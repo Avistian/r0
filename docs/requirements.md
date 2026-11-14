@@ -19,11 +19,10 @@ Get as close as possible to TabPFN's predictive performance. TabPFN is the refer
 
 ## Prior art to reuse
 
-- curie-llm (Piotr's repo, ~/Projects/curie-llm) has a pretrained transformer. Check it for reusable parts (model code, training loop, embeddings) before writing new ones.
+- curie-llm (source of truth: https://github.com/Avistian/curie-llm, public, MIT) has a pretrained transformer. Check it for reusable parts (model code, training loop, embeddings) before writing new ones.
 
 ## Open questions
 
 - Which TabPFN version and which benchmark suite to compare against.
-- Which curie-llm copy is canonical (there are several under ~/Projects) and what its licence allows.
 - Output heads: one shared head, or one per task type.
 - Maximum number of classes for multi-class.
