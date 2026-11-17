@@ -1,2 +1,5 @@
+from r0.modules.cli import main as run_cli
+
+
 def main() -> None:
-    print("r0")
+    run_cli()
