@@ -7,7 +7,15 @@ authors = [
     { name = "Avistian", email = "pszar92@gmail.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "lightgbm>=4.7.0",
+    "numpy>=2.5.5",
+    "pandas>=3.1.1",
+    "pyarrow>=26.0.1",
+    "relbench>=3.1,<4",
+    "scikit-learn>=1.9.1",
+    "torch>=2.15.0",
+]
 
 [project.scripts]
 r0 = "r0:main"
@@ -18,5 +26,20 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "hypothesis>=6.170.15",
+    "import-linter>=2.16",
+    "mutmut>=3.8.1",
+    "pyright>=1.1.414",
     "pytest>=9.2.0",
+    "pytest-cov>=7.1.0",
+    "pytest-socket>=0.8.1",
+    "ruff>=0.17.5",
 ]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]

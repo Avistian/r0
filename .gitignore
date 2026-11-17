@@ -1,0 +1,9 @@
+.cache/
+checkpoints/
+*.pt
+*.ckpt
+*.parquet
+.env
+.env.*
+/tmp/
+mlruns/
