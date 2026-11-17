@@ -403,7 +403,7 @@ jobs:
       caps_allowed: ${{ steps.caps.outputs.allowed }}
 
     steps:
-      - name: Caps (max 3 open agent PRs, max 6 runs a day)
+      - name: Caps (max 3 open agent PRs)
         id: caps
         env:
           GH_TOKEN: ${{ github.token }}
@@ -411,9 +411,8 @@ jobs:
           set -euo pipefail
           echo "allowed=false" >> "$GITHUB_OUTPUT"
           open=$(gh pr list --repo "$GITHUB_REPOSITORY" --label agent:review --state open --json number --jq length)
-          today=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow agent-implement.yml --created ">=$(date -u +%F)" --json databaseId --jq length)
-          echo "Open agent PRs: $open; runs today: $today"
-          if [ "$open" -ge 3 ] || [ "$today" -gt 6 ]; then
+          echo "Open agent PRs: $open"
+          if [ "$open" -ge 3 ]; then
             echo "Caps reached; not starting."
             exit 1
           fi
