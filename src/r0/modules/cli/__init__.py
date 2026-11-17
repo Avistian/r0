@@ -46,8 +46,10 @@ def run(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> None:
     parser.add_argument(
         "--version", action="store_true", help="show program's version number and exit"
     )
+    parser.add_argument("--hello", action="store_true", help="print hello")
     args = parser.parse_args(argv)
     if not args.quiet:
-        print(version("r0") if args.version else "r0", file=stdout)
+        greeting = "hello" if args.hello else "r0"
+        print(version("r0") if args.version else greeting, file=stdout)
     if args.version:
         parser.exit()

@@ -20,6 +20,15 @@ def test_normal_output() -> None:
     assert invoke(["--quiet", "--quiet"]) == (None, "", "")
 
 
+def test_hello_output() -> None:
+    assert invoke(["--hello"]) == (None, "hello\n", "")
+
+
+def test_quiet_suppresses_hello() -> None:
+    for argv in [["--quiet", "--hello"], ["--hello", "--quiet"]]:
+        assert invoke(argv) == (None, "", "")
+
+
 def test_explicit_information_prints() -> None:
     for flag in ["--help", "-h", "--version"]:
         code, stdout, stderr = invoke([flag])
