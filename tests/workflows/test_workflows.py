@@ -73,3 +73,9 @@ def test_implement_commits_after_codex_with_hook() -> None:
         assert "git commit -m" in commit
         assert "--no-verify" not in commit
         assert "core.hooksPath" not in commit
+
+
+def test_workflows_never_use_pr_edit() -> None:
+    for f in WF.iterdir():
+        if f.suffix in {".yml", ".yaml"}:
+            assert not re.search(r"\bgh\s+pr\s+edit\b", f.read_text()), f.name
