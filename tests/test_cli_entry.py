@@ -32,3 +32,16 @@ def test_version_matches_pyproject() -> None:
     assert result.returncode == 0
     assert result.stdout == f"{expected}\n"
     assert result.stderr == ""
+
+
+def test_quiet_console_entry() -> None:
+    result = subprocess.run(
+        [str(Path(sys.executable).with_name("r0")), "--quiet"],
+        cwd="/tmp",
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
