@@ -5,7 +5,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 from pathlib import Path
 
-from r0.modules.cli import main
+from r0.cli import main
 
 
 def test_no_arguments_preserves_greeting() -> None:
@@ -17,7 +17,7 @@ def test_no_arguments_preserves_greeting() -> None:
 
 
 def test_version_matches_pyproject() -> None:
-    root = Path(__file__).resolve().parents[2]
+    root = Path(__file__).resolve().parents[1]
     with (root / "pyproject.toml").open("rb") as source:
         expected = tomllib.load(source)["project"]["version"]
 
