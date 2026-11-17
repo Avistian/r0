@@ -46,7 +46,7 @@ name: Agent — Review A Pull Request
 #   still a human's.
 #
 # WHAT IT NEEDS
-#   secrets.OPENAI_API_KEY — the agent's auth token.
+#   Codex CLI on the runner, already signed in with the ChatGPT plan.
 #   secrets.FACTORY_PAT — the factory's one token. Only the steps that call
 #     GitHub get it; the agent's step does not. It pushes the review's
 #     commits and posts its verdict and inline comments, so it needs
@@ -89,8 +89,9 @@ jobs:
   review:
     if: >-
       vars.FACTORY_ENABLED == 'true' &&
-      github.event.label.name == 'agent:review'
-    runs-on: ubuntu-latest
+      github.event.label.name == 'agent:review' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, codex]
     timeout-minutes: 45
 
     env:
@@ -104,6 +105,10 @@ jobs:
       RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
     steps:
+      - name: Check Codex CLI
+        run: |
+          command -v codex >/dev/null 2>&1 || { echo "::error::Codex CLI is not on PATH on this runner."; exit 1; }
+
       - name: Transition labels
         # The trigger comes off, so putting it back on is how you retry.
         # `agent:in-progress` goes on until the run ends, however it ends.
@@ -176,14 +181,20 @@ jobs:
 
       - name: Review the pull request
         id: run_codex
-        uses: openai/codex-action@v1
-        with:
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          prompt-file: .sandcastle/agent-workflows/review/prompt.md
-          safety-strategy: drop-sudo
-          output-file: ${{ runner.temp }}/review-findings.json
-          output-schema: |
-            {"type":"object","properties":{"comments":{"type":"array","items":{"type":"object","properties":{"axis":{"enum":["standards","spec"],"type":"string"},"title":{"type":"string"},"path":{"type":"string"},"line":{"type":"integer","minimum":1},"body":{"type":"string"}},"required":["axis","title","path","line","body"],"additionalProperties":false}}},"required":["comments"],"additionalProperties":false}
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/codex-output-schema.json" <<'JSON'
+          {"type":"object","properties":{"comments":{"type":"array","items":{"type":"object","properties":{"axis":{"enum":["standards","spec"],"type":"string"},"title":{"type":"string"},"path":{"type":"string"},"line":{"type":"integer","minimum":1},"body":{"type":"string"}},"required":["axis","title","path","line","body"],"additionalProperties":false}}},"required":["comments"],"additionalProperties":false}
+          JSON
+          codex --ask-for-approval never exec --sandbox workspace-write --output-schema "$RUNNER_TEMP/codex-output-schema.json" --output-last-message "$RUNNER_TEMP/review-findings.json" - < .sandcastle/agent-workflows/review/prompt.md
+
+      - name: Commit review fixes
+        run: |
+          set -euo pipefail
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "factory: review fixes"
+          fi
 
       - name: Prepare the review comments
         # Keep out-of-diff findings in the verdict; GitHub rejects them inline.

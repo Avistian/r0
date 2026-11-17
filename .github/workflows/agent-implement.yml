@@ -24,7 +24,7 @@ name: Agent — Implement A Ticket
 #   Codex reads .sandcastle/agent-workflows/implement/prompt.md.
 #
 # WHAT IT NEEDS
-#   secrets.OPENAI_API_KEY — the Codex action's API key.
+#   Codex CLI on the runner, already signed in with the ChatGPT plan.
 #   secrets.FACTORY_PAT — a fine-grained PAT on this repository with Issues,
 #     Pull requests, Contents, Workflows and Actions, all read/write. Every
 #     step that talks to GitHub uses it: reading the ticket, pushing, opening
@@ -93,7 +93,7 @@ jobs:
       !contains(github.event.issue.labels.*.name, 'human:local') &&
       !contains(github.event.issue.labels.*.name, 'agent:train') &&
       !contains(github.event.issue.labels.*.name, 'agent:awaiting-merge')
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, codex]
     timeout-minutes: 45
 
     permissions:
@@ -124,6 +124,10 @@ jobs:
             exit 1
           fi
           echo "allowed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Check Codex CLI
+        run: |
+          command -v codex >/dev/null 2>&1 || { echo "::error::Codex CLI is not on PATH on this runner."; exit 1; }
 
       - name: Transition labels
         # The trigger comes off, so putting it back on is how you retry.
@@ -197,15 +201,23 @@ jobs:
       - name: Build the ticket
         if: steps.caps.outputs.allowed == 'true'
         id: run_codex
-        uses: openai/codex-action@v1
-        with:
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          prompt-file: .sandcastle/agent-workflows/implement/prompt.md
-          safety-strategy: drop-sudo
+        run: |
+          set -euo pipefail
+          codex --ask-for-approval never exec --sandbox workspace-write - < .sandcastle/agent-workflows/implement/prompt.md
+
+      - name: Commit the changes
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet; then
+            echo "::error::Codex left no changes to commit."
+            exit 1
+          fi
+          git commit -m "factory: implement ticket"
 
       - name: Check the agent committed
-        # The agent owns the commits now, so this step owns the question of
-        # whether there are any. No commit means no pull request, and the run
+        # The workflow commits the edits, and this step checks
+        # that there are commits. No commit means no pull request, and the run
         # goes red rather than green-and-empty.
         env:
           BASE: ${{ steps.branch.outputs.base }}

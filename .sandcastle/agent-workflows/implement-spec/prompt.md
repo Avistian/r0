@@ -4,7 +4,8 @@ CODING_STANDARDS.md and GLOSSARY.md. Read SPEC_MODE from the environment.
 If SPEC_MODE is `implement`, read /tmp/ticket.md (the ticket and trusted
 comments) and /tmp/spec.md (context). Follow the implementation instructions
 in .sandcastle/agent-workflows/implement/prompt.md. Build only this ticket,
-commit through .githooks, and write /tmp/pr-body.md. The workflow pushes and
+leave changes in the working tree without staging or committing, and write
+/tmp/pr-body.md. The workflow commits through the normal hook, pushes and
 opens the draft PR.
 
 If SPEC_MODE is `decompose`, read /tmp/spec.md and turn it into an ordered

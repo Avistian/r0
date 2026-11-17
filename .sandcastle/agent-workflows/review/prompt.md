@@ -21,8 +21,9 @@ leaves open, or a trade-off between two documented rules. Everything else you
 fix on `$BRANCH`, however large: deepening a module, taking `db` as a
 parameter, writing the tests a module lacks, extracting a shared component,
 splitting a function off a lint exemption list. A fix is done when
-`make check` passes and the hook accepts its commit. Commit each fix on
-its own. The workflow pushes your commits. Leave `.github/` untouched.
+`make check` passes. Leave fixes in the working tree; do not stage or commit,
+because the sandbox cannot write .git. The workflow commits through the normal
+pre-commit hook and pushes your fixes. Leave `.github/` untouched.
 
 Every finding you leave becomes an inline comment on the first line it
 concerns, one comment per finding. You will be asked for them as structured
@@ -34,7 +35,7 @@ Write your verdict on the branch, after your fixes, to /tmp/review-verdict.md:
 
     ## Standards: PASS | CHANGES REQUESTED
     One line of reasoning, then each finding you fixed, worst first: its
-    commit, citing the rule by heading.
+    changed files, citing the rule by heading.
 
     ## Spec: PASS | CHANGES REQUESTED
     One line of reasoning, then each finding you fixed.
