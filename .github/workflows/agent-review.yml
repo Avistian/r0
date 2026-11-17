@@ -120,9 +120,9 @@ jobs:
             --description "An agent is working on this right now" || true
           gh label create "agent:blocked" --color B60205 \
             --description "An agent run failed here. Its comment says how to retry" || true
-          gh pr edit "$PR_NUMBER" --remove-label "agent:review" || true
-          gh pr edit "$PR_NUMBER" --remove-label "agent:blocked" || true
-          gh pr edit "$PR_NUMBER" --add-label "agent:in-progress"
+          gh api -X DELETE "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels/agent%3Areview" || true
+          gh api -X DELETE "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels/agent%3Ablocked" || true
+          gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels" -f "labels[]=agent:in-progress"
 
       - name: Checkout the pull request
         uses: actions/checkout@v4
@@ -379,10 +379,10 @@ jobs:
         if: failure() || steps.push.outputs.fallback == 'true'
         env:
           GH_TOKEN: ${{ secrets.FACTORY_PAT }}
-        run: gh pr edit "$PR_NUMBER" --add-label "agent:blocked" || true
+        run: gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels" -f "labels[]=agent:blocked" || true
 
       - name: Always remove in-progress
         if: always()
         env:
           GH_TOKEN: ${{ secrets.FACTORY_PAT }}
-        run: gh pr edit "$PR_NUMBER" --remove-label "agent:in-progress" || true
+        run: gh api -X DELETE "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels/agent%3Ain-progress" || true
