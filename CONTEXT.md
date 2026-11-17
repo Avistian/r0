@@ -1,0 +1,21 @@
+# CONTEXT.md — r0 vocabulary
+- **RelDB**: our in-memory relational database: Tables with a primary key, foreign keys and an optional time column.
+- **Entity table / event table**: a table without / with a time column that grows over time.
+- **Seed time**: the moment a prediction is made; rows at or after it are invisible (ADR 0005).
+- **Task rows**: (entity id, seed time, label) — RelBench's "training table".
+- **Prior**: modules/priors; samples a synthetic RelDB plus task rows. The only training data (ADR 0002).
+- **Synthetic task**: one prior sample: a RelDB, task rows over several seed times, a label rule.
+- **Label rule**: future activity | future value | entity property (spec 0001).
+- **Featurizer**: modules/featurize; the fixed DFS-lite aggregation shared by prior and benchmark.
+- **Feature row**: ≤ 40 numbers per task row; NaN means "no history".
+- **Context set / query set**: labelled rows the model conditions on / rows it predicts.
+- **RPFN**: our relational prior-fitted network (modules/model).
+- **k (shots)**: number of context rows at evaluation: 64, 256 or 512 in suite_v0.
+- **Dev suite**: held-out synthetic tasks + RelBench *val* tables; tuning allowed.
+- **Benchmark suite (suite_v0)**: the frozen RelBench *test* tables in eval/suite_v0.toml.
+- **Protocol hash**: sha256 of eval/suite_v0.toml; on every run record.
+- **Run record / leaderboard / ratchet / budget ledger**: see ADR 0009 and docs/adr/0004.
+- **Smoke config**: configs/ci/smoke.toml; trains in under a minute on a CPU.
+- **Prior mixture**: weighted prior components (single-table core first, relational on top; ADR 0012).
+- **Tabular dev track**: fixed OpenML tasks for development; TabArena subset only at milestones (T19).
+- **Bar head**: regression as cross-entropy over equal-probability buckets of the prior targets.
