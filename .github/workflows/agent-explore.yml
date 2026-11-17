@@ -64,7 +64,7 @@ name: Agent — Explore The Tickets
 #   Codex reads .sandcastle/agent-workflows/explore/prompt.md.
 #
 # WHAT IT NEEDS
-#   secrets.OPENAI_API_KEY — the agent's auth token.
+#   Codex CLI on the runner, already signed in with the ChatGPT plan.
 #   secrets.FACTORY_PAT — a fine-grained personal access token on this
 #     repository. Every call this workflow makes to GitHub uses it: listing
 #     the batch, posting the findings, moving the labels, closing duplicates.
@@ -102,7 +102,7 @@ jobs:
       !contains(github.event.issue.labels.*.name, 'human:local') &&
       !contains(github.event.issue.labels.*.name, 'agent:train') &&
       !contains(github.event.issue.labels.*.name, 'agent:awaiting-merge')
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, codex]
     timeout-minutes: 45
 
     permissions:
@@ -118,6 +118,10 @@ jobs:
       GH_REPO: ${{ github.repository }}
 
     steps:
+      - name: Check Codex CLI
+        run: |
+          command -v codex >/dev/null 2>&1 || { echo "::error::Codex CLI is not on PATH on this runner."; exit 1; }
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -177,14 +181,12 @@ jobs:
       - name: Explore
         id: run_codex
         if: steps.batch.outputs.numbers != '[]'
-        uses: openai/codex-action@v1
-        with:
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          prompt-file: .sandcastle/agent-workflows/explore/prompt.md
-          safety-strategy: drop-sudo
-          output-file: ${{ runner.temp }}/plan.json
-          output-schema: |
-            {"type":"object","properties":{"issues":{"type":"array","items":{"type":"object","properties":{"number":{"type":"integer"},"tag":{"type":"string","enum":["easy-call","needs-a-human","blocked"]},"duplicate_of":{"type":["integer","null"]},"comment":{"type":"string","minLength":1}},"required":["number","tag","duplicate_of","comment"],"additionalProperties":false}}},"required":["issues"],"additionalProperties":false}
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/codex-output-schema.json" <<'JSON'
+          {"type":"object","properties":{"issues":{"type":"array","items":{"type":"object","properties":{"number":{"type":"integer"},"tag":{"type":"string","enum":["easy-call","needs-a-human","blocked"]},"duplicate_of":{"type":["integer","null"]},"comment":{"type":"string","minLength":1}},"required":["number","tag","duplicate_of","comment"],"additionalProperties":false}}},"required":["issues"],"additionalProperties":false}
+          JSON
+          codex --ask-for-approval never exec --sandbox workspace-write --output-schema "$RUNNER_TEMP/codex-output-schema.json" --output-last-message "$RUNNER_TEMP/plan.json" - < .sandcastle/agent-workflows/explore/prompt.md
 
       - name: Hand the plan to the apply job
         id: plan
