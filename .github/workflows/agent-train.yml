@@ -1,4 +1,6 @@
 name: agent-train
+
+# Caller: implementation and guard tests live in Avistian/ml-factory.
 on:
   workflow_dispatch:
     inputs:
@@ -6,74 +8,22 @@ on:
       run:    { required: true, type: string }
   issues:
     types: [labeled]
+
 concurrency:
   group: agent-train
   cancel-in-progress: false            # never cancel a live training job
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
+
 jobs:
-  train:
-    if: >-
-      vars.COMPUTE_ENABLED == 'true' &&
-      (github.event_name == 'workflow_dispatch' || github.event.label.name == 'agent:train')
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    env:
-      MAX_TRAIN_RUNS_PER_DAY: ${{ vars.MAX_TRAIN_RUNS_PER_DAY }}
-      MAX_GPU: ${{ vars.MAX_GPU }}
-    steps:
-      - uses: actions/checkout@v4
-        with: { persist-credentials: false }
-      - uses: astral-sh/setup-uv@v6
-      - run: uv sync --frozen
-      - name: Read the request
-        id: req
-        env:                               # inputs reach the shell through env, never inline
-          BODY: ${{ github.event.issue.body }}
-          IN_CONFIG: ${{ inputs.config }}
-          IN_RUN: ${{ inputs.run }}
-        run: |
-          CONFIG="$IN_CONFIG"; RUN="$IN_RUN"
-          [ -z "$CONFIG" ] && CONFIG=$(printf '%s\n' "$BODY" | sed -n 's/^Config: *//p' | head -1)
-          [ -z "$RUN" ]    && RUN=$(printf '%s\n' "$BODY" | sed -n 's/^Run: *//p' | head -1)
-          case "$CONFIG" in configs/runs/*.toml) ;; *) echo "bad config path"; exit 1;; esac
-          echo "$RUN" | grep -Eq '^[a-z0-9-]{3,40}$' || { echo "bad run id"; exit 1; }
-          echo "config=$CONFIG" >> "$GITHUB_OUTPUT"; echo "run=$RUN" >> "$GITHUB_OUTPUT"
-      - name: Caps
-        run: uv run python scripts/check_compute_caps.py "${{ steps.req.outputs.config }}"
-      - name: CPU smoke first
-        run: make smoke && make eval-smoke
-      - name: Fetch the benchmark data (network, checksummed)
-        run: make data
-      - name: Train and evaluate on Modal   # the only step that sees the Modal token
-        env:
-          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
-          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
-        run: |
-          uv run --with modal modal run scripts/modal_train.py \
-            --config "${{ steps.req.outputs.config }}" \
-            --run "${{ steps.req.outputs.run }}"
-      - name: Record (leaderboard row, ledger row, job summary)
-        run: |
-          uv run r0 leaderboard record "results/runs/${{ steps.req.outputs.run }}.json"
-          uv run r0 ledger append --run "${{ steps.req.outputs.run }}" --trigger "${{ github.event_name }}" \
-             --device from-run-record
-          uv run r0 summary "results/runs/${{ steps.req.outputs.run }}.json" >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: run-${{ steps.req.outputs.run }}
-          path: |
-            checkpoints/${{ steps.req.outputs.run }}/
-            results/runs/${{ steps.req.outputs.run }}.json
-      - name: Open the results PR (no agent on this step)
-        env: { GH_TOKEN: "${{ secrets.FACTORY_PAT }}" }
-        run: |
-          git config user.name "r0-factory"; git config user.email "r0-factory@users.noreply.github.com"
-          B="results/${{ steps.req.outputs.run }}"
-          git switch -c "$B" && git add results/ && git commit -m "Run ${{ steps.req.outputs.run }}"
-          git -c core.hooksPath=/dev/null push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$B"
-          gh pr create --head "$B" --title "Results: ${{ steps.req.outputs.run }}" \
-            --body "Ledger, run record and leaderboard row for ${{ steps.req.outputs.run }}. ${{ github.event.issue.number && format('Closes #{0}', github.event.issue.number) || '' }}" \
-            --label agent:review
+  factory:
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    uses: Avistian/ml-factory/.github/workflows/agent-train.yml@462fbd57fca0e3a1b9e18c4eeb453bebe0f1bc2e
+    with:
+      config: ${{ inputs.config }}
+      run: ${{ inputs.run }}
+    secrets:
+      FACTORY_PAT: ${{ secrets.FACTORY_PAT }}
+      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
