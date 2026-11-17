@@ -7,3 +7,4 @@ checkpoints/
 .env.*
 /tmp/
 mlruns/
+__pycache__/
