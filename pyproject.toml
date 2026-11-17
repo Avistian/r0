@@ -17,9 +17,6 @@ dependencies = [
     "torch>=2.15.0",
 ]
 
-[project.scripts]
-r0 = "r0:main"
-
 [build-system]
 requires = ["uv_build>=0.9.21,<0.10.0"]
 build-backend = "uv_build"
@@ -43,3 +40,48 @@ explicit = true
 
 [tool.uv.sources]
 torch = [{ index = "pytorch-cpu" }]
+
+[project.scripts]
+r0 = "r0.cli:main"
+
+[tool.ruff]
+line-length = 100
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "NPY", "PT", "SIM"]
+
+[tool.pyright]
+include = ["src", "tests"]
+typeCheckingMode = "strict"
+
+[tool.pytest.ini_options]
+addopts = "-q --disable-socket --allow-unix-socket"   # no network in tests, ever
+markers = ["smoke: tiny CPU training run, under a minute"]
+
+[tool.importlinter]
+root_package = "r0"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Layers"
+type = "layers"
+layers = [
+  "r0.cli",
+  "r0.modules.leaderboard",
+  "r0.modules.training | r0.modules.evaluation",
+  "r0.modules.batching | r0.modules.relbench_adapter | r0.modules.model",
+  "r0.modules.featurize | r0.modules.priors",
+  "r0.modules.reldb",
+]
+
+[[tool.importlinter.contracts]]
+name = "ADR 0002: the training path never sees real data"
+type = "forbidden"
+source_modules = ["r0.modules.priors", "r0.modules.featurize", "r0.modules.batching",
+                  "r0.modules.training", "r0.modules.model"]
+forbidden_modules = ["relbench", "r0.modules.relbench_adapter", "r0.modules.evaluation", "lightgbm"]
+
+[[tool.importlinter.contracts]]
+name = "Only the adapter imports relbench"
+type = "forbidden"
+source_modules = ["r0.cli", "r0.modules.evaluation", "r0.modules.leaderboard", "r0.modules.reldb"]
+forbidden_modules = ["relbench"]
