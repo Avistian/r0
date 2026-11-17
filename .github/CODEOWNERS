@@ -1,0 +1,9 @@
+# .github/CODEOWNERS
+/eval/                                @Avistian
+/src/r0/modules/evaluation/           @Avistian
+/src/r0/modules/relbench_adapter/     @Avistian
+/scripts/check_ratchet.py             @Avistian
+/scripts/check_compute_caps.py        @Avistian
+/results/best.json                    @Avistian
+/docs/adr/                            @Avistian
+/.github/                             @Avistian

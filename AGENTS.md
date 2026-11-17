@@ -37,4 +37,4 @@ Put the `make smoke` loss summary and the `make eval-smoke` table in the PR body
 
 ## Agent skills
 ### Issue tracker
-GitHub issues on this repo, via `gh`. See docs/agents/issue-tracker.md.
+GitHub issues on `Avistian/r0`, via `gh`. See docs/agents/issue-tracker.md.
