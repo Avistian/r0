@@ -597,7 +597,8 @@ jobs:
           # No `|| true` and no `::warning` fallback here, on purpose. If this
           # fails the factory has stopped at its last hop, and a green tick over
           # a chain that ended is worse than a red one.
-          gh pr edit "$BRANCH" --add-label "agent:review"
+          pr_number=$(gh pr view "$BRANCH" --json number -q .number)
+          gh api "repos/$GITHUB_REPOSITORY/issues/$pr_number/labels" -f "labels[]=agent:review"
 
       - name: Close the ticket and move the queue on
         if: always() && steps.caps.outputs.allowed == 'true'

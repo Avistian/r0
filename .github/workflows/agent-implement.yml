@@ -303,7 +303,8 @@ jobs:
           # No `|| true` here, on purpose. If this fails, the chain has
           # stopped at its last hop, and a red run says so. A green run over
           # a chain that stopped says nothing.
-          gh pr edit "$PR_URL" --add-label "agent:review"
+          pr_number=$(gh pr view "$PR_URL" --json number -q .number)
+          gh api "repos/$GITHUB_REPOSITORY/issues/$pr_number/labels" -f "labels[]=agent:review"
 
       - name: Mark blocked on failure
         if: failure() && steps.caps.outputs.allowed == 'true'
