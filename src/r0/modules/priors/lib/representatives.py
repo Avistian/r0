@@ -8,6 +8,7 @@ from typing import Literal
 import numpy as np
 
 from r0.modules.episodes import Episode, Feature, Row, Target, TaskType
+from r0.modules.priors.lib.smooth_neural import gp_draw, mlp_draw
 
 Family = Literal["linear", "gp", "mlp", "scm", "tree", "interaction"]
 FAMILIES: tuple[Family, ...] = ("linear", "gp", "mlp", "scm", "tree", "interaction")
@@ -112,6 +113,12 @@ def sample_proposal(p: Proposal) -> GeneratedTask:
     if p.family == "linear":
         parameters = _linear(p, mechanism_rng)
         latent = x @ np.asarray(parameters["weights"], dtype=np.float64)
+    elif p.family == "gp":
+        x, latent, parameters, construction = gp_draw(
+            p.rows, rng=mechanism_rng, observations=observation_rng
+        )
+    elif p.family == "mlp":
+        latent, parameters = mlp_draw(x, rng=mechanism_rng)
     elif p.family == "interaction":
         if p.features < 3:
             raise ValueError("interaction representative requires at least 3 features")
