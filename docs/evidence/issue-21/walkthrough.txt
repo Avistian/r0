@@ -1,0 +1,14 @@
+Regression context ['row-3', 'row-1', 'row-2'] (7.0, 3.0, 5.0)
+Regression query terms {'query_ids': ['row-0', 'row-5', 'row-4'], 'targets': (1.0, 11.0, 9.0), 'predictions': ((5.0,), (5.0,), (5.0,)), 'per_query_terms': (16.0, 36.0, 16.0), 'metric': 'mean_squared_error', 'value': 22.666666666666668}
+Changed targets preserve predictor inputs True
+Changed targets preserve predictions True
+Changed targets score 25.0
+Reordered requests reproduce report True
+Changed split preserves source True
+Changed split changes partition True
+First raw query {'id': 'row-0', 'values': (3.0, 0, 0, 'red', 'low', 1700000000, 7.0, None)}
+First transformed query {'id': 'row-0', 'values': (-2.449489742783178, -2.449489742783178, 0, 1, 0, 1700000000, 0.0, 0), 'missing': (False, False, False, False, False, False, False, True), 'unknown': (False, False, False, False, False, False, False, False)}
+Invalid configuration unknown configuration keys: unknown
+Overlapping identity context/query row identities must be unique and disjoint
+binary {"metric": "multiclass_brier_sum_classes_mean_queries", "per_query_terms": [0.888888888888889, 0.888888888888889, 0.22222222222222224], "predictions": [[0.6666666666666666, 0.3333333333333333], [0.6666666666666666, 0.3333333333333333], [0.6666666666666666, 0.3333333333333333]], "query_ids": ["row-5", "row-1", "row-4"], "targets": ["B", "B", "A"], "value": 0.6666666666666667}
+multiclass {"metric": "multiclass_brier_sum_classes_mean_queries", "per_query_terms": [1.5555555555555556, 0.888888888888889, 0.888888888888889], "predictions": [[0.3333333333333333, 0.6666666666666666, 0.0], [0.3333333333333333, 0.6666666666666666, 0.0], [0.3333333333333333, 0.6666666666666666, 0.0]], "query_ids": ["row-5", "row-4", "row-0"], "targets": ["C", "A", "A"], "value": 1.1111111111111112}

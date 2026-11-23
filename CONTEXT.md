@@ -19,3 +19,15 @@
 - **Prior mixture**: A weighted combination of prior components.
 - **Tabular dev track**: The single-table evaluation tasks used during development.
 - **Bar head**: A regression output distribution represented by probabilities over target intervals.
+
+- **Source task**: The underlying sampled prediction problem from which one or more episodes are drawn.
+- **Episode**: One prediction problem consisting of labeled context examples and query examples drawn from a source task.
+- **Predictor view**: The observations and declared task information available for making predictions in an episode.
+
+- **Missing value**: A feature value that is unobserved for an example.
+- **Unknown category**: An observed category absent from the category mapping fitted on context examples.
+- **Class vocabulary**: The declared set of possible classification targets for a task, independent of the targets observed in a particular episode.
+
+- **Episode schema**: The declared feature meanings and target vocabulary shared by the context and queries of an episode.
+
+- **Replay**: Reconstructing an identified episode and its recorded processing under the same declared recipe and environment.
