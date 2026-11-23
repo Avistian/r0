@@ -3,6 +3,7 @@
 # Tests live in `make check`.
 uv run python scripts/check_checkout.py || exit 1
 uv run python scripts/check_tracked_files.py || exit 1
+uv run python scripts/check_artifact_sizes.py || exit 1
 
 logs=$(mktemp -d); trap 'rm -rf "$logs"' EXIT
 staged=$(git diff --cached --name-only --diff-filter=ACMR)
@@ -17,10 +18,6 @@ run typecheck  uv run pyright
 run boundaries uv run lint-imports
 run modules    uv run python scripts/check_module_tests.py
 wait
-
-big=$(printf '%s\n' "$staged" | while read -r f; do
-  [ -f "$f" ] && [ "$(wc -c < "$f")" -gt 1048576 ] && echo "$f"; done)
-[ -n "$big" ] && { echo "✖ files over 1 MB (data and checkpoints go to .cache/ or Releases): $big"; exit 1; }
 
 status=0
 for failed in "$logs"/*.failed; do

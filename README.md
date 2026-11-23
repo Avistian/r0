@@ -14,6 +14,12 @@ uv run r0 --version
 
 `uv run` runs `r0 --version` in the project's virtual environment.
 
+When reusing an existing environment in a fresh checkout, run `make hooks` to activate
+this repository's commit hook without syncing dependencies. Local `make preflight`
+checks the source checkout and hook activation; CI runs the checks directly.
+`make check` and the commit hook both enforce the 1 MiB limit on staged/tracked Git
+blobs, including files whose working copies were subsequently changed or removed.
+
 ## Predictive reference walkthrough
 
 Issue #22 provides bounded CPU beta–Bernoulli, Dirichlet–categorical and linear/RBF GP

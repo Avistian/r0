@@ -1,0 +1,50 @@
+fresh checkout local preflight rejects inactive hook: exit=2
+uv run python scripts/check_checkout.py && uv run python scripts/check_hooks.py
+Interpreter: /tmp/r0-retro23-commit-cfe_qqx5/.venv/bin/python3
+r0 source: /tmp/r0-retro23-commit-cfe_qqx5/src/r0/__init__.py
+Expected package: /tmp/r0-retro23-commit-cfe_qqx5/src/r0
+FAIL: repository commit hook is inactive or not executable. Run make hooks.
+Resolved hook: /tmp/r0-retro23-commit-cfe_qqx5/.git/hooks/pre-commit
+make: *** [Makefile:14: preflight] Error 1
+
+activate hook without syncing environment: exit=0
+git config --local core.hooksPath .githooks && chmod +x .githooks/pre-commit
+
+local preflight passes with reused environment: exit=0
+uv run python scripts/check_checkout.py && uv run python scripts/check_hooks.py
+Interpreter: /tmp/r0-retro23-commit-cfe_qqx5/.venv/bin/python3
+r0 source: /tmp/r0-retro23-commit-cfe_qqx5/src/r0/__init__.py
+Expected package: /tmp/r0-retro23-commit-cfe_qqx5/src/r0
+Active commit hook: /tmp/r0-retro23-commit-cfe_qqx5/.githooks/pre-commit
+
+normal commit rejects unused import: exit=1
+Interpreter: /tmp/r0-retro23-commit-cfe_qqx5/.venv/bin/python3
+r0 source: /tmp/r0-retro23-commit-cfe_qqx5/src/r0/__init__.py
+Expected package: /tmp/r0-retro23-commit-cfe_qqx5/src/r0
+✖ ruff-lint failed:
+F401 [*] `os` imported but unused
+ --> retro_bad.py:1:8
+  |
+1 | import os
+  |        ^^
+help: Remove unused import: `os`
+  |
+  - import os
+  |
+
+Found 1 error.
+[*] 1 fixable with `--fix`.
+
+
+normal commit rejects oversized staged blob with missing working file: exit=1
+Interpreter: /tmp/r0-retro23-commit-cfe_qqx5/.venv/bin/python3
+r0 source: /tmp/r0-retro23-commit-cfe_qqx5/src/r0/__init__.py
+Expected package: /tmp/r0-retro23-commit-cfe_qqx5/src/r0
+FAIL: Git index files exceed 1 MiB; data/checkpoints belong in .cache/ or Releases:
+  'oversized fixture.bin': 1048577 bytes
+
+same guard through CI make target: exit=2
+uv run python scripts/check_artifact_sizes.py
+FAIL: Git index files exceed 1 MiB; data/checkpoints belong in .cache/ or Releases:
+  'oversized fixture.bin': 1048577 bytes
+make: *** [Makefile:16: artifact-sizes] Error 1
