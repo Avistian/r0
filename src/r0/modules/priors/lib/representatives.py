@@ -9,6 +9,7 @@ import numpy as np
 
 from r0.modules.episodes import Episode, Feature, Row, Target, TaskType
 from r0.modules.priors.lib.smooth_neural import gp_draw, mlp_draw
+from r0.modules.priors.lib.structured import scm_draw, tree_draw
 
 Family = Literal["linear", "gp", "mlp", "scm", "tree", "interaction"]
 FAMILIES: tuple[Family, ...] = ("linear", "gp", "mlp", "scm", "tree", "interaction")
@@ -119,6 +120,12 @@ def sample_proposal(p: Proposal) -> GeneratedTask:
         )
     elif p.family == "mlp":
         latent, parameters = mlp_draw(x, rng=mechanism_rng)
+    elif p.family == "scm":
+        x, latent, parameters, construction = scm_draw(
+            x, rng=mechanism_rng, observations=observation_rng
+        )
+    elif p.family == "tree":
+        latent, parameters, construction = tree_draw(x, rng=mechanism_rng)
     elif p.family == "interaction":
         if p.features < 3:
             raise ValueError("interaction representative requires at least 3 features")
