@@ -16,6 +16,11 @@ from r0.modules.featurize import TransformedView, transform
 from r0.modules.priors import SourceTask, sample_fixture
 from r0.modules.replay.lib.config import Config as Config
 from r0.modules.replay.lib.config import parse_config as parse_config
+from r0.modules.replay.lib.diagnostic_config import DiagnosticConfig as DiagnosticConfig
+from r0.modules.replay.lib.diagnostic_config import diagnostic_schedule as diagnostic_schedule
+from r0.modules.replay.lib.diagnostic_config import (
+    parse_diagnostic_config as parse_diagnostic_config,
+)
 from r0.modules.replay.lib.identity import fingerprint as fingerprint
 from r0.modules.replay.lib.oracle import oracle_replay as oracle_replay
 from r0.modules.replay.lib.oracle import write_oracle_report as write_oracle_report
@@ -23,6 +28,9 @@ from r0.modules.replay.lib.oracle_compare import compare_oracle_report as compar
 from r0.modules.replay.lib.oracle_config import OracleConfig as OracleConfig
 from r0.modules.replay.lib.oracle_config import parse_oracle_config as parse_oracle_config
 from r0.modules.replay.lib.oracle_scores import oracle_scores as oracle_scores
+from r0.modules.replay.lib.prior_diagnostics import (
+    write_prior_diagnostics as write_prior_diagnostics,
+)
 
 
 class Report(TypedDict):
