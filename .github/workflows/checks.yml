@@ -24,6 +24,16 @@ jobs:
       - uses: astral-sh/setup-uv@v6
       - run: uv sync --frozen
       - run: make check
+      - name: Oracle reference walkthrough
+        run: uv run python scripts/oracle_walkthrough.py --out "${{ runner.temp }}/oracle-reference-evidence"
+      - name: Retain oracle reference evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oracle-reference-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/oracle-reference-evidence/
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Job summary
         if: always()
         run: echo "### checks · $(git rev-parse --short HEAD)" >> "$GITHUB_STEP_SUMMARY"
