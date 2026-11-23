@@ -174,3 +174,30 @@ def test_challenges_reports_pending_custody_and_respects_quiet(tmp_path: Path) -
     report = json.loads(output.read_text())
     assert report["public_status"] == "PASS"
     assert report["sealed_status"] == "PENDING_OWNER_VERIFICATION"
+
+
+def test_challenge_timeout_interrupts_blocked_output(tmp_path: Path) -> None:
+    """Exercise the installed deadline handler without waiting five minutes."""
+    import os
+    import subprocess
+    import sys
+
+    output = tmp_path / "blocked.json"
+    os.mkfifo(output)
+    script = """
+import os, signal, sys, threading, time
+from r0.modules.cli import run
+
+def interrupt():
+    time.sleep(0.2)
+    os.kill(os.getpid(), signal.SIGALRM)
+
+threading.Thread(target=interrupt, daemon=True).start()
+run(['challenges', '--out', sys.argv[1]], stdout=sys.stdout, stderr=sys.stderr)
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", script, str(output)], text=True, capture_output=True, timeout=5
+    )
+    assert result.returncode == 2
+    assert "exceeded 300 seconds" in result.stderr
+    assert "PASS" not in result.stdout

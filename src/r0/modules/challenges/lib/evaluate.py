@@ -16,6 +16,7 @@ class PredictionCheck(TypedDict):
 
 
 class EpisodeCheck(TypedDict):
+    errors: list[str]
     episode: dict[str, object]
     predictor_view: dict[str, object]
     expected_answers: list[Target]
@@ -32,6 +33,7 @@ class PairReport(TypedDict):
     before: EpisodeCheck
     after: EpisodeCheck
     transformation_valid: bool
+    transformation_error: str | None
     status: str
 
 
@@ -58,16 +60,23 @@ def _check(episode: Episode, predictions: tuple[Target, ...]) -> PredictionCheck
 
 
 def _episode_check(episode: Episode, pair: ChallengePair) -> EpisodeCheck:
-    if len(episode.context) > 12 or len(episode.queries) > 6 or len(episode.features) > 4:
-        raise ValueError("challenge exceeds 12 context rows, 6 queries or 4 features")
     view = episode.predictor_view()
-    return {
+    report: EpisodeCheck = {
+        "errors": [],
         "episode": asdict(episode),
         "predictor_view": asdict(view),
         "expected_answers": list(episode.query_targets),
-        "reference": _check(episode, reference_predictions(view, pair.family)),
-        "shortcut": _check(episode, shortcut_predictions(view, pair.shortcut)),
+        "reference": {"predictions": [], "matches": [], "absolute_differences": []},
+        "shortcut": {"predictions": [], "matches": [], "absolute_differences": []},
     }
+    try:
+        if len(episode.context) > 12 or len(episode.queries) > 6 or len(episode.features) > 4:
+            raise ValueError("challenge exceeds 12 context rows, 6 queries or 4 features")
+        report["reference"] = _check(episode, reference_predictions(view, pair.family))
+        report["shortcut"] = _check(episode, shortcut_predictions(view, pair.shortcut, pair.family))
+    except (ValueError, ArithmeticError, KeyError) as error:
+        report["errors"].append(f"{type(error).__name__}: {error}")
+    return report
 
 
 def _transformation_valid(pair: ChallengePair) -> bool:
@@ -122,11 +131,18 @@ def _transformation_valid(pair: ChallengePair) -> bool:
 
 
 def evaluate_pair(pair: ChallengePair) -> PairReport:
-    """Retain failed comparisons; reference errors remain explicit invalid-case errors."""
+    """Retain failed comparisons and invalid-case errors alongside raw observations."""
     before, after = _episode_check(pair.before, pair), _episode_check(pair.after, pair)
-    transformation = _transformation_valid(pair)
+    transformation_error = None
+    try:
+        transformation = _transformation_valid(pair)
+    except (ValueError, TypeError, ArithmeticError, KeyError) as error:
+        transformation = False
+        transformation_error = f"{type(error).__name__}: {error}"
     passed = (
         transformation
+        and not before["errors"]
+        and not after["errors"]
         and all(before["reference"]["matches"])
         and all(after["reference"]["matches"])
         and all(before["shortcut"]["matches"])
@@ -141,5 +157,6 @@ def evaluate_pair(pair: ChallengePair) -> PairReport:
         "before": before,
         "after": after,
         "transformation_valid": transformation,
+        "transformation_error": transformation_error,
         "status": "PASS" if passed else "FAIL",
     }

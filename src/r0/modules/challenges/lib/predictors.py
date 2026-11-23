@@ -11,7 +11,7 @@ def reference_predictions(view: PredictorView, family: Family) -> tuple[Target, 
         return _affine(view)
     if family != "single-feature-lookup":
         raise ValueError("unsupported declared family")
-    candidates: list[tuple[Target, ...]] = []
+    candidates: list[tuple[int, dict[Value, Target]]] = []
     for column in range(len(view.features)):
         mapping: dict[Value, Target] = {}
         valid = True
@@ -20,14 +20,24 @@ def reference_predictions(view: PredictorView, family: Family) -> tuple[Target, 
             if value in mapping and mapping[value] != target:
                 valid = False
             mapping[value] = target
-        if valid and all(r.values[column] in mapping for r in view.queries):
-            candidates.append(tuple(mapping[r.values[column]] for r in view.queries))
+        if valid:
+            candidates.append((column, mapping))
     if len(candidates) != 1:
         raise ValueError("context must identify exactly one supported feature rule")
-    return candidates[0]
+    column, mapping = candidates[0]
+    if any(r.values[column] not in mapping for r in view.queries):
+        raise ValueError("query value is not identified by context lookup")
+    return tuple(mapping[r.values[column]] for r in view.queries)
 
 
-def shortcut_predictions(view: PredictorView, shortcut: Shortcut) -> tuple[Target, ...]:
+def shortcut_predictions(
+    view: PredictorView, shortcut: Shortcut, family: Family
+) -> tuple[Target, ...]:
+    expected_family = (
+        "single-feature-affine" if shortcut == "range-clipping" else "single-feature-lookup"
+    )
+    if family != expected_family:
+        raise ValueError("shortcut does not support declared family")
     if shortcut == "range-clipping":
         low, high = (
             min(float(y) for y in view.context_targets),
