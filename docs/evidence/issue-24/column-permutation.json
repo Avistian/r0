@@ -1,0 +1,396 @@
+{
+  "after": {
+    "episode": {
+      "class_provenance": "authored vocabulary, independent of query targets",
+      "classes": [
+        "low",
+        "high"
+      ],
+      "context": [
+        {
+          "id": "c0",
+          "values": [
+            0,
+            0
+          ]
+        },
+        {
+          "id": "c1",
+          "values": [
+            1,
+            0
+          ]
+        },
+        {
+          "id": "c2",
+          "values": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "c3",
+          "values": [
+            1,
+            1
+          ]
+        }
+      ],
+      "context_targets": [
+        "low",
+        "low",
+        "high",
+        "high"
+      ],
+      "episode_id": "permutation-after-v1",
+      "features": [
+        {
+          "kind": "binary",
+          "name": "b",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        },
+        {
+          "kind": "binary",
+          "name": "a",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "q0",
+          "values": [
+            1,
+            0
+          ]
+        },
+        {
+          "id": "q1",
+          "values": [
+            0,
+            1
+          ]
+        }
+      ],
+      "query_targets": [
+        "low",
+        "high"
+      ],
+      "source_task_id": "permutation-v1",
+      "task_type": "binary"
+    },
+    "errors": [],
+    "expected_answers": [
+      "low",
+      "high"
+    ],
+    "predictor_view": {
+      "class_provenance": "authored vocabulary, independent of query targets",
+      "classes": [
+        "low",
+        "high"
+      ],
+      "context": [
+        {
+          "id": "c0",
+          "values": [
+            0,
+            0
+          ]
+        },
+        {
+          "id": "c1",
+          "values": [
+            1,
+            0
+          ]
+        },
+        {
+          "id": "c2",
+          "values": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "c3",
+          "values": [
+            1,
+            1
+          ]
+        }
+      ],
+      "context_targets": [
+        "low",
+        "low",
+        "high",
+        "high"
+      ],
+      "features": [
+        {
+          "kind": "binary",
+          "name": "b",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        },
+        {
+          "kind": "binary",
+          "name": "a",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "q0",
+          "values": [
+            1,
+            0
+          ]
+        },
+        {
+          "id": "q1",
+          "values": [
+            0,
+            1
+          ]
+        }
+      ],
+      "task_type": "binary"
+    },
+    "reference": {
+      "absolute_differences": [
+        null,
+        null
+      ],
+      "matches": [
+        true,
+        true
+      ],
+      "predictions": [
+        "low",
+        "high"
+      ]
+    },
+    "shortcut": {
+      "absolute_differences": [
+        null,
+        null
+      ],
+      "matches": [
+        false,
+        false
+      ],
+      "predictions": [
+        "high",
+        "low"
+      ]
+    }
+  },
+  "before": {
+    "episode": {
+      "class_provenance": "authored vocabulary, independent of query targets",
+      "classes": [
+        "low",
+        "high"
+      ],
+      "context": [
+        {
+          "id": "c0",
+          "values": [
+            0,
+            0
+          ]
+        },
+        {
+          "id": "c1",
+          "values": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "c2",
+          "values": [
+            1,
+            0
+          ]
+        },
+        {
+          "id": "c3",
+          "values": [
+            1,
+            1
+          ]
+        }
+      ],
+      "context_targets": [
+        "low",
+        "low",
+        "high",
+        "high"
+      ],
+      "episode_id": "permutation-before-v1",
+      "features": [
+        {
+          "kind": "binary",
+          "name": "a",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        },
+        {
+          "kind": "binary",
+          "name": "b",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "q0",
+          "values": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "q1",
+          "values": [
+            1,
+            0
+          ]
+        }
+      ],
+      "query_targets": [
+        "low",
+        "high"
+      ],
+      "source_task_id": "permutation-v1",
+      "task_type": "binary"
+    },
+    "errors": [],
+    "expected_answers": [
+      "low",
+      "high"
+    ],
+    "predictor_view": {
+      "class_provenance": "authored vocabulary, independent of query targets",
+      "classes": [
+        "low",
+        "high"
+      ],
+      "context": [
+        {
+          "id": "c0",
+          "values": [
+            0,
+            0
+          ]
+        },
+        {
+          "id": "c1",
+          "values": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "c2",
+          "values": [
+            1,
+            0
+          ]
+        },
+        {
+          "id": "c3",
+          "values": [
+            1,
+            1
+          ]
+        }
+      ],
+      "context_targets": [
+        "low",
+        "low",
+        "high",
+        "high"
+      ],
+      "features": [
+        {
+          "kind": "binary",
+          "name": "a",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        },
+        {
+          "kind": "binary",
+          "name": "b",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "q0",
+          "values": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "q1",
+          "values": [
+            1,
+            0
+          ]
+        }
+      ],
+      "task_type": "binary"
+    },
+    "reference": {
+      "absolute_differences": [
+        null,
+        null
+      ],
+      "matches": [
+        true,
+        true
+      ],
+      "predictions": [
+        "low",
+        "high"
+      ]
+    },
+    "shortcut": {
+      "absolute_differences": [
+        null,
+        null
+      ],
+      "matches": [
+        true,
+        true
+      ],
+      "predictions": [
+        "low",
+        "high"
+      ]
+    }
+  },
+  "derivation": "Context has both b values for each a: a=0 maps to low, a=1 to high. Query a values are 0,1 on both sides: low,high.",
+  "family": "single-feature-lookup",
+  "name": "column-permutation",
+  "shortcut": "fixed-position",
+  "status": "PASS",
+  "transformation": "Reverse context/query columns and schema; preserve answers.",
+  "transformation_error": null,
+  "transformation_valid": true
+}

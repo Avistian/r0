@@ -1,0 +1,43 @@
+uv run python scripts/check_checkout.py && uv run python scripts/check_hooks.py
+Interpreter: /tmp/r0-24/.venv/bin/python3
+r0 source: /tmp/r0-24-check-spec/src/r0/__init__.py
+Expected package: /tmp/r0-24-check-spec/src/r0
+Active commit hook: /tmp/r0-24-check-spec/.githooks/pre-commit
+uv run python scripts/check_tracked_files.py
+uv run python scripts/check_artifact_sizes.py
+uv run ruff format --check .
+129 files already formatted
+uv run ruff check .
+All checks passed!
+uv run pyright
+0 errors, 0 warnings, 0 informations
+uv run lint-imports
+
+╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐
+╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │
+ ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗
+ ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝
+╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║
+╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝
+  └──▶║║                    ▲
+      ╚╝────────────────────┘
+
+
+---------
+Contracts
+---------
+
+Analyzed 46 files, 49 dependencies.
+-----------------------------------
+
+Layers KEPT
+ADR 0002: the training path never sees real data KEPT
+Only the adapter imports relbench KEPT
+
+Contracts: 3 kept, 0 broken.
+uv run python scripts/check_module_tests.py
+git ls-files -z '*.py' '*.md' '*.toml' | xargs -0 uv run python scripts/check_file_tokens.py
+uv run pytest
+........................................................................ [ 52%]
+..................................................................       [100%]
+138 passed in 1.74s
