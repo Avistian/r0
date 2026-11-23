@@ -6,6 +6,11 @@ import numpy as np
 
 from r0.modules.episodes import Feature, Row, Target, TaskType
 from r0.modules.priors.lib.authored import authored_episode as authored_episode
+from r0.modules.priors.lib.representatives import FAMILIES as FAMILIES
+from r0.modules.priors.lib.representatives import GeneratedTask as GeneratedTask
+from r0.modules.priors.lib.representatives import Proposal as Proposal
+from r0.modules.priors.lib.representatives import record_fingerprint as record_fingerprint
+from r0.modules.priors.lib.representatives import sample_proposal as sample_proposal
 
 
 @dataclass(frozen=True)
