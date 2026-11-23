@@ -51,3 +51,5 @@
 
 - **Added observation noise**: A declared perturbation applied to a generated target, distinct from randomness inside the underlying mechanism.
 - **Label replacement**: A randomization event that draws a class label from the declared vocabulary; the sampled label may equal the original label.
+
+- **Generator diagnostics**: Findings and measurements about generated prediction problems and their coverage, distinct from task-selection policies and downstream usefulness.

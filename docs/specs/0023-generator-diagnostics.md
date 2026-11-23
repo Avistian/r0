@@ -1,6 +1,6 @@
 # Issue 23 generator coverage and family diagnostics
 
-Status: Q1–Q39 accepted. Final shared-understanding confirmation pending. The user explicitly prioritizes generator variety across TabPFN, MITRA, LimiX, TabICL and additional supported sources. Implementation has not been authorized or started.
+Status: Q1–Q39 accepted. Implementation authorized by $implement 23, with delivery in small readable PRs. The user explicitly prioritizes generator variety across TabPFN, MITRA, LimiX, TabICL and additional supported sources. Implementation is in progress.
 
 Issue: https://github.com/Avistian/r0/issues/23
 
@@ -83,7 +83,7 @@ Initial primary-source navigation (not a completed audit):
 
 ## Final confirmation
 
-All questions Q1–Q39 have accepted answers. Obtain final shared-understanding confirmation on the consolidated scope before implementation. Exact sampler configuration values within the accepted ranges must be explicit and versioned before execution; they are bounded demonstration settings, not production choices.
+All questions Q1–Q39 have accepted answers. The user confirmed implementation with $implement 23. Exact sampler configuration values within the accepted ranges must be explicit and versioned before execution; they are bounded demonstration settings, not production choices.
 
 ## Publication handoff
 
