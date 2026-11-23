@@ -1,0 +1,8 @@
+{
+  "prediction.latent_variance.0": 0.5,
+  "prediction.latent_variance.1": 1.0,
+  "prediction.mean.0": 1.0,
+  "prediction.mean.1": 1.2664165549094176e-14,
+  "prediction.observation_variance.0": 1.5,
+  "prediction.observation_variance.1": 2.0
+}

@@ -1,0 +1,15 @@
+version = 1
+name = "gp-prior"
+mode = "prior"
+
+[reference]
+family = "rbf"
+length_scale = 1.0
+noise_variance = 1.0
+
+[observations]
+query_x = [0.0, 1.0]
+
+[units]
+feature = "unitless"
+target = "unitless"

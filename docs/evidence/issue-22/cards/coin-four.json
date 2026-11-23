@@ -1,0 +1,8 @@
+{
+  "prediction.posterior.0": 4.0,
+  "prediction.posterior.1": 2.0,
+  "prediction.probabilities.0.0": 0.6666666666666666,
+  "scoring.brier": 0.5555555555555556,
+  "scoring.negative_log_probability": 0.7520386983881371,
+  "scoring.roc_auc.value": 0.5
+}

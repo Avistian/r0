@@ -1,0 +1,16 @@
+version = 1
+name = "multiclass-undefined-auc"
+mode = "posterior"
+
+[reference]
+family = "dirichlet_categorical"
+classes = ["A", "B", "C"]
+concentration = [1.0, 2.0, 3.0]
+
+[observations]
+context_x = [0.0, 0.0]
+context_y = ["A", "A"]
+query_x = [0.0, 0.0]
+
+[scoring]
+targets = ["A", "C"]

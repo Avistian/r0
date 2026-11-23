@@ -101,3 +101,48 @@ def test_replay_command_preserves_quiet_and_errors(tmp_path: "Path") -> None:
     assert code == 2
     assert stdout == ""
     assert "unknown configuration keys" in stderr
+
+
+def test_oracle_command_creates_prior_report_and_preserves_existing_output(
+    tmp_path: "Path",
+) -> None:
+    config = tmp_path / "oracle.toml"
+    config.write_text(
+        'version=1\nname="prior"\nmode="prior"\n'
+        '[reference]\nfamily="beta_bernoulli"\nclasses=["H","T"]\n'
+        'concentration=[1.0,1.0]\npositive_class="H"\n'
+        "[observations]\nquery_x=[0.0]\n"
+    )
+    output = tmp_path / "report.json"
+    args = ["oracle", "--config", str(config), "--out", str(output), "--quiet"]
+    assert invoke(args) == (None, "", "")
+    original = output.read_bytes()
+    config.write_text(config.read_text().replace("[1.0,1.0]", "[2.0,1.0]"))
+    code, stdout, stderr = invoke(args)
+    assert code == 2
+    assert stdout == ""
+    assert "different run record" in stderr
+    assert output.read_bytes() == original
+
+
+def test_oracle_cli_retains_failed_reference_comparison(tmp_path: "Path") -> None:
+    config = Path(__file__).resolve().parents[2] / "configs/oracles/coin-four.toml"
+    expected = tmp_path / "wrong.json"
+    expected.write_text('{"prediction.probabilities.0.0": 0.75}')
+    output = tmp_path / "rejected.json"
+    code, stdout, stderr = invoke(
+        [
+            "oracle",
+            "--config",
+            str(config),
+            "--out",
+            str(output),
+            "--expected",
+            str(expected),
+            "--quiet",
+        ]
+    )
+    assert code == 2
+    assert stdout == ""
+    assert "reference comparison failed" in stderr
+    assert '"status": "FAIL"' in output.read_text()

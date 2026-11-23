@@ -1,0 +1,17 @@
+version = 1
+name = "coin-four"
+mode = "posterior"
+
+[reference]
+family = "beta_bernoulli"
+classes = ["H", "T"]
+concentration = [1.0, 1.0]
+positive_class = "H"
+
+[observations]
+context_x = [0.0, 0.0, 0.0, 0.0]
+context_y = ["H", "H", "H", "T"]
+query_x = [0.0, 0.0]
+
+[scoring]
+targets = ["H", "T"]

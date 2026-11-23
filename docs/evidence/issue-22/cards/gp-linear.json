@@ -1,0 +1,8 @@
+{
+  "prediction.conditioning_covariance.0.0": 2.0,
+  "prediction.latent_variance.0": 2.0,
+  "prediction.mean.0": 2.0,
+  "prediction.observation_variance.0": 3.0,
+  "scoring.gaussian_negative_log_density.value": 1.6349113442053944,
+  "scoring.mse": 1.0
+}

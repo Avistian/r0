@@ -1,0 +1,196 @@
+{
+  "config": {
+    "atol": 1e-10,
+    "context_x": [],
+    "context_y": [],
+    "feature_unit": "unitless",
+    "mode": "prior",
+    "name": "gp-prior",
+    "query_targets": [],
+    "query_x": [
+      0.0,
+      1.0
+    ],
+    "reference": {
+      "family": "rbf",
+      "jitter": 0.0,
+      "length_scale": 1.0,
+      "mean": 0.0,
+      "noise_variance": 1.0,
+      "signal_variance": 1.0
+    },
+    "rtol": 1e-10,
+    "target_unit": "unitless",
+    "tolerance_reason": "default well-conditioned reference",
+    "version": 1
+  },
+  "config_fingerprint": "90000691951290683ad6e870ff1b99bb505e9413cd543743f183169af50510a3",
+  "content_fingerprint": "4ebdcad9cc8301e2a373c35832141fa5775ca8a619811a05b5ec659292ef9167",
+  "environment": {
+    "numpy": "2.5.5",
+    "python": "3.12.3",
+    "r0": "0.1.0"
+  },
+  "episode": null,
+  "numerical_policy": {
+    "atol": 1e-10,
+    "dtype": "float64",
+    "reason": "default well-conditioned reference",
+    "rtol": 1e-10
+  },
+  "prediction": {
+    "cholesky": [],
+    "conditioning_covariance": [],
+    "correction_bound": 1e-12,
+    "corrections": [],
+    "cross_covariance": [],
+    "jitter": 0.0,
+    "latent_covariance": [
+      [
+        1.0,
+        0.6065306597126334
+      ],
+      [
+        0.6065306597126334,
+        1.0
+      ]
+    ],
+    "latent_variance": [
+      1.0,
+      1.0
+    ],
+    "mean": [
+      0.0,
+      0.0
+    ],
+    "minimum_eigenvalue": 0.3934693402873666,
+    "observation_covariance": [
+      [
+        2.0,
+        0.6065306597126334
+      ],
+      [
+        0.6065306597126334,
+        2.0
+      ]
+    ],
+    "observation_variance": [
+      2.0,
+      2.0
+    ],
+    "prior_query_covariance": [
+      [
+        1.0,
+        0.6065306597126334
+      ],
+      [
+        0.6065306597126334,
+        1.0
+      ]
+    ],
+    "raw_latent_covariance": [
+      [
+        1.0,
+        0.6065306597126334
+      ],
+      [
+        0.6065306597126334,
+        1.0
+      ]
+    ],
+    "stabilized": false,
+    "symmetry_error": 0.0,
+    "weights": []
+  },
+  "predictor_view": {
+    "context": [],
+    "mode": "prior",
+    "query_x": [
+      0.0,
+      1.0
+    ]
+  },
+  "preprocessing": "raw coordinates and original target units",
+  "reference": {
+    "family": "rbf",
+    "jitter": 0.0,
+    "length_scale": 1.0,
+    "mean": 0.0,
+    "noise_variance": 1.0,
+    "signal_variance": 1.0
+  },
+  "reference_card_fingerprint": "fe78ea846a75f6882c211c5f4a5555b34d9c7a9f2c08434366d598bd1317a540",
+  "reference_id": "0f6af052e8b7691900ec52d5f2b2c90ed4c42a69c06a899e5d33e2e3752b2c27",
+  "schema_version": 1,
+  "scoring": null,
+  "source_task": {
+    "authorship": "explicit observations; not randomly sampled",
+    "context_x": [],
+    "context_y": [],
+    "id": "f0e2f3a9473185e2970169e31f345f25cf23eeab8379e859ecc9f395facdc55f",
+    "query_targets": [],
+    "query_x": [
+      0.0,
+      1.0
+    ]
+  },
+  "units": {
+    "feature": "unitless",
+    "target": "unitless"
+  },
+  "verification": {
+    "atol": 1e-10,
+    "comparisons": [
+      {
+        "absolute_error": 0.0,
+        "absolute_error_reason": null,
+        "allowed_error": 1.6065306597126334e-10,
+        "allowed_error_reason": null,
+        "expected": 0.6065306597126334,
+        "observed": 0.6065306597126334,
+        "passed": true,
+        "path": "prediction.latent_covariance.0.1",
+        "relative_error": 0.0,
+        "relative_error_reason": null
+      },
+      {
+        "absolute_error": 0.0,
+        "absolute_error_reason": null,
+        "allowed_error": 2e-10,
+        "allowed_error_reason": null,
+        "expected": 1.0,
+        "observed": 1.0,
+        "passed": true,
+        "path": "prediction.latent_variance.0",
+        "relative_error": 0.0,
+        "relative_error_reason": null
+      },
+      {
+        "absolute_error": 0.0,
+        "absolute_error_reason": null,
+        "allowed_error": 1e-10,
+        "allowed_error_reason": null,
+        "expected": 0.0,
+        "observed": 0.0,
+        "passed": true,
+        "path": "prediction.mean.0",
+        "relative_error": null,
+        "relative_error_reason": "zero expected value"
+      },
+      {
+        "absolute_error": 0.0,
+        "absolute_error_reason": null,
+        "allowed_error": 3e-10,
+        "allowed_error_reason": null,
+        "expected": 2.0,
+        "observed": 2.0,
+        "passed": true,
+        "path": "prediction.observation_variance.0",
+        "relative_error": 0.0,
+        "relative_error_reason": null
+      }
+    ],
+    "rtol": 1e-10,
+    "status": "PASS"
+  }
+}

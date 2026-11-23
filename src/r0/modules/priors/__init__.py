@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from r0.modules.episodes import Feature, Row, Target, TaskType
+from r0.modules.priors.lib.authored import authored_episode as authored_episode
 
 
 @dataclass(frozen=True)
