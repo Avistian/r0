@@ -1,0 +1,5 @@
+{
+  "prediction.posterior.0": 5.0,
+  "prediction.probabilities.0.0": 0.7142857142857143,
+  "scoring.roc_auc.value": 0.5
+}

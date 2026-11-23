@@ -1,0 +1,372 @@
+{
+  "config": {
+    "atol": 1e-10,
+    "context_x": [
+      0.0,
+      0.0
+    ],
+    "context_y": [
+      "A",
+      "A"
+    ],
+    "feature_unit": "unused",
+    "mode": "posterior",
+    "name": "multiclass",
+    "query_targets": [
+      "A",
+      "B",
+      "C"
+    ],
+    "query_x": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "reference": {
+      "classes": [
+        "A",
+        "B",
+        "C"
+      ],
+      "concentration": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "family": "dirichlet_categorical",
+      "positive_class": null
+    },
+    "rtol": 1e-10,
+    "target_unit": "class label",
+    "tolerance_reason": "default well-conditioned reference",
+    "version": 1
+  },
+  "config_fingerprint": "49756df7e282d6f4bbffa868784d63ecc9efae8c13358bf581214ff5358dc5df",
+  "content_fingerprint": "aec4ff3eb6f1ad5b631cb64e4229bad1f477570847b108ac669d2a211d24e2fb",
+  "environment": {
+    "numpy": "2.5.5",
+    "python": "3.12.3",
+    "r0": "0.1.0"
+  },
+  "episode": {
+    "class_provenance": "declared in authored reference specification",
+    "classes": [
+      "A",
+      "B",
+      "C"
+    ],
+    "context": [
+      {
+        "id": "context-0",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "context-1",
+        "values": [
+          0.0
+        ]
+      }
+    ],
+    "context_targets": [
+      "A",
+      "A"
+    ],
+    "episode_id": "007f9d1f420a8837c6d528ad297d9ea8f65480335893c5a716e0a79aaa739be5",
+    "features": [
+      {
+        "kind": "continuous",
+        "name": "x",
+        "order": [],
+        "timezone": null,
+        "unit": null
+      }
+    ],
+    "queries": [
+      {
+        "id": "query-0",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "query-1",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "query-2",
+        "values": [
+          0.0
+        ]
+      }
+    ],
+    "query_targets": [
+      "A",
+      "B",
+      "C"
+    ],
+    "source_task_id": "fc35af06f2d0317757f0390d1852d75319b17d6d1c4b222d56f06902fab4fc27",
+    "task_type": "multiclass"
+  },
+  "numerical_policy": {
+    "atol": 1e-10,
+    "dtype": "float64",
+    "reason": "default well-conditioned reference",
+    "rtol": 1e-10
+  },
+  "prediction": {
+    "classes": [
+      "A",
+      "B",
+      "C"
+    ],
+    "positive_class": null,
+    "posterior": [
+      3.0,
+      2.0,
+      3.0
+    ],
+    "probabilities": [
+      [
+        0.375,
+        0.25,
+        0.375
+      ],
+      [
+        0.375,
+        0.25,
+        0.375
+      ],
+      [
+        0.375,
+        0.25,
+        0.375
+      ]
+    ]
+  },
+  "predictor_view": {
+    "class_provenance": "declared in authored reference specification",
+    "classes": [
+      "A",
+      "B",
+      "C"
+    ],
+    "context": [
+      {
+        "id": "context-0",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "context-1",
+        "values": [
+          0.0
+        ]
+      }
+    ],
+    "context_targets": [
+      "A",
+      "A"
+    ],
+    "features": [
+      {
+        "kind": "continuous",
+        "name": "x",
+        "order": [],
+        "timezone": null,
+        "unit": null
+      }
+    ],
+    "queries": [
+      {
+        "id": "query-0",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "query-1",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "query-2",
+        "values": [
+          0.0
+        ]
+      }
+    ],
+    "task_type": "multiclass"
+  },
+  "preprocessing": "raw coordinates and original target units",
+  "reference": {
+    "classes": [
+      "A",
+      "B",
+      "C"
+    ],
+    "concentration": [
+      1.0,
+      2.0,
+      3.0
+    ],
+    "family": "dirichlet_categorical",
+    "positive_class": null
+  },
+  "reference_card_fingerprint": "fe711be40b638690e0ea4561aa9095a94389ba8edf9a2c73b9b494947d6e8615",
+  "reference_id": "464a5829b4cfd0bd341196ca661a3ab31840a7c9dc56ef5948af59357e948f25",
+  "schema_version": 1,
+  "scoring": {
+    "auc_convention": "binary declared positive class; multiclass macro one-versus-rest",
+    "brier": 0.6770833333333334,
+    "brier_per_query": [
+      0.59375,
+      0.84375,
+      0.59375
+    ],
+    "negative_log_probability": 1.115984289047781,
+    "negative_log_probability_per_query": [
+      0.9808292530117262,
+      1.3862943611198906,
+      0.9808292530117262
+    ],
+    "query_ids": [
+      "query-0",
+      "query-1",
+      "query-2"
+    ],
+    "roc_auc": {
+      "reason": null,
+      "value": 0.5
+    },
+    "roc_auc_per_class": {
+      "A": {
+        "reason": null,
+        "value": 0.5
+      },
+      "B": {
+        "reason": null,
+        "value": 0.5
+      },
+      "C": {
+        "reason": null,
+        "value": 0.5
+      }
+    },
+    "targets": [
+      "A",
+      "B",
+      "C"
+    ]
+  },
+  "source_task": {
+    "authorship": "explicit observations; not randomly sampled",
+    "context_x": [
+      0.0,
+      0.0
+    ],
+    "context_y": [
+      "A",
+      "A"
+    ],
+    "id": "fc35af06f2d0317757f0390d1852d75319b17d6d1c4b222d56f06902fab4fc27",
+    "query_targets": [
+      "A",
+      "B",
+      "C"
+    ],
+    "query_x": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "units": {
+    "feature": "unused",
+    "target": "class label"
+  },
+  "verification": {
+    "atol": 1e-10,
+    "comparisons": [
+      {
+        "absolute_error": 0.0,
+        "absolute_error_reason": null,
+        "allowed_error": 4e-10,
+        "allowed_error_reason": null,
+        "expected": 3.0,
+        "observed": 3.0,
+        "passed": true,
+        "path": "prediction.posterior.0",
+        "relative_error": 0.0,
+        "relative_error_reason": null
+      },
+      {
+        "absolute_error": 0.0,
+        "absolute_error_reason": null,
+        "allowed_error": 3e-10,
+        "allowed_error_reason": null,
+        "expected": 2.0,
+        "observed": 2.0,
+        "passed": true,
+        "path": "prediction.posterior.1",
+        "relative_error": 0.0,
+        "relative_error_reason": null
+      },
+      {
+        "absolute_error": 0.0,
+        "absolute_error_reason": null,
+        "allowed_error": 4e-10,
+        "allowed_error_reason": null,
+        "expected": 3.0,
+        "observed": 3.0,
+        "passed": true,
+        "path": "prediction.posterior.2",
+        "relative_error": 0.0,
+        "relative_error_reason": null
+      },
+      {
+        "absolute_error": 0.0,
+        "absolute_error_reason": null,
+        "allowed_error": 1.3750000000000002e-10,
+        "allowed_error_reason": null,
+        "expected": 0.375,
+        "observed": 0.375,
+        "passed": true,
+        "path": "prediction.probabilities.0.2",
+        "relative_error": 0.0,
+        "relative_error_reason": null
+      },
+      {
+        "absolute_error": 0.0,
+        "absolute_error_reason": null,
+        "allowed_error": 1.6770833333333334e-10,
+        "allowed_error_reason": null,
+        "expected": 0.6770833333333334,
+        "observed": 0.6770833333333334,
+        "passed": true,
+        "path": "scoring.brier",
+        "relative_error": 0.0,
+        "relative_error_reason": null
+      },
+      {
+        "absolute_error": 0.0,
+        "absolute_error_reason": null,
+        "allowed_error": 1.5e-10,
+        "allowed_error_reason": null,
+        "expected": 0.5,
+        "observed": 0.5,
+        "passed": true,
+        "path": "scoring.roc_auc.value",
+        "relative_error": 0.0,
+        "relative_error_reason": null
+      }
+    ],
+    "rtol": 1e-10,
+    "status": "PASS"
+  }
+}

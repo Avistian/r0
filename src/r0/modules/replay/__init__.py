@@ -1,6 +1,5 @@
 """Deterministic fixture replay with inspectable inputs, predictions and scores."""
 
-import hashlib
 import json
 import math
 import platform
@@ -17,6 +16,13 @@ from r0.modules.featurize import TransformedView, transform
 from r0.modules.priors import SourceTask, sample_fixture
 from r0.modules.replay.lib.config import Config as Config
 from r0.modules.replay.lib.config import parse_config as parse_config
+from r0.modules.replay.lib.identity import fingerprint as fingerprint
+from r0.modules.replay.lib.oracle import oracle_replay as oracle_replay
+from r0.modules.replay.lib.oracle import write_oracle_report as write_oracle_report
+from r0.modules.replay.lib.oracle_compare import compare_oracle_report as compare_oracle_report
+from r0.modules.replay.lib.oracle_config import OracleConfig as OracleConfig
+from r0.modules.replay.lib.oracle_config import parse_oracle_config as parse_oracle_config
+from r0.modules.replay.lib.oracle_scores import oracle_scores as oracle_scores
 
 
 class Report(TypedDict):
@@ -29,18 +35,6 @@ class Report(TypedDict):
     predictor_view: dict[str, object]
     transformed_view: dict[str, object]
     scoring: dict[str, object]
-
-
-def fingerprint(value: object) -> str:
-    """Fingerprint canonical JSON semantic content, independent of output location."""
-    return hashlib.sha256(
-        json.dumps(
-            value,
-            sort_keys=True,
-            separators=(",", ":"),
-            allow_nan=False,
-        ).encode()
-    ).hexdigest()
 
 
 def _task(config: Config) -> tuple[SourceTask, str]:

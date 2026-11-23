@@ -3,9 +3,9 @@
 import argparse
 from importlib.metadata import version
 from pathlib import Path
-from typing import TYPE_CHECKING, NoReturn, TextIO
+from typing import TYPE_CHECKING, NoReturn, TextIO, cast
 
-from r0.modules.replay import write_report
+from r0.modules.replay import write_oracle_report, write_report
 
 if TYPE_CHECKING:
     from _typeshed import SupportsWrite
@@ -50,24 +50,40 @@ def run(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> None:
         "--version", action="store_true", help="show program's version number and exit"
     )
     parser.add_argument("--hello", action="store_true", help="print hello")
-    parser.add_argument("command", nargs="?", choices=("replay",))
+    parser.add_argument("command", nargs="?", choices=("replay", "oracle"))
     parser.add_argument("--config", type=Path)
     parser.add_argument("--out", type=Path)
+    parser.add_argument(
+        "--expected", type=Path, help="independent numeric reference card for oracle"
+    )
     args = parser.parse_args(argv)
-    if args.command == "replay":
+    if args.command in ("replay", "oracle"):
         if args.version or args.hello:
-            parser.error("replay cannot be combined with --version or --hello")
+            parser.error(f"{args.command} cannot be combined with --version or --hello")
         if args.config is None or args.out is None:
-            parser.error("replay requires --config and --out")
+            parser.error(f"{args.command} requires --config and --out")
+        if args.command == "replay" and args.expected is not None:
+            parser.error("--expected requires oracle")
         try:
-            write_report(args.config, args.out)
+            if args.command == "oracle":
+                report = write_oracle_report(args.config, args.out, args.expected)
+                verification = report["verification"]
+                if (
+                    isinstance(verification, dict)
+                    and cast(dict[str, object], verification).get("status") == "FAIL"
+                ):
+                    parser.error(f"reference comparison failed; retained report at {args.out}")
+            else:
+                write_report(args.config, args.out)
         except (OSError, ValueError) as error:
             parser.error(str(error))
         if not args.quiet:
-            print(f"Wrote replay report to {args.out}", file=stdout)
+            print(f"Wrote {args.command} report to {args.out}", file=stdout)
         return
+    if args.expected is not None:
+        parser.error("--expected requires oracle")
     if args.config is not None or args.out is not None:
-        parser.error("--config and --out require replay")
+        parser.error("--config and --out require replay or oracle")
     if not args.quiet:
         greeting = "hello" if args.hello else "r0"
         print(version("r0") if args.version else greeting, file=stdout)

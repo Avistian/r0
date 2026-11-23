@@ -1,0 +1,320 @@
+{
+  "config": {
+    "atol": 1e-10,
+    "context_x": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "context_y": [
+      "H",
+      "H",
+      "H",
+      "T"
+    ],
+    "feature_unit": "unused",
+    "mode": "posterior",
+    "name": "coin-undefined-auc",
+    "query_targets": [
+      "H",
+      "H"
+    ],
+    "query_x": [
+      0.0,
+      0.0
+    ],
+    "reference": {
+      "classes": [
+        "H",
+        "T"
+      ],
+      "concentration": [
+        1.0,
+        1.0
+      ],
+      "family": "beta_bernoulli",
+      "positive_class": "H"
+    },
+    "rtol": 1e-10,
+    "target_unit": "class label",
+    "tolerance_reason": "default well-conditioned reference",
+    "version": 1
+  },
+  "config_fingerprint": "7b3cde3b9503cf366e860ce89be09156e6aff5c094829f736acfd465f3acb7fd",
+  "content_fingerprint": "9ff7fdcfcd8bfb13a73e8d000fa9cf530b8d19058dcae7c298f7bf7a9c242be9",
+  "environment": {
+    "numpy": "2.5.5",
+    "python": "3.12.3",
+    "r0": "0.1.0"
+  },
+  "episode": {
+    "class_provenance": "declared in authored reference specification",
+    "classes": [
+      "H",
+      "T"
+    ],
+    "context": [
+      {
+        "id": "context-0",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "context-1",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "context-2",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "context-3",
+        "values": [
+          0.0
+        ]
+      }
+    ],
+    "context_targets": [
+      "H",
+      "H",
+      "H",
+      "T"
+    ],
+    "episode_id": "9d4239749d29f946f8f59a3b5add706b70faccc0166f09305273155939eccd9f",
+    "features": [
+      {
+        "kind": "continuous",
+        "name": "x",
+        "order": [],
+        "timezone": null,
+        "unit": null
+      }
+    ],
+    "queries": [
+      {
+        "id": "query-0",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "query-1",
+        "values": [
+          0.0
+        ]
+      }
+    ],
+    "query_targets": [
+      "H",
+      "H"
+    ],
+    "source_task_id": "024db0918007c96f450fe5f80ac9c112011e7683060a947b797e8d0599519e32",
+    "task_type": "binary"
+  },
+  "numerical_policy": {
+    "atol": 1e-10,
+    "dtype": "float64",
+    "reason": "default well-conditioned reference",
+    "rtol": 1e-10
+  },
+  "prediction": {
+    "classes": [
+      "H",
+      "T"
+    ],
+    "positive_class": "H",
+    "posterior": [
+      4.0,
+      2.0
+    ],
+    "probabilities": [
+      [
+        0.6666666666666666,
+        0.3333333333333333
+      ],
+      [
+        0.6666666666666666,
+        0.3333333333333333
+      ]
+    ]
+  },
+  "predictor_view": {
+    "class_provenance": "declared in authored reference specification",
+    "classes": [
+      "H",
+      "T"
+    ],
+    "context": [
+      {
+        "id": "context-0",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "context-1",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "context-2",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "context-3",
+        "values": [
+          0.0
+        ]
+      }
+    ],
+    "context_targets": [
+      "H",
+      "H",
+      "H",
+      "T"
+    ],
+    "features": [
+      {
+        "kind": "continuous",
+        "name": "x",
+        "order": [],
+        "timezone": null,
+        "unit": null
+      }
+    ],
+    "queries": [
+      {
+        "id": "query-0",
+        "values": [
+          0.0
+        ]
+      },
+      {
+        "id": "query-1",
+        "values": [
+          0.0
+        ]
+      }
+    ],
+    "task_type": "binary"
+  },
+  "preprocessing": "raw coordinates and original target units",
+  "reference": {
+    "classes": [
+      "H",
+      "T"
+    ],
+    "concentration": [
+      1.0,
+      1.0
+    ],
+    "family": "beta_bernoulli",
+    "positive_class": "H"
+  },
+  "reference_card_fingerprint": "c26121aa47511f23d03301c64bb38768427210b7eebe024bcfb35c566eaa9339",
+  "reference_id": "01faa77af183388b6179efaca0aaa0e9d4114c0b5b5fc877236c509be68dde98",
+  "schema_version": 1,
+  "scoring": {
+    "auc_convention": "binary declared positive class; multiclass macro one-versus-rest",
+    "brier": 0.22222222222222224,
+    "brier_per_query": [
+      0.22222222222222224,
+      0.22222222222222224
+    ],
+    "negative_log_probability": 0.40546510810816444,
+    "negative_log_probability_per_query": [
+      0.40546510810816444,
+      0.40546510810816444
+    ],
+    "query_ids": [
+      "query-0",
+      "query-1"
+    ],
+    "roc_auc": {
+      "reason": "requires positive and negative query targets",
+      "value": null
+    },
+    "roc_auc_per_class": {
+      "H": {
+        "reason": "requires positive and negative query targets",
+        "value": null
+      },
+      "T": {
+        "reason": "requires positive and negative query targets",
+        "value": null
+      }
+    },
+    "targets": [
+      "H",
+      "H"
+    ]
+  },
+  "source_task": {
+    "authorship": "explicit observations; not randomly sampled",
+    "context_x": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "context_y": [
+      "H",
+      "H",
+      "H",
+      "T"
+    ],
+    "id": "024db0918007c96f450fe5f80ac9c112011e7683060a947b797e8d0599519e32",
+    "query_targets": [
+      "H",
+      "H"
+    ],
+    "query_x": [
+      0.0,
+      0.0
+    ]
+  },
+  "units": {
+    "feature": "unused",
+    "target": "class label"
+  },
+  "verification": {
+    "atol": 1e-10,
+    "comparisons": [
+      {
+        "absolute_error": 0.0,
+        "absolute_error_reason": null,
+        "allowed_error": 1.6666666666666666e-10,
+        "allowed_error_reason": null,
+        "expected": 0.6666666666666666,
+        "observed": 0.6666666666666666,
+        "passed": true,
+        "path": "prediction.probabilities.0.0",
+        "relative_error": 0.0,
+        "relative_error_reason": null
+      },
+      {
+        "absolute_error": 2.7755575615628914e-17,
+        "absolute_error_reason": null,
+        "allowed_error": 1.2222222222222222e-10,
+        "allowed_error_reason": null,
+        "expected": 0.2222222222222222,
+        "observed": 0.22222222222222224,
+        "passed": true,
+        "path": "scoring.brier",
+        "relative_error": 1.249000902703301e-16,
+        "relative_error_reason": null
+      }
+    ],
+    "rtol": 1e-10,
+    "status": "PASS"
+  }
+}

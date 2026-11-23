@@ -1,0 +1,18 @@
+version = 1
+name = "gp-noiseless"
+mode = "posterior"
+
+[reference]
+family = "linear"
+
+[observations]
+context_x = [1.0]
+context_y = [2.0]
+query_x = [1.0, 2.0]
+
+[scoring]
+targets = [2.0, 4.0]
+
+[units]
+feature = "unitless"
+target = "unitless"

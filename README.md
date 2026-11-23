@@ -14,6 +14,17 @@ uv run r0 --version
 
 `uv run` runs `r0 --version` in the project's virtual environment.
 
+## Predictive reference walkthrough
+
+Issue #22 provides bounded CPU beta–Bernoulli, Dirichlet–categorical and linear/RBF GP
+references. See [the worked reference cards](docs/evidence/issue-22/README.md) for
+independent calculations, metric conventions and replay instructions. The
+[accepted specification](docs/specs/0022-oracles.md) defines the scope.
+
+```sh
+uv run python scripts/oracle_walkthrough.py --out /tmp/r0-oracle-evidence
+```
+
 ## Data attributions
 The planned benchmark suite uses RelBench databases, each under its own terms:
 rel-f1 (CC BY-NC-SA 3.0), rel-stack (CC BY-SA 4.0), rel-trial (ClinicalTrials.gov terms).

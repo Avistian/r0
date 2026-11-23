@@ -1,0 +1,12 @@
+version = 1
+name = "coin-prior"
+mode = "prior"
+
+[reference]
+family = "beta_bernoulli"
+classes = ["H", "T"]
+concentration = [1.0, 1.0]
+positive_class = "H"
+
+[observations]
+query_x = [0.0]

@@ -1,0 +1,6 @@
+{
+  "prediction.jitter": 1.0,
+  "prediction.latent_variance.0": 0.5,
+  "prediction.mean.0": 1.0,
+  "prediction.observation_variance.0": 0.5
+}

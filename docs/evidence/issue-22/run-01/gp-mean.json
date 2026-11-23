@@ -1,0 +1,253 @@
+{
+  "config": {
+    "atol": 1e-10,
+    "context_x": [
+      1.0
+    ],
+    "context_y": [
+      3.0
+    ],
+    "feature_unit": "unitless",
+    "mode": "posterior",
+    "name": "gp-mean",
+    "query_targets": [
+      4.0
+    ],
+    "query_x": [
+      2.0
+    ],
+    "reference": {
+      "family": "linear",
+      "jitter": 0.0,
+      "length_scale": null,
+      "mean": 1.0,
+      "noise_variance": 1.0,
+      "signal_variance": 1.0
+    },
+    "rtol": 1e-10,
+    "target_unit": "unitless",
+    "tolerance_reason": "default well-conditioned reference",
+    "version": 1
+  },
+  "config_fingerprint": "cb6ada896d662df48d9e82b886f2ad0e4caf58e98e60812f6eec45a1f16ab247",
+  "content_fingerprint": "a0fdfc034ad2d18ccb7e165142b5b2bc797bb835cd1639c53821e117515de941",
+  "environment": {
+    "numpy": "2.5.5",
+    "python": "3.12.3",
+    "r0": "0.1.0"
+  },
+  "episode": {
+    "class_provenance": null,
+    "classes": [],
+    "context": [
+      {
+        "id": "context-0",
+        "values": [
+          1.0
+        ]
+      }
+    ],
+    "context_targets": [
+      3.0
+    ],
+    "episode_id": "f56eef010380e09b481fd99ce978d8a9d53db95ac1f9a74046645c4b72c8ae6c",
+    "features": [
+      {
+        "kind": "continuous",
+        "name": "x",
+        "order": [],
+        "timezone": null,
+        "unit": null
+      }
+    ],
+    "queries": [
+      {
+        "id": "query-0",
+        "values": [
+          2.0
+        ]
+      }
+    ],
+    "query_targets": [
+      4.0
+    ],
+    "source_task_id": "f4fe4342de87fb29939598fcbc9ef8f46de5aab9cbfe8e0e833273805db991cd",
+    "task_type": "regression"
+  },
+  "numerical_policy": {
+    "atol": 1e-10,
+    "dtype": "float64",
+    "reason": "default well-conditioned reference",
+    "rtol": 1e-10
+  },
+  "prediction": {
+    "cholesky": [
+      [
+        1.4142135623730951
+      ]
+    ],
+    "conditioning_covariance": [
+      [
+        2.0
+      ]
+    ],
+    "correction_bound": 4e-12,
+    "corrections": [],
+    "cross_covariance": [
+      [
+        2.0
+      ]
+    ],
+    "jitter": 0.0,
+    "latent_covariance": [
+      [
+        2.0000000000000004
+      ]
+    ],
+    "latent_variance": [
+      2.0000000000000004
+    ],
+    "mean": [
+      3.0
+    ],
+    "minimum_eigenvalue": 2.0000000000000004,
+    "observation_covariance": [
+      [
+        3.0000000000000004
+      ]
+    ],
+    "observation_variance": [
+      3.0000000000000004
+    ],
+    "prior_query_covariance": [
+      [
+        4.0
+      ]
+    ],
+    "raw_latent_covariance": [
+      [
+        2.0000000000000004
+      ]
+    ],
+    "stabilized": false,
+    "symmetry_error": 0.0,
+    "weights": [
+      0.9999999999999999
+    ]
+  },
+  "predictor_view": {
+    "class_provenance": null,
+    "classes": [],
+    "context": [
+      {
+        "id": "context-0",
+        "values": [
+          1.0
+        ]
+      }
+    ],
+    "context_targets": [
+      3.0
+    ],
+    "features": [
+      {
+        "kind": "continuous",
+        "name": "x",
+        "order": [],
+        "timezone": null,
+        "unit": null
+      }
+    ],
+    "queries": [
+      {
+        "id": "query-0",
+        "values": [
+          2.0
+        ]
+      }
+    ],
+    "task_type": "regression"
+  },
+  "preprocessing": "raw coordinates and original target units",
+  "reference": {
+    "family": "linear",
+    "jitter": 0.0,
+    "length_scale": null,
+    "mean": 1.0,
+    "noise_variance": 1.0,
+    "signal_variance": 1.0
+  },
+  "reference_card_fingerprint": "40f3f6f6fab2fe90c0b2840cdacbaee841a6c8cf64d7e6282eb3909934f5428f",
+  "reference_id": "cd71abac0c524ac27ea43f598fc155f78c4eb00a6c3aab5474f4d3b0733f49de",
+  "schema_version": 1,
+  "scoring": {
+    "gaussian_negative_log_density": {
+      "reason": null,
+      "value": 1.6349113442053942
+    },
+    "mse": 1.0,
+    "negative_log_density_per_query": [
+      1.6349113442053942
+    ],
+    "query_ids": [
+      "query-0"
+    ],
+    "squared_error_per_query": [
+      1.0
+    ],
+    "targets": [
+      4.0
+    ]
+  },
+  "source_task": {
+    "authorship": "explicit observations; not randomly sampled",
+    "context_x": [
+      1.0
+    ],
+    "context_y": [
+      3.0
+    ],
+    "id": "f4fe4342de87fb29939598fcbc9ef8f46de5aab9cbfe8e0e833273805db991cd",
+    "query_targets": [
+      4.0
+    ],
+    "query_x": [
+      2.0
+    ]
+  },
+  "units": {
+    "feature": "unitless",
+    "target": "unitless"
+  },
+  "verification": {
+    "atol": 1e-10,
+    "comparisons": [
+      {
+        "absolute_error": 4.440892098500626e-16,
+        "absolute_error_reason": null,
+        "allowed_error": 3e-10,
+        "allowed_error_reason": null,
+        "expected": 2.0,
+        "observed": 2.0000000000000004,
+        "passed": true,
+        "path": "prediction.latent_variance.0",
+        "relative_error": 2.220446049250313e-16,
+        "relative_error_reason": null
+      },
+      {
+        "absolute_error": 0.0,
+        "absolute_error_reason": null,
+        "allowed_error": 4e-10,
+        "allowed_error_reason": null,
+        "expected": 3.0,
+        "observed": 3.0,
+        "passed": true,
+        "path": "prediction.mean.0",
+        "relative_error": 0.0,
+        "relative_error_reason": null
+      }
+    ],
+    "rtol": 1e-10,
+    "status": "PASS"
+  }
+}

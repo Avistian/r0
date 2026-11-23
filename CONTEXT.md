@@ -31,3 +31,8 @@
 - **Episode schema**: The declared feature meanings and target vocabulary shared by the context and queries of an episode.
 
 - **Replay**: Reconstructing an identified episode and its recorded processing under the same declared recipe and environment.
+
+- **Predictive oracle**: A reference that computes a predictive distribution from context observations and explicitly declared prior assumptions. It does not observe query targets or the particular latent mechanism sampled for the task.
+- **Reference specification**: The declared probabilistic assumptions under which an oracle prediction is defined.
+- **Latent-function uncertainty**: Uncertainty about the underlying function value at a query location, excluding noise from a new observation.
+- **Observation uncertainty**: Uncertainty about a new observed target, including both latent-function uncertainty and observation noise.
