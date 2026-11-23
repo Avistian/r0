@@ -36,3 +36,18 @@
 - **Reference specification**: The declared probabilistic assumptions under which an oracle prediction is defined.
 - **Latent-function uncertainty**: Uncertainty about the underlying function value at a query location, excluding noise from a new observation.
 - **Observation uncertainty**: Uncertainty about a new observed target, including both latent-function uncertainty and observation noise.
+
+- **Mechanism family**: A class of rules that generate dependencies or targets, with variation governed by declared parameters.
+- **Generator coverage**: The set and distribution of prediction-problem regimes that a generator can produce or has demonstrably produced; declared support and measured coverage are distinct claims.
+- **Observation process**: The process that turns underlying variables into observed features and targets, including noise, missingness and measurement transformations.
+- **Selection filter**: A declared policy that chooses among otherwise valid generated tasks for a particular use.
+- **Task card**: An inspectable account of one prediction problem, its generating assumptions, observations and diagnostic findings.
+
+- **Proposal**: An identified request for a generated task under declared mechanism and regime choices, whether or not generation succeeds or the resulting task is selected.
+- **Coverage cell**: A declared combination of task properties used to count and compare proposed and realized prediction problems.
+- **Mechanism instance**: One sampled generating rule and its parameters, which may produce multiple observed datasets or episodes.
+- **Task equivalence**: An explicitly defined relationship under which transformations preserve the prediction problem; it is narrower than unrestricted semantic sameness.
+- **Structural difficulty**: Declared properties of a generating mechanism that may affect prediction, distinct from performance measured using a particular learner.
+
+- **Added observation noise**: A declared perturbation applied to a generated target, distinct from randomness inside the underlying mechanism.
+- **Label replacement**: A randomization event that draws a class label from the declared vocabulary; the sampled label may equal the original label.
