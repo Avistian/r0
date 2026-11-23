@@ -1,0 +1,9 @@
+version = 1
+profile = "diagnostic-v1"
+families = ["linear", "gp", "mlp", "scm", "tree", "interaction"]
+seeds = [11, 23, 47]
+draws = 2
+rows = 64
+features = 8
+context_rows = 48
+selection = "none"

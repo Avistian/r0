@@ -6,6 +6,7 @@ import numpy as np
 
 from r0.modules.episodes import Feature, Row, Target, TaskType
 from r0.modules.priors.lib.authored import authored_episode as authored_episode
+from r0.modules.priors.lib.profile import diagnostic_profile as diagnostic_profile
 from r0.modules.priors.lib.representatives import FAMILIES as FAMILIES
 from r0.modules.priors.lib.representatives import GeneratedTask as GeneratedTask
 from r0.modules.priors.lib.representatives import Proposal as Proposal
