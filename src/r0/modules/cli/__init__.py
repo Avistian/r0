@@ -5,7 +5,7 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import TYPE_CHECKING, NoReturn, TextIO, cast
 
-from r0.modules.replay import write_oracle_report, write_report
+from r0.modules.replay import write_oracle_report, write_prior_diagnostics, write_report
 
 if TYPE_CHECKING:
     from _typeshed import SupportsWrite
@@ -50,19 +50,19 @@ def run(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> None:
         "--version", action="store_true", help="show program's version number and exit"
     )
     parser.add_argument("--hello", action="store_true", help="print hello")
-    parser.add_argument("command", nargs="?", choices=("replay", "oracle"))
+    parser.add_argument("command", nargs="?", choices=("replay", "oracle", "diagnose-priors"))
     parser.add_argument("--config", type=Path)
     parser.add_argument("--out", type=Path)
     parser.add_argument(
         "--expected", type=Path, help="independent numeric reference card for oracle"
     )
     args = parser.parse_args(argv)
-    if args.command in ("replay", "oracle"):
+    if args.command in ("replay", "oracle", "diagnose-priors"):
         if args.version or args.hello:
             parser.error(f"{args.command} cannot be combined with --version or --hello")
         if args.config is None or args.out is None:
             parser.error(f"{args.command} requires --config and --out")
-        if args.command == "replay" and args.expected is not None:
+        if args.command != "oracle" and args.expected is not None:
             parser.error("--expected requires oracle")
         try:
             if args.command == "oracle":
@@ -73,6 +73,10 @@ def run(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> None:
                     and cast(dict[str, object], verification).get("status") == "FAIL"
                 ):
                     parser.error(f"reference comparison failed; retained report at {args.out}")
+            elif args.command == "diagnose-priors":
+                diagnostic_report = write_prior_diagnostics(args.config, args.out)
+                if diagnostic_report["status"] == "FAIL":
+                    parser.error(f"diagnostics failed; retained records at {args.out}")
             else:
                 write_report(args.config, args.out)
         except (OSError, ValueError) as error:
@@ -83,7 +87,7 @@ def run(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> None:
     if args.expected is not None:
         parser.error("--expected requires oracle")
     if args.config is not None or args.out is not None:
-        parser.error("--config and --out require replay or oracle")
+        parser.error("--config and --out require replay, oracle, or diagnose-priors")
     if not args.quiet:
         greeting = "hello" if args.hello else "r0"
         print(version("r0") if args.version else greeting, file=stdout)
