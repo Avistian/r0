@@ -1,21 +1,21 @@
 # CONTEXT.md — r0 vocabulary
-- **RelDB**: our in-memory relational database: Tables with a primary key, foreign keys and an optional time column.
+- **RelDB**: A collection of related tables with primary keys, foreign keys and optional time columns.
 - **Entity table / event table**: a table without / with a time column that grows over time.
 - **Seed time**: the moment a prediction is made; rows at or after it are invisible (ADR 0005).
 - **Task rows**: (entity id, seed time, label) — RelBench's "training table".
-- **Prior**: modules/priors; samples a synthetic RelDB plus task rows. The only training data (ADR 0002).
-- **Synthetic task**: one prior sample: a RelDB, task rows over several seed times, a label rule.
-- **Label rule**: future activity | future value | entity property (spec 0001).
-- **Featurizer**: modules/featurize; the fixed DFS-lite aggregation shared by prior and benchmark.
-- **Feature row**: ≤ 40 numbers per task row; NaN means "no history".
-- **Context set / query set**: labelled rows the model conditions on / rows it predicts.
-- **RPFN**: our relational prior-fitted network (modules/model).
-- **k (shots)**: number of context rows at evaluation: 64, 256 or 512 in suite_v0.
-- **Dev suite**: held-out synthetic tasks + RelBench *val* tables; tuning allowed.
-- **Benchmark suite (suite_v0)**: the frozen RelBench *test* tables in eval/suite_v0.toml.
-- **Protocol hash**: sha256 of eval/suite_v0.toml; on every run record.
-- **Run record / leaderboard / ratchet / budget ledger**: see ADR 0009 and docs/adr/0004.
-- **Smoke config**: configs/ci/smoke.toml; trains in under a minute on a CPU.
-- **Prior mixture**: weighted prior components (single-table core first, relational on top; ADR 0012).
-- **Tabular dev track**: fixed OpenML tasks for development; TabArena subset only at milestones (T19).
-- **Bar head**: regression as cross-entropy over equal-probability buckets of the prior targets.
+- **Prior**: A distribution over data-generating mechanisms and the datasets they produce.
+- **Synthetic task**: A sampled prediction problem with generated observations and targets, using one table or related tables.
+- **Label rule**: The mechanism defining a prediction task’s targets.
+- **Featurizer**: A transformation from available observations to features used for prediction.
+- **Feature row**: The feature values associated with one prediction example.
+- **Context set / query set**: Labeled examples available to condition predictions / examples whose targets are to be predicted.
+- **RPFN**: A relational prior-fitted network.
+- **k (shots)**: The number of labeled context examples supplied for prediction.
+- **Dev suite**: Evaluation tasks used to guide model and generator development.
+- **Benchmark suite**: Evaluation tasks governed by a fixed protocol for milestone performance claims.
+- **Protocol hash**: A content fingerprint identifying an evaluation protocol.
+- **Run record / leaderboard / ratchet / budget ledger**: An execution’s recorded evidence / comparable results / a performance acceptance rule / resource and cost records.
+- **Smoke config**: A configuration for a small, bounded end-to-end execution.
+- **Prior mixture**: A weighted combination of prior components.
+- **Tabular dev track**: The single-table evaluation tasks used during development.
+- **Bar head**: A regression output distribution represented by probabilities over target intervals.
