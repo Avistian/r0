@@ -18,8 +18,7 @@ uv run r0 --version
 
 `make setup` explicitly syncs this checkout's `.venv` and activates its commit hook.
 Verification commands (`make check`, its component targets and the commit hook) use
-`scripts/run_check.py`. They require an existing environment, run uv with syncing and
-network access disabled, and select this checkout's `src` directory. Verification never
+`scripts/run_check.py`. They require an existing environment, run uv in offline, no-sync mode, and select this checkout's `src` directory. Verification never
 creates an environment or repairs missing dependencies; run setup explicitly when needed.
 
 To deliberately reuse an existing environment without changing its editable installation:

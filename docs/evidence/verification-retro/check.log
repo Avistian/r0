@@ -1,0 +1,43 @@
+python3 scripts/run_check.py python scripts/check_checkout.py && python3 scripts/run_check.py python scripts/check_hooks.py
+Interpreter: /tmp/r0-retro-24/.venv/bin/python3
+r0 source: /tmp/r0-retro-24/src/r0/__init__.py
+Expected package: /tmp/r0-retro-24/src/r0
+Active commit hook: /tmp/r0-retro-24/.githooks/pre-commit
+python3 scripts/run_check.py python scripts/check_tracked_files.py
+python3 scripts/run_check.py python scripts/check_artifact_sizes.py
+python3 scripts/run_check.py ruff format --check .
+131 files already formatted
+python3 scripts/run_check.py ruff check .
+All checks passed!
+python3 scripts/run_check.py pyright
+0 errors, 0 warnings, 0 informations
+python3 scripts/run_check.py lint-imports
+
+╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐
+╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │
+ ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗
+ ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝
+╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║
+╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝
+  └──▶║║                    ▲
+      ╚╝────────────────────┘
+
+
+---------
+Contracts
+---------
+
+Analyzed 46 files, 49 dependencies.
+-----------------------------------
+
+Layers KEPT
+ADR 0002: the training path never sees real data KEPT
+Only the adapter imports relbench KEPT
+
+Contracts: 3 kept, 0 broken.
+python3 scripts/run_check.py python scripts/check_module_tests.py
+python3 scripts/run_check.py python scripts/check_file_tokens.py
+python3 scripts/run_check.py pytest
+........................................................................ [ 50%]
+.......................................................................  [100%]
+143 passed in 5.49s
