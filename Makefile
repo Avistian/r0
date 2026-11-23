@@ -1,4 +1,4 @@
-.PHONY: setup format format-check lint typecheck boundaries modules tokens test check \
+.PHONY: setup format format-check lint typecheck boundaries modules tokens test check preflight tracked-files \
         smoke eval-smoke ratchet data train eval mutation
 
 setup:        ; uv sync && git config core.hooksPath .githooks
@@ -10,7 +10,9 @@ boundaries:   ; uv run lint-imports
 modules:      ; uv run python scripts/check_module_tests.py
 tokens:       ; git ls-files -z '*.py' '*.md' '*.toml' | xargs -0 uv run python scripts/check_file_tokens.py
 test:         ; uv run pytest
-check:        format-check lint typecheck boundaries modules tokens test   # T13 appends: ratchet
+preflight:    ; uv run python scripts/check_checkout.py
+tracked-files: ; uv run python scripts/check_tracked_files.py
+check:        preflight tracked-files format-check lint typecheck boundaries modules tokens test   # T13 appends: ratchet
 
 # ML targets. They start working with the ticket in brackets.
 smoke:        ; uv run r0 train --config configs/ci/smoke.toml --out /tmp/r0-smoke              # [T7]
