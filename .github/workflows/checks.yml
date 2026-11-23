@@ -34,6 +34,16 @@ jobs:
           path: ${{ runner.temp }}/oracle-reference-evidence/
           if-no-files-found: ignore
           retention-days: 14
+      - name: Generator diagnostics walkthrough
+        run: uv run python scripts/prior_walkthrough.py --out "${{ runner.temp }}/prior-diagnostic-evidence"
+      - name: Retain generator diagnostics evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prior-diagnostic-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prior-diagnostic-evidence/
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Job summary
         if: always()
         run: echo "### checks · $(git rev-parse --short HEAD)" >> "$GITHUB_STEP_SUMMARY"
