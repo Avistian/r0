@@ -85,3 +85,16 @@ def test_all_pairs_keep_query_targets_out_of_both_predictors():
         assert shortcut_predictions(
             altered.predictor_view(), pair.shortcut
         ) == shortcut_predictions(episode.predictor_view(), pair.shortcut)
+
+
+def test_pair_report_retains_failed_expected_answers():
+    from r0.modules.challenges import evaluate_pair
+
+    pair = public_pairs()[2]
+    report = evaluate_pair(pair)
+    assert report["status"] == "PASS"
+    bad = replace(pair, after=replace(pair.after, query_targets=(0.0, 0.0)))
+    report = evaluate_pair(bad)
+    assert report["status"] == "FAIL"
+    assert report["after"]["reference"]["matches"] == [False, False]
+    assert report["after"]["reference"]["predictions"] == [-3.0, 7.0]

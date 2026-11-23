@@ -159,3 +159,18 @@ def test_diagnostic_command_and_immutable_output(tmp_path: Path) -> None:
     assert code == 2
     assert stdout == ""
     assert "immutable" in stderr
+
+
+def test_challenges_reports_pending_custody_and_respects_quiet(tmp_path: Path) -> None:
+    import json
+    from io import StringIO
+
+    from r0.modules.cli import run
+
+    output = tmp_path / "challenges.json"
+    stdout, stderr = StringIO(), StringIO()
+    run(["challenges", "--out", str(output), "--quiet"], stdout=stdout, stderr=stderr)
+    assert stdout.getvalue() == stderr.getvalue() == ""
+    report = json.loads(output.read_text())
+    assert report["public_status"] == "PASS"
+    assert report["sealed_status"] == "PENDING_OWNER_VERIFICATION"
