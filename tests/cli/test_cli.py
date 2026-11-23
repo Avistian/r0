@@ -146,3 +146,16 @@ def test_oracle_cli_retains_failed_reference_comparison(tmp_path: "Path") -> Non
     assert stdout == ""
     assert "reference comparison failed" in stderr
     assert '"status": "FAIL"' in output.read_text()
+
+
+def test_diagnostic_command_and_immutable_output(tmp_path: Path) -> None:
+    config = tmp_path / "diagnostic.toml"
+    config.write_text('version=1\nfamilies=["linear"]\nseeds=[11]\ndraws=1\n')
+    output = tmp_path / "run"
+    args = ["diagnose-priors", "--config", str(config), "--out", str(output), "--quiet"]
+    assert invoke(args) == (None, "", "")
+    assert (output / "report.json").is_file()
+    code, stdout, stderr = invoke(args)
+    assert code == 2
+    assert stdout == ""
+    assert "immutable" in stderr

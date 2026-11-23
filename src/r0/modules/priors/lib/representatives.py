@@ -130,7 +130,9 @@ def sample_proposal(p: Proposal) -> GeneratedTask:
         if p.features < 3:
             raise ValueError("interaction representative requires at least 3 features")
         degree = int(mechanism_rng.integers(2, 4))
-        rule = ("product", "parity", "gated")[p.draw % 3]
+        rule = ("product", "parity", "gated")[
+            (p.draw + ("regression", "binary", "multiclass").index(p.task_type)) % 3
+        ]
         parameters = {
             "degree": degree,
             "rule": rule,
