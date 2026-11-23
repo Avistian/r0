@@ -1,0 +1,3 @@
+version = 1
+fixture = "regression"
+split_seed = 0

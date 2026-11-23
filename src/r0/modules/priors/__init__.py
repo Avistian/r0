@@ -1,0 +1,67 @@
+"""Tiny inspectable source tasks for the episode walkthrough."""
+
+from dataclasses import dataclass
+
+import numpy as np
+
+from r0.modules.episodes import Feature, Row, Target, TaskType
+
+
+@dataclass(frozen=True)
+class SourceTask:
+    features: tuple[Feature, ...]
+    rows: tuple[Row, ...]
+    targets: tuple[Target, ...]
+    classes: tuple[str, ...]
+    class_provenance: str | None
+    mechanism: str
+
+
+def sample_fixture(task_type: TaskType, *, rng: np.random.Generator) -> SourceTask:
+    """Draw a small offset; all other values are deliberately readable."""
+    if task_type not in ("regression", "binary", "multiclass"):
+        raise ValueError("unsupported fixture task type")
+    offset = int(rng.integers(0, 4))
+    features = (
+        Feature("measurement", "continuous"),
+        Feature("count", "count"),
+        Feature("flag", "binary"),
+        Feature("color", "categorical"),
+        Feature("grade", "ordinal", order=("low", "medium", "high")),
+        Feature("time", "timestamp", unit="s", timezone="UTC"),
+        Feature("constant", "continuous"),
+        Feature("unobserved", "continuous"),
+    )
+    colors = ("red", "blue", "red", "blue", None, "green")
+    grades = ("low", "medium", "high", "low", "medium", "high")
+    rows = tuple(
+        Row(
+            f"row-{i}",
+            (
+                float(offset + 2 * i),
+                i,
+                i % 2,
+                colors[i],
+                grades[i],
+                1_700_000_000 + 60 * i,
+                7.0,
+                None,
+            ),
+        )
+        for i in range(6)
+    )
+    if task_type == "regression":
+        targets: tuple[Target, ...] = tuple(float(2 * i + 1) for i in range(6))
+        classes: tuple[str, ...] = ()
+    else:
+        classes = ("A", "B") if task_type == "binary" else ("A", "B", "C")
+        targets = ("A", "B", "A", "B", "A", classes[-1])
+    return SourceTask(
+        features,
+        rows,
+        targets,
+        classes,
+        "declared by fixture-v1 task design" if classes else None,
+        f"fixture-v1: measurement offset {offset}; regression y=2*row_index+1; "
+        "classification labels assigned by declared fixture design",
+    )

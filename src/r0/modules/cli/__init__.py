@@ -2,7 +2,10 @@
 
 import argparse
 from importlib.metadata import version
+from pathlib import Path
 from typing import TYPE_CHECKING, NoReturn, TextIO
+
+from r0.modules.replay import write_report
 
 if TYPE_CHECKING:
     from _typeshed import SupportsWrite
@@ -47,7 +50,24 @@ def run(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> None:
         "--version", action="store_true", help="show program's version number and exit"
     )
     parser.add_argument("--hello", action="store_true", help="print hello")
+    parser.add_argument("command", nargs="?", choices=("replay",))
+    parser.add_argument("--config", type=Path)
+    parser.add_argument("--out", type=Path)
     args = parser.parse_args(argv)
+    if args.command == "replay":
+        if args.version or args.hello:
+            parser.error("replay cannot be combined with --version or --hello")
+        if args.config is None or args.out is None:
+            parser.error("replay requires --config and --out")
+        try:
+            write_report(args.config, args.out)
+        except (OSError, ValueError) as error:
+            parser.error(str(error))
+        if not args.quiet:
+            print(f"Wrote replay report to {args.out}", file=stdout)
+        return
+    if args.config is not None or args.out is not None:
+        parser.error("--config and --out require replay")
     if not args.quiet:
         greeting = "hello" if args.hello else "r0"
         print(version("r0") if args.version else greeting, file=stdout)

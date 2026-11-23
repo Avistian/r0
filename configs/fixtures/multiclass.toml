@@ -1,0 +1,3 @@
+version = 1
+fixture = "multiclass"
+split_seed = 3

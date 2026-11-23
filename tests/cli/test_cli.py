@@ -1,5 +1,6 @@
 from importlib.metadata import version
 from io import StringIO
+from pathlib import Path
 
 from r0.modules.cli import run
 
@@ -67,3 +68,36 @@ def test_streams_are_not_replaced() -> None:
             return super().write(text)
 
     run([], stdout=ObservedStream(), stderr=ObservedStream())
+
+
+def test_replay_command_preserves_quiet_and_errors(tmp_path: "Path") -> None:
+    config = tmp_path / "fixture.toml"
+    config.write_text('version = 1\nfixture = "binary"\n')
+    output = tmp_path / "report.json"
+    code, stdout, stderr = invoke(
+        [
+            "--quiet",
+            "replay",
+            "--config",
+            str(config),
+            "--out",
+            str(output),
+        ]
+    )
+    assert code is None
+    assert stdout == stderr == ""
+    assert output.is_file()
+    config.write_text('version = 1\nfixture = "binary"\nunknown = 1')
+    code, stdout, stderr = invoke(
+        [
+            "replay",
+            "--config",
+            str(config),
+            "--out",
+            str(output),
+            "--quiet",
+        ]
+    )
+    assert code == 2
+    assert stdout == ""
+    assert "unknown configuration keys" in stderr
