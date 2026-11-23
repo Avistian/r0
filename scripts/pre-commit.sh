@@ -1,5 +1,9 @@
 #!/bin/sh
-# scripts/pre-commit.sh: every check in parallel; budget ~3 s. Tests live in `make check`.
+# Fail fast on checkout/index guards, then run static checks in parallel.
+# Tests live in `make check`.
+uv run python scripts/check_checkout.py || exit 1
+uv run python scripts/check_tracked_files.py || exit 1
+
 logs=$(mktemp -d); trap 'rm -rf "$logs"' EXIT
 staged=$(git diff --cached --name-only --diff-filter=ACMR)
 py=$(printf '%s\n' "$staged" | grep -E '\.py$' || true)

@@ -8,3 +8,4 @@ checkpoints/
 /tmp/
 mlruns/
 __pycache__/
+*.py[cod]
