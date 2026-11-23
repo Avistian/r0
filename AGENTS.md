@@ -1,6 +1,7 @@
 # r0 — agents start here
 
 ## Verification checks
+Environment setup and deliberate reuse: [README](README.md#verification-environments).
 Before you report a change to `src/` as complete, run in order:
 1. `make check`   2. `make smoke` (once T7 lands)   3. `make eval-smoke` (once T12 lands)
 Put the `make smoke` loss summary and the `make eval-smoke` table in the PR body as evidence.
