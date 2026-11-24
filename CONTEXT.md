@@ -53,3 +53,8 @@
 - **Label replacement**: A randomization event that draws a class label from the declared vocabulary; the sampled label may equal the original label.
 
 - **Generator diagnostics**: Findings and measurements about generated prediction problems and their coverage, distinct from task-selection policies and downstream usefulness.
+
+- **Milestone evaluation**: A final measurement of a frozen model selection under an accepted benchmark protocol, separated from development selection.
+- **Dataset family**: Datasets sharing an underlying collection, including versions and derivatives whose overlap matters for evaluation.
+- **Context draw**: One selection of labeled context examples for an identified prediction problem.
+- **Protocol freeze**: Human acceptance of a fully identified evaluation procedure and its evidence; subsequent score-affecting changes define a different protocol.
