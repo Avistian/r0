@@ -1,0 +1,48 @@
+# Verification record
+
+Base: 107c5051084a0a918db16b18874981d430bc1828 (fetched origin/main, 2026-11-24).
+Isolated authoring checkout: /tmp/r0-25. Original checkout edits were preserved.
+Environment reuse was explicit: UV_PROJECT_ENVIRONMENT=/tmp/r0-24/.venv, with the repository's
+no-sync verification wrapper selecting /tmp/r0-25/src/r0. Preflight and tracked-file guards passed.
+
+## Packet and arithmetic checks
+
+A one-off Python standard-library calculation parsed comparison.json and compared calculated
+primary scores against the independent literal/radical values in README.md. It checked every
+context/query ID intersection, probability-vector dimensions/ranges/sums, each draw's three
+primary scores, mean gap and the simple-baseline comparison. This is fixture verification,
+not a runtime integration test, model execution or an independent scientific evaluation.
+
+```text
+Candidate identity: f68a211d5491a204c9f0556cb07dd55806a33a976e678c58cd4168f39348305b
+PASS: spec binding, formatting stability, changed-split identity sensitivity, six roles, pending assets
+PASS binary: candidate mean=0.1966666667, gap mean=+0.0716666667
+PASS multiclass: candidate mean=0.2383333333, gap mean=+0.0983333333
+PASS regression: candidate mean=0.8047378541, gap mean=-0.2798541044
+Authored arithmetic only; models NOT_RUN; human freeze PENDING
+```
+
+The identity check reparsed differently formatted JSON and recovered the same digest; changing
+query_seed changed it. All six role combinations are present, all admissions remain PENDING,
+and no unverified asset hash is fabricated. The README identity command is reproducible locally.
+No failure-injection outcomes in the walkthrough are claimed as executed harness tests.
+
+## Repository gate and independent review
+
+`UV_PROJECT_ENVIRONMENT=/tmp/r0-24/.venv make check` passed: 143 tests in 7.00 seconds,
+with preflight, tracked-file/artifact guards, formatting, lint, typechecking, import boundaries,
+module coverage and token checks passing. This is local evidence; hosted CI is reported in
+PR checks separately. `git diff --check` also passed. Smoke and eval-smoke: NOT_RUN; no source
+change and the corresponding training/evaluation CLI paths remain unimplemented.
+
+Two independent read-only reviewers checked base 107c5051084a0a918db16b18874981d430bc1828
+through ec76e6a80d2ab9b53598432451442ff537a452fa:
+
+- Standards: zero documented violations and zero actionable heuristic findings. Protected
+  paths untouched; evidence boundaries explicit. Published specification linkage was pending.
+- Spec: PASS for documentation scope, zero blocking mismatches. Independently recomputed all
+  nine primary-score draws, their mean gaps, context/query disjointness and candidate digest.
+
+Review did not establish real dataset eligibility, model performance, hosted execution or
+human freeze. This record adds the review/check results after the reviewed implementation;
+no specification, manifest or arithmetic data changed after review.
