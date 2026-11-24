@@ -26,3 +26,23 @@ The identity check reparsed differently formatted JSON and recovered the same di
 query_seed changed it. All six role combinations are present, all admissions remain PENDING,
 and no unverified asset hash is fabricated. The README identity command is reproducible locally.
 No failure-injection outcomes in the walkthrough are claimed as executed harness tests.
+
+## Repository gate and independent review
+
+`UV_PROJECT_ENVIRONMENT=/tmp/r0-24/.venv make check` passed: 143 tests in 7.00 seconds,
+with preflight, tracked-file/artifact guards, formatting, lint, typechecking, import boundaries,
+module coverage and token checks passing. This is local evidence; hosted CI is reported in
+PR checks separately. `git diff --check` also passed. Smoke and eval-smoke: NOT_RUN; no source
+change and the corresponding training/evaluation CLI paths remain unimplemented.
+
+Two independent read-only reviewers checked base 107c5051084a0a918db16b18874981d430bc1828
+through ec76e6a80d2ab9b53598432451442ff537a452fa:
+
+- Standards: zero documented violations and zero actionable heuristic findings. Protected
+  paths untouched; evidence boundaries explicit. Published specification linkage was pending.
+- Spec: PASS for documentation scope, zero blocking mismatches. Independently recomputed all
+  nine primary-score draws, their mean gaps, context/query disjointness and candidate digest.
+
+Review did not establish real dataset eligibility, model performance, hosted execution or
+human freeze. This record adds the review/check results after the reviewed implementation;
+no specification, manifest or arithmetic data changed after review.
