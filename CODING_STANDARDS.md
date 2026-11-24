@@ -16,3 +16,17 @@ Context rows never contribute to a reported number.
 
 ## A result-changing config edit needs a new run record
 Change a config that alters results → new run id, new record. Never overwrite one.
+
+## Completion claims distinguish choices from missing evidence
+For protocol/specification reviews, classify pending work as an unresolved decision, a fact
+awaiting verification, or an authorization. Name its owner and the stage it blocks. Reviewers
+check that completion language matches those distinctions; accepted scope can still defer
+implementation choices. See [protocol review](docs/agents/protocol-review.md).
+
+## Verification claims have a retained reproduction path
+Reviewers require identified inputs and the exact command or retained program needed to
+reproduce claimed calculations/checks in the declared environment. Compare what it actually
+checks with the claim; a printed PASS or another reviewer's independent calculation is not
+itself a reproduction recipe. Keep unsupported portions explicitly unverified. Hand calculations
+remain valid evidence when their inputs and derivation are retained; executable-check claims
+also need the executed procedure. See the [worked review example](docs/evidence/issue-25-retro/README.md).
