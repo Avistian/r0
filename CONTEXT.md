@@ -53,3 +53,5 @@
 - **Label replacement**: A randomization event that draws a class label from the declared vocabulary; the sampled label may equal the original label.
 
 - **Generator diagnostics**: Findings and measurements about generated prediction problems and their coverage, distinct from task-selection policies and downstream usefulness.
+
+- **Challenge pair**: Independently authored related episodes with a declared transformation and known answers; diagnostic evidence is distinct from sealed milestone evidence.
