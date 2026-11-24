@@ -1,8 +1,8 @@
 # Issue 25 single-table evaluation protocol
 
-Authoritative accepted scope from eight interview rounds and the owner's instruction to
-implement #25 in small readable PRs. Design accepted; asset verification and human freeze
-remain PENDING. This document does not authorize compute, downloads, merges or benchmark
+Scope from eight accepted interview rounds, revised by owner instruction on 2026-11-24.
+This edited specification requires Piotr's re-acceptance; it is not the previously accepted
+revision. Dataset admission and human protocol freeze remain PENDING. This document does not authorize compute, downloads, merges or benchmark
 access. Issue: <https://github.com/Avistian/r0/issues/25>.
 
 ## Deliverable and ownership
@@ -24,13 +24,20 @@ Use six real datasets, one development and one milestone dataset for each task t
 
 | Task type | Development | Milestone |
 | --- | --- | --- |
-| Binary | Wisconsin Diagnostic Breast Cancer, diagnosis | Indian Liver Patient, liver-disease label |
+| Binary | Wisconsin Diagnostic Breast Cancer, diagnosis | Spambase, spam label |
 | Multiclass | Contraceptive Method Choice, contraceptive method | Dry Bean, bean variety |
 | Regression | Abalone, rings as a continuous target | Facial/oral temperature v1.0.0, aveOralM |
 
-These are provisional candidates, not verified assets. Use only FLIR_groups1and2.csv for
+Piotr replaced ILPD with Spambase on 2026-11-24 because ILPD occurs in the pinned
+BeyondArena inventory. This was an overlap-driven change before any scoring, not silent
+performance-based selection. The candidate digest changes; no protocol has been frozen.
+
+Owner-provisioned asset findings are recorded in the candidate packet; admission is PENDING. Use only FLIR_groups1and2.csv for
 thermography, one row per subject. Exclude aveOralF, other oral measurements, subject/date
 identifiers and target-derived fields; never concatenate overlapping cameras/group files.
+Piotr approved the 115-feature FLIR allowlist, including image-derived T_OR*/T_OR_Max*,
+Ethnicity and banded Age. These image features are distinct from other oral thermometer
+measurements. This approval does not admit the dataset or accept the full revised protocol.
 Exclude record identifiers and target-derived fields from all predictors. Record the exact
 feature allowlist and source target vocabulary before sampling. Abalone's target is rings,
 not an unrecorded conversion to age.
@@ -79,7 +86,10 @@ A new protocol identity never restores secrecy. A valid negative result remains 
 ## Predictors and inference allowance
 
 Pin TabPFN v2 explicitly, including package version, weight filenames/revisions/hashes and
-terms; never rely on an upstream default. Claims are about TabPFN v2, not current TabPFN.
+terms; never rely on an upstream default. Load explicit local model_path assets only after
+verifying their hashes. Piotr acknowledged the supplied Prior Labs License v1.1 caveat:
+retain the license/attribution for public results and keep TabPFN descriptive-only; its
+outputs must not improve or select r0 training/models. This is not protocol acceptance. Claims are about TabPFN v2, not current TabPFN.
 Use mean/class-frequency, linear and boosted-tree baselines through #26, plus the learner.
 Freeze one baseline configuration per task type across datasets; development may verify
 compatibility, but no baseline hyperparameter sweeps. Claims concern these configurations,

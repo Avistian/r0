@@ -1,0 +1,25 @@
+{
+  "provisioning_receipt": {
+    "date": "2026-11-24",
+    "source": "Owner-provisioned codex-brief.md, asset-report.md, asset-check.json and SHA256SUMS.txt; no raw assets committed",
+    "files": {
+      "codex-brief.md": "63122967a3114e0ea9ed32601b40a8908b27b8e7b0c4feee7da1916a79998da9",
+      "asset-report.md": "e6e890e490d0024e6ecee412f17165f625f1ed763ae9027c9b51823be7482e42",
+      "asset-check.json": "5db5fa4408592a12f27b821b8f31c4586459cb0eeef356ea1cd0228eab57095f",
+      "SHA256SUMS.txt": "812c8f24f89055145b30ff899ac46d9341a640522feeed2a97214573a3017aaa"
+    },
+    "reported_checksum_files": 34,
+    "reported_checksum_mismatches": 0,
+    "verification_scope": "Transcribed and cross-checked receipts; raw assets not reopened or reprocessed"
+  },
+  "overlap_inventory": {
+    "repository": "autogluon/tabarena",
+    "revision": "39c3b4a8dcd18633551f9b1ff0585948250d8435",
+    "files": {
+      "curated_tabarena_dataset_metadata.csv": "b45fa1f33e7fdf992326fb638b146939d1aab09a21ecfb6af5093b0805387b2a",
+      "BeyondArena_core2k_tasks.csv": "1bb466acc21dad1d6ff6f2b1ea09cd0f4a960538344ebf5433fd709c389534b5"
+    },
+    "hf_inventory": "TabArena/BeyondArena@2ecfe882ccfb814fc27c4de10a64ceefd5d7655c",
+    "screening": "Owner screened names, aliases, source URLs and DOIs in 51 v0.1 and 143 BeyondArena entries; ILPD matched; six current candidates had no match. No dataset content-hash comparison was performed."
+  }
+}
