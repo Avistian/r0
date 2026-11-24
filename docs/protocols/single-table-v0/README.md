@@ -93,8 +93,11 @@ a byte-hashed companion requires refreshing its reference; the top-level canonic
 identity ignores only its own formatting.
 
 Run the [retained verification command](verify.md) against the owner's four receipt files.
-It checks the full metadata transcription and every excluded ID without reading raw assets.
-Neither the candidate digest nor that check is a frozen protocol identity or human acceptance.
+It checks structured counts, target/feature vocabularies, every excluded ID and the specified
+source/specification/companion hashes without reading raw assets. Source URLs/DOIs, package
+and weight revision/filename associations, wheel hash and narrative findings are manual
+transcriptions checked in the independent receipt review; the command does not establish
+their correctness. Neither the digest nor these reviews establish human protocol acceptance.
 
 ## Pending decisions, verification and authorization
 
