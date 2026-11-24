@@ -1,5 +1,7 @@
 """Shared input and output validation for every predictor backend."""
 
+from typing import Protocol, cast
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -60,3 +62,34 @@ def validate_predictions(
         or not np.allclose(values.sum(axis=1), 1.0, atol=1e-6, rtol=0)
     ):
         raise ValueError("invalid probabilities; no clipping or renormalization")
+
+
+Array = NDArray[np.float64]
+
+
+class Predictor(Protocol):
+    """Every backend fits labeled context and predicts a separate query view."""
+
+    def fit(self, context: Document) -> None: ...
+
+    def predict(self, queries: Document) -> tuple[list[str], Array]: ...
+
+
+def validate_output(output: Document, view: Document, identity: Document | None) -> None:
+    raw = output.get("query_ids")
+    if not isinstance(raw, list) or not all(isinstance(i, str) for i in cast(list[object], raw)):
+        raise ValueError("prediction query IDs missing or malformed")
+    ids = cast(list[str], raw)
+    if len(ids) != len(set(ids)) or set(ids) != set(view["query_ids"]):
+        raise ValueError("prediction query IDs differ from prepared input")
+    if output.get("version") != 1 or output.get("invariance") != "PASS":
+        raise ValueError("unsupported prediction output or invariance not verified")
+    if (
+        not isinstance(output.get("evidence"), dict)
+        or output["evidence"].get("fit_ids") != view["context_ids"]
+    ):
+        raise ValueError("prediction fit IDs differ from context")
+    if output.get("backend_identity") != identity:
+        raise ValueError("external backend identity mismatch")
+    if identity is not None and output.get("environment") != identity["environment"]:
+        raise ValueError("external runtime differs from frozen environment")

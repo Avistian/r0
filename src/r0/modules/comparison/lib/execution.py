@@ -144,3 +144,42 @@ def run_process(
             if process is not None and process.poll() is None:
                 process.wait()
             group.rmdir()
+
+
+def launch(
+    command: list[str],
+    input_path: Path,
+    output: Path,
+    *,
+    diagnostic: bool,
+    cgroup_root: Path | None,
+) -> Document:
+    """The same process interface in diagnostic mode and enforced execution."""
+    command = [*command, "--input", str(input_path.resolve()), "--out", str(output.resolve())]
+    if not diagnostic:
+        if cgroup_root is None:
+            raise ValueError("enforced attempt requires delegated cgroup_root")
+        return run_process(command, cwd=input_path.parent.resolve(), cgroup_root=cgroup_root)
+    env = {
+        key: value
+        for key, value in os.environ.items()
+        if key in ("PATH", "PYTHONPATH", "LANG", "LC_ALL")
+    }
+    env.update({key: "1" for key in THREAD_ENV})
+    env.update(TABPFN_DISABLE_TELEMETRY="1", PYTHONDONTWRITEBYTECODE="1")
+    result = subprocess.run(
+        command,
+        cwd=input_path.parent,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=300,
+        check=False,
+    )
+    return {
+        "status": "COMPLETED" if result.returncode == 0 else "FAILED",
+        "enforcement": "NOT_ENFORCED",
+        "returncode": result.returncode,
+        "stdout": result.stdout,
+        "stderr": result.stderr,
+    }

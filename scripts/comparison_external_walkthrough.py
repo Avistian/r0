@@ -1,13 +1,12 @@
 """Exercise learner/TabPFN roles using explicit fixture subprocesses and saved ingestion."""
 
 import argparse
-import hashlib
 import json
 import sys
 from pathlib import Path
 from typing import Any
 
-from r0.modules.comparison import compare, environment, external_attempt, prepare
+from r0.modules.comparison import ExternalPredictor, attempt, compare, environment, prepare
 
 
 def main() -> None:
@@ -28,22 +27,16 @@ def main() -> None:
         "evidence": "FIXTURE_ONLY",
     }
     identity_path = args.out.resolve() / "identity.json"
-    identity_path.write_text(json.dumps(identity, indent=2) + "\n")
-    files = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in (script, identity_path)}
-    descriptor = {
-        "command": [sys.executable, str(script), "--identity", str(identity_path)],
-        "identity": identity,
-        "files": files,
-    }
+    identity_path.write_text(json.dumps({"identity": identity}, indent=2) + "\n")
     rows: list[dict[str, Any]] = []
     for task in ("binary", "multiclass", "regression"):
         prepared = args.out / f"{task}-prepared"
         prepare(root / f"docs/evidence/issue-26/fixtures/{task}.json", prepared)
-        learner = {**descriptor, "name": "learner"}
-        tabpfn = {**descriptor, "name": "tabpfn"}
+        learner = ExternalPredictor("learner", Path(sys.executable), identity_path, script)
+        tabpfn = ExternalPredictor("tabpfn", Path(sys.executable), identity_path, script)
         saved = [args.out / f"{task}-tabpfn-{draw}" for draw in (1, 2, 3)]
         for draw, path in enumerate(saved, 1):
-            attempt = external_attempt(
+            result = attempt(
                 prepared,
                 path,
                 tabpfn,
@@ -51,7 +44,7 @@ def main() -> None:
                 diagnostic=args.cgroup_root is None,
                 cgroup_root=args.cgroup_root,
             )
-            assert attempt["status"] == "SUCCESS", attempt
+            assert result["status"] == "SUCCESS", result
         report = compare(
             prepared,
             args.out / f"{task}-results",

@@ -1,0 +1,71 @@
+{
+  "membership": {
+    "status": "COMPLETED",
+    "returncode": 0,
+    "stdout": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/r0-comparison-probes-simplify-final.service/r0-comparison-8da58dc4fe534b6b81c3ecdc94a2d685\n\n",
+    "stderr": "",
+    "seconds": 0.04675812000641599,
+    "limits": {
+      "cpu_max": "100000 100000",
+      "threads": 1,
+      "memory_max": 67108864,
+      "swap_max": 0,
+      "wall_seconds": 1
+    },
+    "enforcement": "linux-cgroup-v2",
+    "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+    "cpu_stat": "usage_usec 18531\nuser_usec 4632\nsystem_usec 13898\nnr_periods 1\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n"
+  },
+  "timeout": {
+    "status": "TIMEOUT",
+    "returncode": -9,
+    "stdout": "",
+    "stderr": "",
+    "seconds": 1.0198247579974122,
+    "limits": {
+      "cpu_max": "100000 100000",
+      "threads": 1,
+      "memory_max": 67108864,
+      "swap_max": 0,
+      "wall_seconds": 1
+    },
+    "enforcement": "linux-cgroup-v2",
+    "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+    "cpu_stat": "usage_usec 17422\nuser_usec 10453\nsystem_usec 6969\nnr_periods 2\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n"
+  },
+  "memory": {
+    "status": "MEMORY_LIMIT",
+    "returncode": -9,
+    "stdout": "",
+    "stderr": "",
+    "seconds": 0.18067544299992733,
+    "limits": {
+      "cpu_max": "100000 100000",
+      "threads": 1,
+      "memory_max": 67108864,
+      "swap_max": 0,
+      "wall_seconds": 1
+    },
+    "enforcement": "linux-cgroup-v2",
+    "memory_events": "low 0\nhigh 0\nmax 35\noom 1\noom_kill 2\noom_group_kill 1\n",
+    "cpu_stat": "usage_usec 104597\nuser_usec 21791\nsystem_usec 82806\nnr_periods 2\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n"
+  },
+  "descendant_timeout": {
+    "status": "TIMEOUT",
+    "returncode": -9,
+    "stdout": "",
+    "stderr": "",
+    "seconds": 1.023855582010583,
+    "limits": {
+      "cpu_max": "100000 100000",
+      "threads": 1,
+      "memory_max": 67108864,
+      "swap_max": 0,
+      "wall_seconds": 1
+    },
+    "enforcement": "linux-cgroup-v2",
+    "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+    "cpu_stat": "usage_usec 31588\nuser_usec 17548\nsystem_usec 14039\nnr_periods 2\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n"
+  },
+  "groups_removed": true
+}

@@ -1,5 +1,8 @@
 # PR 68 completion
 
+Historical API and evidence. For the subsequent interface migration, see
+[comparison simplification](../comparison-simplification/README.md).
+
 The accepted scope is [the specification](../../specs/0026-offline-comparison.md).
 The original [implementation receipt](fixture-receipt.json) and review RED logs
 remain historical evidence. This delivery finishes fixture-backed implementation;

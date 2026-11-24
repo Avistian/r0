@@ -9,7 +9,7 @@ from typing import Any
 
 import numpy as np
 
-from .predictors import Array
+from .contracts import Array
 from .storage import Document, file_hash
 from .tabpfn import tabpfn_recipe
 
@@ -91,7 +91,7 @@ class TabPFNBackend:
 
 def tabpfn_worker(input_path: Path, output: Path, config_path: Path) -> None:
     """Execute only the pinned recipe; provisioned config cannot relabel settings."""
-    from .adapter_worker import adapter_worker
+    from .prediction import prediction_worker
     from .storage import read_json
 
     view = read_json(input_path)
@@ -100,6 +100,6 @@ def tabpfn_worker(input_path: Path, output: Path, config_path: Path) -> None:
     identity = config["identity"]
     if identity["settings"] != recipe or identity["checkpoint"] != recipe["weight_sha256"]:
         raise ValueError("TabPFN identity differs from the frozen recipe or weights")
-    adapter_worker(
+    prediction_worker(
         input_path, output, TabPFNBackend(Path(config["wheel"]), Path(config["model"])), identity
     )

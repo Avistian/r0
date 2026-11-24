@@ -8,48 +8,22 @@ from pathlib import Path
 
 import numpy as np
 
-from .execution import environment, run_process
-from .external import execute_external, external_recipe, validate_external_output
-from .predictors import Unsupported, fit_predictor, recipe
-from .scoring import check_invariance, score
+from .contracts import validate_output
+from .execution import environment, launch
+from .external import ExternalPredictor
+from .predictors import Unsupported, recipe
+from .scoring import score
 from .storage import Document, digest, file_hash, read_json, seal, verify, write_json
 from .summary import aggregate_datasets, comparison_gaps, summarize_draws
 from .tabpfn import tabpfn_status
 
 
-def worker(input_path: Path, output: Path, predictor: str) -> None:
-    """Versioned input-only worker; never receives a scoring path."""
-    view = read_json(input_path)
-    start = time.monotonic()
-    infer, evidence = fit_predictor(view, predictor)
-    indices = list(range(len(view["query_ids"])))
-    prediction = infer(indices)
-    reverse = indices[::-1]
-    reversed_prediction = infer(reverse)
-    chunks = [infer([i]) for i in indices]
-    check_invariance(prediction, reversed_prediction[reverse], np.concatenate(chunks))
-    output.mkdir(exist_ok=False)
-    np.save(output / "predictions.npy", prediction, allow_pickle=False)
-    write_json(
-        output / "prediction.json",
-        {
-            "version": 1,
-            "query_ids": view["query_ids"],
-            "evidence": evidence,
-            "invariance": "PASS",
-            "seconds": time.monotonic() - start,
-            "environment": environment(),
-        },
-    )
-
-
 def cache_identity(
     prepared: Path,
-    predictor: str,
+    predictor: str | ExternalPredictor,
     draw: int,
     *,
     diagnostic: bool,
-    external: Document | None = None,
 ) -> Document:
     verify(prepared)
     manifest = read_json(prepared / "manifest.json")
@@ -61,8 +35,8 @@ def cache_identity(
         "draw": draw,
         "input": manifest["draws"][draw - 1]["sha256"],
         "scoring": manifest["scoring_sha256"],
-        "predictor": external_recipe(external)
-        if external is not None
+        "predictor": predictor.snapshot()
+        if isinstance(predictor, ExternalPredictor)
         else recipe(predictor, manifest["task"]),
         "environment": environment(),
         "limits": manifest["limits"],
@@ -84,8 +58,7 @@ def read_attempt(path: Path, expected_identity: Document) -> Document:
     view = read_json(path / "input.json")
     labels = read_json(path / "scoring.json")
     output = read_json(path / "output/prediction.json")
-    if "command" in expected_identity["predictor"]:
-        validate_external_output(output, view, expected_identity["predictor"]["identity"])
+    validate_output(output, view, expected_identity["predictor"].get("identity"))
     prediction = np.load(path / "output/predictions.npy", allow_pickle=False)
     recomputed = score(
         view["task"],
@@ -106,18 +79,17 @@ def read_attempt(path: Path, expected_identity: Document) -> Document:
 def attempt(
     prepared: Path,
     destination: Path,
-    predictor: str,
+    predictor: str | ExternalPredictor,
     draw: int,
     *,
     cgroup_root: Path | None = None,
     diagnostic: bool = False,
-    external: Document | None = None,
 ) -> Document:
     """Execute once; never overwrite, resample, retry or silently reuse a result.
 
     diagnostic=True is explicitly unenforced fixture development, not a protocol run.
     """
-    identity = cache_identity(prepared, predictor, draw, diagnostic=diagnostic, external=external)
+    identity = cache_identity(prepared, predictor, draw, diagnostic=diagnostic)
     manifest = read_json(prepared / "manifest.json")
     if manifest["evidence"] != "AUTHORED_FIXTURE":
         raise ValueError("real comparison admission unavailable")
@@ -125,7 +97,7 @@ def attempt(
     result: Document = {
         "version": 1,
         "identity": identity,
-        "predictor": predictor,
+        "predictor": predictor.name if isinstance(predictor, ExternalPredictor) else predictor,
         "draw": draw,
         "evidence": "FIXTURE_ONLY",
         "status": "FAILED",
@@ -139,54 +111,36 @@ def attempt(
         if file_hash(source) != identity["input"]:
             raise ValueError("input hash mismatch")
         shutil.copyfile(source, destination / "input.json")
-        if external is not None:
-            receipt = execute_external(
-                external,
-                destination / "input.json",
-                destination / "output",
-                diagnostic=diagnostic,
-                cgroup_root=cgroup_root,
-            )
-            result["resources"] = receipt
-            if receipt["status"] != "COMPLETED":
-                raise ValueError(f"external predictor process {receipt['status']}")
-        elif diagnostic:
-            worker(destination / "input.json", destination / "output", predictor)
-            result["resources"] = {
-                "status": "NOT_ENFORCED",
-                "reason": "explicit fixture diagnostic",
-            }
-        else:
-            if cgroup_root is None:
-                raise ValueError("enforced attempt requires delegated cgroup_root")
-            receipt = run_process(
-                [
-                    sys.executable,
-                    "-m",
-                    "r0.modules.comparison",
-                    "worker",
-                    "--input",
-                    str((destination / "input.json").resolve()),
-                    "--out",
-                    str((destination / "output").resolve()),
-                    "--predictor",
-                    predictor,
-                ],
-                cwd=destination.resolve(),
-                cgroup_root=cgroup_root,
-            )
-            result["resources"] = receipt
-            if receipt["status"] != "COMPLETED":
-                raise ValueError(f"predictor process {receipt['status']}")
+        command = (
+            predictor.command()
+            if isinstance(predictor, ExternalPredictor)
+            else [
+                sys.executable,
+                "-m",
+                "r0.modules.comparison",
+                "worker",
+                "--predictor",
+                predictor,
+            ]
+        )
+        receipt = launch(
+            command,
+            destination / "input.json",
+            destination / "output",
+            diagnostic=diagnostic,
+            cgroup_root=cgroup_root,
+        )
+        result["resources"] = receipt
+        if receipt.get("returncode") == 3:
+            raise Unsupported(receipt["stdout"].strip())
+        if receipt["status"] != "COMPLETED":
+            raise ValueError(f"predictor process {receipt['status']}")
         shutil.copyfile(prepared / "scoring.json", destination / "scoring.json")
         labels = read_json(destination / "scoring.json")
         output = read_json(destination / "output/prediction.json")
-        if output.get("version") != 1:
-            raise ValueError("unsupported external output version")
-        if external is not None:
-            validate_external_output(
-                output, read_json(destination / "input.json"), external["identity"]
-            )
+        validate_output(
+            output, read_json(destination / "input.json"), identity["predictor"].get("identity")
+        )
         prediction = np.load(destination / "output/predictions.npy", allow_pickle=False)
         result["scores"] = score(
             manifest["task"],
@@ -215,11 +169,11 @@ def compare(
     diagnostic: bool = False,
     cgroup_root: Path | None = None,
     fixture_predictors: bool = False,
-    external_predictors: list[Document] | None = None,
+    external_predictors: list[ExternalPredictor] | None = None,
     saved_attempts: dict[str, list[Path]] | None = None,
 ) -> Document:
     verify(prepared)
-    descriptors = {d["name"]: d for d in external_predictors or []}
+    descriptors = {d.name: d for d in external_predictors or []}
     if len(descriptors) != len(external_predictors or []) or (fixture_predictors and descriptors):
         raise ValueError("duplicate or conflicting predictor roles")
     if set(saved_attempts or {}) - set(descriptors):
@@ -228,40 +182,30 @@ def compare(
     names = ["simple", "linear", "boosted_tree"]
     if fixture_predictors:
         names += ["learner_fixture", "tabpfn_fixture"]
-    results = [
-        attempt(
-            prepared,
-            destination / f"{name}-{draw}",
-            name,
-            draw,
-            diagnostic=diagnostic,
-            cgroup_root=cgroup_root,
-        )
-        for name in names
-        for draw in (1, 2, 3)
-    ]
-    for name, descriptor in descriptors.items():
+    predictors: dict[str, str | ExternalPredictor] = {name: name for name in names}
+    predictors.update(descriptors)
+    names = list(predictors)
+    results: list[Document] = []
+    for name, predictor in predictors.items():
         paths = (saved_attempts or {}).get(name)
         if paths is not None and len(paths) != 3:
             raise ValueError("exactly three saved attempts required")
         for draw in (1, 2, 3):
+            destination_path = destination / f"{name}-{draw}"
             if paths is None:
-                result = external_attempt(
+                result = attempt(
                     prepared,
-                    destination / f"{name}-{draw}",
-                    descriptor,
+                    destination_path,
+                    predictor,
                     draw,
                     diagnostic=diagnostic,
                     cgroup_root=cgroup_root,
                 )
             else:
-                expected = cache_identity(
-                    prepared, name, draw, diagnostic=diagnostic, external=descriptor
-                )
+                expected = cache_identity(prepared, predictor, draw, diagnostic=diagnostic)
                 result = read_attempt(paths[draw - 1], expected)
-                shutil.copytree(paths[draw - 1], destination / f"{name}-{draw}")
+                shutil.copytree(paths[draw - 1], destination_path)
             results.append(result)
-        names.append(name)
     summaries: Document = {}
     for name in names:
         scores = [
@@ -328,24 +272,3 @@ def compare(
     write_json(destination / "comparison.json", report)
     seal(destination)
     return report
-
-
-def external_attempt(
-    prepared: Path,
-    destination: Path,
-    descriptor: Document,
-    draw: int,
-    *,
-    diagnostic: bool = False,
-    cgroup_root: Path | None = None,
-) -> Document:
-    """Execute an identified external backend through the normal attempt lifecycle."""
-    return attempt(
-        prepared,
-        destination,
-        descriptor["name"],
-        draw,
-        diagnostic=diagnostic,
-        cgroup_root=cgroup_root,
-        external=descriptor,
-    )

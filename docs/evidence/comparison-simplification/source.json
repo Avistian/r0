@@ -1,0 +1,16 @@
+{
+  "src/r0/modules/comparison/__init__.py": "c2cd2da5609d25ca9d762c9b7737ee1d1c937c2f11ac8a521066d83da4625df3",
+  "src/r0/modules/comparison/__main__.py": "794a7506a69efc7c5d50409ff8eb9772e001c9fb0f198e87d4d2eec0d0d34dd8",
+  "src/r0/modules/comparison/lib/contracts.py": "7fffa86545732689833a9c1c715b39524c39ce2cde2e3fdd01dea125e5955774",
+  "src/r0/modules/comparison/lib/execution.py": "10d76f3131b38a02496ec56dc40c1c7d393c3366f448d7c0a2276078029e98fb",
+  "src/r0/modules/comparison/lib/external.py": "fc026d5c6d88a0cd9b7f1fc40708d7506acf3a9e9f3bff737418f956dfe0a802",
+  "src/r0/modules/comparison/lib/prediction.py": "e7f115d7d932d0917aee9fcace6d5bd272369dcb29a7b5e669b0eaab184d5d10",
+  "src/r0/modules/comparison/lib/predictors.py": "03c78e70d84eb5a7f8dcfdef58ff133169ee19bf85af5fb9bb57be108f71adfe",
+  "src/r0/modules/comparison/lib/prepare.py": "34ca99696e48c224b5afd5182b838668b8fc188cac9563c5854fcaa7cda6789c",
+  "src/r0/modules/comparison/lib/runner.py": "87806212d230372b2766d0ce96d02b8b48462f925851d711a852b40764bb65a5",
+  "src/r0/modules/comparison/lib/scoring.py": "8fec667cc061fff6b68bc2be89e4a9fe5c01bfd065b61df6910f7475900c1938",
+  "src/r0/modules/comparison/lib/storage.py": "dd8fdc130705bf5f144ac2126b22056606499d165ef014171a0b52830df2b4b7",
+  "src/r0/modules/comparison/lib/summary.py": "f4cfc1acfeab06165ceaaee46cb4f3541152e4bf7a2187cc5b31adcdd3edad00",
+  "src/r0/modules/comparison/lib/tabpfn.py": "aca52fc22cad5dc8755f0716c9e76171eb0a797fff5b150114de585959ae0d38",
+  "src/r0/modules/comparison/lib/tabpfn_backend.py": "480031ced289bd50acd0a2184a122d2ae3ae23fdd9daa5246f89ad1b5d4c4783"
+}
