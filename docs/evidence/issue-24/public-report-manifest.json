@@ -1,0 +1,35 @@
+{
+  "content_fingerprint": "5a3aedb59e355236129bfc3ca2768100d1bf42881daddf19e3776fd9124e16e7",
+  "environment": {
+    "python": "3.12.3"
+  },
+  "influenced_development": true,
+  "limits": {
+    "command_seconds": 300,
+    "context_rows": 12,
+    "features": 4,
+    "query_rows": 6
+  },
+  "novelty": "UNKNOWN",
+  "numerical_policy": {
+    "atol": 1e-10,
+    "rtol": 1e-10
+  },
+  "pair_files": [
+    "column-permutation.json",
+    "context-remapping.json",
+    "affine-extrapolation.json"
+  ],
+  "provenance": {
+    "answers": "authored targets and calculations, independent of reference predictions",
+    "challenge_source_fingerprint": "58b955898550dcd9575fae0be92ad0b1b0adeccbf1c6f65ddb66e5712f6be174",
+    "construction": "independently authored literals in challenges/lib/cases.py",
+    "preprocessing": "raw coordinates and original target units; no fitted preprocessing",
+    "replay_source_fingerprint": "5a4267e73c66eab8e10d8f9832e6a72763d1ebd4c07aa876f91222c3cdcb602f"
+  },
+  "public_status": "PASS",
+  "sealed_status": "PENDING_OWNER_VERIFICATION",
+  "suite_version": "public-challenges-v1",
+  "ticket_status": "PENDING",
+  "training_mixture_identity": null
+}

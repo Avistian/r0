@@ -1,0 +1,360 @@
+{
+  "after": {
+    "episode": {
+      "class_provenance": "fixed declared vocabulary",
+      "classes": [
+        "red",
+        "green",
+        "blue"
+      ],
+      "context": [
+        {
+          "id": "c0",
+          "values": [
+            "A"
+          ]
+        },
+        {
+          "id": "c1",
+          "values": [
+            "B"
+          ]
+        },
+        {
+          "id": "c2",
+          "values": [
+            "C"
+          ]
+        }
+      ],
+      "context_targets": [
+        "blue",
+        "red",
+        "green"
+      ],
+      "episode_id": "mapping-after-v1",
+      "features": [
+        {
+          "kind": "categorical",
+          "name": "symbol",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "q0",
+          "values": [
+            "A"
+          ]
+        },
+        {
+          "id": "q1",
+          "values": [
+            "B"
+          ]
+        },
+        {
+          "id": "q2",
+          "values": [
+            "C"
+          ]
+        }
+      ],
+      "query_targets": [
+        "blue",
+        "red",
+        "green"
+      ],
+      "source_task_id": "mapping-v1",
+      "task_type": "multiclass"
+    },
+    "errors": [],
+    "expected_answers": [
+      "blue",
+      "red",
+      "green"
+    ],
+    "predictor_view": {
+      "class_provenance": "fixed declared vocabulary",
+      "classes": [
+        "red",
+        "green",
+        "blue"
+      ],
+      "context": [
+        {
+          "id": "c0",
+          "values": [
+            "A"
+          ]
+        },
+        {
+          "id": "c1",
+          "values": [
+            "B"
+          ]
+        },
+        {
+          "id": "c2",
+          "values": [
+            "C"
+          ]
+        }
+      ],
+      "context_targets": [
+        "blue",
+        "red",
+        "green"
+      ],
+      "features": [
+        {
+          "kind": "categorical",
+          "name": "symbol",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "q0",
+          "values": [
+            "A"
+          ]
+        },
+        {
+          "id": "q1",
+          "values": [
+            "B"
+          ]
+        },
+        {
+          "id": "q2",
+          "values": [
+            "C"
+          ]
+        }
+      ],
+      "task_type": "multiclass"
+    },
+    "reference": {
+      "absolute_differences": [
+        null,
+        null,
+        null
+      ],
+      "matches": [
+        true,
+        true,
+        true
+      ],
+      "predictions": [
+        "blue",
+        "red",
+        "green"
+      ]
+    },
+    "shortcut": {
+      "absolute_differences": [
+        null,
+        null,
+        null
+      ],
+      "matches": [
+        false,
+        false,
+        false
+      ],
+      "predictions": [
+        "red",
+        "green",
+        "blue"
+      ]
+    }
+  },
+  "before": {
+    "episode": {
+      "class_provenance": "fixed declared vocabulary",
+      "classes": [
+        "red",
+        "green",
+        "blue"
+      ],
+      "context": [
+        {
+          "id": "c0",
+          "values": [
+            "A"
+          ]
+        },
+        {
+          "id": "c1",
+          "values": [
+            "B"
+          ]
+        },
+        {
+          "id": "c2",
+          "values": [
+            "C"
+          ]
+        }
+      ],
+      "context_targets": [
+        "red",
+        "green",
+        "blue"
+      ],
+      "episode_id": "mapping-before-v1",
+      "features": [
+        {
+          "kind": "categorical",
+          "name": "symbol",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "q0",
+          "values": [
+            "A"
+          ]
+        },
+        {
+          "id": "q1",
+          "values": [
+            "B"
+          ]
+        },
+        {
+          "id": "q2",
+          "values": [
+            "C"
+          ]
+        }
+      ],
+      "query_targets": [
+        "red",
+        "green",
+        "blue"
+      ],
+      "source_task_id": "mapping-v1",
+      "task_type": "multiclass"
+    },
+    "errors": [],
+    "expected_answers": [
+      "red",
+      "green",
+      "blue"
+    ],
+    "predictor_view": {
+      "class_provenance": "fixed declared vocabulary",
+      "classes": [
+        "red",
+        "green",
+        "blue"
+      ],
+      "context": [
+        {
+          "id": "c0",
+          "values": [
+            "A"
+          ]
+        },
+        {
+          "id": "c1",
+          "values": [
+            "B"
+          ]
+        },
+        {
+          "id": "c2",
+          "values": [
+            "C"
+          ]
+        }
+      ],
+      "context_targets": [
+        "red",
+        "green",
+        "blue"
+      ],
+      "features": [
+        {
+          "kind": "categorical",
+          "name": "symbol",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "q0",
+          "values": [
+            "A"
+          ]
+        },
+        {
+          "id": "q1",
+          "values": [
+            "B"
+          ]
+        },
+        {
+          "id": "q2",
+          "values": [
+            "C"
+          ]
+        }
+      ],
+      "task_type": "multiclass"
+    },
+    "reference": {
+      "absolute_differences": [
+        null,
+        null,
+        null
+      ],
+      "matches": [
+        true,
+        true,
+        true
+      ],
+      "predictions": [
+        "red",
+        "green",
+        "blue"
+      ]
+    },
+    "shortcut": {
+      "absolute_differences": [
+        null,
+        null,
+        null
+      ],
+      "matches": [
+        true,
+        true,
+        true
+      ],
+      "predictions": [
+        "red",
+        "green",
+        "blue"
+      ]
+    }
+  },
+  "derivation": "Each query symbol occurs in context. Before: A=red,B=green,C=blue. After: A=blue,B=red,C=green. Read the matching context label.",
+  "family": "single-feature-lookup",
+  "name": "context-remapping",
+  "shortcut": "fixed-label",
+  "status": "PASS",
+  "transformation": "Cyclically rename targets, preserving vocabulary and input rows.",
+  "transformation_error": null,
+  "transformation_valid": true
+}

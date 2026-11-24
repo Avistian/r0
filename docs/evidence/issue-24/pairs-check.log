@@ -1,0 +1,45 @@
+uv run python scripts/check_checkout.py && uv run python scripts/check_hooks.py
+Interpreter: /tmp/r0-24/.venv/bin/python3
+r0 source: /tmp/r0-24-check-pairs/src/r0/__init__.py
+Expected package: /tmp/r0-24-check-pairs/src/r0
+Active commit hook: /tmp/r0-24-check-pairs/.githooks/pre-commit
+uv run python scripts/check_tracked_files.py
+uv run python scripts/check_artifact_sizes.py
+uv run ruff format --check .
+133 files already formatted
+uv run ruff check .
+All checks passed!
+uv run pyright
+0 errors, 0 warnings, 0 informations
+uv run lint-imports
+
+╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐
+╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │
+ ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗
+ ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝
+╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║
+╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝
+  └──▶║║                    ▲
+      ╚╝────────────────────┘
+
+
+---------
+Contracts
+---------
+
+Analyzed 47 files, 50 dependencies.
+-----------------------------------
+
+Layers KEPT
+ADR 0002: the training path never sees real data KEPT
+Only the adapter imports relbench KEPT
+Independent challenges never consume production generators KEPT
+Training never consumes held-out challenges KEPT
+
+Contracts: 5 kept, 0 broken.
+uv run python scripts/check_module_tests.py
+git ls-files -z '*.py' '*.md' '*.toml' | xargs -0 uv run python scripts/check_file_tokens.py
+uv run pytest
+........................................................................ [ 50%]
+.......................................................................  [100%]
+143 passed in 1.59s

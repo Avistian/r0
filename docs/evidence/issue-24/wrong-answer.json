@@ -1,0 +1,304 @@
+{
+  "after": {
+    "episode": {
+      "class_provenance": null,
+      "classes": [],
+      "context": [
+        {
+          "id": "c0",
+          "values": [
+            0.0
+          ]
+        },
+        {
+          "id": "c1",
+          "values": [
+            1.0
+          ]
+        },
+        {
+          "id": "c2",
+          "values": [
+            2.0
+          ]
+        }
+      ],
+      "context_targets": [
+        1.0,
+        3.0,
+        5.0
+      ],
+      "episode_id": "affine-after-v1",
+      "features": [
+        {
+          "kind": "continuous",
+          "name": "x",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "q0",
+          "values": [
+            -2.0
+          ]
+        },
+        {
+          "id": "q1",
+          "values": [
+            3.0
+          ]
+        }
+      ],
+      "query_targets": [
+        0.0,
+        0.0
+      ],
+      "source_task_id": "affine-v1",
+      "task_type": "regression"
+    },
+    "errors": [],
+    "expected_answers": [
+      0.0,
+      0.0
+    ],
+    "predictor_view": {
+      "class_provenance": null,
+      "classes": [],
+      "context": [
+        {
+          "id": "c0",
+          "values": [
+            0.0
+          ]
+        },
+        {
+          "id": "c1",
+          "values": [
+            1.0
+          ]
+        },
+        {
+          "id": "c2",
+          "values": [
+            2.0
+          ]
+        }
+      ],
+      "context_targets": [
+        1.0,
+        3.0,
+        5.0
+      ],
+      "features": [
+        {
+          "kind": "continuous",
+          "name": "x",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "q0",
+          "values": [
+            -2.0
+          ]
+        },
+        {
+          "id": "q1",
+          "values": [
+            3.0
+          ]
+        }
+      ],
+      "task_type": "regression"
+    },
+    "reference": {
+      "absolute_differences": [
+        3.0,
+        7.0
+      ],
+      "matches": [
+        false,
+        false
+      ],
+      "predictions": [
+        -3.0,
+        7.0
+      ]
+    },
+    "shortcut": {
+      "absolute_differences": [
+        1.0,
+        5.0
+      ],
+      "matches": [
+        false,
+        false
+      ],
+      "predictions": [
+        1.0,
+        5.0
+      ]
+    }
+  },
+  "before": {
+    "episode": {
+      "class_provenance": null,
+      "classes": [],
+      "context": [
+        {
+          "id": "c0",
+          "values": [
+            0.0
+          ]
+        },
+        {
+          "id": "c1",
+          "values": [
+            1.0
+          ]
+        },
+        {
+          "id": "c2",
+          "values": [
+            2.0
+          ]
+        }
+      ],
+      "context_targets": [
+        1.0,
+        3.0,
+        5.0
+      ],
+      "episode_id": "affine-before-v1",
+      "features": [
+        {
+          "kind": "continuous",
+          "name": "x",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "q0",
+          "values": [
+            0.5
+          ]
+        },
+        {
+          "id": "q1",
+          "values": [
+            1.5
+          ]
+        }
+      ],
+      "query_targets": [
+        2.0,
+        4.0
+      ],
+      "source_task_id": "affine-v1",
+      "task_type": "regression"
+    },
+    "errors": [],
+    "expected_answers": [
+      2.0,
+      4.0
+    ],
+    "predictor_view": {
+      "class_provenance": null,
+      "classes": [],
+      "context": [
+        {
+          "id": "c0",
+          "values": [
+            0.0
+          ]
+        },
+        {
+          "id": "c1",
+          "values": [
+            1.0
+          ]
+        },
+        {
+          "id": "c2",
+          "values": [
+            2.0
+          ]
+        }
+      ],
+      "context_targets": [
+        1.0,
+        3.0,
+        5.0
+      ],
+      "features": [
+        {
+          "kind": "continuous",
+          "name": "x",
+          "order": [],
+          "timezone": null,
+          "unit": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "q0",
+          "values": [
+            0.5
+          ]
+        },
+        {
+          "id": "q1",
+          "values": [
+            1.5
+          ]
+        }
+      ],
+      "task_type": "regression"
+    },
+    "reference": {
+      "absolute_differences": [
+        0.0,
+        0.0
+      ],
+      "matches": [
+        true,
+        true
+      ],
+      "predictions": [
+        2.0,
+        4.0
+      ]
+    },
+    "shortcut": {
+      "absolute_differences": [
+        0.0,
+        0.0
+      ],
+      "matches": [
+        true,
+        true
+      ],
+      "predictions": [
+        2.0,
+        4.0
+      ]
+    }
+  },
+  "derivation": "The affine intercept is 1 at x=0; slope is (3-1)/(1-0)=2. At x=0.5,1.5 answers are 2,4; at x=-2,3 answers are -3,7. Clipping to observed target range [1,5] gives 1,5 outside support.",
+  "family": "single-feature-affine",
+  "name": "affine-extrapolation",
+  "shortcut": "range-clipping",
+  "status": "FAIL",
+  "transformation": "Keep context fixed; move queries outside the context range.",
+  "transformation_error": null,
+  "transformation_valid": true
+}
