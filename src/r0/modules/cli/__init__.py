@@ -5,6 +5,7 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import TYPE_CHECKING, NoReturn, TextIO, cast
 
+from r0.modules.cli.lib.challenges import run_challenges
 from r0.modules.replay import write_oracle_report, write_prior_diagnostics, write_report
 
 if TYPE_CHECKING:
@@ -50,13 +51,32 @@ def run(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> None:
         "--version", action="store_true", help="show program's version number and exit"
     )
     parser.add_argument("--hello", action="store_true", help="print hello")
-    parser.add_argument("command", nargs="?", choices=("replay", "oracle", "diagnose-priors"))
+    parser.add_argument(
+        "command", nargs="?", choices=("replay", "oracle", "diagnose-priors", "challenges")
+    )
     parser.add_argument("--config", type=Path)
     parser.add_argument("--out", type=Path)
     parser.add_argument(
         "--expected", type=Path, help="independent numeric reference card for oracle"
     )
     args = parser.parse_args(argv)
+    if args.command == "challenges":
+        if args.out is None or args.config is not None or args.expected is not None:
+            parser.error("challenges requires --out and accepts no --config or --expected")
+        if args.version or args.hello:
+            parser.error("challenges cannot be combined with --version or --hello")
+        try:
+            status = run_challenges(args.out)
+        except (OSError, ValueError) as error:
+            parser.error(str(error))
+        if status != "PASS":
+            parser.error(f"public challenge checks failed; retained report at {args.out}")
+        if not args.quiet:
+            print(
+                f"Public challenges PASS; sealed case and ticket PENDING. Report: {args.out}",
+                file=stdout,
+            )
+        return
     if args.command in ("replay", "oracle", "diagnose-priors"):
         if args.version or args.hello:
             parser.error(f"{args.command} cannot be combined with --version or --hello")

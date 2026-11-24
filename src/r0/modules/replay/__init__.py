@@ -14,6 +14,7 @@ import numpy as np
 from r0.modules.episodes import Episode
 from r0.modules.featurize import TransformedView, transform
 from r0.modules.priors import SourceTask, sample_fixture
+from r0.modules.replay.lib.challenges import write_challenge_report as write_challenge_report
 from r0.modules.replay.lib.config import Config as Config
 from r0.modules.replay.lib.config import parse_config as parse_config
 from r0.modules.replay.lib.diagnostic_config import DiagnosticConfig as DiagnosticConfig
