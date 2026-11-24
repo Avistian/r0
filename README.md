@@ -14,11 +14,33 @@ uv run r0 --version
 
 `uv run` runs `r0 --version` in the project's virtual environment.
 
-When reusing an existing environment in a fresh checkout, run `make hooks` to activate
-this repository's commit hook without syncing dependencies. Local `make preflight`
-checks the source checkout and hook activation; CI runs the checks directly.
-`make check` and the commit hook both enforce the 1 MiB limit on staged/tracked Git
-blobs, including files whose working copies were subsequently changed or removed.
+## Verification environments
+
+`make setup` explicitly syncs this checkout's `.venv` and activates its commit hook.
+Verification commands (`make check`, its component targets and the commit hook) use
+`scripts/run_check.py`. They require an existing environment, run uv in offline, no-sync mode, and select this checkout's `src` directory. Verification never
+creates an environment or repairs missing dependencies; run setup explicitly when needed.
+
+To deliberately reuse an existing environment without changing its editable installation:
+
+```sh
+make hooks
+UV_PROJECT_ENVIRONMENT=/absolute/path/to/existing/.venv make check
+```
+
+The wrapper checks path files, editable finders and direct-URL metadata before and after
+each command. A change fails verification and names the affected files; it is not silently
+rolled back. This detects editable-install changes, not arbitrary writes by tested code.
+An inherited active environment alone does not select reuse. The default remains `.venv`.
+For other read-only verification commands, use `python3 scripts/run_check.py COMMAND ...`;
+a bare `uv run` can sync an environment and is outside this guard.
+
+`make preflight` checks source resolution and local hook activation. `make tokens` and the
+commit hook run the same token checker over **all Git index blobs**, including JSON and
+filenames containing spaces. Staged oversized content remains a failure even if its working
+copy is replaced or deleted. The existing binary, lockfile and workflow exclusions remain.
+Stage edits before checking the intended commit. Both paths also enforce the 1 MiB index
+artifact limit. CI runs the same `make check` after explicit frozen environment setup.
 
 ## Predictive reference walkthrough
 
@@ -28,7 +50,7 @@ independent calculations, metric conventions and replay instructions. The
 [accepted specification](docs/specs/0022-oracles.md) defines the scope.
 
 ```sh
-uv run python scripts/oracle_walkthrough.py --out /tmp/r0-oracle-evidence
+python3 scripts/run_check.py python scripts/oracle_walkthrough.py --out /tmp/r0-oracle-evidence
 ```
 
 ## Data attributions
