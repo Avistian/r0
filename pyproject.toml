@@ -71,7 +71,7 @@ layers = [
   "r0.modules.replay",
   "r0.modules.diagnostics",
   "r0.modules.leaderboard",
-  "r0.modules.training | r0.modules.evaluation",
+  "r0.modules.training | r0.modules.evaluation | r0.modules.comparison",
   "r0.modules.batching | r0.modules.relbench_adapter | r0.modules.model",
   "r0.modules.featurize | r0.modules.priors | r0.modules.oracles",
   "r0.modules.reldb",
@@ -83,10 +83,16 @@ name = "ADR 0002: the training path never sees real data"
 type = "forbidden"
 source_modules = ["r0.modules.priors", "r0.modules.featurize", "r0.modules.batching",
                   "r0.modules.training", "r0.modules.model"]
-forbidden_modules = ["relbench", "r0.modules.relbench_adapter", "r0.modules.evaluation", "lightgbm"]
+forbidden_modules = ["relbench", "r0.modules.relbench_adapter", "r0.modules.evaluation", "r0.modules.comparison", "tabpfn", "lightgbm"]
 
 [[tool.importlinter.contracts]]
 name = "Only the adapter imports relbench"
 type = "forbidden"
 source_modules = ["r0.cli", "r0.modules.evaluation", "r0.modules.leaderboard", "r0.modules.reldb"]
 forbidden_modules = ["relbench"]
+
+[[tool.importlinter.contracts]]
+name = "Comparison stays isolated from training and real-data adapters"
+type = "forbidden"
+source_modules = ["r0.modules.comparison"]
+forbidden_modules = ["r0.modules.training", "r0.modules.relbench_adapter", "relbench"]
