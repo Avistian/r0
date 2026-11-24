@@ -1,0 +1,360 @@
+{
+ "schema_version": 1,
+ "state": "CANDIDATE_NOT_FROZEN",
+ "specification": {
+  "path": "docs/specs/0025-evaluation-protocol.md",
+  "sha256": "4870fa0d754d1fad9c0ddd3be4ee9d192c8a9bfbced05cfe52fca01626bf1003",
+  "acceptance": "PENDING_PIOTR_REACCEPTANCE_AFTER_SPAMBASE_REVISION"
+ },
+ "asset_verification": "OWNER_REPORT_RECEIVED; admission and human freeze PENDING",
+ "human_acceptance": "PENDING",
+ "datasets": [
+  {
+   "id": "wdbc",
+   "partition": "development",
+   "task_type": "binary",
+   "name": "Wisconsin Diagnostic Breast Cancer",
+   "source_url": "https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic",
+   "source_doi": "10.24432/C5DW2B",
+   "collection_family": "Wisconsin FNA breast-mass measurements",
+   "published_rows": 569,
+   "published_features": 30,
+   "target_meaning": "diagnosis",
+   "metadata_license": "CC BY 4.0",
+   "asset_revision": "10.24432/C5DW2B; accessed 2026-11-24",
+   "asset_files": {
+    "download_url": "https://archive.ics.uci.edu/static/public/17/breast+cancer+wisconsin+diagnostic.zip",
+    "data_member": "wdbc.data"
+   },
+   "asset_sha256": {
+    "downloaded_file": "bc154869ef13f753f9e2b5a17e248cfe1ba4b6721db7c4da9f4880e40b05d3af",
+    "data_member": "d606af411f3e5be8a317a5a8b652b425aaf0ff38ca683d5327ffff94c3695f4a"
+   },
+   "embedded_terms_review": ".names has no license or notice; UCI page CC BY 4.0; proposed: ELIGIBLE; awaiting owner",
+   "target_column": "diagnosis",
+   "feature_allowlist": ["radius_mean","texture_mean","perimeter_mean","area_mean","smoothness_mean","compactness_mean","concavity_mean","concave_points_mean","symmetry_mean","fractal_dimension_mean","radius_se","texture_se","perimeter_se","area_se","smoothness_se","compactness_se","concavity_se","concave_points_se","symmetry_se","fractal_dimension_se","radius_worst","texture_worst","perimeter_worst","area_worst","smoothness_worst","compactness_worst","concavity_worst","concave_points_worst","symmetry_worst","fractal_dimension_worst"],
+   "class_vocabulary": ["B","M"],
+   "eligible_rows": 569,
+   "exclusions_receipt": {
+    "raw_rows": 569,
+    "excluded_invalid_target": 0,
+    "excluded_exact_duplicates": 0,
+    "quarantined_conflict_rows": 0,
+    "quarantined_conflict_groups": 0,
+    "eligible_rows": 569,
+    "rule_order": ["invalid_target","exact_duplicate_keep_first","conflicting_target_group"],
+    "excluded_row_ids": {
+
+    }
+   },
+   "collection_review": "Unique excluded IDs; one FNA image/row. Repeat patients remain uncertain; proposed: ELIGIBLE; awaiting owner",
+   "overlap_review": "Owner: no name/alias/source URL/DOI hit in pinned inventories or paired collection; content comparison not run; proposed: ELIGIBLE; awaiting owner",
+   "tabpfn_exposure": "UNKNOWN",
+   "query_row_ids": null,
+   "context_row_ids": null,
+   "admission": "PENDING"
+  },
+  {
+   "id": "spambase",
+   "partition": "milestone",
+   "task_type": "binary",
+   "name": "Spambase",
+   "source_url": "https://archive.ics.uci.edu/dataset/94/spambase",
+   "source_doi": "10.24432/C53G6X",
+   "collection_family": "HP Labs 1999 spam/non-spam email collection",
+   "published_rows": 4601,
+   "published_features": 57,
+   "target_meaning": "spam label",
+   "metadata_license": "CC BY 4.0",
+   "asset_revision": "10.24432/C53G6X; accessed 2026-11-24",
+   "asset_files": {
+    "download_url": "https://archive.ics.uci.edu/static/public/94/spambase.zip",
+    "data_member": "spambase.data"
+   },
+   "asset_sha256": {
+    "downloaded_file": "813ac1df8effac70463c09c9c4b11e8803eefcab54771af66150852bcdcd1636",
+    "data_member": "b1ef93de71f97714d3d7d4f58fc9f718da7bbc8ac8a150eff2778616a8097b12"
+   },
+   "embedded_terms_review": ".names/.DOCUMENTATION have no license; donor HP Labs (Hopkins, Reeber, Forman, Suermondt); UCI page CC BY 4.0; proposed: ELIGIBLE; awaiting owner",
+   "target_column": "spam",
+   "feature_allowlist": ["word_freq_make","word_freq_address","word_freq_all","word_freq_3d","word_freq_our","word_freq_over","word_freq_remove","word_freq_internet","word_freq_order","word_freq_mail","word_freq_receive","word_freq_will","word_freq_people","word_freq_report","word_freq_addresses","word_freq_free","word_freq_business","word_freq_email","word_freq_you","word_freq_credit","word_freq_your","word_freq_font","word_freq_000","word_freq_money","word_freq_hp","word_freq_hpl","word_freq_george","word_freq_650","word_freq_lab","word_freq_labs","word_freq_telnet","word_freq_857","word_freq_data","word_freq_415","word_freq_85","word_freq_technology","word_freq_1999","word_freq_parts","word_freq_pm","word_freq_direct","word_freq_cs","word_freq_meeting","word_freq_original","word_freq_project","word_freq_re","word_freq_edu","word_freq_table","word_freq_conference","char_freq_;","char_freq_(","char_freq_[","char_freq_!","char_freq_$","char_freq_#","capital_run_length_average","capital_run_length_longest","capital_run_length_total"],
+   "class_vocabulary": ["0","1"],
+   "eligible_rows": 4204,
+   "exclusions_receipt": {
+    "raw_rows": 4601,
+    "excluded_invalid_target": 0,
+    "excluded_exact_duplicates": 391,
+    "quarantined_conflict_rows": 6,
+    "quarantined_conflict_groups": 3,
+    "eligible_rows": 4204,
+    "rule_order": ["invalid_target","exact_duplicate_keep_first","conflicting_target_group"],
+    "excluded_row_ids": {
+     "path": "exclusions/spambase.json",
+     "sha256": "81c2f8b1f1873302d0d6e8a6e635401c05d1a9d4691d41900b73891a524a19fc"
+    }
+   },
+   "collection_review": "One email/row; no sender/thread IDs. Single-mailbox source shortcuts word_freq_george/word_freq_650 retained; residual near-duplicate threads; proposed: ELIGIBLE; awaiting owner",
+   "overlap_review": "Owner: no name/alias/source URL/DOI hit in pinned inventories or paired collection; content comparison not run; proposed: ELIGIBLE; awaiting owner",
+   "tabpfn_exposure": "UNKNOWN",
+   "query_row_ids": null,
+   "context_row_ids": null,
+   "admission": "PENDING"
+  },
+  {
+   "id": "cmc",
+   "partition": "development",
+   "task_type": "multiclass",
+   "name": "Contraceptive Method Choice",
+   "source_url": "https://archive.ics.uci.edu/dataset/30/contraceptive+method+choice",
+   "source_doi": "10.24432/C59W2D",
+   "collection_family": "1987 Indonesian contraceptive survey",
+   "published_rows": 1473,
+   "published_features": 9,
+   "target_meaning": "contraceptive method",
+   "metadata_license": "CC BY 4.0",
+   "asset_revision": "10.24432/C59W2D; accessed 2026-11-24",
+   "asset_files": {
+    "download_url": "https://archive.ics.uci.edu/static/public/30/contraceptive+method+choice.zip",
+    "data_member": "cmc.data"
+   },
+   "asset_sha256": {
+    "downloaded_file": "ca2e59780133ce0040cbe3939243ee71419fd2d1c72ae1edb5c90c0977d55785",
+    "data_member": "ad2a49da55df24b061a994ecc4d90c856aba35acd05138851aa251c4f06303c9"
+   },
+   "embedded_terms_review": "No embedded terms; UCI page CC BY 4.0; proposed: ELIGIBLE; awaiting owner",
+   "target_column": "contraceptive_method",
+   "feature_allowlist": ["wife_age","wife_education","husband_education","children_ever_born","wife_religion","wife_working","husband_occupation","standard_of_living","media_exposure"],
+   "class_vocabulary": ["1","2","3"],
+   "eligible_rows": 1296,
+   "exclusions_receipt": {
+    "raw_rows": 1473,
+    "excluded_invalid_target": 0,
+    "excluded_exact_duplicates": 48,
+    "quarantined_conflict_rows": 129,
+    "quarantined_conflict_groups": 62,
+    "eligible_rows": 1296,
+    "rule_order": ["invalid_target","exact_duplicate_keep_first","conflicting_target_group"],
+    "excluded_row_ids": {
+     "path": "exclusions/cmc.json",
+     "sha256": "55ffd6db7ed227017c67866d80a1b8e617bb3d621e797b0c22e539f4aed26622"
+    }
+   },
+   "collection_review": "Cluster-sampled survey without cluster IDs; residual grouping uncertainty. 177/1473 rows (12%) excluded; proposed: ELIGIBLE; awaiting owner",
+   "overlap_review": "Owner: no name/alias/source URL/DOI hit in pinned inventories or paired collection; content comparison not run; proposed: ELIGIBLE; awaiting owner",
+   "tabpfn_exposure": "UNKNOWN",
+   "query_row_ids": null,
+   "context_row_ids": null,
+   "admission": "PENDING"
+  },
+  {
+   "id": "dry-bean",
+   "partition": "milestone",
+   "task_type": "multiclass",
+   "name": "Dry Bean",
+   "source_url": "https://archive.ics.uci.edu/dataset/602/dry+bean+dataset",
+   "source_doi": "10.24432/C50S4B",
+   "collection_family": "Koklu-Ozkan individual bean grains",
+   "published_rows": 13611,
+   "published_features": 16,
+   "target_meaning": "bean variety",
+   "metadata_license": "CC BY 4.0",
+   "asset_revision": "10.24432/C50S4B; accessed 2026-11-24",
+   "asset_files": {
+    "download_url": "https://archive.ics.uci.edu/static/public/602/dry+bean+dataset.zip",
+    "data_member": "DryBeanDataset/Dry_Bean_Dataset.arff"
+   },
+   "asset_sha256": {
+    "downloaded_file": "0a64eff5be87f48c3dbbfc0a12a56c5d5b5167ef8e61cd45d69b3e7c7130c06f",
+    "data_member": "b2a4a76a2aedfb8ed415adfc1bfc70b5f202cb00cb72e500766e364c14834014"
+   },
+   "embedded_terms_review": ".txt requests Koklu & Ozkan 2020 citation, doi 10.1016/j.compag.2020.105507; UCI page CC BY 4.0; proposed: ELIGIBLE; awaiting owner",
+   "target_column": "Class",
+   "feature_allowlist": ["Area","Perimeter","MajorAxisLength","MinorAxisLength","AspectRation","Eccentricity","ConvexArea","EquivDiameter","Extent","Solidity","roundness","Compactness","ShapeFactor1","ShapeFactor2","ShapeFactor3","ShapeFactor4"],
+   "class_vocabulary": ["BARBUNYA","BOMBAY","CALI","DERMASON","HOROZ","SEKER","SIRA"],
+   "eligible_rows": 13543,
+   "exclusions_receipt": {
+    "raw_rows": 13611,
+    "excluded_invalid_target": 0,
+    "excluded_exact_duplicates": 68,
+    "quarantined_conflict_rows": 0,
+    "quarantined_conflict_groups": 0,
+    "eligible_rows": 13543,
+    "rule_order": ["invalid_target","exact_duplicate_keep_first","conflicting_target_group"],
+    "excluded_row_ids": {
+     "path": "exclusions/dry-bean.json",
+     "sha256": "d60834646119bd25447cccfdf70c9dc190a7479dee3dff7d7df87062dd2032a1"
+    }
+   },
+   "collection_review": "One grain/row; no batch IDs; 68 duplicates removed. Residual acquisition-session clustering; proposed: ELIGIBLE; awaiting owner",
+   "overlap_review": "Owner: no name/alias/source URL/DOI hit in pinned inventories or paired collection; content comparison not run; proposed: ELIGIBLE; awaiting owner",
+   "tabpfn_exposure": "UNKNOWN",
+   "query_row_ids": null,
+   "context_row_ids": null,
+   "admission": "PENDING"
+  },
+  {
+   "id": "abalone",
+   "partition": "development",
+   "task_type": "regression",
+   "name": "Abalone",
+   "source_url": "https://archive.ics.uci.edu/dataset/1/abalone",
+   "source_doi": "10.24432/C55C7W",
+   "collection_family": "Nash et al. abalone specimens",
+   "published_rows": 4177,
+   "published_features": 8,
+   "target_meaning": "rings (continuous)",
+   "metadata_license": "CC BY 4.0",
+   "asset_revision": "10.24432/C55C7W; accessed 2026-11-24",
+   "asset_files": {
+    "download_url": "https://archive.ics.uci.edu/static/public/1/abalone.zip",
+    "data_member": "abalone.data"
+   },
+   "asset_sha256": {
+    "downloaded_file": "755a6a67c5b266961a3f149ea13be2cfb6e6c727e48cee3c83bc0b4526210ee4",
+    "data_member": "de37cdcdcaaa50c309d514f248f7c2302a5f1f88c168905eba23fe2fbc78449f"
+   },
+   "embedded_terms_review": "No embedded terms; UCI page CC BY 4.0; proposed: ELIGIBLE; awaiting owner",
+   "target_column": "rings",
+   "feature_allowlist": ["sex","length","diameter","height","whole_weight","shucked_weight","viscera_weight","shell_weight"],
+   "class_vocabulary": null,
+   "eligible_rows": 4177,
+   "exclusions_receipt": {
+    "raw_rows": 4177,
+    "excluded_invalid_target": 0,
+    "excluded_exact_duplicates": 0,
+    "quarantined_conflict_rows": 0,
+    "quarantined_conflict_groups": 0,
+    "eligible_rows": 4177,
+    "rule_order": ["invalid_target","exact_duplicate_keep_first","conflicting_target_group"],
+    "excluded_row_ids": {
+
+    }
+   },
+   "collection_review": "Individual specimens; no site/batch IDs. Upstream scaling and missing-row removal; residual site clustering; proposed: ELIGIBLE; awaiting owner",
+   "overlap_review": "Owner: no name/alias/source URL/DOI hit in pinned inventories or paired collection; content comparison not run; proposed: ELIGIBLE; awaiting owner",
+   "tabpfn_exposure": "UNKNOWN",
+   "query_row_ids": null,
+   "context_row_ids": null,
+   "admission": "PENDING"
+  },
+  {
+   "id": "flir-oral",
+   "partition": "milestone",
+   "task_type": "regression",
+   "name": "Facial and oral temperature v1.0.0",
+   "source_url": "https://physionet.org/content/face-oral-temp-data/1.0.0/",
+   "source_doi": "10.13026/3bhc-9065",
+   "collection_family": "FDA/University of Maryland thermography volunteers",
+   "published_rows": 1020,
+   "published_features": 115,
+   "target_meaning": "aveOralM",
+   "metadata_license": "CC0 1.0",
+   "asset_revision": "10.13026/3bhc-9065 v1.0.0; accessed 2026-11-24",
+   "asset_files": {
+    "download_url": "https://physionet.org/files/face-oral-temp-data/1.0.0/FLIR_groups1and2.csv",
+    "data_member": "FLIR_groups1and2.csv"
+   },
+   "asset_sha256": {
+    "downloaded_file": "e14b023b146cca78077f1ca8cbc2151db518708604e5b48e82f23813130e83c5",
+    "data_member": "e14b023b146cca78077f1ca8cbc2151db518708604e5b48e82f23813130e83c5"
+   },
+   "embedded_terms_review": "Project LICENSE.txt is CC0 1.0; proposed: ELIGIBLE; awaiting owner",
+   "target_column": "aveOralM",
+   "feature_allowlist": ["T_offset1","Max1R13_1","Max1L13_1","aveAllR13_1","aveAllL13_1","T_RC1","T_RC_Dry1","T_RC_Wet1","T_RC_Max1","T_LC1","T_LC_Dry1","T_LC_Wet1","T_LC_Max1","RCC1","LCC1","canthiMax1","canthi4Max1","T_FHCC1","T_FHRC1","T_FHLC1","T_FHBC1","T_FHTC1","T_FH_Max1","T_FHC_Max1","T_Max1","T_OR1","T_OR_Max1","T_offset2","Max1R13_2","Max1L13_2","aveAllR13_2","aveAllL13_2","T_RC2","T_RC_Dry2","T_RC_Wet2","T_RC_Max2","T_LC2","T_LC_Dry2","T_LC_Wet2","T_LC_Max2","RCC2","LCC2","canthiMax2","canthi4Max2","T_FHCC2","T_FHRC2","T_FHLC2","T_FHBC2","T_FHTC2","T_FH_Max2","T_FHC_Max2","T_Max2","T_OR2","T_OR_Max2","T_offset3","Max1R13_3","Max1L13_3","aveAllR13_3","aveAllL13_3","T_RC3","T_RC_Dry3","T_RC_Wet3","T_RC_Max3","T_LC3","T_LC_Dry3","T_LC_Wet3","T_LC_Max3","RCC3","LCC3","canthiMax3","canthi4Max3","T_FHCC3","T_FHRC3","T_FHLC3","T_FHBC3","T_FHTC3","T_FH_Max3","T_FHC_Max3","T_Max3","T_OR3","T_OR_Max3","T_offset4","Max1R13_4","Max1L13_4","aveAllR13_4","aveAllL13_4","T_RC4","T_RC_Dry4","T_RC_Wet4","T_RC_Max4","T_LC14","T_LC_Dry4","T_LC_Wet4","T_LC_Max4","RCC4","LCC4","canthiMax4","canthi4Max4","T_FHCC4","T_FHRC4","T_FHLC4","T_FHBC4","T_FHTC4","T_FH_Max4","T_FHC_Max4","T_Max4","T_OR4","T_OR_Max4","Gender","Age","Ethnicity","T_atm","Humidity","Distance","Cosmetics"],
+   "class_vocabulary": null,
+   "eligible_rows": 1020,
+   "exclusions_receipt": {
+    "raw_rows": 1020,
+    "excluded_invalid_target": 0,
+    "excluded_exact_duplicates": 0,
+    "quarantined_conflict_rows": 0,
+    "quarantined_conflict_groups": 0,
+    "eligible_rows": 1020,
+    "rule_order": ["invalid_target","exact_duplicate_keep_first","conflicting_target_group"],
+    "excluded_row_ids": {
+
+    }
+   },
+   "collection_review": "1020 unique subjects; four rounds within each row. Return visits under new IDs undetectable; no known grouped/time split requirement; proposed: ELIGIBLE; awaiting owner",
+   "overlap_review": "Owner: no name/alias/source URL/DOI hit in pinned inventories or paired collection; content comparison not run; proposed: ELIGIBLE; awaiting owner",
+   "tabpfn_exposure": "UNKNOWN",
+   "query_row_ids": null,
+   "context_row_ids": null,
+   "admission": "PENDING",
+   "feature_review": "Piotr approved all 115 features, including image-derived T_OR*/T_OR_Max*, Ethnicity and banded Age; admission PENDING"
+  }
+ ],
+ "sampling": {
+  "context_rows": 256,
+  "query_rows": 256,
+  "context_draws": 3,
+  "query_seed": 0,
+  "context_seeds": [1,2,3],
+  "seed_status": "CANDIDATE_FIXED_BEFORE_SCORES",
+  "sampler_version": null,
+  "row_identity_recipe": null,
+  "stratified_all_classes": true,
+  "allocation_tie_break": null,
+  "regression": "uniform_without_replacement"
+ },
+ "reference": {
+  "model_family": "TabPFN v2",
+  "package_version": "tabpfn==2.2.1",
+  "weight_revisions": {
+   "classifier": "Prior-Labs/TabPFN-v2-clf@275f19d2add9c2c0de38f9ebaded3856599fa2e7:tabpfn-v2-classifier-finetuned-zk73skhh.ckpt",
+   "regressor": "Prior-Labs/TabPFN-v2-reg@02a44705ff7790b50cded404bc59adb94da456a1:tabpfn-v2-regressor.ckpt"
+  },
+  "weight_sha256": {
+   "classifier": "cf8c519c01eaf1613ee91239006d57b1c806ff5f23ac1aeb1315ba1015210e49",
+   "regressor": "2ab5a07d5c41dfe6db9aa7ae106fc6de898326c2765be66505a07e2868c10736"
+  },
+  "terms_receipt": "Owner receipt: Prior Labs License v1.1 (Apache-2.0 + section 10 attribution), LICENSE.txt sha256 08b1851b4b6136b5fb0cb124d3258e0d91e3e1623f1be5904b77e4d270d112d8. Public results need 'Built with PriorLabs-TabPFN' and license copy; naming caveat if outputs improve a distributed model. Piotr OKd this caveat; descriptive baseline only, no training/selection signal. Human protocol acceptance remains PENDING.",
+  "package_selection": "Proposed recommended pin from owner receipt; final package selection remains PENDING",
+  "package_wheel_sha256": "9aa3a0df8ecebcae5f426b1fec9bb2e2a690880bc8ad079191e8d959bf0f157b",
+  "loading": "Explicit local model_path and SHA-256 verification; never an upstream default; TABPFN_DISABLE_TELEMETRY=1; nothing installed or run"
+ },
+ "inference": {
+  "device": "cpu",
+  "same_environment": true,
+  "seconds_per_predictor_dataset_draw": 300,
+  "memory_bytes_per_predictor_dataset_draw": 8589934592,
+  "included": ["preprocessing","model_loading","fit","predict"],
+  "separately_recorded": ["scoring","artifact_writing"],
+  "cpu_identity": null,
+  "thread_limit": null,
+  "environment_lock": null,
+  "cap_enforcement": null,
+  "predictor_configs": null,
+  "preprocessing_recipes": null,
+  "probability_tolerance": null,
+  "query_invariance_tolerance": null,
+  "feasibility": "NOT_MEASURED"
+ },
+ "reporting": {
+  "classification_primary": "brier_sum_over_classes_mean_over_queries",
+  "classification_secondary": "accuracy",
+  "regression_primary": "rmse_original_units",
+  "regression_secondary": "mae_original_units",
+  "classification_gap": "learner_minus_tabpfn",
+  "regression_gap": "(learner_rmse-tabpfn_rmse)/context_mean_baseline_rmse_per_draw",
+  "zero_denominator": "UNDEFINED",
+  "aggregation": "draw_mean_then_equal_dataset_mean_within_partition_and_task_type",
+  "range": "min_max_over_three_context_draws",
+  "quality": "strictly_beat_simple_baseline_mean_primary_score_in_every_task_type",
+  "missing_required_result": "INCOMPLETE",
+  "synthetic_challenges": "separate_per_pair"
+ },
+ "execution": {
+  "status": "NOT_RUN",
+  "compute_authorization": "NONE",
+  "required_predictors": ["context_simple","linear","boosted_tree","tabpfn_v2","learner"],
+  "learner_selection_receipt": null,
+  "milestone_access_receipt": null,
+  "budget_authorization": null
+ },
+ "excluded_row_id_convention": "0-based data-row positions after headers; grouped by reason; not frozen split IDs. Referenced receipts retain every excluded ID.",
+ "owner_receipt": {
+  "path": "owner-receipt.json",
+  "sha256": "fef4ecc233dae814193f930623efd22dfedabef93889741dd76851238e35637a"
+ }
+}
