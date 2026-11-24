@@ -58,3 +58,5 @@
 - **Dataset family**: Datasets sharing an underlying collection, including versions and derivatives whose overlap matters for evaluation.
 - **Context draw**: One selection of labeled context examples for an identified prediction problem.
 - **Protocol freeze**: Human acceptance of a fully identified evaluation procedure and its evidence; subsequent score-affecting changes define a different protocol.
+
+- **Comparison**: An offline measurement of predictors on the same frozen query rows and context draws, retaining inputs, raw predictions, scores and attempt identities.

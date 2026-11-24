@@ -1,0 +1,306 @@
+{
+  "evidence": "AUTHORED_FIXTURE",
+  "dataset": "authored-regression-v1",
+  "task": "regression",
+  "classes": [],
+  "features": [
+    {
+      "name": "measurement",
+      "kind": "numeric"
+    },
+    {
+      "name": "group",
+      "kind": "categorical"
+    }
+  ],
+  "rows": [
+    {
+      "source_id": "authored-0",
+      "values": [
+        null,
+        "group-0"
+      ],
+      "target": 1.0
+    },
+    {
+      "source_id": "authored-1",
+      "values": [
+        1,
+        "group-1"
+      ],
+      "target": 3.0
+    },
+    {
+      "source_id": "authored-2",
+      "values": [
+        2,
+        "group-2"
+      ],
+      "target": 5.0
+    },
+    {
+      "source_id": "authored-3",
+      "values": [
+        3,
+        "group-3"
+      ],
+      "target": 7.0
+    },
+    {
+      "source_id": "authored-4",
+      "values": [
+        4,
+        "group-4"
+      ],
+      "target": 9.0
+    },
+    {
+      "source_id": "authored-5",
+      "values": [
+        5,
+        "group-0"
+      ],
+      "target": 11.0
+    },
+    {
+      "source_id": "authored-6",
+      "values": [
+        6,
+        "group-1"
+      ],
+      "target": 13.0
+    },
+    {
+      "source_id": "authored-7",
+      "values": [
+        7,
+        "group-2"
+      ],
+      "target": 15.0
+    },
+    {
+      "source_id": "authored-8",
+      "values": [
+        8,
+        "group-3"
+      ],
+      "target": 17.0
+    },
+    {
+      "source_id": "authored-9",
+      "values": [
+        9,
+        "group-4"
+      ],
+      "target": 19.0
+    },
+    {
+      "source_id": "authored-10",
+      "values": [
+        10,
+        "group-0"
+      ],
+      "target": 21.0
+    },
+    {
+      "source_id": "authored-11",
+      "values": [
+        null,
+        "group-1"
+      ],
+      "target": 23.0
+    },
+    {
+      "source_id": "authored-12",
+      "values": [
+        12,
+        "group-2"
+      ],
+      "target": 25.0
+    },
+    {
+      "source_id": "authored-13",
+      "values": [
+        13,
+        "group-3"
+      ],
+      "target": 27.0
+    },
+    {
+      "source_id": "authored-14",
+      "values": [
+        14,
+        "group-4"
+      ],
+      "target": 29.0
+    },
+    {
+      "source_id": "authored-15",
+      "values": [
+        15,
+        "group-0"
+      ],
+      "target": 31.0
+    },
+    {
+      "source_id": "authored-16",
+      "values": [
+        16,
+        "group-1"
+      ],
+      "target": 33.0
+    },
+    {
+      "source_id": "authored-17",
+      "values": [
+        17,
+        "group-2"
+      ],
+      "target": 35.0
+    },
+    {
+      "source_id": "authored-18",
+      "values": [
+        18,
+        "group-3"
+      ],
+      "target": 37.0
+    },
+    {
+      "source_id": "authored-19",
+      "values": [
+        19,
+        "group-4"
+      ],
+      "target": 39.0
+    },
+    {
+      "source_id": "authored-20",
+      "values": [
+        20,
+        "group-0"
+      ],
+      "target": 41.0
+    },
+    {
+      "source_id": "authored-21",
+      "values": [
+        21,
+        "group-1"
+      ],
+      "target": 43.0
+    },
+    {
+      "source_id": "authored-22",
+      "values": [
+        null,
+        "group-2"
+      ],
+      "target": 45.0
+    },
+    {
+      "source_id": "authored-23",
+      "values": [
+        23,
+        "group-3"
+      ],
+      "target": 47.0
+    },
+    {
+      "source_id": "authored-24",
+      "values": [
+        24,
+        "group-4"
+      ],
+      "target": 49.0
+    },
+    {
+      "source_id": "authored-25",
+      "values": [
+        25,
+        "group-0"
+      ],
+      "target": 51.0
+    },
+    {
+      "source_id": "authored-26",
+      "values": [
+        26,
+        "group-1"
+      ],
+      "target": 53.0
+    },
+    {
+      "source_id": "authored-27",
+      "values": [
+        27,
+        "group-2"
+      ],
+      "target": 55.0
+    },
+    {
+      "source_id": "authored-28",
+      "values": [
+        28,
+        "group-3"
+      ],
+      "target": 57.0
+    },
+    {
+      "source_id": "authored-29",
+      "values": [
+        29,
+        "group-4"
+      ],
+      "target": 59.0
+    },
+    {
+      "source_id": "authored-30",
+      "values": [
+        30,
+        "group-0"
+      ],
+      "target": 61.0
+    },
+    {
+      "source_id": "authored-31",
+      "values": [
+        31,
+        "group-1"
+      ],
+      "target": 63.0
+    },
+    {
+      "source_id": "authored-32",
+      "values": [
+        32,
+        "group-2"
+      ],
+      "target": 65.0
+    },
+    {
+      "source_id": "authored-33",
+      "values": [
+        null,
+        "group-3"
+      ],
+      "target": 67.0
+    },
+    {
+      "source_id": "authored-34",
+      "values": [
+        34,
+        "group-4"
+      ],
+      "target": 69.0
+    },
+    {
+      "source_id": "authored-35",
+      "values": [
+        35,
+        "group-0"
+      ],
+      "target": 71.0
+    }
+  ]
+}
