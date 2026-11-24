@@ -13,7 +13,6 @@ from r0.modules.comparison import (
     aggregate_datasets,
     comparison_gaps,
     predict,
-    predict_adapter,
     prepare,
     run_process,
     score,
@@ -103,20 +102,11 @@ def test_backend_sees_only_context_labels() -> None:
             assert "targets" not in queries
             return queries["row_ids"], np.array([1.5])
 
-    result = predict_adapter(
-        view,
-        FixtureLearner(),
-        {
-            "implementation": "authored-mean-v1",
-            "environment": "fixture",
-            "settings": {"mean": True},
-            "checkpoint": "FIXTURE_NO_REAL_CHECKPOINT",
-            "evidence": "FIXTURE_ONLY",
-        },
-    )
+    result, evidence = predict(view, FixtureLearner())
     assert captured[0]["row_ids"] == view["context_ids"]
     assert captured[0]["targets"] == view["context_targets"]
-    assert result["query_ids"] == ["q"]
+    assert result.tolist() == [1.5]
+    assert evidence["fit_ids"] == view["context_ids"]
 
 
 def test_gaps_negative_quality_zero_denominator_and_partitioning() -> None:

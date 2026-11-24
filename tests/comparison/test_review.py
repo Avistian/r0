@@ -5,7 +5,7 @@ from typing import Any
 import numpy as np
 import pytest
 
-from r0.modules.comparison import predict_adapter, score
+from r0.modules.comparison import predict, score
 
 
 def adapter_view() -> dict[str, Any]:
@@ -60,14 +60,14 @@ class Backend:
 def test_adapter_rejects_invalid_views_before_fit(change: dict[str, Any]) -> None:
     backend = Backend([0.5, 0.5])
     with pytest.raises(ValueError, match="overlapping|support|width|scoring"):
-        predict_adapter({**adapter_view(), **change}, backend, IDENTITY)
+        predict({**adapter_view(), **change}, backend)
     assert not backend.fitted
 
 
 @pytest.mark.parametrize("probabilities", [[1.2, -0.2], [0.2, 0.2]])
 def test_adapter_rejects_invalid_probability_vectors(probabilities: list[float]) -> None:
     with pytest.raises(ValueError, match="probabilit"):
-        predict_adapter(adapter_view(), Backend(probabilities), IDENTITY)
+        predict(adapter_view(), Backend(probabilities))
 
 
 def test_nonfinite_computed_scores_are_rejected() -> None:
@@ -75,24 +75,12 @@ def test_nonfinite_computed_scores_are_rejected() -> None:
         score("regression", [], ["q"], [-1e308], ["q"], np.array([1e308]))
 
 
-def test_attempt_fits_estimator_once_for_inference_checks(tmp_path: Any, monkeypatch: Any) -> None:
-    import importlib
-    from pathlib import Path
+def test_predict_fits_once_for_inference_checks() -> None:
+    class Once(Backend):
+        def fit(self, context: dict[str, Any]) -> None:
+            assert not self.fitted
+            super().fit(context)
 
-    Ridge: Any = importlib.import_module("sklearn.linear_model").Ridge
-
-    from r0.modules.comparison import attempt, prepare
-
-    fits: list[int] = []
-    ridge: Any = Ridge
-    original = ridge.fit
-
-    def counted_fit(self: Any, *args: Any, **kwargs: Any) -> Any:
-        fits.append(1)
-        return original(self, *args, **kwargs)
-
-    monkeypatch.setattr(Ridge, "fit", counted_fit)
-    prepare(Path("docs/evidence/issue-26/fixtures/regression.json"), tmp_path / "prepared")
-    result = attempt(tmp_path / "prepared", tmp_path / "attempt", "linear", 1, diagnostic=True)
-    assert result["status"] == "SUCCESS"
-    assert len(fits) == 1
+    backend = Once([0.5, 0.5])
+    predict(adapter_view(), backend)
+    assert backend.fitted

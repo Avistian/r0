@@ -1,0 +1,441 @@
+{
+  "status": "PASS",
+  "evidence": "FIXTURE_ONLY",
+  "attempts": [
+    {
+      "attempt": "regression-results/simple-1",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        41.25,
+        41.25,
+        41.25,
+        41.25
+      ],
+      "after": [
+        41.25,
+        41.25,
+        41.25,
+        41.25
+      ],
+      "before_scores": {
+        "mae": 18.25,
+        "rmse": 22.782943181248555
+      },
+      "after_scores": {
+        "mae": 18.25,
+        "rmse": 22.782943181248555
+      }
+    },
+    {
+      "attempt": "regression-results/simple-2",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        37.0,
+        37.0,
+        37.0,
+        37.0
+      ],
+      "after": [
+        37.0,
+        37.0,
+        37.0,
+        37.0
+      ],
+      "before_scores": {
+        "mae": 16.0,
+        "rmse": 19.544820285692065
+      },
+      "after_scores": {
+        "mae": 16.0,
+        "rmse": 19.544820285692065
+      }
+    },
+    {
+      "attempt": "regression-results/simple-3",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        33.75,
+        33.75,
+        33.75,
+        33.75
+      ],
+      "after": [
+        33.75,
+        33.75,
+        33.75,
+        33.75
+      ],
+      "before_scores": {
+        "mae": 14.375,
+        "rmse": 17.365554986812256
+      },
+      "after_scores": {
+        "mae": 14.375,
+        "rmse": 17.365554986812256
+      }
+    },
+    {
+      "attempt": "regression-results/linear-1",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        23.145571231301833,
+        40.80033827537368,
+        28.77794011929148,
+        8.246666430458184
+      ],
+      "after": [
+        23.145571231301833,
+        40.80033827537368,
+        28.77794011929148,
+        8.246666430458184
+      ],
+      "before_scores": {
+        "mae": 2.3424598764194533,
+        "rmse": 2.9720329916218056
+      },
+      "after_scores": {
+        "mae": 2.3424598764194533,
+        "rmse": 2.9720329916218056
+      }
+    },
+    {
+      "attempt": "regression-results/linear-2",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        24.478500943650545,
+        42.178366136424884,
+        32.828158533297376,
+        8.64947964410893
+      ],
+      "after": [
+        24.478500943650545,
+        42.178366136424884,
+        32.828158533297376,
+        8.64947964410893
+      ],
+      "before_scores": {
+        "mae": 4.033626314370434,
+        "rmse": 4.454564167932111
+      },
+      "after_scores": {
+        "mae": 4.033626314370434,
+        "rmse": 4.454564167932111
+      }
+    },
+    {
+      "attempt": "regression-results/linear-3",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        9.462969052969164,
+        27.345338925239183,
+        26.49423018889356,
+        4.570738423843334
+      ],
+      "after": [
+        9.462969052969164,
+        27.345338925239183,
+        26.49423018889356,
+        4.570738423843334
+      ],
+      "before_scores": {
+        "mae": 6.817050064185357,
+        "rmse": 8.976021869922386
+      },
+      "after_scores": {
+        "mae": 6.817050064185357,
+        "rmse": 8.976021869922386
+      }
+    },
+    {
+      "attempt": "regression-results/boosted_tree-1",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        41.25,
+        41.25,
+        41.25,
+        41.25
+      ],
+      "after": [
+        41.25,
+        41.25,
+        41.25,
+        41.25
+      ],
+      "before_scores": {
+        "mae": 18.25,
+        "rmse": 22.782943181248555
+      },
+      "after_scores": {
+        "mae": 18.25,
+        "rmse": 22.782943181248555
+      }
+    },
+    {
+      "attempt": "regression-results/boosted_tree-2",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        37.0,
+        37.0,
+        37.0,
+        37.0
+      ],
+      "after": [
+        37.0,
+        37.0,
+        37.0,
+        37.0
+      ],
+      "before_scores": {
+        "mae": 16.0,
+        "rmse": 19.544820285692065
+      },
+      "after_scores": {
+        "mae": 16.0,
+        "rmse": 19.544820285692065
+      }
+    },
+    {
+      "attempt": "regression-results/boosted_tree-3",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        33.75,
+        33.75,
+        33.75,
+        33.75
+      ],
+      "after": [
+        33.75,
+        33.75,
+        33.75,
+        33.75
+      ],
+      "before_scores": {
+        "mae": 14.375,
+        "rmse": 17.365554986812256
+      },
+      "after_scores": {
+        "mae": 14.375,
+        "rmse": 17.365554986812256
+      }
+    },
+    {
+      "attempt": "regression-results/learner-1",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        41.25,
+        41.25,
+        41.25,
+        41.25
+      ],
+      "after": [
+        41.25,
+        41.25,
+        41.25,
+        41.25
+      ],
+      "before_scores": {
+        "mae": 18.25,
+        "rmse": 22.782943181248555
+      },
+      "after_scores": {
+        "mae": 18.25,
+        "rmse": 22.782943181248555
+      }
+    },
+    {
+      "attempt": "regression-results/learner-2",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        37.0,
+        37.0,
+        37.0,
+        37.0
+      ],
+      "after": [
+        37.0,
+        37.0,
+        37.0,
+        37.0
+      ],
+      "before_scores": {
+        "mae": 16.0,
+        "rmse": 19.544820285692065
+      },
+      "after_scores": {
+        "mae": 16.0,
+        "rmse": 19.544820285692065
+      }
+    },
+    {
+      "attempt": "regression-results/learner-3",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        33.75,
+        33.75,
+        33.75,
+        33.75
+      ],
+      "after": [
+        33.75,
+        33.75,
+        33.75,
+        33.75
+      ],
+      "before_scores": {
+        "mae": 14.375,
+        "rmse": 17.365554986812256
+      },
+      "after_scores": {
+        "mae": 14.375,
+        "rmse": 17.365554986812256
+      }
+    },
+    {
+      "attempt": "regression-results/tabpfn-1",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        41.25,
+        41.25,
+        41.25,
+        41.25
+      ],
+      "after": [
+        41.25,
+        41.25,
+        41.25,
+        41.25
+      ],
+      "before_scores": {
+        "mae": 18.25,
+        "rmse": 22.782943181248555
+      },
+      "after_scores": {
+        "mae": 18.25,
+        "rmse": 22.782943181248555
+      }
+    },
+    {
+      "attempt": "regression-results/tabpfn-2",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        37.0,
+        37.0,
+        37.0,
+        37.0
+      ],
+      "after": [
+        37.0,
+        37.0,
+        37.0,
+        37.0
+      ],
+      "before_scores": {
+        "mae": 16.0,
+        "rmse": 19.544820285692065
+      },
+      "after_scores": {
+        "mae": 16.0,
+        "rmse": 19.544820285692065
+      }
+    },
+    {
+      "attempt": "regression-results/tabpfn-3",
+      "query_ids": [
+        "4a200c519451e035b8466f79bcc2b5366923cf4e3c55dc8130dffdb56962be9e",
+        "478eafb7d0c0279967d0efa220b052337a80bad26d7c56a7b32e2a887ea589f0",
+        "1c8a1555816ce43228dadb602feb7851b4bb7eb2f796a3f48662ac443a10d588",
+        "544c1ee10af73416e008f825174a17dc02b9b9ce661db1ba355620fc1b632994"
+      ],
+      "before": [
+        33.75,
+        33.75,
+        33.75,
+        33.75
+      ],
+      "after": [
+        33.75,
+        33.75,
+        33.75,
+        33.75
+      ],
+      "before_scores": {
+        "mae": 14.375,
+        "rmse": 17.365554986812256
+      },
+      "after_scores": {
+        "mae": 14.375,
+        "rmse": 17.365554986812256
+      }
+    }
+  ]
+}

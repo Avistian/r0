@@ -4,8 +4,11 @@ import argparse
 from pathlib import Path
 
 from .lib.execution import environment
+from .lib.external import ExternalPredictor
+from .lib.prediction import prediction_worker
+from .lib.predictors import Unsupported
 from .lib.prepare import prepare
-from .lib.runner import attempt, compare, external_attempt, worker
+from .lib.runner import attempt, compare
 from .lib.storage import read_json, write_json
 from .lib.tabpfn import tabpfn_status
 from .lib.tabpfn_backend import tabpfn_worker
@@ -59,7 +62,7 @@ def main() -> None:
                 diagnostic=args.fixture_diagnostic,
                 cgroup_root=args.cgroup_root,
                 fixture_predictors=args.fixture_predictors,
-                external_predictors=[read_json(path) for path in args.external],
+                external_predictors=[ExternalPredictor.from_file(path) for path in args.external],
                 saved_attempts={
                     key: [Path(p) for p in paths] for key, paths in read_json(args.saved).items()
                 }
@@ -70,14 +73,14 @@ def main() -> None:
             if report["fixture_checks"] != "PASS":
                 raise SystemExit(1)
         elif args.command == "worker":
-            worker(args.input, args.out, args.predictor)
+            prediction_worker(args.input, args.out, args.predictor)
         elif args.descriptor:
             if args.prepared is None:
                 parser.error("TabPFN descriptor requires --prepared")
-            descriptor = read_json(args.descriptor)
-            if descriptor["name"] != "tabpfn":
+            descriptor = ExternalPredictor.from_file(args.descriptor)
+            if descriptor.name != "tabpfn":
                 parser.error("TabPFN command requires a tabpfn descriptor")
-            result = external_attempt(
+            result = attempt(
                 args.prepared,
                 args.out,
                 descriptor,
@@ -98,6 +101,9 @@ def main() -> None:
         else:
             write_json(args.out, tabpfn_status())
             print("TabPFN UNAVAILABLE; real inference NOT_RUN")
+    except Unsupported as error:
+        print(str(error))
+        raise SystemExit(3) from error
     except (ValueError, OSError) as error:
         parser.error(str(error))
 
