@@ -36,7 +36,9 @@ def environment() -> Document:
             sorted((d.metadata["Name"], d.version) for d in distributions() if d.metadata["Name"])
         ),
         "implementation": {
-            str(p.relative_to(root)): file_hash(p) for p in sorted(root.rglob("*.py"))
+            str(p.relative_to(root)): file_hash(p)
+            for p in sorted(root.rglob("*"))
+            if p.is_file() and p.suffix in (".py", ".json")
         },
         "thread_environment": {key: os.environ.get(key) for key in THREAD_ENV},
         "required_thread_environment": {key: "1" for key in THREAD_ENV},
@@ -83,7 +85,10 @@ def run_process(
             raise ValueError("whole-cgroup termination unavailable")
         bootstrap = (
             "import os,sys; "
-            "open(sys.argv[1], 'w').write(str(os.getpid())); "
+            "fd=os.open(sys.argv[1],os.O_WRONLY); "
+            "os.write(fd,str(os.getpid()).encode()); os.close(fd); "
+            "members=open(sys.argv[1]).read().split(); "
+            "assert str(os.getpid()) in members, 'child did not enter cgroup'; "
             "os.execvpe(sys.argv[2],sys.argv[2:],os.environ)"
         )
         env = {

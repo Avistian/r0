@@ -1,0 +1,82 @@
+{
+  "classifier": {
+    "MAX_UNIQUE_FOR_CATEGORICAL_FEATURES": 30,
+    "MIN_UNIQUE_FOR_NUMERICAL_FEATURES": 4,
+    "MIN_NUMBER_SAMPLES_FOR_CATEGORICAL_INFERENCE": 100,
+    "OUTLIER_REMOVAL_STD": "auto",
+    "FEATURE_SHIFT_METHOD": "shuffle",
+    "CLASS_SHIFT_METHOD": "shuffle",
+    "FINGERPRINT_FEATURE": true,
+    "POLYNOMIAL_FEATURES": "no",
+    "SUBSAMPLE_SAMPLES": null,
+    "PREPROCESS_TRANSFORMS": [
+      {
+        "categorical_name": "ordinal_very_common_categories_shuffled",
+        "append_original": "auto",
+        "subsample_features": -1,
+        "global_transformer_name": "svd",
+        "differentiable": false,
+        "name": "quantile_uni_coarse"
+      },
+      {
+        "categorical_name": "numeric",
+        "append_original": false,
+        "subsample_features": -1,
+        "global_transformer_name": null,
+        "differentiable": false,
+        "name": "none"
+      }
+    ],
+    "REGRESSION_Y_PREPROCESS_TRANSFORMS": [
+      null,
+      "safepower"
+    ],
+    "USE_SKLEARN_16_DECIMAL_PRECISION": false,
+    "MAX_NUMBER_OF_CLASSES": 10,
+    "MAX_NUMBER_OF_FEATURES": 500,
+    "MAX_NUMBER_OF_SAMPLES": 10000,
+    "FIX_NAN_BORDERS_AFTER_TARGET_TRANSFORM": true,
+    "_REGRESSION_DEFAULT_OUTLIER_REMOVAL_STD": null,
+    "_CLASSIFICATION_DEFAULT_OUTLIER_REMOVAL_STD": 12.0
+  },
+  "regressor": {
+    "MAX_UNIQUE_FOR_CATEGORICAL_FEATURES": 30,
+    "MIN_UNIQUE_FOR_NUMERICAL_FEATURES": 4,
+    "MIN_NUMBER_SAMPLES_FOR_CATEGORICAL_INFERENCE": 100,
+    "OUTLIER_REMOVAL_STD": "auto",
+    "FEATURE_SHIFT_METHOD": "shuffle",
+    "CLASS_SHIFT_METHOD": "shuffle",
+    "FINGERPRINT_FEATURE": true,
+    "POLYNOMIAL_FEATURES": "no",
+    "SUBSAMPLE_SAMPLES": null,
+    "PREPROCESS_TRANSFORMS": [
+      {
+        "categorical_name": "ordinal_very_common_categories_shuffled",
+        "append_original": "auto",
+        "subsample_features": -1,
+        "global_transformer_name": "svd",
+        "differentiable": false,
+        "name": "quantile_uni"
+      },
+      {
+        "categorical_name": "onehot",
+        "append_original": false,
+        "subsample_features": -1,
+        "global_transformer_name": null,
+        "differentiable": false,
+        "name": "safepower"
+      }
+    ],
+    "REGRESSION_Y_PREPROCESS_TRANSFORMS": [
+      null,
+      "safepower"
+    ],
+    "USE_SKLEARN_16_DECIMAL_PRECISION": false,
+    "MAX_NUMBER_OF_CLASSES": 10,
+    "MAX_NUMBER_OF_FEATURES": 500,
+    "MAX_NUMBER_OF_SAMPLES": 10000,
+    "FIX_NAN_BORDERS_AFTER_TARGET_TRANSFORM": true,
+    "_REGRESSION_DEFAULT_OUTLIER_REMOVAL_STD": null,
+    "_CLASSIFICATION_DEFAULT_OUTLIER_REMOVAL_STD": 12.0
+  }
+}

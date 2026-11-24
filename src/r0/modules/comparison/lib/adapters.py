@@ -5,6 +5,7 @@ from typing import Protocol
 
 import numpy as np
 
+from .contracts import validate_predictions, validate_view
 from .predictors import Array
 from .storage import Document, digest
 
@@ -29,10 +30,7 @@ def predict_adapter(
     Model loading belongs inside the worker's enforced attempt boundary. The caller
     must bind checkpoint, implementation, environment and settings in identity.
     """
-    if view.get("evidence") != "AUTHORED_FIXTURE":
-        raise ValueError("real learner execution requires the guarded admitted lane")
-    if "query_targets" in view or "targets" in view:
-        raise ValueError("scoring labels forbidden in predictor view")
+    validate_view(view)
     required = {"implementation", "environment", "settings", "checkpoint", "evidence"}
     if set(identity) != required or not all(identity[k] for k in required):
         raise ValueError("incomplete adapter identity")
@@ -58,11 +56,7 @@ def predict_adapter(
     if len(ids) != len(set(ids)) or set(ids) != set(view["query_ids"]):
         raise ValueError("invalid backend prediction IDs")
     values = np.asarray(values, dtype=np.float64)
-    expected_shape = (
-        (len(ids),) if view["task"] == "regression" else (len(ids), len(view["classes"]))
-    )
-    if values.shape != expected_shape or not np.isfinite(values).all():
-        raise ValueError("invalid backend predictions")
+    validate_predictions(view["task"], view["classes"], len(ids), values)
     return {
         "version": 1,
         "identity": identity,

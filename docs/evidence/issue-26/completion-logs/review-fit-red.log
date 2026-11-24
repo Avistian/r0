@@ -1,0 +1,34 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____________ test_attempt_fits_estimator_once_for_inference_checks _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-avist/pytest-62/test_attempt_fits_estimator_on0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xf46621c98410>
+
+    def test_attempt_fits_estimator_once_for_inference_checks(tmp_path: Any, monkeypatch: Any) -> None:
+        from pathlib import Path
+    
+        from sklearn.linear_model import Ridge
+    
+        from r0.modules.comparison import attempt, prepare
+    
+        fits: list[int] = []
+        original = Ridge.fit
+    
+        def counted_fit(self: Any, *args: Any, **kwargs: Any) -> Any:
+            fits.append(1)
+            return original(self, *args, **kwargs)
+    
+        monkeypatch.setattr(Ridge, "fit", counted_fit)
+        prepare(Path("docs/evidence/issue-26/fixtures/regression.json"), tmp_path / "prepared")
+        result = attempt(tmp_path / "prepared", tmp_path / "attempt", "linear", 1, diagnostic=True)
+        assert result["status"] == "SUCCESS"
+>       assert len(fits) == 1
+E       assert 6 == 1
+E        +  where 6 = len([1, 1, 1, 1, 1, 1])
+
+tests/comparison/test_review.py:96: AssertionError
+=========================== short test summary info ============================
+FAILED tests/comparison/test_review.py::test_attempt_fits_estimator_once_for_inference_checks - assert 6 == 1
+ +  where 6 = len([1, 1, 1, 1, 1, 1])
+1 failed, 9 deselected in 1.24s

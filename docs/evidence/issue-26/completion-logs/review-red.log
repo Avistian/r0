@@ -1,0 +1,150 @@
+FFFFF.FFF                                                                [100%]
+=================================== FAILURES ===================================
+____________ test_adapter_rejects_invalid_views_before_fit[change0] ____________
+
+change = {'context_ids': ['q', 'c1']}
+
+    @pytest.mark.parametrize(
+        "change",
+        [
+            {"context_ids": ["q", "c1"]},
+            {"context_ids": ["c0", "c0"]},
+            {"support": 3},
+            {"context_values": [[0]]},
+            {"context_values": [[0, 1], [1, 2]]},
+            {"query_targets": ["a"]},
+        ],
+    )
+    def test_adapter_rejects_invalid_views_before_fit(change: dict[str, Any]) -> None:
+        backend = Backend([0.5, 0.5])
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests/comparison/test_review.py:62: Failed
+____________ test_adapter_rejects_invalid_views_before_fit[change1] ____________
+
+change = {'context_ids': ['c0', 'c0']}
+
+    @pytest.mark.parametrize(
+        "change",
+        [
+            {"context_ids": ["q", "c1"]},
+            {"context_ids": ["c0", "c0"]},
+            {"support": 3},
+            {"context_values": [[0]]},
+            {"context_values": [[0, 1], [1, 2]]},
+            {"query_targets": ["a"]},
+        ],
+    )
+    def test_adapter_rejects_invalid_views_before_fit(change: dict[str, Any]) -> None:
+        backend = Backend([0.5, 0.5])
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests/comparison/test_review.py:62: Failed
+____________ test_adapter_rejects_invalid_views_before_fit[change2] ____________
+
+change = {'support': 3}
+
+    @pytest.mark.parametrize(
+        "change",
+        [
+            {"context_ids": ["q", "c1"]},
+            {"context_ids": ["c0", "c0"]},
+            {"support": 3},
+            {"context_values": [[0]]},
+            {"context_values": [[0, 1], [1, 2]]},
+            {"query_targets": ["a"]},
+        ],
+    )
+    def test_adapter_rejects_invalid_views_before_fit(change: dict[str, Any]) -> None:
+        backend = Backend([0.5, 0.5])
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests/comparison/test_review.py:62: Failed
+____________ test_adapter_rejects_invalid_views_before_fit[change3] ____________
+
+change = {'context_values': [[0]]}
+
+    @pytest.mark.parametrize(
+        "change",
+        [
+            {"context_ids": ["q", "c1"]},
+            {"context_ids": ["c0", "c0"]},
+            {"support": 3},
+            {"context_values": [[0]]},
+            {"context_values": [[0, 1], [1, 2]]},
+            {"query_targets": ["a"]},
+        ],
+    )
+    def test_adapter_rejects_invalid_views_before_fit(change: dict[str, Any]) -> None:
+        backend = Backend([0.5, 0.5])
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests/comparison/test_review.py:62: Failed
+____________ test_adapter_rejects_invalid_views_before_fit[change4] ____________
+
+change = {'context_values': [[0, 1], [1, 2]]}
+
+    @pytest.mark.parametrize(
+        "change",
+        [
+            {"context_ids": ["q", "c1"]},
+            {"context_ids": ["c0", "c0"]},
+            {"support": 3},
+            {"context_values": [[0]]},
+            {"context_values": [[0, 1], [1, 2]]},
+            {"query_targets": ["a"]},
+        ],
+    )
+    def test_adapter_rejects_invalid_views_before_fit(change: dict[str, Any]) -> None:
+        backend = Backend([0.5, 0.5])
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests/comparison/test_review.py:62: Failed
+_______ test_adapter_rejects_invalid_probability_vectors[probabilities0] _______
+
+probabilities = [1.2, -0.2]
+
+    @pytest.mark.parametrize("probabilities", [[1.2, -0.2], [0.2, 0.2]])
+    def test_adapter_rejects_invalid_probability_vectors(probabilities: list[float]) -> None:
+>       with pytest.raises(ValueError, match="probabilit"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/comparison/test_review.py:69: Failed
+_______ test_adapter_rejects_invalid_probability_vectors[probabilities1] _______
+
+probabilities = [0.2, 0.2]
+
+    @pytest.mark.parametrize("probabilities", [[1.2, -0.2], [0.2, 0.2]])
+    def test_adapter_rejects_invalid_probability_vectors(probabilities: list[float]) -> None:
+>       with pytest.raises(ValueError, match="probabilit"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/comparison/test_review.py:69: Failed
+_________________ test_nonfinite_computed_scores_are_rejected __________________
+
+    def test_nonfinite_computed_scores_are_rejected() -> None:
+>       with pytest.raises(ValueError, match="nonfinite"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/comparison/test_review.py:74: Failed
+=============================== warnings summary ===============================
+tests/comparison/test_review.py::test_nonfinite_computed_scores_are_rejected
+  /home/avist/actions-runner/_work/r0/r0/src/r0/modules/comparison/lib/scoring.py:31: RuntimeWarning: overflow encountered in subtract
+    return {"rmse": float(np.sqrt(np.mean((p - y) ** 2))), "mae": float(np.mean(np.abs(p - y)))}
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/comparison/test_review.py::test_adapter_rejects_invalid_views_before_fit[change0] - Failed: DID NOT RAISE ValueError
+FAILED tests/comparison/test_review.py::test_adapter_rejects_invalid_views_before_fit[change1] - Failed: DID NOT RAISE ValueError
+FAILED tests/comparison/test_review.py::test_adapter_rejects_invalid_views_before_fit[change2] - Failed: DID NOT RAISE ValueError
+FAILED tests/comparison/test_review.py::test_adapter_rejects_invalid_views_before_fit[change3] - Failed: DID NOT RAISE ValueError
+FAILED tests/comparison/test_review.py::test_adapter_rejects_invalid_views_before_fit[change4] - Failed: DID NOT RAISE ValueError
+FAILED tests/comparison/test_review.py::test_adapter_rejects_invalid_probability_vectors[probabilities0] - Failed: DID NOT RAISE ValueError
+FAILED tests/comparison/test_review.py::test_adapter_rejects_invalid_probability_vectors[probabilities1] - Failed: DID NOT RAISE ValueError
+FAILED tests/comparison/test_review.py::test_nonfinite_computed_scores_are_rejected - Failed: DID NOT RAISE ValueError
+8 failed, 1 passed, 1 warning in 0.54s

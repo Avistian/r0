@@ -1,3 +1,9 @@
+# Historical implementation and review evidence
+
+The sections below retain the initial implementation/review state. For the PR
+completion and current reproduction commands, read [completion.md](completion.md).
+The original receipts remain unchanged; later fixes do not erase earlier failures.
+
 # Offline comparison implementation and fixture review
 
 This is fixture evidence, not protocol acceptance or real TabPFN evidence. The
@@ -190,3 +196,45 @@ Both commands exited 2 at argument parsing. Smoke loss: **NOT_RUN**.
 
 The comparison walkthrough is a separate offline fixture smoke; it is not a
 replacement training loss or protected evaluation-suite result.
+
+## PR 68 review corrections
+
+The review added shared predictor-input validation before backend fitting, shared
+probability validation, rejection of nonfinite computed regression scores, and
+one fitted estimator for all query-order/chunk checks. Draw summaries now reuse
+the common finite-score aggregation helper.
+
+Regression evidence: eight new boundary cases failed before correction (one
+existing rejection case passed); the estimator-fit test separately observed six
+fits where one was expected. All ten review cases pass after correction.
+
+Reproduce the final checks with the explicit Pyright-path setup above:
+
+```sh
+UV_CACHE_DIR=/tmp/r0-review-uv-cache OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+  MKL_NUM_THREADS=1 make check VERIFY='python3 /tmp/comparison-verify.py'
+```
+
+This full invocation passed **194 tests**, all four import contracts, strict type
+checking, formatting, lint and repository checks. The normal Pyright discovery
+limitation remains; no check strictness was reduced. The workflow must rerun
+index size checks after staging; this review leaves changes unstaged.
+
+The walkthrough was rerun on the corrected implementation:
+
+```sh
+UV_CACHE_DIR=/tmp/r0-review-uv-cache OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+  MKL_NUM_THREADS=1 python3 scripts/run_check.py python scripts/comparison_walkthrough.py \
+  --out /tmp/r0-pr68-review-walkthrough
+```
+
+Binary, multiclass and regression fixture checks passed. Each comparison remains
+INCOMPLETE. Timeout and memory probes remain NOT_RUN because the cgroup filesystem
+is read-only. TabPFN 2.2.1 source/provisioning and its loading adapter are still
+outstanding; cached newer releases cannot establish its pinned behavior.
+
+After `make check`, `UV_CACHE_DIR=/tmp/r0-review-uv-cache make smoke` and then
+`UV_CACHE_DIR=/tmp/r0-review-uv-cache make eval-smoke` each exited 2 because the
+respective CLI command is not implemented. Smoke loss: **NOT_RUN**. The eval-smoke
+table above remains applicable. No cloud execution, downloads, real inference,
+protected evaluation changes or UI changes were made.

@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from .contracts import validate_predictions
 from .predictors import Array
 from .storage import Document
 
@@ -28,17 +29,19 @@ def score(
         y = np.asarray(targets, dtype=np.float64)
         if not np.isfinite(y).all():
             raise ValueError("nonfinite targets")
-        return {"rmse": float(np.sqrt(np.mean((p - y) ** 2))), "mae": float(np.mean(np.abs(p - y)))}
+        if y.shape != p.shape:
+            raise ValueError("regression requires one target per row")
+        with np.errstate(over="ignore", invalid="ignore"):
+            result = {
+                "rmse": float(np.sqrt(np.mean((p - y) ** 2))),
+                "mae": float(np.mean(np.abs(p - y))),
+            }
+        if not all(np.isfinite(value) for value in result.values()):
+            raise ValueError("nonfinite computed scores")
+        return result
     if task not in ("binary", "multiclass") or len(set(classes)) != len(classes):
         raise ValueError("invalid task/classes")
-    if p.shape != (len(query_ids), len(classes)):
-        raise ValueError("invalid probability dimensions")
-    if (
-        (p < -1e-6).any()
-        or (p > 1 + 1e-6).any()
-        or not np.allclose(p.sum(axis=1), 1.0, atol=1e-6, rtol=0)
-    ):
-        raise ValueError("invalid probabilities; no clipping or renormalization")
+    validate_predictions(task, classes, len(query_ids), p)
     if any(t not in classes for t in targets):
         raise ValueError("undeclared scoring target")
     indices = np.array([classes.index(str(t)) for t in targets])

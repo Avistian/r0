@@ -8,6 +8,7 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
+from .contracts import validate_view
 from .storage import Document
 
 Array = NDArray[np.float64]
@@ -156,41 +157,13 @@ def _preprocess(view: Document, tree: bool, spy: FitSpy | None) -> tuple[Array, 
     )
 
 
-def predict(view: Document, name: str, *, spy: FitSpy | None = None) -> tuple[Array, Document]:
+def fit_predictor(
+    view: Document, name: str, *, spy: FitSpy | None = None
+) -> tuple[Callable[[list[int]], Array], Document]:
     """Fit only on context; query labels are forbidden in the input contract."""
-    allowed = {
-        "version",
-        "evidence",
-        "task",
-        "classes",
-        "features",
-        "context_ids",
-        "query_ids",
-        "context_values",
-        "query_values",
-        "context_targets",
-        "support",
-        "limits",
-    }
-    if set(view) != allowed or view["version"] != 1:
-        raise ValueError("invalid predictor input contract; scoring targets are forbidden")
-    if view["evidence"] != "AUTHORED_FIXTURE":
-        raise ValueError("real predictor execution requires an admitted frozen protocol")
+    validate_view(view)
     ids = view["context_ids"]
     query_ids = view["query_ids"]
-    if (
-        len(set(ids)) != len(ids)
-        or len(set(query_ids)) != len(query_ids)
-        or set(ids) & set(query_ids)
-    ):
-        raise ValueError("duplicate or overlapping rows")
-    if (
-        len(ids) != view["support"]
-        or len(ids) != len(view["context_targets"])
-        or len(ids) != len(view["context_values"])
-        or len(query_ids) != len(view["query_values"])
-    ):
-        raise ValueError("support mismatch")
     spec = recipe(name, view["task"])
     regression = view["task"] == "regression"
     classes = view["classes"]
@@ -213,7 +186,7 @@ def predict(view: Document, name: str, *, spy: FitSpy | None = None) -> tuple[Ar
                 (len(query_ids), 1),
             )
         )
-        return result, {
+        return lambda indices: result[indices], {
             "recipe": spec,
             "fit_ids": ids,
             "resolved_parameters": {},
@@ -234,15 +207,26 @@ def predict(view: Document, name: str, *, spy: FitSpy | None = None) -> tuple[Ar
         model.fit(x, targets)
         if any(w.category.__name__ == "ConvergenceWarning" for w in caught):
             raise ValueError("convergence failure; no automatic retuning")
-    result = np.asarray(
-        model.predict(q) if regression else model.predict_proba(q), dtype=np.float64
-    )
-    if not regression:
-        result = result[:, [list(model.classes_).index(i) for i in range(len(classes))]]
-    return result, {
+
+    def infer(indices: list[int]) -> Array:
+        result = np.asarray(
+            model.predict(q[indices]) if regression else model.predict_proba(q[indices]),
+            dtype=np.float64,
+        )
+        if not regression:
+            result = result[:, [list(model.classes_).index(i) for i in range(len(classes))]]
+        return result
+
+    return infer, {
         "recipe": spec,
         "resolved_parameters": model.get_params(),
         "fit_ids": ids,
         "preprocessing": preprocessing,
         "warnings": [str(w.message) for w in caught],
     }
+
+
+def predict(view: Document, name: str, *, spy: FitSpy | None = None) -> tuple[Array, Document]:
+    """Fit on context and predict the ordered query rows."""
+    infer, evidence = fit_predictor(view, name, spy=spy)
+    return infer(list(range(len(view["query_ids"])))), evidence

@@ -1,0 +1,18 @@
+.F                                                                       [100%]
+=================================== FAILURES ===================================
+________________ test_compare_reports_fixture_gaps_and_quality _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-avist/pytest-69/test_compare_reports_fixture_g0')
+
+    def test_compare_reports_fixture_gaps_and_quality(tmp_path: Path) -> None:
+        comparison.prepare(FIXTURE, tmp_path / "prepared")
+        report = comparison.compare(tmp_path / "prepared", tmp_path / "report",
+                                    diagnostic=True, fixture_predictors=True)
+>       assert report["comparison"]["status"] == "COMPLETE"
+               ^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'comparison'
+
+tests/comparison/test_external.py:48: KeyError
+=========================== short test summary info ============================
+FAILED tests/comparison/test_external.py::test_compare_reports_fixture_gaps_and_quality
+1 failed, 1 passed in 3.13s
