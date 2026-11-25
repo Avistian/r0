@@ -48,7 +48,7 @@ These ranges are explicit exploration choices, not attributed to a paper.
 | --- | --- |
 | `linear` | Preserves the task controls; the existing generator samples active columns and normal coefficients. Standard Gaussian inputs only. |
 | `grouped` | Group size chosen from all common divisors of signal and active feature counts. |
-| `polynomial` | Maximum degree uniformly 1–16; existing mechanism samples each active column's integer power between 1 and that maximum. |
+| `polynomial` | Maximum degree uniformly 1–16. The first active column is forced to that degree; other active columns sample uniformly from 1 through that maximum. |
 | `quadratic` | Rank 1–256, interaction strength uniform(-2,2), linear strength log-uniform(0.01,4). |
 | `rff` | Terms from 64,128,256,512,1024,2048,4096; length scale log-uniform(0.05,20). Standard Gaussian inputs only. |
 | `periodic` | Terms uniformly active-count–64; length scale log-uniform(0.05,20). Standard Gaussian inputs only; active count above 64 is rejected. |
@@ -149,3 +149,26 @@ The sampler is a public selection function in this slice. Integrating per-task
 selection into resumable runs and the explorer is subsequent #27 work; callers
 can already save and generate any selected recipe through the existing interfaces.
 No profile is yet marked bulk-training eligible by this document.
+
+## Reproduce the settings and examples
+
+```sh
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+  python scripts/run_check.py python scripts/sampling_walkthrough.py \
+  --out docs/evidence/issue-27-sampling-profiles
+```
+
+Use a new output directory for each run. The script retains 128 settings draws per
+family/profile combination (1,792 total), complete request/recipe records, summary
+histograms, and one generated example per family/profile/task-type combination
+(42 total). It checks recipe JSON round-trips, deterministic sampling, exact task
+replay, finite scores and generation-graph reconstruction for rows 0,1,3.
+
+The local run at `a9490e120e5f0066222bf9a2d46a26f440e985a7` passed all 42 examples
+with zero signal/target graph reconstruction error. Its settings draws covered all
+polynomial degrees 1–16, every listed RFF term count, composition component counts
+including 1 and 64, and actual expression depths 0–8 (zero means one component).
+They also included one- and 64-kernel GPs. These are observed settings counts;
+not every selected setting was generated, nor is this the full diversity or
+resource qualification matrix. Raw records remain in the ignored local directory.
+The runtime/source version is recorded independently of later documentation edits.
