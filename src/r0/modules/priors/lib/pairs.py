@@ -187,6 +187,8 @@ def _measure(task: TrainingTask) -> dict[str, Any]:
         "normalization": mechanism.get(
             "normalization", "analytic unit variance under independent standard Gaussian inputs"
         ),
+        "center": mechanism.get("center", [0.0] * scores.shape[1]),
+        "scale": mechanism.get("scale", [1.0] * scores.shape[1]),
         "expected_signal_variance": mechanism.get("expected_signal_variance"),
         "signal_std": [_std(scores[:, channel]) for channel in range(scores.shape[1])],
     }

@@ -99,6 +99,8 @@ def test_composition_sparsity_preserves_expression_and_fixed_component_mapping()
     report = json.loads(pair.card_json)
     assert report["variance_control"] == "independent_calibration_unit_variance_estimate"
     assert report["after"]["expected_signal_variance"] is None
+    assert report["before"]["center"] == before["center"]
+    assert report["after"]["scale"] == after["scale"]
 
 
 def test_pair_rejects_extra_changes_different_draws_and_invalid_geometry() -> None:
