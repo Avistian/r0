@@ -47,6 +47,8 @@ The interface shows:
   context/query colors and clickable points. These are observed points with other
   features varying, explicitly not response curves.
 - The first 64 sampled rows in the table preview, with arbitrary full-task row lookup.
+- [Analytic response curves](response-curves.md) with other inputs fixed to a chosen
+  row, bounded evaluation points and inspectable values.
 - Regression latent signal versus observed target and realized noise deviation;
   classification probabilities and observed/context/query/expected counts for
   every declared class, including absent classes.
@@ -64,8 +66,8 @@ Ctrl-C stops accepting connections and waits for an active bounded generation jo
 to finish, so its child process is not abandoned. Saved datasets remain on disk.
 
 This slice supplies the local creation/inspection loop. Expandable generation
-graphs, reconstructed component values, analytic/conditional GP curves, paired
-comparisons and embedded Colab controls remain required #27 follow-up slices.
+graphs, reconstructed component values, conditional GP views and paired
+comparisons remain required #27 follow-up slices.
 The [embedded Colab adapter](colab-explorer.md) shares this UI; its hosted proof
 is tracked separately.
 
