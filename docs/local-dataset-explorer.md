@@ -82,8 +82,7 @@ Ctrl-C stops accepting connections and waits for an active bounded generation jo
 to finish, so its child process is not abandoned. Saved datasets remain on disk.
 
 This supplies the local creation/inspection loop, response curves, generation
-graphs and conditional GP views. Paired comparisons remain a required #27 follow-up
-slice.
+graphs, conditional GP views and [controlled paired comparisons](controlled-pairs.md).
 The [embedded Colab adapter](colab-explorer.md) shares this UI; its hosted proof
 is tracked separately.
 
