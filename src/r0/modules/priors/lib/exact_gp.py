@@ -7,7 +7,12 @@ import torch
 
 from r0.modules.priors.lib.calibration import stable_calibration
 from r0.modules.priors.lib.inputs import InputDistribution, sample_inputs
-from r0.modules.priors.lib.kernels import StationaryKernel, kernel_covariance
+from r0.modules.priors.lib.kernels import (
+    Kernel,
+    SpectralKernel,
+    StationaryKernel,
+    kernel_covariance,
+)
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.task_output import complete_task
@@ -18,7 +23,7 @@ from r0.modules.priors.lib.training_task import TrainingTask
 class GaussianProcessRecipe:
     task: LinearRecipe = field(default_factory=LinearRecipe)
     inputs: InputDistribution = field(default_factory=InputDistribution)
-    kernels: tuple[StationaryKernel, ...] = (StationaryKernel(),)
+    kernels: tuple[Kernel, ...] = (StationaryKernel(),)
     combine: str = "sum"
     calibration_rows: int = 256
     version: str = "exact-gp-v1"
@@ -39,6 +44,12 @@ class GaussianProcessRecipe:
                 raise ValueError("kernel axes index the selected active features")
             if kernel.feature_scales and len(kernel.feature_scales) != len(axes):
                 raise ValueError("feature_scales must match selected kernel axes")
+            if (
+                isinstance(kernel, SpectralKernel)
+                and kernel.frequencies
+                and len(kernel.frequencies) != len(axes)
+            ):
+                raise ValueError("frequencies must match selected kernel axes")
             if self.combine == "product" and kernel.weight != 1:
                 raise ValueError("product kernels require unit component weights")
             used.update(axes)

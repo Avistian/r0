@@ -20,6 +20,11 @@ from r0.modules.priors import FourierRecipe, LinearRecipe, generate_task, recipe
         'version = "grouped-linear-v1"\ngroup_size = 2',
         'version = "smooth-v1"\nfamily = "radial"\nprojection = "ridge"\nterms = 4',
         'version = "exact-gp-v1"\ncalibration_rows = 32',
+        'version = "exact-gp-v1"\ncalibration_rows = 32\n'
+        '[[recipe.kernels]]\nkind = "rational_quadratic"\nalpha = 0.2',
+        'version = "exact-gp-v1"\ncalibration_rows = 32\n'
+        '[[recipe.kernels]]\nkind = "spectral"\nfrequencies = [0.2, 0.3, 0.4, 0.5]\n'
+        '[[recipe.kernels]]\nkind = "spectral"\nfrequencies = [1.2, 1.3, 1.4, 1.5]',
     ],
 )
 def test_configured_run_saves_exact_recipe_and_resumes(tmp_path: Path, family_fields: str) -> None:

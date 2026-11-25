@@ -6,7 +6,12 @@ from r0.modules.priors.lib.exact_gp import GaussianProcessRecipe, generate_exact
 from r0.modules.priors.lib.fourier import FourierRecipe, generate_fourier
 from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe, generate_grouped_linear
 from r0.modules.priors.lib.inputs import InputDistribution
-from r0.modules.priors.lib.kernels import StationaryKernel
+from r0.modules.priors.lib.kernels import (
+    Kernel,
+    RationalQuadraticKernel,
+    SpectralKernel,
+    StationaryKernel,
+)
 from r0.modules.priors.lib.linear import LinearRecipe, generate_linear
 from r0.modules.priors.lib.polynomial import PolynomialRecipe, generate_polynomial
 from r0.modules.priors.lib.quadratic import QuadraticRecipe, generate_quadratic
@@ -24,11 +29,15 @@ type Recipe = (
 )
 
 
-def _kernel_from_dict(data: dict[str, Any]) -> StationaryKernel:
+def _kernel_from_dict(data: dict[str, Any]) -> Kernel:
     fields = dict(data)
-    for key in ("axes", "feature_scales"):
+    for key in ("axes", "feature_scales", "frequencies"):
         if key in fields:
             fields[key] = tuple(fields[key])
+    if fields.get("kind") == "rational_quadratic":
+        return RationalQuadraticKernel(**fields)
+    if fields.get("kind") == "spectral":
+        return SpectralKernel(**fields)
     return StationaryKernel(**fields)
 
 

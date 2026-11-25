@@ -18,18 +18,65 @@ class StationaryKernel:
     def __post_init__(self) -> None:
         if self.kind not in ("rbf", "matern12", "matern32", "matern52"):
             raise ValueError("unsupported stationary kernel")
-        for value in (self.length_scale, self.weight, *self.feature_scales):
-            if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
-                raise ValueError("kernel scales and weights must be finite and positive")
-        if type(self.axes) is not tuple or any(type(v) is not int or v < 0 for v in self.axes):
-            raise ValueError("kernel axes must be a tuple of nonnegative integers")
-        if len(set(self.axes)) != len(self.axes) or type(self.feature_scales) is not tuple:
-            raise ValueError("kernel axes must be unique and feature_scales must be a tuple")
+        _validate_geometry(self.length_scale, self.axes, self.feature_scales, self.weight)
+
+
+@dataclass(frozen=True, slots=True)
+class RationalQuadraticKernel:
+    kind: str = "rational_quadratic"
+    length_scale: float = 1.0
+    axes: tuple[int, ...] = ()
+    feature_scales: tuple[float, ...] = ()
+    weight: float = 1.0
+    alpha: float = 1.0
+
+    def __post_init__(self) -> None:
+        if self.kind != "rational_quadratic":
+            raise ValueError("unsupported rational quadratic kernel")
+        _validate_geometry(self.length_scale, self.axes, self.feature_scales, self.weight)
+        if type(self.alpha) not in (int, float) or not math.isfinite(self.alpha) or self.alpha <= 0:
+            raise ValueError("alpha must be finite and positive")
+
+
+@dataclass(frozen=True, slots=True)
+class SpectralKernel:
+    kind: str = "spectral"
+    length_scale: float = 1.0
+    axes: tuple[int, ...] = ()
+    feature_scales: tuple[float, ...] = ()
+    weight: float = 1.0
+    frequencies: tuple[float, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.kind != "spectral":
+            raise ValueError("unsupported spectral kernel")
+        _validate_geometry(self.length_scale, self.axes, self.feature_scales, self.weight)
+        if type(self.frequencies) is not tuple or any(
+            type(v) not in (int, float) or not math.isfinite(v) or v < 0 for v in self.frequencies
+        ):
+            raise ValueError(
+                "frequencies must be a tuple of finite nonnegative cycles per input unit"
+            )
+
+
+type Kernel = StationaryKernel | RationalQuadraticKernel | SpectralKernel
+
+
+def _validate_geometry(
+    length_scale: float, axes: tuple[int, ...], feature_scales: tuple[float, ...], weight: float
+) -> None:
+    for value in (length_scale, weight, *feature_scales):
+        if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
+            raise ValueError("kernel scales and weights must be finite and positive")
+    if type(axes) is not tuple or any(type(v) is not int or v < 0 for v in axes):
+        raise ValueError("kernel axes must be a tuple of nonnegative integers")
+    if len(set(axes)) != len(axes) or type(feature_scales) is not tuple:
+        raise ValueError("kernel axes must be unique and feature_scales must be a tuple")
 
 
 def kernel_covariance(
     support: NDArray[np.float64],
-    kernels: tuple[StationaryKernel, ...],
+    kernels: tuple[Kernel, ...],
     combine: str,
 ) -> tuple[NDArray[np.float64], list[dict[str, object]]]:
     weights = np.asarray([k.weight for k in kernels], dtype=np.float64)
@@ -63,7 +110,18 @@ def kernel_covariance(
                     fallback = scaled[:, None] - scaled[None, :]
                     normalized[overflow] = fallback[overflow]
                 distance = np.hypot(distance, normalized)
-            if kernel.kind == "rbf":
+            if isinstance(kernel, RationalQuadraticKernel):
+                if not np.isfinite(distance).all():
+                    raise ValueError(
+                        "unrepresentable rational quadratic distance; task was not retried"
+                    )
+                # log(alpha * log1p(r^2 / (2*alpha))) avoids squaring r,
+                # overflowing 2*alpha, and losing the RBF limit for large alpha.
+                log_ratio = 2 * np.log(distance) - math.log(2) - math.log(kernel.alpha)
+                log_softplus = np.log(np.logaddexp(0, log_ratio))
+                log_softplus = np.where(log_ratio < -36, log_ratio, log_softplus)
+                values = np.exp(-np.exp(math.log(kernel.alpha) + log_softplus))
+            elif kernel.kind == "rbf" or isinstance(kernel, SpectralKernel):
                 values = np.exp(-0.5 * distance**2)
             else:
                 nu2 = {"matern12": 1, "matern32": 3, "matern52": 5}[kernel.kind]
@@ -76,6 +134,25 @@ def kernel_covariance(
                     log_polynomial = np.logaddexp(0, np.logaddexp(log_t, 2 * log_t - math.log(3)))
                 values = np.exp(log_polynomial - t)
                 values[np.isinf(t)] = 0  # The limiting covariance is zero.
+        if isinstance(kernel, SpectralKernel):
+            frequencies = kernel.frequencies or (0.0,) * len(axes)
+            for axis, frequency in zip(axes, frequencies, strict=True):
+                if frequency == 0:
+                    continue
+                with np.errstate(over="ignore", invalid="ignore"):
+                    delta = support[:, axis, None] - support[None, :, axis]
+                    cycles = delta * frequency
+                    overflow = np.isinf(delta)
+                    if overflow.any():
+                        scaled = support[:, axis] * frequency
+                        fallback = scaled[:, None] - scaled[None, :]
+                        cycles[overflow] = fallback[overflow]
+                # Declared cap: float64 spacing at 2**40 cycles is 1/4096 of a cycle.
+                if not np.isfinite(cycles).all() or np.any(np.abs(cycles) > 2**40):
+                    raise ValueError(
+                        "spectral phase exceeds the declared numerical limit; task was not retried"
+                    )
+                values *= np.cos(2 * math.pi * np.remainder(cycles, 1))
         if not np.isfinite(values).all():
             raise ValueError("nonfinite kernel covariance; task was not retried")
         if combine == "sum":
@@ -90,4 +167,9 @@ def kernel_covariance(
                 "weight": float(weight),
             }
         )
+        if isinstance(kernel, RationalQuadraticKernel):
+            cards[-1]["alpha"] = kernel.alpha
+        if isinstance(kernel, SpectralKernel):
+            cards[-1]["frequencies"] = list(kernel.frequencies or (0.0,) * len(axes))
+            cards[-1]["frequency_units"] = "cycles per input unit"
     return covariance, cards
