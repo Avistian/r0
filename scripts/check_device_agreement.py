@@ -124,10 +124,9 @@ def compare(recipe, seed, task_id, candidate):
 
     reference = generate_task(recipe, seed=seed, task_id=task_id, device="cpu")
     other = generate_task(recipe, seed=seed, task_id=task_id, device=candidate)
-    assert reference.source_task_id == other.source_task_id
-    assert reference.episode_id == other.episode_id
-    assert reference.mechanism_json == other.mechanism_json
-    assert reference.classes == other.classes
+    for field in ("source_task_id", "episode_id", "mechanism_json", "classes"):
+        if getattr(reference, field) != getattr(other, field):
+            raise ValueError(f"different {field}")
     errors = {}
     for field in (
         "inputs",
@@ -139,11 +138,13 @@ def compare(recipe, seed, task_id, candidate):
     ):
         left, right = getattr(reference, field), getattr(other, field)
         if left is None:
-            assert right is None, field
+            if right is not None:
+                raise ValueError(f"unexpected candidate {field}")
             continue
-        assert right is not None, field
-        assert left.device.type == "cpu", field
-        assert right.device.type == candidate, field
+        if right is None:
+            raise ValueError(f"missing candidate {field}")
+        if left.device.type != "cpu" or right.device.type != candidate:
+            raise ValueError(f"unexpected tensor device for {field}")
         right = right.cpu()
         torch.testing.assert_close(left, right, rtol=1e-10, atol=1e-10)
         errors[field] = float((left.to(torch.float64) - right.to(torch.float64)).abs().max())
@@ -165,12 +166,16 @@ def main():
     parser.add_argument("--candidate", required=True, choices=("cpu", "cuda"))
     parser.add_argument("--plan-only", action="store_true")
     args = parser.parse_args()
-    source = (
-        os.environ.get("R0_GENERATION_SOURCE")
-        or subprocess.check_output(
-            ["git", "-C", str(Path(__file__).resolve().parents[1]), "rev-parse", "HEAD"], text=True
+    root = Path(__file__).resolve().parents[1]
+    override = os.environ.get("R0_GENERATION_SOURCE")
+    if (root / ".git").exists() or not override:
+        source = subprocess.check_output(
+            ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
         ).strip()
-    )
+        if override and override != source:
+            raise ValueError("source override differs from checkout")
+    else:
+        source = override
     plan_bytes = (
         args.plan.read_bytes()
         if args.plan
@@ -249,7 +254,7 @@ def main():
                         args.candidate,
                     )
                 )
-            except (ValueError, RuntimeError, AssertionError) as error:
+            except (ValueError, TypeError, KeyError, RuntimeError, AssertionError) as error:
                 record.update(status="FAILED", error=f"{type(error).__name__}: {error}"[:2048])
                 status = "FAILED"
             record["elapsed_seconds"] = time.perf_counter() - started

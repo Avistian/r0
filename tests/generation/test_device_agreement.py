@@ -8,6 +8,8 @@ import sys
 from dataclasses import asdict
 from pathlib import Path
 
+import pytest
+
 from r0.modules.priors import LinearRecipe, recipe_from_dict
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -124,10 +126,13 @@ def test_matrix_plan_covers_each_family_size_and_target_without_generation(tmp_p
     assert not list(out.glob("case-*.json"))
 
 
-def test_failed_case_stops_comparison_and_preserves_remaining_count(tmp_path: Path) -> None:
+@pytest.mark.parametrize("invalid_fields", [{"rows": 0}, {"unknown": 1}])
+def test_failed_case_stops_comparison_and_preserves_remaining_count(
+    tmp_path: Path, invalid_fields: dict[str, int]
+) -> None:
     source = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     valid = asdict(LinearRecipe(rows=16, context_rows=8))
-    invalid = {**valid, "rows": 0}
+    invalid = {**valid, **invalid_fields}
     plan = tmp_path / "plan.json"
     plan.write_text(
         json.dumps(
@@ -192,3 +197,24 @@ def test_unavailable_cuda_never_falls_back_to_cpu(tmp_path: Path) -> None:
     assert summary["planned"] == summary["not_run"] == 90
     assert summary["passed"] == summary["failed"] == 0
     assert not list(out.glob("case-*.json"))
+
+
+def test_checkout_rejects_conflicting_source_override(tmp_path: Path) -> None:
+    out = tmp_path / "conflict"
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts/check_device_agreement.py"),
+            "--out",
+            str(out),
+            "--candidate",
+            "cpu",
+            "--plan-only",
+        ],
+        env={**os.environ, "R0_GENERATION_SOURCE": "0" * 40},
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode != 0
+    assert "source override differs from checkout" in result.stderr
+    assert not out.exists()
