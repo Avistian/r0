@@ -17,7 +17,7 @@ this candidate; runtime code is unchanged by that correction.
 | Browser errors | Zero reported exceptions across all five walkthroughs; mobile overflow checks passed where present |
 | Notebook cells, executed locally | Eight sampled polynomial tasks created and verified; resume generated zero replacements; larger run stayed disabled |
 | `make smoke` then `make eval-smoke` | Both exit 2: `train` and `eval` CLI commands are absent. No loss summary or evaluation table exists; these commands belong to their separate implementation tickets |
-| Actual hosted Colab | NOT_RUN: local notebook execution does not verify Colab output callbacks, downloads, Drive persistence or runtime restart |
+| Actual hosted Colab | Later [user-run checks](colab-user-verification.md) confirmed generation, graphs/downloads, rich views and restart; author-run hosted execution remains NOT_RUN |
 
 The full check and browser runs used the shared existing environment through
 `scripts/run_check.py`, with numerical libraries restricted to one thread. Browser
@@ -56,4 +56,6 @@ commands were run in the required order: `make check`, `make smoke`, `make eval-
 
 This closes the local combined-branch verification gap. It does not turn the
 candidate into merged main, certify a production sampling mixture, or close #27
-without its actual embedded Colab acceptance. Raw evidence remains out of Git.
+without its full hosted evidence record and merge acceptance. The later user reports
+are recorded separately; exact runtime output remains outstanding. Raw evidence
+remains out of Git.
