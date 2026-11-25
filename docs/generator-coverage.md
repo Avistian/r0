@@ -76,6 +76,14 @@ missing records as verified failures or successful tasks. An audit PASS means it
 checks succeeded, not that all generation attempts passed. Outcome counts remain
 visible. This is an author-run artifact audit, not an independent formula oracle.
 
+Histogram bins distinguish `SELECTED`, `GENERATION_SAVED` and the worker's terminal
+outcome. A saved task can still have a verification timeout: generation publishes
+its complete save result before replay/graph checks. `confirmed_saved_tasks` counts
+those recorded completed saves; `verified_source_tasks` counts only tasks whose
+worker checks passed and whose archive this auditor then checked. Missing save
+confirmation is not proof that no file was written. Saved-but-unverified cases
+remain in the failure list and never become PASS merely because an archive exists.
+
 Earlier sampling evidence at `a9490e120e5f0066222bf9a2d46a26f440e985a7`
 contains 1,792 settings selections and 42 generated examples. Settings include every
 polynomial degree, every listed RFF term count, 1/64 components and actual expression

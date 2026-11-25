@@ -79,6 +79,7 @@ def audit(root, output):
         committed = subprocess.check_output(["git", "show", f"{manifest['source']}:scripts/{name}"])
         assert hashlib.sha256(committed).hexdigest() == expected
     identities, counts, families, failures = set(), Counter(), {}, []
+    confirmed_saved = 0
     for case in manifest["cases"]:
         directory = root / case["id"]
         request = json.loads((directory / "request.json").read_text())
@@ -88,6 +89,15 @@ def audit(root, output):
         selected = json.loads(json.dumps(asdict(sample_recipe(**selection))))
         assert selected == request["recipe"], case["id"]
         result = json.loads((directory / "result.json").read_text())
+        measurement = result["measurement"]
+        saved = measurement is not None and measurement["summary"] == {
+            "attempted": 1,
+            "completed": 1,
+            "failed": 0,
+            "pending": 0,
+            "status": "COMPLETE",
+        }
+        confirmed_saved += int(saved)
         status = result["status"]
         if status == "PASS" and result["worker"].get("verification") != "PASS":
             status = "FAILED"
@@ -105,6 +115,7 @@ def audit(root, output):
         for key, value in fields(request["recipe"]).items():
             bins = group["settings"].setdefault(key, {}).setdefault(str(value), Counter())
             bins["SELECTED"] += 1
+            bins["GENERATION_SAVED"] += int(saved)
             bins[status] += 1
         for component in request["recipe"].get("components", []):
             child = component["recipe"]
@@ -121,12 +132,14 @@ def audit(root, output):
                 {
                     "case": case["id"],
                     "status": status,
+                    "saved_before_worker_verification": saved,
                     "stderr_tail": (directory / "stderr.txt").read_text().splitlines()[-8:],
                     "generation_measurement": result["measurement"],
                 }
             )
             continue
         assert result["returncode"] == 0
+        assert saved
         assert not result["timed_out"]
         assert not result["receipt_errors"]
         archives = list((directory / "run").rglob("data-*.zip"))
@@ -160,6 +173,7 @@ def audit(root, output):
         "report_sha256": hashlib.sha256((root / "report.json").read_bytes()).hexdigest(),
         "audit_status": "PASS",
         "totals": counts,
+        "confirmed_saved_tasks": confirmed_saved,
         "verified_source_tasks": len(identities),
         "new_generations": 0,
         "families": families,
