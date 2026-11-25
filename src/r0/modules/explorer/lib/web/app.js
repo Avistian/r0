@@ -12,7 +12,7 @@ const format = value => {
 };
 
 async function request(action, data = {}) {
-  if (current && ["row", "parameters", "export", "curve"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
+  if (current && ["row", "parameters", "export", "curve", "graph"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
   if (window.r0request) return window.r0request(action, data);
   const response = await fetch("/api", {
     method: "POST", headers: {"Content-Type": "application/json", "X-r0-explorer": window.r0token},
@@ -119,23 +119,28 @@ function plotFrame(container, title, xLabel, yLabel, low, high, yLow, yHigh) {
   label(54, 214, format(yLow), "end"); label(54, 38, format(yHigh), "end");
   label(260, 258, xLabel); label(62, 18, yLabel, "start");
   $(container).replaceChildren(svg);
+  chartExports(container, svg, container, title);
+  return {svg, x: value => 62 + 394 * position(value, low, high), y: value => 210 - 176 * position(value, yLow, yHigh)};
+}
+function chartExports(container, svg, name, title = name) {
   const controls = document.createElement("div"); controls.className = "chart-actions";
   for (const kind of ["SVG", "PNG"]) {
     const button = document.createElement("button"); button.textContent = kind;
     button.setAttribute("aria-label", `Export ${title} as ${kind}`);
-    button.onclick = () => saveChart(svg, container, kind);
+    button.onclick = () => saveChart(svg, name, kind);
     controls.append(button);
   }
   $(container).append(controls);
-  return {svg, x: value => 62 + 394 * position(value, low, high), y: value => 210 - 176 * position(value, yLow, yHigh)};
 }
 function saveChart(svg, name, kind) {
   const xml = new XMLSerializer().serializeToString(svg), blob = new Blob([xml], {type: "image/svg+xml"});
   if (kind === "SVG") { download(`${name}.svg`, blob); return; }
   const image = new Image(), url = URL.createObjectURL(blob);
   image.onload = () => {
-    const canvas = document.createElement("canvas"); canvas.width = 960; canvas.height = 540;
-    canvas.getContext("2d").drawImage(image, 0, 0, 960, 540);
+    const canvas = document.createElement("canvas"), {width, height} = svg.viewBox.baseVal;
+    const scale = Math.min(2, 4096 / width, 4096 / height);
+    canvas.width = Math.ceil(width * scale); canvas.height = Math.ceil(height * scale);
+    canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
     canvas.toBlob(data => download(`${name}.png`, data), "image/png");
     URL.revokeObjectURL(url);
   };
@@ -201,7 +206,7 @@ function show(result) {
   $("archive-path").value = result.archive; $("saved-id").value = view.recipe.task_id;
   $("replay-record").value = result.recipe_json; $("seed").value = view.recipe.seed; $("task-id").value = view.recipe.task_id;
   $("curve-row").value = 0; $("curve-row").max = view.total_rows - 1;
-  fillControls(view.recipe.recipe); charts(); clearCurve();
+  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph();
 }
 async function inspectRow(index) {
   await act("Loading row…", async () => {

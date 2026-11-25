@@ -45,6 +45,26 @@ The implementation uses ordinary functions and the existing signal/covariance
 evaluators. The existing multiplication guard is shared under a nonprivate helper
 name inside the priors module; generation arithmetic is unchanged.
 
-This slice supplies graph data and reconstruction. Selectable browser/Colab graph
-rendering, conditional GP inspection and controlled pairs are still pending #27
-work. Hosted Colab verification remains **NOT_RUN**.
+The shared local/Colab explorer renders these records in its generation-graph
+panel. Select a node with a mouse or keyboard to inspect its formula, parameters,
+an input matrix and the output matrix. Expand composition children in place, or
+use the mechanism selector to return to the whole task. Edit original row indices
+and the first value column before rebuilding to inspect different rows or terms.
+Changing those controls clears the old graph. Dataset changes reset the panel.
+
+Smaller graphs use a compact top-to-bottom flow; wide graphs keep a horizontal
+layout. Color and labels distinguish inputs, random draws, transformations, signals
+and targets. Selecting a node highlights its incoming and outgoing connections.
+Fit and zoom controls keep larger diagrams navigable.
+
+Diagrams scroll within the panel and export as SVG/PNG; PNG keeps the diagram's
+aspect ratio and caps its longest edge at 4096 pixels. Graph JSON preserves the
+returned records. Matrix heatmaps show the first 16 returned matrix rows; tables
+show all returned rows and the bounded columns. Source matrices such as weights
+and GP normals retain their stated axes, rather than being called observations.
+Heatmaps also export as SVG/PNG. Diagram arrows connect actual parent records;
+connections across several levels route around intervening boxes.
+
+Conditional GP inspection and controlled pairs remain pending #27 work. Hosted
+Colab verification remains **NOT_RUN**; sharing the UI does not establish that
+it has been exercised in an actual hosted notebook.

@@ -258,6 +258,30 @@ article {
 .plot {
   min-width:0
 }
+.graph-scroll {
+  max-height:620px;
+  overflow:auto;
+  margin:12px 0;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#f8fafc
+}
+.graph-scroll:empty {
+  display:none
+}
+.graph-scroll svg {
+  display:block;
+  margin:0 auto
+}
+.formula {
+  font:12px/1.6 ui-monospace,monospace;
+  overflow-wrap:anywhere
+}
+#graph-detail {
+  border-top:1px solid var(--line);
+  margin-top:16px;
+  padding-top:16px
+}
 .chart-grid+article,article+.chart-grid {
   margin-top:16px
 }
@@ -371,3 +395,48 @@ h1 br {
 
 }
 
+
+.graph-matrix-panel {
+  display:grid;
+  grid-template-rows:80px auto;
+  align-content:start
+}
+
+.graph-toolbar,.graph-legend,.graph-zoom {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap
+}
+.graph-toolbar {
+  justify-content:space-between;
+  margin-top:18px
+}
+.graph-legend {
+  gap:14px;
+  font-size:11px;
+  color:var(--muted)
+}
+.graph-legend span:before {
+  content:"";
+  display:inline-block;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  margin-right:6px
+}
+.legend-input:before { background:#3674c5 }
+.legend-parameter:before { background:#b7791f }
+.legend-function:before { background:#8060bd }
+.legend-target:before { background:#138470 }
+.graph-zoom {
+  gap:4px;
+  background:white;
+  padding:4px;
+  border:1px solid var(--line);
+  border-radius:9px
+}
+.graph-zoom button { padding:5px 9px; border:0 }
+#graph-zoom-label { min-width:42px; text-align:center; font-size:11px; color:var(--muted) }
+.graph-node:focus-visible { outline:none }
+.graph-node:focus-visible .graph-card { stroke-width:3; stroke:#25374a }

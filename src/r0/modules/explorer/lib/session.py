@@ -24,6 +24,7 @@ from r0.modules.priors import (
     QuadraticRecipe,
     SmoothRecipe,
     TrainingTask,
+    explain_generation,
     recipe_from_dict,
     record_fingerprint,
 )
@@ -178,6 +179,14 @@ class ExplorerSession:
             return {"row": inspect_rows(self.task, [data["index"]])[0]}
         if action == "parameters":
             return {"parameters": json.loads(self.task.mechanism_json)}
+        if action == "graph":
+            graph = explain_generation(
+                self.task,
+                data["indices"],
+                component=data.get("component"),
+                column_start=data.get("column_start", 0),
+            )
+            return {"graph": _identity_numbers(graph, for_browser=True)}
         if action == "curve":
             return {
                 "curve": inspect_curve(
