@@ -19,11 +19,16 @@ try {
 const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
 const socket = new WebSocket(targets.find(target => target.type === "page").webSocketDebuggerUrl);
 await new Promise(resolve => socket.addEventListener("open", resolve, {once: true}));
-const pending = new Map(), exceptions = [];
+const pending = new Map(), exceptions = [], downloads = [];
 let counter = 0;
 socket.addEventListener("message", event => {
   const message = JSON.parse(event.data);
   if (message.method === "Runtime.exceptionThrown") exceptions.push(message.params);
+  if (message.method === "Browser.downloadWillBegin") downloads.push({...message.params,state:"started"});
+  if (message.method === "Browser.downloadProgress") {
+    const download = downloads.find(item => item.guid === message.params.guid);
+    if (download) download.state = message.params.state;
+  }
   if (message.id) {
     const {resolve, reject} = pending.get(message.id);
     pending.delete(message.id);
@@ -49,6 +54,13 @@ async function waitFor(expression, timeout = 60000) {
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 }
+async function downloaded(name, count = 1) {
+  const start = Date.now();
+  while (downloads.filter(item => item.suggestedFilename === name && item.state === "completed").length < count) {
+    if (Date.now() - start > 30000) throw new Error(`Download did not complete: ${name}`);
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+}
 async function screenshot(name) {
   const result = await send("Page.captureScreenshot", {captureBeyondViewport: true});
   await fs.writeFile(path.join(directory, name), Buffer.from(result.data, "base64"));
@@ -62,7 +74,7 @@ async function click(id) {
 await send("Page.enable");
 await send("Runtime.enable");
 await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false});
-await send("Browser.setDownloadBehavior", {behavior: "allow", downloadPath: path.resolve(directory)});
+await send("Browser.setDownloadBehavior", {behavior: "allow", eventsEnabled: true, downloadPath: path.resolve(directory)});
 await send("Page.navigate", {url});
 await waitFor("document.getElementById('family')?.options.length === 10");
 assert.equal(await evaluate("Boolean(document.getElementById('curve'))"), true, "response-curve controls must exist");
@@ -84,7 +96,7 @@ assert.equal(await evaluate("current.view.source_task_id"), initial.id);
 await click("export");
 await evaluate("document.querySelector('#feature-hist .chart-actions button').click()");
 await evaluate("document.querySelectorAll('#feature-hist .chart-actions button')[1].click()");
-await new Promise(resolve => setTimeout(resolve, 1500));
+await Promise.all([downloaded(`dataset-${initial.id}.zip`), downloaded("feature-hist.svg"), downloaded("feature-hist.png")]);
 const files = await fs.readdir(directory);
 assert(files.some(name => name.endsWith('.zip')));
 assert(files.includes('feature-hist.svg'));
@@ -145,7 +157,7 @@ await send("Input.dispatchKeyEvent", {type:"keyDown",key:"Enter",code:"Enter",wi
 await send("Input.dispatchKeyEvent", {type:"keyUp",key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
 assert.equal(await evaluate("graphNode.id"), "expression-0");
 await evaluate("document.querySelector('#graph-downloads button').click(); document.querySelectorAll('#graph-downloads button')[1].click()");
-await new Promise(resolve => setTimeout(resolve, 1000));
+await Promise.all([downloaded("generation-graph.svg"), downloaded("generation-graph.png")]);
 assert((await fs.readdir(directory)).includes('generation-graph.svg'));
 assert((await fs.readdir(directory)).includes('generation-graph.png'));
 await screenshot("composition-graph.png");
@@ -154,7 +166,7 @@ await click("generate"); await click("graph");
 assert.equal(await evaluate("generationGraph.component_count"), 64);
 assert.equal(await evaluate("document.querySelectorAll('#generation-graph [data-node]').length"), await evaluate("generationGraph.nodes.length"));
 await evaluate("document.querySelectorAll('#graph-downloads button')[1].click()");
-await new Promise(resolve => setTimeout(resolve, 1000));
+await downloaded("generation-graph.png", 2);
 const graphPngs = (await fs.readdir(directory)).filter(name => name.startsWith('generation-graph') && name.endsWith('.png'));
 const largePng = await fs.readFile(path.join(directory, graphPngs.find(name => name !== 'generation-graph.png')));
 assert.equal(Math.max(largePng.readUInt32BE(16), largePng.readUInt32BE(20)), 4096);
@@ -169,7 +181,7 @@ await click("curve");
 assert.equal(await evaluate("curve.anchor_row"), 63);
 assert.equal(await evaluate("document.querySelector('#response-plot polyline').points.numberOfItems"), 65);
 await evaluate("document.querySelector('#response-plot .chart-actions button').click(); document.querySelectorAll('#response-plot .chart-actions button')[1].click()");
-await new Promise(resolve => setTimeout(resolve, 1000));
+await Promise.all([downloaded("response-plot.svg"), downloaded("response-plot.png")]);
 assert((await fs.readdir(directory)).includes('response-plot.svg'));
 assert((await fs.readdir(directory)).includes('response-plot.png'));
 await screenshot("composition-response.png");
@@ -221,6 +233,6 @@ await send("Emulation.setDeviceMetricsOverride", {width: 390, height: 844, devic
 await screenshot("mobile.png");
 assert.equal(await evaluate("document.documentElement.scrollWidth > innerWidth"), false);
 assert.deepEqual(exceptions, []);
-await fs.writeFile(path.join(directory, "receipt.json"), JSON.stringify({url, browser: await send("Browser.getVersion"), node: process.version, initial, familyRuns, curveRuns, graphRuns, largeGraph, largeIdentity, largeTask, files, checks: ["generation graph all ten families", "component expansion", "graph node keyboard selection", "graph SVG/PNG download", "graph numerical label bounds", "analytic curves for nine families", "GP explicitly rejects analytic curve", "curve anchor and point controls", "irrelevant feature constant curve", "curve SVG/PNG exports", "generate all ten starting recipes", "row selection", "replay zero-new-generation", "open saved task", "ZIP/SVG/PNG downloads", "classification counts", "advanced recipe preservation", "whole-axis and subset composition controls", "63-bit identity replay", "20000 rows and 256 features", "full vs sampled rows", "failed generation preserves view", "mobile no horizontal overflow"], exceptions}, null, 2));
+await fs.writeFile(path.join(directory, "receipt.json"), JSON.stringify({url, browser: await send("Browser.getVersion"), node: process.version, initial, familyRuns, curveRuns, graphRuns, largeGraph, largeIdentity, largeTask, files, downloads, checks: ["generation graph all ten families", "component expansion", "graph node keyboard selection", "graph SVG/PNG download", "graph numerical label bounds", "analytic curves for nine families", "GP explicitly rejects analytic curve", "curve anchor and point controls", "irrelevant feature constant curve", "curve SVG/PNG exports", "generate all ten starting recipes", "row selection", "replay zero-new-generation", "open saved task", "ZIP/SVG/PNG downloads", "classification counts", "advanced recipe preservation", "whole-axis and subset composition controls", "63-bit identity replay", "20000 rows and 256 features", "full vs sampled rows", "failed generation preserves view", "mobile no horizontal overflow"], exceptions}, null, 2));
 socket.close();
 console.log(`Browser checks passed; evidence in ${directory}`);
