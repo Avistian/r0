@@ -60,3 +60,7 @@
 - **Protocol freeze**: Human acceptance of a fully identified evaluation procedure and its evidence; subsequent score-affecting changes define a different protocol.
 
 - **Comparison**: An offline measurement of predictors on the same frozen query rows and context draws, retaining inputs, raw predictions, scores and attempt identities.
+
+- **Generation recipe**: The declared mechanisms and parameter distributions used to sample synthetic tasks.
+- **Generation run**: An identified collection of task-generation attempts under one recipe and explicit resource limits.
+- **Generation trace**: The steps and sampled values explaining how a task's observations and targets were produced.
