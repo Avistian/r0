@@ -108,3 +108,13 @@ def test_small_positive_input_scale_keeps_valid_normalized_quadratic() -> None:
     original = generate_task(recipe, seed=27, task_id=1)
     small = generate_task(replace(recipe, inputs=InputDistribution(scale=1e-7)), seed=27, task_id=1)
     torch.testing.assert_close(original.scores, small.scores, rtol=1e-10, atol=1e-10)
+
+
+@pytest.mark.parametrize("input_scale", [1e-100, 1e100])
+def test_finite_extreme_quadratic_scales_keep_normalized_signal(input_scale: float) -> None:
+    recipe = QuadraticRecipe(linear_strength=0)
+    original = generate_task(recipe, seed=27, task_id=1)
+    scaled = generate_task(
+        replace(recipe, inputs=InputDistribution(scale=input_scale)), seed=27, task_id=1
+    )
+    torch.testing.assert_close(original.scores, scaled.scores, rtol=1e-10, atol=1e-10)
