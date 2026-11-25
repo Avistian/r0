@@ -1,0 +1,16 @@
+created Linear: sparsity
+Traceback (most recent call last):
+  File "/tmp/r0-27-saved-pairs/scripts/saved_pair_walkthrough.py", line 163, in <module>
+    (create if args.mode == "create" else verify)(args.out)
+  File "/tmp/r0-27-saved-pairs/scripts/saved_pair_walkthrough.py", line 55, in create
+    session.request("generate", {"recipe": recipe, "seed": str(2**63 - 1), "task_id": i})
+  File "/tmp/r0-27-saved-pairs/src/r0/modules/explorer/lib/session.py", line 139, in request
+    recipe=recipe_from_dict(record["recipe"]),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r0-27-saved-pairs/src/r0/modules/priors/lib/generate.py", line 118, in recipe_from_dict
+    return GroupedLinearRecipe(**fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 8, in __init__
+  File "/tmp/r0-27-saved-pairs/src/r0/modules/priors/lib/grouped_linear.py", line 38, in __post_init__
+    raise ValueError("calibration rows must be 256..16384")
+ValueError: calibration rows must be 256..16384

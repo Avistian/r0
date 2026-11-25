@@ -1,0 +1,219 @@
+{
+  "after": {
+    "active_features": 4,
+    "center": [
+      0.6891613667638775,
+      0.33491646524194585,
+      -0.33717557406153253
+    ],
+    "class_counts": [
+      13,
+      6,
+      13
+    ],
+    "entropy_units": "nats",
+    "episode_id": "659e6304a0f2209bb093c422d3e6ccd5e05a2b3b9ded883d5100600a5145323d",
+    "expected_class_counts": [
+      10.11142427022905,
+      10.271100134682355,
+      11.617475595088598
+    ],
+    "expected_signal_variance": null,
+    "features": 12,
+    "mean_entropy": 0.8776801184075668,
+    "mechanism_sha256": "135ed140cb50b52f20ab9aac220a5917a4c3cd67a558f9225be08544541a2f24",
+    "normalization": "estimated from independent calibration inputs in the same joint GP draw",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "exact-gp-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "calibration_rows": 32,
+        "combine": "sum",
+        "inputs": {
+          "bound": null,
+          "df": 5.0,
+          "distribution": "gaussian",
+          "location": 0.0,
+          "mixture_gap": 2.0,
+          "scale": 1.0,
+          "version": "inputs-v1"
+        },
+        "kernels": [
+          {
+            "axes": [],
+            "feature_scales": [],
+            "kind": "rbf",
+            "length_scale": 1.0,
+            "weight": 1.0
+          }
+        ],
+        "task": {
+          "active_features": 4,
+          "class_offsets": [],
+          "classes": 3,
+          "context_rows": 20,
+          "features": 12,
+          "noise_ratio": 0,
+          "rows": 32,
+          "separation": 1.0,
+          "signal_features": 8,
+          "split": 0,
+          "task_type": "multiclass",
+          "version": "linear-v1"
+        },
+        "version": "exact-gp-v1"
+      },
+      "seed": 9223372036854775807,
+      "task_id": 8
+    },
+    "rows": 32,
+    "scale": [
+      0.8784634296692023,
+      1.064508259666155,
+      0.9971851751918205
+    ],
+    "signal_std": [
+      1.03473395907622,
+      0.9266443748584805,
+      1.04704744748209
+    ],
+    "source_task_id": "13be28b9ea47b64a6c6b632620a76e0ea7ad92757bb5a27543d3d02752ed4744"
+  },
+  "allow_estimated_variance": false,
+  "before": {
+    "active_features": 4,
+    "center": [
+      0.6891613667638775,
+      0.33491646524194585,
+      -0.33717557406153253
+    ],
+    "class_counts": [
+      13,
+      6,
+      13
+    ],
+    "entropy_units": "nats",
+    "episode_id": "3589a3cbece23dc22797b3ded7f5e61d63c7f49a0e916c86af41346715be703a",
+    "expected_class_counts": [
+      10.11142427022905,
+      10.271100134682355,
+      11.617475595088598
+    ],
+    "expected_signal_variance": null,
+    "features": 8,
+    "mean_entropy": 0.8776801184075668,
+    "mechanism_sha256": "135ed140cb50b52f20ab9aac220a5917a4c3cd67a558f9225be08544541a2f24",
+    "normalization": "estimated from independent calibration inputs in the same joint GP draw",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "exact-gp-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "calibration_rows": 32,
+        "combine": "sum",
+        "inputs": {
+          "bound": null,
+          "df": 5.0,
+          "distribution": "gaussian",
+          "location": 0.0,
+          "mixture_gap": 2.0,
+          "scale": 1.0,
+          "version": "inputs-v1"
+        },
+        "kernels": [
+          {
+            "axes": [],
+            "feature_scales": [],
+            "kind": "rbf",
+            "length_scale": 1.0,
+            "weight": 1.0
+          }
+        ],
+        "task": {
+          "active_features": 4,
+          "class_offsets": [],
+          "classes": 3,
+          "context_rows": 20,
+          "features": 8,
+          "noise_ratio": 0,
+          "rows": 32,
+          "separation": 1.0,
+          "signal_features": 8,
+          "split": 0,
+          "task_type": "multiclass",
+          "version": "linear-v1"
+        },
+        "version": "exact-gp-v1"
+      },
+      "seed": 9223372036854775807,
+      "task_id": 8
+    },
+    "rows": 32,
+    "scale": [
+      0.8784634296692023,
+      1.064508259666155,
+      0.9971851751918205
+    ],
+    "signal_std": [
+      1.03473395907622,
+      0.9266443748584805,
+      1.04704744748209
+    ],
+    "source_task_id": "922a7d1be562e4ac75ce4a7fa90ca33240834c55861625bdfc83cb6cf64da6a9"
+  },
+  "changed_target_fraction": 0.0,
+  "control": {
+    "after": 12,
+    "before": 8,
+    "field": "features"
+  },
+  "independent_source_draws": 1,
+  "intervention": "irrelevant",
+  "observed_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": true,
+    "probabilities": true,
+    "query_indices": true,
+    "scores": true,
+    "seed": true,
+    "targets": true,
+    "task_id": true
+  },
+  "pair_id": "446108bbd571d76379417cfbd8d0d060cf80f4bc7c2222e73196ecc8d633f9c3",
+  "required_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": true,
+    "probabilities": true,
+    "query_indices": true,
+    "scores": true,
+    "seed": true,
+    "targets": true,
+    "task_id": true
+  },
+  "seed": 9223372036854775807,
+  "task_id": 8,
+  "variance_control": "unchanged_mechanism",
+  "variant_count": 2,
+  "version": "controlled-pair-v1"
+}

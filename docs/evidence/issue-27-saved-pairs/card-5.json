@@ -1,0 +1,183 @@
+{
+  "after": {
+    "active_features": 4,
+    "center": [
+      0.04175568944478975,
+      0.08535243210405856,
+      -0.21751340973458388
+    ],
+    "class_counts": [
+      9,
+      14,
+      9
+    ],
+    "entropy_units": "nats",
+    "episode_id": "0d2575dffaf22fa043f42e9799ebdfdc8c37e2a7ef54b104d68c8aee63a11699",
+    "expected_class_counts": [
+      10.666666666666668,
+      10.666666666666668,
+      10.666666666666668
+    ],
+    "expected_signal_variance": null,
+    "features": 8,
+    "mean_entropy": 1.0986122886681096,
+    "mechanism_sha256": "8395def5f0412dfb534676d802f92cdf5c431d640a2531d36c96417742047c59",
+    "normalization": "estimated from independent Gaussian calibration",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "fourier-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "calibration_rows": 4096,
+        "family": "periodic",
+        "length_scale": 1.0,
+        "task": {
+          "active_features": 4,
+          "class_offsets": [],
+          "classes": 3,
+          "context_rows": 20,
+          "features": 8,
+          "noise_ratio": 0,
+          "rows": 32,
+          "separation": 0,
+          "signal_features": 8,
+          "split": 0,
+          "task_type": "multiclass",
+          "version": "linear-v1"
+        },
+        "terms": 16,
+        "version": "fourier-v1"
+      },
+      "seed": 9223372036854775807,
+      "task_id": 5
+    },
+    "rows": 32,
+    "scale": [
+      0.48086768445839007,
+      0.6319152683702418,
+      0.6714069199772678
+    ],
+    "signal_std": [
+      0.8304547410599404,
+      0.9525760779260416,
+      0.8773241175052601
+    ],
+    "source_task_id": "741c14b0420872a2dc971a17b671c050177a6f5ae0a22fda74bb47e731431003"
+  },
+  "allow_estimated_variance": false,
+  "before": {
+    "active_features": 4,
+    "center": [
+      0.04175568944478975,
+      0.08535243210405856,
+      -0.21751340973458388
+    ],
+    "class_counts": [
+      9,
+      13,
+      10
+    ],
+    "entropy_units": "nats",
+    "episode_id": "2ea975a7fad158e478347d43145ef9dd6a23fc627410aefadacc92653ac1a95e",
+    "expected_class_counts": [
+      10.668968441973792,
+      10.889616834764594,
+      10.441414723261614
+    ],
+    "expected_signal_variance": null,
+    "features": 8,
+    "mean_entropy": 0.9234268420386388,
+    "mechanism_sha256": "8395def5f0412dfb534676d802f92cdf5c431d640a2531d36c96417742047c59",
+    "normalization": "estimated from independent Gaussian calibration",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "fourier-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "calibration_rows": 4096,
+        "family": "periodic",
+        "length_scale": 1.0,
+        "task": {
+          "active_features": 4,
+          "class_offsets": [],
+          "classes": 3,
+          "context_rows": 20,
+          "features": 8,
+          "noise_ratio": 0,
+          "rows": 32,
+          "separation": 1.0,
+          "signal_features": 8,
+          "split": 0,
+          "task_type": "multiclass",
+          "version": "linear-v1"
+        },
+        "terms": 16,
+        "version": "fourier-v1"
+      },
+      "seed": 9223372036854775807,
+      "task_id": 5
+    },
+    "rows": 32,
+    "scale": [
+      0.48086768445839007,
+      0.6319152683702418,
+      0.6714069199772678
+    ],
+    "signal_std": [
+      0.8304547410599404,
+      0.9525760779260416,
+      0.8773241175052601
+    ],
+    "source_task_id": "0d79ef847f6c7ebc1fab197e0f5f42590a59dfcc5bf58366230d24e6bf43334e"
+  },
+  "changed_target_fraction": 0.34375,
+  "control": {
+    "after": 0,
+    "before": 1.0,
+    "field": "separation"
+  },
+  "independent_source_draws": 1,
+  "intervention": "separation",
+  "observed_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": true,
+    "query_indices": true,
+    "scores": true,
+    "seed": true,
+    "task_id": true
+  },
+  "pair_id": "02190deb937a79fea18563f46f7fe081b6fab7b3c4705c5c76f7dc7b13372596",
+  "required_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": true,
+    "query_indices": true,
+    "scores": true,
+    "seed": true,
+    "task_id": true
+  },
+  "seed": 9223372036854775807,
+  "task_id": 5,
+  "variance_control": "unchanged_mechanism",
+  "variant_count": 2,
+  "version": "controlled-pair-v1"
+}
