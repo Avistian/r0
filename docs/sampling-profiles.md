@@ -172,3 +172,5 @@ They also included one- and 64-kernel GPs. These are observed settings counts;
 not every selected setting was generated, nor is this the full diversity or
 resource qualification matrix. Raw records remain in the ignored local directory.
 The runtime/source version is recorded independently of later documentation edits.
+CI runs the same walkthrough and retains its output as a temporary Actions artifact
+for 14 days. Generated evidence stays out of Git.
