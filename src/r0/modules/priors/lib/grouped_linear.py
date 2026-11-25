@@ -5,6 +5,7 @@ from dataclasses import asdict, dataclass, field
 import numpy as np
 import torch
 
+from r0.modules.priors.lib.calibration import stable_calibration
 from r0.modules.priors.lib.inputs import InputDistribution, sample_inputs
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
@@ -70,17 +71,7 @@ def generate_grouped_linear(
     )
     with np.errstate(over="ignore", invalid="ignore"):
         raw = calibration @ weights
-    if not np.isfinite(raw).all():
-        raise ValueError("nonfinite calibration; task was not retried")
-    magnitude = np.max(np.abs(raw), axis=0)
-    if np.any(magnitude == 0):
-        raise ValueError("degenerate calibration; task was not retried")
-    # Avoid squaring tiny/large raw values during variance estimation.
-    scaled = raw / magnitude
-    center = scaled.mean(axis=0) * magnitude
-    scale = scaled.std(axis=0) * magnitude
-    if not np.isfinite(scale).all() or np.any(scale <= 0):
-        raise ValueError("nonfinite or degenerate calibration; task was not retried")
+    center, scale = stable_calibration(raw)
     x = sample_inputs(recipe.inputs, task.rows, task.features, rng, "input")
     inputs = torch.tensor(x, dtype=torch.float64, device=device)
     scores = inputs[:, : task.signal_features] @ torch.tensor(weights, device=device)

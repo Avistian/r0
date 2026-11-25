@@ -83,3 +83,20 @@ def test_small_scale_monomial_retains_normalized_signal(degree: int) -> None:
     original = generate_task(recipe, seed=27, task_id=1)
     small = generate_task(replace(recipe, inputs=InputDistribution(scale=1e-7)), seed=27, task_id=1)
     torch.testing.assert_close(original.scores, small.scores, rtol=1e-10, atol=1e-10)
+
+
+@pytest.mark.parametrize("degree", [1, 4, 16])
+@pytest.mark.parametrize("exponent", [-200, 200])
+def test_finite_extreme_polynomial_scales_keep_normalized_signal(
+    degree: int, exponent: int
+) -> None:
+    recipe = PolynomialRecipe(
+        task=LinearRecipe(features=1, signal_features=1, active_features=1), degree=degree
+    )
+    original = generate_task(recipe, seed=27, task_id=1)
+    scaled = generate_task(
+        replace(recipe, inputs=InputDistribution(scale=10 ** (exponent / degree))),
+        seed=27,
+        task_id=1,
+    )
+    torch.testing.assert_close(original.scores, scaled.scores, rtol=1e-10, atol=1e-10)

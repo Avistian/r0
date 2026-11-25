@@ -6,6 +6,7 @@ from dataclasses import asdict, dataclass, field
 import numpy as np
 import torch
 
+from r0.modules.priors.lib.calibration import stable_calibration
 from r0.modules.priors.lib.inputs import InputDistribution, sample_inputs
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
@@ -83,7 +84,8 @@ def generate_quadratic(
         )
         center, scale = raw.mean(axis=0), raw.std(axis=0)
     if not np.isfinite(raw).all() or not np.isfinite(scale).all() or np.any(scale <= 0):
-        raise ValueError("nonfinite or degenerate calibration; task was not retried")
+        # Preserve existing successful records; rescale only a failed estimate.
+        center, scale = stable_calibration(raw)
     x = sample_inputs(recipe.inputs, task.rows, task.features, rng, "input")
     inputs = torch.tensor(x, dtype=torch.float64, device=device)
     signal = inputs[:, : task.signal_features]
