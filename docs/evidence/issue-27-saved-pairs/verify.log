@@ -1,0 +1,10 @@
+verified Linear: sparsity
+verified Grouped linear: irrelevant
+verified Polynomial: noise
+verified Quadratic: sparsity
+verified Random Fourier features: separation
+verified Periodic: separation
+verified Smooth radial: irrelevant
+verified Smooth sinusoidal: noise
+verified Exact Gaussian process: irrelevant
+verified Composition: sparsity

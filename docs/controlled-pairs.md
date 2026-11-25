@@ -24,8 +24,8 @@ Use `paired_recipe(recipe, intervention=..., value=...)` to obtain the second
 recipe before running it through the existing guarded/persistent generation path.
 Use `compare_pair(before, after, intervention=...)` to verify already saved tasks.
 `generate_pair` combines those operations in memory on the requested CPU/CUDA
-device. It does not launch cloud work or write files. The explorer comparison
-panel and persistent pair exports are the next #27 integration slice.
+device. It does not launch cloud work or write files. The shared explorer session
+can save and reopen pairs as described below; the comparison panel follows separately.
 
 | Intervention | `value` means | Properties required to stay fixed |
 | --- | --- | --- |
@@ -84,6 +84,70 @@ or harder for every model or draw. Compare actual model outcomes separately. The
 retained walkthrough uses a fixed ordinary least-squares model with an intercept,
 fits only context inputs/targets and reports query-only observed-target MSE. It
 performs no tuning and makes no claim about frontier-model performance.
+
+## Saved comparisons in the shared explorer session
+
+Local and embedded Colab transports both use `ExplorerSession.request`. After
+`generate` or `open` selects the base dataset, `pair` generates the variant through
+the same bounded runner. It preserves the original seed, task identifier and
+execution device, then checks the saved arrays with `compare_pair`. An explicit
+request for a different device is rejected. Neither successful comparisons nor
+failed attempts replace the base dataset. Opening or generating another base
+clears the selected comparison.
+
+```python
+from pathlib import Path
+
+from r0.modules.explorer import ExplorerSession
+
+session = ExplorerSession(Path("/tmp/r0-pair-example"))
+base = session.request("generate", {"recipe": {"noise_ratio": 0.2}, "seed": "27", "task_id": "9"})
+comparison = session.request(
+    "pair",
+    {
+        "intervention": "noise",
+        "value": 0.8,
+        "expected_episode_id": base["view"]["episode_id"],
+        "max_seconds": 30,
+        "max_bytes": 1048576,
+    },
+)
+reopened = ExplorerSession(session.output_dir).request(
+    "open_pair", {"path": comparison["pair"]["path"]}
+)
+export = session.request(
+    "pair_export",
+    {"expected_pair_id": comparison["pair"]["card"]["pair_id"], "max_bytes": 2097152},
+)
+```
+
+`pair` returns the unchanged base view and a `pair` object with the second view,
+archive location, run result, comparison card and saved manifest path. Browser
+records encode large seed/task/split integers as decimal strings; `card_json`
+and each `recipe_json` retain the original integers for lossless download/replay.
+The stable sampled row indices match across both views because they share the seed,
+task identifier and row count.
+
+The manifest under `pairs/` links two ordinary runner archives. `open_pair` verifies
+both archive receipts and recomputes the comparison card before changing the
+session. All paths must resolve inside the output directory. Moving the entire
+output directory preserves its relative links. These are local generated artifacts,
+not an upload interface. Run records retain the original paths and measurements.
+
+Generation's byte/time limits apply to the new variant's runner request; existing
+base data and diagnostic attempt/manifest records are not charged to that archive
+limit. Each comparison manifest is limited to 1 MiB. A rejected post-generation
+comparison can leave a valid variant archive: `.pair-attempts/` records the failure
+separately from the worker's successful generation. For example, estimated-variance
+permission is checked by the shared comparison function after the variant is saved.
+No failed comparison is returned as accepted or counted as a second independent draw.
+
+`pair_export` returns base64 ZIP bytes under one total `max_bytes` limit. It contains
+`card.json`, `before.zip` and `after.zip`. Each nested archive has its complete
+recipe, mechanism, identities, predictor arrays/CSV and separate diagnostic truth
+arrays/CSV. Query targets remain outside predictor data. Exports contain all rows;
+only the returned chart views are sampled. The optional `expected_episode_id` and
+`expected_pair_id` guards reject requests from stale views.
 
 ## Replay and remaining delivery
 

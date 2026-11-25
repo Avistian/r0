@@ -1,0 +1,171 @@
+{
+  "after": {
+    "active_features": 4,
+    "center": [
+      -0.3405271623512734
+    ],
+    "episode_id": "ebd5697a910c2d7b45adab294e0289d77ae074608061090d4667d3f4fd326b1c",
+    "expected_signal_variance": null,
+    "features": 8,
+    "mechanism_sha256": "b6d79df5a1651bd831b3c1a519d409f2bbef80e31c79e389f717f76b8a8afc34",
+    "normalization": "estimated from an independent generating-distribution sample",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "smooth-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "calibration_rows": 4096,
+        "family": "sinusoidal",
+        "inputs": {
+          "bound": null,
+          "df": 5.0,
+          "distribution": "gaussian",
+          "location": 0.0,
+          "mixture_gap": 2.0,
+          "scale": 1.0,
+          "version": "inputs-v1"
+        },
+        "length_scale": 1.0,
+        "projection": "additive",
+        "task": {
+          "active_features": 4,
+          "class_offsets": [],
+          "classes": 0,
+          "context_rows": 20,
+          "features": 8,
+          "noise_ratio": 0.8,
+          "rows": 32,
+          "separation": 1.0,
+          "signal_features": 8,
+          "split": 0,
+          "task_type": "regression",
+          "version": "linear-v1"
+        },
+        "terms": 16,
+        "version": "smooth-v1",
+        "width_spread": 1.0
+      },
+      "seed": 9223372036854775807,
+      "task_id": 7
+    },
+    "residual_std": 1.0539883181253316,
+    "rows": 32,
+    "scale": [
+      0.6202737428132248
+    ],
+    "signal_std": [
+      0.9211484541414949
+    ],
+    "source_task_id": "2cf302829e0ad2a48fdb4750e5cb4f8204137f6d389ebdd179b87e87a1c3b07f"
+  },
+  "allow_estimated_variance": false,
+  "before": {
+    "active_features": 4,
+    "center": [
+      -0.3405271623512734
+    ],
+    "episode_id": "0d6e9d6ce3de0776fd0bb04baf44b0e0cf4bdb1cc83eda39d9d2c86909c205b4",
+    "expected_signal_variance": null,
+    "features": 8,
+    "mechanism_sha256": "b6d79df5a1651bd831b3c1a519d409f2bbef80e31c79e389f717f76b8a8afc34",
+    "normalization": "estimated from an independent generating-distribution sample",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "smooth-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "calibration_rows": 4096,
+        "family": "sinusoidal",
+        "inputs": {
+          "bound": null,
+          "df": 5.0,
+          "distribution": "gaussian",
+          "location": 0.0,
+          "mixture_gap": 2.0,
+          "scale": 1.0,
+          "version": "inputs-v1"
+        },
+        "length_scale": 1.0,
+        "projection": "additive",
+        "task": {
+          "active_features": 4,
+          "class_offsets": [],
+          "classes": 0,
+          "context_rows": 20,
+          "features": 8,
+          "noise_ratio": 0.2,
+          "rows": 32,
+          "separation": 1.0,
+          "signal_features": 8,
+          "split": 0,
+          "task_type": "regression",
+          "version": "linear-v1"
+        },
+        "terms": 16,
+        "version": "smooth-v1",
+        "width_spread": 1.0
+      },
+      "seed": 9223372036854775807,
+      "task_id": 7
+    },
+    "residual_std": 0.2634970795313329,
+    "rows": 32,
+    "scale": [
+      0.6202737428132248
+    ],
+    "signal_std": [
+      0.9211484541414949
+    ],
+    "source_task_id": "edc16566fe5da0b096f30a477fca74db0747548220cb4bea8536067563add398"
+  },
+  "changed_target_fraction": 1.0,
+  "control": {
+    "after": 0.8,
+    "before": 0.2,
+    "field": "noise_ratio"
+  },
+  "independent_source_draws": 1,
+  "intervention": "noise",
+  "observed_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": true,
+    "query_indices": true,
+    "scores": true,
+    "seed": true,
+    "task_id": true
+  },
+  "pair_id": "d551c4b952c29997a38253e94c087010fb18d99522bd15fa790a031e43395795",
+  "required_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": true,
+    "query_indices": true,
+    "scores": true,
+    "seed": true,
+    "task_id": true
+  },
+  "seed": 9223372036854775807,
+  "task_id": 7,
+  "variance_control": "unchanged_mechanism",
+  "variant_count": 2,
+  "version": "controlled-pair-v1"
+}
