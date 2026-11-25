@@ -1,6 +1,6 @@
 # Issue 22 predictive oracles
 
-Status: all three interview rounds accepted; implementation authorized by the user with $implement 22. Implemented locally. Evidence and review history are in ../evidence/issue-22/. Publication and hosted CI remain pending.
+Status: all three interview rounds accepted; implementation authorized by the user with $implement 22. Implemented locally. Local evidence and review history are in the ignored `docs/evidence/issue-22/` directory; authored answer cards are versioned under `tests/fixtures/oracles/`. Publication and hosted CI remain pending.
 
 Issue: https://github.com/Avistian/r0/issues/22
 

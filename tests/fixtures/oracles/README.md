@@ -12,7 +12,7 @@ Run an individual card through the CLI:
 
 ```sh
 uv run r0 oracle --config configs/oracles/coin-four.toml \
-  --expected docs/evidence/issue-22/cards/coin-four.json \
+  --expected tests/fixtures/oracles/coin-four.json \
   --out /tmp/coin-four.json
 ```
 

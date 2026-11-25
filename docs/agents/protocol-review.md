@@ -34,5 +34,5 @@ This review does not choose values, expand permissions, change protected files o
 extra approval gate. Follow the existing owner and ticket boundaries.
 
 For an example retaining a previously session-only arithmetic procedure, see
-[the #25 reproduction record](../evidence/issue-25-retro/README.md). Its fixed-input checker
+[the #25 reproduction record](https://github.com/Avistian/r0/blob/0e4801bde17896383862d0d695ae81334ebb7aee/docs/evidence/issue-25-retro/README.md). Its fixed-input checker
 supports the authored calculations only; it is not an evaluation harness or asset validator.
