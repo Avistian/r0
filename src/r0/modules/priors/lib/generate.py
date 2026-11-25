@@ -2,9 +2,15 @@
 
 from typing import Any, cast
 
-from r0.modules.priors.lib.exact_gp import GaussianProcessRecipe, generate_exact_gp
-from r0.modules.priors.lib.fourier import FourierRecipe, generate_fourier
-from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe, generate_grouped_linear
+from r0.modules.priors.lib.compositions import (
+    Combination,
+    CompositeRecipe,
+    FunctionComponent,
+    generate_composite,
+)
+from r0.modules.priors.lib.exact_gp import GaussianProcessRecipe
+from r0.modules.priors.lib.fourier import FourierRecipe
+from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe
 from r0.modules.priors.lib.inputs import InputDistribution
 from r0.modules.priors.lib.kernels import (
     GibbsKernel,
@@ -13,21 +19,14 @@ from r0.modules.priors.lib.kernels import (
     SpectralKernel,
     StationaryKernel,
 )
-from r0.modules.priors.lib.linear import LinearRecipe, generate_linear
-from r0.modules.priors.lib.polynomial import PolynomialRecipe, generate_polynomial
-from r0.modules.priors.lib.quadratic import QuadraticRecipe, generate_quadratic
-from r0.modules.priors.lib.smooth import SmoothRecipe, generate_smooth
+from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.polynomial import PolynomialRecipe
+from r0.modules.priors.lib.quadratic import QuadraticRecipe
+from r0.modules.priors.lib.sampling import BaseRecipe, generate_base_task
+from r0.modules.priors.lib.smooth import SmoothRecipe
 from r0.modules.priors.lib.training_task import TrainingTask
 
-type Recipe = (
-    LinearRecipe
-    | FourierRecipe
-    | PolynomialRecipe
-    | QuadraticRecipe
-    | GroupedLinearRecipe
-    | SmoothRecipe
-    | GaussianProcessRecipe
-)
+type Recipe = BaseRecipe | CompositeRecipe
 
 
 def _kernel_from_dict(data: dict[str, Any]) -> Kernel:
@@ -52,12 +51,39 @@ def _kernel_from_dict(data: dict[str, Any]) -> Kernel:
     return StationaryKernel(**fields)
 
 
+def _expression_from_dict(value: Any) -> int | Combination:
+    if type(value) is int:
+        return value
+    fields = dict(value)
+    fields["children"] = tuple(_expression_from_dict(child) for child in fields["children"])
+    return Combination(**fields)
+
+
 def recipe_from_dict(data: object) -> Recipe:
     """Decode JSON/TOML recipe fields without mutating the caller's record."""
     if not isinstance(data, dict):
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
+    if version == "composite-v1":
+        task = recipe_from_dict(fields.get("task", {}))
+        if not isinstance(task, LinearRecipe):
+            raise ValueError("task controls must use linear-v1 settings")
+        fields["task"] = task
+        fields["inputs"] = InputDistribution(**fields.get("inputs", {}))
+        components: list[FunctionComponent] = []
+        for item in fields["components"]:
+            component = dict(item)
+            child = recipe_from_dict(component.pop("recipe"))
+            if isinstance(child, CompositeRecipe):
+                raise ValueError("nest combinations in expression, not in component recipes")
+            component["recipe"] = child
+            if "axes" in component:
+                component["axes"] = tuple(component["axes"])
+            components.append(FunctionComponent(**component))
+        fields["components"] = tuple(components)
+        fields["expression"] = _expression_from_dict(fields.get("expression", 0))
+        return CompositeRecipe(**fields)
     if version == "linear-v1":
         if "class_offsets" in fields:
             fields["class_offsets"] = tuple(fields["class_offsets"])
@@ -101,16 +127,6 @@ def recipe_from_dict(data: object) -> Recipe:
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
-    if isinstance(recipe, FourierRecipe):
-        return generate_fourier(recipe, seed=seed, task_id=task_id, device=device)
-    if isinstance(recipe, PolynomialRecipe):
-        return generate_polynomial(recipe, seed=seed, task_id=task_id, device=device)
-    if isinstance(recipe, QuadraticRecipe):
-        return generate_quadratic(recipe, seed=seed, task_id=task_id, device=device)
-    if isinstance(recipe, GroupedLinearRecipe):
-        return generate_grouped_linear(recipe, seed=seed, task_id=task_id, device=device)
-    if isinstance(recipe, SmoothRecipe):
-        return generate_smooth(recipe, seed=seed, task_id=task_id, device=device)
-    if isinstance(recipe, GaussianProcessRecipe):
-        return generate_exact_gp(recipe, seed=seed, task_id=task_id, device=device)
-    return generate_linear(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, CompositeRecipe):
+        return generate_composite(recipe, seed=seed, task_id=task_id, device=device)
+    return generate_base_task(recipe, seed=seed, task_id=task_id, device=device)

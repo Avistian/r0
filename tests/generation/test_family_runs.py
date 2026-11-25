@@ -28,6 +28,17 @@ from r0.modules.priors import FourierRecipe, LinearRecipe, generate_task, recipe
         'version = "exact-gp-v1"\ncalibration_rows = 32\n'
         '[[recipe.kernels]]\nkind = "spectral"\nfrequencies = [0.2, 0.3, 0.4, 0.5]\n'
         '[[recipe.kernels]]\nkind = "spectral"\nfrequencies = [1.2, 1.3, 1.4, 1.5]',
+        'version = "composite-v1"\ncalibration_rows = 256\n'
+        'expression = {operation = "product", children = [0, 1]}\n'
+        "[[recipe.components]]\n"
+        '[recipe.components.recipe]\nversion = "polynomial-v1"\ndegree = 1\n'
+        "calibration_rows = 256\n"
+        "[recipe.components.recipe.task]\nrows = 16\ncontext_rows = 8\n"
+        'task_type = "binary"\nclasses = 2\n'
+        "[[recipe.components]]\n"
+        '[recipe.components.recipe]\nversion = "smooth-v1"\nterms = 4\ncalibration_rows = 256\n'
+        "[recipe.components.recipe.task]\nrows = 16\ncontext_rows = 8\n"
+        'task_type = "binary"\nclasses = 2',
     ],
 )
 def test_configured_run_saves_exact_recipe_and_resumes(tmp_path: Path, family_fields: str) -> None:
