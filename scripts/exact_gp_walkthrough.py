@@ -17,6 +17,8 @@ from r0.modules.priors import (
     GaussianProcessRecipe,
     InputDistribution,
     LinearRecipe,
+    RationalQuadraticKernel,
+    SpectralKernel,
     StationaryKernel,
 )
 
@@ -42,9 +44,18 @@ def scalar_from_card(card: dict[str, Any], row: int) -> float:
         elif kernel["kind"] == "matern32":
             t = math.sqrt(3) * distance
             values = (1 + t) * np.exp(-t)
-        else:
+        elif kernel["kind"] == "matern52":
             t = math.sqrt(5) * distance
             values = (1 + t + t * t / 3) * np.exp(-t)
+        elif kernel["kind"] == "rational_quadratic":
+            values = (1 + squared / (2 * kernel["alpha"])) ** -kernel["alpha"]
+        elif kernel["kind"] == "spectral":
+            values = np.exp(-squared / 2)
+            for axis, frequency in zip(kernel["axes"], kernel["frequencies"], strict=True):
+                delta = support[:, axis, None] - support[None, :, axis]
+                values *= np.cos(2 * math.pi * frequency * delta)
+        else:
+            raise ValueError(f"unsupported walkthrough kernel: {kernel['kind']}")
         if card["combine"] == "sum":
             covariance += kernel["weight"] * values
         else:
@@ -58,9 +69,49 @@ def scalar_from_card(card: dict[str, Any], row: int) -> float:
     return (raw - card["center"][0]) / card["scale"][0]
 
 
+def extended_cases() -> list[GaussianProcessRecipe]:
+    return [
+        GaussianProcessRecipe(kernels=(RationalQuadraticKernel(alpha=alpha),))
+        for alpha in (0.1, 1, 100)
+    ] + [
+        GaussianProcessRecipe(
+            task=LinearRecipe(task_type="binary", classes=2),
+            kernels=tuple(SpectralKernel(frequencies=(i / 4,) * 4, weight=i + 1) for i in range(8)),
+        ),
+        GaussianProcessRecipe(
+            task=LinearRecipe(task_type="multiclass", classes=3),
+            inputs=InputDistribution(distribution="student_t", df=1),
+            combine="product",
+            kernels=(
+                RationalQuadraticKernel(alpha=0.5, axes=(0, 1)),
+                SpectralKernel(frequencies=(0.5, 1), axes=(2, 3)),
+            ),
+        ),
+        GaussianProcessRecipe(
+            task=LinearRecipe(
+                rows=1024,
+                context_rows=512,
+                features=256,
+                signal_features=256,
+                active_features=256,
+                task_type="multiclass",
+                classes=100,
+            ),
+            calibration_rows=512,
+            kernels=(
+                RationalQuadraticKernel(length_scale=12, alpha=0.3),
+                SpectralKernel(length_scale=12, frequencies=(0.04,) * 256),
+            ),
+        ),
+    ]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", required=True, type=Path)
+    parser.add_argument(
+        "--extended", action="store_true", help="check rational quadratic and spectral bands"
+    )
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=False)
     cases = [
@@ -114,6 +165,8 @@ def main() -> None:
             ),
         ),
     ]
+    if args.extended:
+        cases = extended_cases()
     records = []
     for i, recipe in enumerate(cases):
         request = RunRequest(
