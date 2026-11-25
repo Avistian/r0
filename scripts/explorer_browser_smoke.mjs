@@ -65,6 +65,7 @@ await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 1100, dev
 await send("Browser.setDownloadBehavior", {behavior: "allow", downloadPath: path.resolve(directory)});
 await send("Page.navigate", {url});
 await waitFor("document.getElementById('family')?.options.length === 10");
+assert.equal(await evaluate("Boolean(document.getElementById('curve'))"), true, "response-curve controls must exist");
 await screenshot("empty.png");
 await click("generate");
 const initial = await evaluate("({id: current.view.source_task_id, rows: current.view.total_rows, plotted: document.querySelectorAll('svg circle').length, archive: current.archive, run: current.run.summary})");
@@ -99,14 +100,41 @@ assert.equal(await evaluate("current.view.classes.length"), 3);
 assert.equal(await evaluate("document.querySelectorAll('#class-counts tbody tr').length"), 3);
 await screenshot("classification.png");
 assert.equal(await evaluate("[...document.querySelectorAll('.plot svg text')].every(text => {const box=text.getBBox(); return box.x>=0 && box.x+box.width<=480;})"), true);
-const families = await evaluate("Object.keys(examples)"), familyRuns = [];
+const families = await evaluate("Object.keys(examples)"), familyRuns = [], curveRuns = [];
 for (const family of families) {
   await evaluate(`document.getElementById('family').value=${JSON.stringify(family)}; document.getElementById('family').dispatchEvent(new Event('change'))`);
   await click("generate");
   assert.equal(await evaluate("current.view.total_rows"), 64);
   familyRuns.push({family, ...await evaluate("({identity: current.view.source_task_id, run: current.run.summary})")});
+  await evaluate("document.getElementById('feature').value = current.view.features.find(f => f.role === 'active').index; document.getElementById('feature').dispatchEvent(new Event('change'))");
+  if (family === "Exact Gaussian process") {
+    await evaluate("document.getElementById('curve').click()"); await waitFor("!busy");
+    assert.match(await evaluate("document.getElementById('status').textContent"), /conditional/);
+    assert.equal(await evaluate("document.querySelectorAll('#response-plot polyline').length"), 0);
+    curveRuns.push({family, result: "explicit conditional-inspection requirement"});
+  } else {
+    await click("curve");
+    assert.equal(await evaluate("document.querySelector('#response-plot polyline').points.numberOfItems"), 129);
+    assert.match(await evaluate("document.getElementById('curve-note').textContent"), /fixed to row 0/);
+    curveRuns.push({family, ...await evaluate("({identity:curve.episode_id,points:curve.points,feature:curve.feature,bounds:curve.bounds})")});
+  }
 }
 await screenshot("composition.png");
+await evaluate("document.getElementById('curve-row').value=63; document.getElementById('curve-row').dispatchEvent(new Event('change')); document.getElementById('curve-points').value=65");
+assert.equal(await evaluate("document.querySelectorAll('#response-plot polyline').length"), 0);
+await click("curve");
+assert.equal(await evaluate("curve.anchor_row"), 63);
+assert.equal(await evaluate("document.querySelector('#response-plot polyline').points.numberOfItems"), 65);
+await evaluate("document.querySelector('#response-plot .chart-actions button').click(); document.querySelectorAll('#response-plot .chart-actions button')[1].click()");
+await new Promise(resolve => setTimeout(resolve, 1000));
+assert((await fs.readdir(directory)).includes('response-plot.svg'));
+assert((await fs.readdir(directory)).includes('response-plot.png'));
+await screenshot("composition-response.png");
+await evaluate("document.getElementById('feature').value=current.view.features.find(f => f.role==='irrelevant').index; document.getElementById('feature').dispatchEvent(new Event('change'))");
+assert.equal(await evaluate("document.querySelectorAll('#response-plot polyline').length"), 0);
+await click("curve");
+assert.equal(await evaluate("curve.scores.every(row => row.every((value,i) => value===curve.scores[0][i]))"), true);
+
 await evaluate("document.getElementById('active').value=3; document.getElementById('active').dispatchEvent(new Event('change'))");
 await waitFor("!busy");
 await click("generate");
@@ -150,6 +178,6 @@ await send("Emulation.setDeviceMetricsOverride", {width: 390, height: 844, devic
 await screenshot("mobile.png");
 assert.equal(await evaluate("document.documentElement.scrollWidth > innerWidth"), false);
 assert.deepEqual(exceptions, []);
-await fs.writeFile(path.join(directory, "receipt.json"), JSON.stringify({url, browser: await send("Browser.getVersion"), node: process.version, initial, familyRuns, largeIdentity, largeTask, files, checks: ["generate all ten starting recipes", "row selection", "replay zero-new-generation", "open saved task", "ZIP/SVG/PNG downloads", "classification counts", "advanced recipe preservation", "whole-axis and subset composition controls", "63-bit identity replay", "20000 rows and 256 features", "full vs sampled rows", "failed generation preserves view", "mobile no horizontal overflow"], exceptions}, null, 2));
+await fs.writeFile(path.join(directory, "receipt.json"), JSON.stringify({url, browser: await send("Browser.getVersion"), node: process.version, initial, familyRuns, curveRuns, largeIdentity, largeTask, files, checks: ["analytic curves for nine families", "GP explicitly rejects analytic curve", "curve anchor and point controls", "irrelevant feature constant curve", "curve SVG/PNG exports", "generate all ten starting recipes", "row selection", "replay zero-new-generation", "open saved task", "ZIP/SVG/PNG downloads", "classification counts", "advanced recipe preservation", "whole-axis and subset composition controls", "63-bit identity replay", "20000 rows and 256 features", "full vs sampled rows", "failed generation preserves view", "mobile no horizontal overflow"], exceptions}, null, 2));
 socket.close();
 console.log(`Browser checks passed; evidence in ${directory}`);

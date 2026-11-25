@@ -12,7 +12,7 @@ const format = value => {
 };
 
 async function request(action, data = {}) {
-  if (current && ["row", "parameters", "export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
+  if (current && ["row", "parameters", "export", "curve"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
   if (window.r0request) return window.r0request(action, data);
   const response = await fetch("/api", {
     method: "POST", headers: {"Content-Type": "application/json", "X-r0-explorer": window.r0token},
@@ -200,7 +200,8 @@ function show(result) {
   $("row-index").max = view.total_rows - 1; $("row-index").value = 0;
   $("archive-path").value = result.archive; $("saved-id").value = view.recipe.task_id;
   $("replay-record").value = result.recipe_json; $("seed").value = view.recipe.seed; $("task-id").value = view.recipe.task_id;
-  fillControls(view.recipe.recipe); charts();
+  $("curve-row").value = 0; $("curve-row").max = view.total_rows - 1;
+  fillControls(view.recipe.recipe); charts(); clearCurve();
 }
 async function inspectRow(index) {
   await act("Loading row…", async () => {
@@ -218,7 +219,8 @@ $("task-type").onchange = () => {
   $("difficulty-label").firstChild.textContent = kind === "regression" ? "Noise / signal" : "Class separation";
   act("Updating recipe…", async () => updateRecipe("task-type"));
 };
-$("feature").onchange = charts; $("channel").onchange = charts;
+$("feature").onchange = () => {charts(); clearCurve();};
+$("channel").onchange = () => {charts(); drawCurve();};
 $("inspect-row").onclick = () => inspectRow(number("row-index"));
 $("replay").onclick = () => act("Replaying saved recipe…", async () => show(await request("generate", {record_json: $("replay-record").value, ...limits()})));
 $("open").onclick = () => act("Verifying saved dataset…", async () => show(await request("open", {archive: $("archive-path").value, task_id: $("saved-id").value})));
