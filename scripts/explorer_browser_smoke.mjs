@@ -88,6 +88,7 @@ await click("generate");
 assert.equal(await evaluate("current.view.classes.length"), 3);
 assert.equal(await evaluate("document.querySelectorAll('#class-counts tbody tr').length"), 3);
 await screenshot("classification.png");
+assert.equal(await evaluate("[...document.querySelectorAll('.plot svg text')].every(text => {const box=text.getBBox(); return box.x>=0 && box.x+box.width<=480;})"), true);
 const families = await evaluate("Object.keys(examples)"), familyRuns = [];
 for (const family of families) {
   await evaluate(`document.getElementById('family').value=${JSON.stringify(family)}; document.getElementById('family').dispatchEvent(new Event('change'))`);

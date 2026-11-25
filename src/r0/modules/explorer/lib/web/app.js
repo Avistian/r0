@@ -3,7 +3,13 @@ const $ = id => document.getElementById(id);
 let examples = {}, current = null, busy = false;
 const number = id => Number($(id).value);
 const pretty = value => JSON.stringify(value, null, 2);
-const format = value => value === null ? "unavailable" : Number(value).toLocaleString(undefined, {maximumSignificantDigits: 4});
+const format = value => {
+  if (value === null) return "unavailable";
+  const number = Number(value), magnitude = Math.abs(number);
+  return magnitude > 0 && (magnitude < 0.001 || magnitude >= 1e6)
+    ? number.toExponential(2)
+    : number.toLocaleString(undefined, {maximumSignificantDigits: 4});
+};
 
 async function request(action, data = {}) {
   if (window.r0request) return window.r0request(action, data);
