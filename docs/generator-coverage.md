@@ -152,10 +152,10 @@ not observed execution or an estimate for a chosen production mix.
 
 | Requirement | Current evidence | Remaining acceptance |
 | --- | --- | --- |
-| Shared generation, cards and replay | Public recipes, common task/episode contract, saved selected recipes and deterministic identities | Final integrated-head audit |
+| Shared generation, cards and replay | Public recipes, common task/episode contract, saved selected recipes and deterministic identities | [Combined-branch verification passed](generator-integrated-verification.md); merge acceptance on main remains |
 | Bounded training consumption | 30-task and 90-task optimizer walkthroughs; saved-group consumption with generation disabled | Full foundation-model training remains separate |
-| Local create/save/explore | Actual browser checks, full-task summaries, sampled chart rows, individual-row inspection, graphs, curves, paired views and ZIP/SVG/PNG exports | Final integrated-head verification |
-| Colab notebook and embedded explorer | Pinned install, local execution of generation/estimate cells, tested callback adapter and shared browser UI | Actual hosted install, interaction/download, Drive persistence and runtime restart are NOT_RUN |
+| Local create/save/explore | Actual browser checks, full-task summaries, sampled chart rows, individual-row inspection, graphs, curves, paired views and ZIP/SVG/PNG exports | [Combined-branch browser checks passed](generator-integrated-verification.md); merge acceptance on main remains |
+| Colab notebook and embedded explorer | Pinned install, local execution of generation/estimate cells, tested callback adapter and shared browser UI | [User confirmed hosted generation, graphs, downloads, rich views and restart](colab-user-verification.md); exact runtime metadata/count output has not been supplied |
 | Modal generation and durable restart | Guarded T4 run 45697210266: 93 comparisons passed, eight sampled tasks generated, separate single-use resume generated zero replacements | Observed billing remains NOT_MEASURED; arbitrary sampled-profile GPU capacity is not established |
 | Resource and diversity evidence | Fixed 270-task matrix; sampled 270/108-task matrices with retained timeouts and artifact audits; one-off extremes and mathematical walkthroughs | Bounded eligibility recorded above; choosing and qualifying a production mixture remains #30 |
 | Published-capability comparison | Separate source-linked comparison PR #117 | Integration with the remaining PRs |
