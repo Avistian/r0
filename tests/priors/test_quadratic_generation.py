@@ -101,3 +101,10 @@ def test_quadratic_nuisance_and_noise_pairs() -> None:
     torch.testing.assert_close(first.inputs, wider.inputs[:, :8], rtol=0, atol=0)
     torch.testing.assert_close(first.scores, wider.scores, rtol=0, atol=0)
     torch.testing.assert_close(first.scores, noisy.scores, rtol=0, atol=0)
+
+
+def test_small_positive_input_scale_keeps_valid_normalized_quadratic() -> None:
+    recipe = QuadraticRecipe(linear_strength=0)
+    original = generate_task(recipe, seed=27, task_id=1)
+    small = generate_task(replace(recipe, inputs=InputDistribution(scale=1e-7)), seed=27, task_id=1)
+    torch.testing.assert_close(original.scores, small.scores, rtol=1e-10, atol=1e-10)

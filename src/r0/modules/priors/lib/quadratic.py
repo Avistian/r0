@@ -82,7 +82,7 @@ def generate_quadratic(
             + recipe.linear_strength * (calibration @ linear)
         )
         center, scale = raw.mean(axis=0), raw.std(axis=0)
-    if not np.isfinite(raw).all() or not np.isfinite(scale).all() or np.any(scale <= 1e-12):
+    if not np.isfinite(raw).all() or not np.isfinite(scale).all() or np.any(scale <= 0):
         raise ValueError("nonfinite or degenerate calibration; task was not retried")
     x = sample_inputs(recipe.inputs, task.rows, task.features, rng, "input")
     inputs = torch.tensor(x, dtype=torch.float64, device=device)
