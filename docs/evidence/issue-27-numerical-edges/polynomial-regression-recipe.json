@@ -1,0 +1,42 @@
+{
+  "execution": {
+    "cpu_threads": 1,
+    "cuda": null,
+    "device": "cpu",
+    "gpu": null,
+    "implementation": "polynomial-v1",
+    "numpy": "2.5.5",
+    "python": "3.12.3",
+    "torch": "2.15.0+cpu"
+  },
+  "recipe": {
+    "calibration_rows": 256,
+    "degree": 16,
+    "inputs": {
+      "bound": null,
+      "df": 5.0,
+      "distribution": "gaussian",
+      "location": 0.0,
+      "mixture_gap": 2.0,
+      "scale": 5e+18,
+      "version": "inputs-v1"
+    },
+    "task": {
+      "active_features": 1,
+      "class_offsets": [],
+      "classes": 0,
+      "context_rows": 48,
+      "features": 128,
+      "noise_ratio": 0.0,
+      "rows": 64,
+      "separation": 1.0,
+      "signal_features": 128,
+      "split": 0,
+      "task_type": "regression",
+      "version": "linear-v1"
+    },
+    "version": "polynomial-v1"
+  },
+  "seed": 1,
+  "task_id": 0
+}

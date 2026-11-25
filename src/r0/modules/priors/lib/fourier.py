@@ -5,7 +5,9 @@ from dataclasses import asdict, dataclass, field
 
 import numpy as np
 import torch
+from numpy.typing import NDArray
 
+from r0.modules.priors.lib.calibration import stable_calibration
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.signals import evaluate_mechanism
@@ -87,14 +89,27 @@ def generate_fourier(
             for j in range(task.signal_features)
         ]
     )
-    samples = np.concatenate(
-        [
-            np.cos(part @ frequencies.T + phases) @ coefficients
-            for part in np.array_split(calibration, math.ceil(recipe.calibration_rows / 256))
-        ]
-    )
+
+    def calibration_samples(*, centered: bool) -> NDArray[np.float64]:
+        parts: list[NDArray[np.float64]] = []
+        for part in np.array_split(calibration, math.ceil(recipe.calibration_rows / 256)):
+            projection = part @ frequencies.T
+            basis = (
+                -2 * np.sin(projection / 2) * np.sin(phases + projection / 2)
+                if centered
+                else np.cos(projection + phases)
+            )
+            parts.append(basis @ coefficients)
+        return np.concatenate(parts)
+
+    samples = calibration_samples(centered=False)
     center, scale = samples.mean(axis=0), samples.std(axis=0)
-    if not np.isfinite(samples).all() or np.any(scale <= 1e-12):
+    centered_basis = bool(np.any(scale <= 1e-12))
+    if centered_basis:
+        # Existing successful records retain their arithmetic. Formerly rejected
+        # flat functions use an equivalent constant shift before calibration.
+        center, scale = stable_calibration(calibration_samples(centered=True))
+    if not np.isfinite(samples).all() or not np.isfinite(scale).all() or np.any(scale <= 0):
         raise ValueError("nonfinite or degenerate calibration; task was not retried")
     x = np.column_stack([rng("input", j).normal(size=task.rows) for j in range(task.features)])
     inputs = torch.tensor(x, dtype=torch.float64, device=device)
@@ -111,6 +126,8 @@ def generate_fourier(
         "calibration_rows": recipe.calibration_rows,
         "input": "independent standard normal",
     }
+    if centered_basis:
+        mechanism["centered_basis"] = True
     scores = evaluate_mechanism(mechanism, inputs)
     return complete_task(
         task, asdict(recipe), mechanism, inputs, scores, seed=seed, task_id=task_id, rng=rng

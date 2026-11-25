@@ -1,0 +1,6 @@
+python3 scripts/run_check.py r0 train --config configs/ci/smoke.toml --out /tmp/r0-smoke              # [T7]
+usage: r0 [--quiet] [-h] [--version] [--hello] [--config CONFIG] [--out OUT]
+          [--expected EXPECTED]
+          [{replay,oracle,diagnose-priors}]
+r0: error: argument command: invalid choice: 'train' (choose from 'replay', 'oracle', 'diagnose-priors')
+make: *** [Makefile:22: smoke] Error 2

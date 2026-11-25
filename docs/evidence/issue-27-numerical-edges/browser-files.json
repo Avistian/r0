@@ -1,0 +1,17 @@
+[
+  {
+    "path": "centered-fourier.png",
+    "bytes": 461221,
+    "sha256": "b13b60647f202e777f613a6d01c63065c044b32aa141da4d0ea9fa8ccb2dd838"
+  },
+  {
+    "path": "inactive-polynomial.png",
+    "bytes": 421551,
+    "sha256": "1ab8c81beda0cbba854612fd8d2d2fcf5cc0d358d3ba7934b534e062df982682"
+  },
+  {
+    "path": "receipt.json",
+    "bytes": 906,
+    "sha256": "ad3003f61625613f8d1d9a01e45dbae470352d718a7a8ef573f3d1497ea37b1d"
+  }
+]

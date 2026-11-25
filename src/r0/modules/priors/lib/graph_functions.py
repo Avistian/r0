@@ -13,7 +13,9 @@ from r0.modules.priors.lib.signals import (
     combine_signals,
     component_inputs,
     evaluate_mechanism,
+    fourier_basis,
     multiply_signals,
+    polynomial_basis,
 )
 
 
@@ -60,14 +62,14 @@ def analytic_steps(card: dict[str, Any], x: torch.Tensor, add: Callable[..., Non
         parents += ["weights"]
         formula = "input signal columns @ coefficients"
     elif version == "polynomial-v1":
-        basis = x[:, : len(card["powers"])] ** torch.tensor(card["powers"])
+        basis = polynomial_basis(card, x)
         add(
             "basis",
             "Integer powers",
             ["inputs"],
-            "input_j ** power_j",
+            "input_j ** power_j for active features; zero for inactive features",
             basis,
-            {"powers": card["powers"]},
+            {"powers": card["powers"], "active": card["active"]},
         )
         add(
             "weights",
@@ -104,16 +106,24 @@ def analytic_steps(card: dict[str, Any], x: torch.Tensor, add: Callable[..., Non
             "linear_strength * (inputs @ linear_weights)"
         )
     elif version == "fourier-v1":
-        phase = x[:, : len(card["frequencies"][0])] @ tensor("frequencies").T + tensor("phases")
+        projection = x[:, : len(card["frequencies"][0])] @ tensor("frequencies").T
+        centered = card.get("centered_basis", False)
         add(
             "phase",
-            "Frequency projection and phase",
+            "Frequency projection" if centered else "Frequency projection and phase",
             ["inputs"],
-            "inputs @ frequencies.T + phases",
-            phase,
+            "inputs @ frequencies.T" if centered else "inputs @ frequencies.T + phases",
+            projection if centered else projection + tensor("phases"),
             {"frequencies": card["frequencies"], "phases": card["phases"]},
         )
-        add("basis", "Cosine features", ["phase"], "cos(phase)", torch.cos(phase), {})
+        add(
+            "basis",
+            "Centered cosine features" if centered else "Cosine features",
+            ["phase"],
+            "-2 * sin(projection/2) * sin(phases + projection/2)" if centered else "cos(phase)",
+            fourier_basis(projection, tensor("phases"), centered=centered),
+            {"centered_basis": centered},
+        )
         parents, formula = ["basis"], "cosine features @ coefficients"
     elif version == "smooth-v1":
         projection = x[:, : len(card["directions"][0])] @ tensor("directions").T

@@ -41,8 +41,7 @@ def evaluate_mechanism(card: dict[str, Any], inputs: torch.Tensor) -> torch.Tens
         weights = tensor("weights")
         scores = inputs[:, : weights.shape[0]] @ weights
     elif version == "polynomial-v1":
-        powers = torch.tensor(card["powers"], dtype=torch.long, device=inputs.device)
-        scores = inputs[:, : len(card["powers"])] ** powers @ tensor("weights")
+        scores = polynomial_basis(card, inputs) @ tensor("weights")
     elif version == "quadratic-v1":
         directions, weights = tensor("directions"), tensor("weights")
         signal = inputs[:, : directions.shape[1]]
@@ -64,8 +63,10 @@ def evaluate_mechanism(card: dict[str, Any], inputs: torch.Tensor) -> torch.Tens
         )
         scores = torch.cat(
             [
-                torch.cos(
-                    inputs[start : start + 256, : frequencies.shape[1]] @ frequencies.T + phases
+                fourier_basis(
+                    inputs[start : start + 256, : frequencies.shape[1]] @ frequencies.T,
+                    phases,
+                    centered=card.get("centered_basis", False),
                 )
                 @ coefficients
                 for start in range(0, len(inputs), 256)
@@ -92,6 +93,24 @@ def evaluate_mechanism(card: dict[str, Any], inputs: torch.Tensor) -> torch.Tens
     if not torch.isfinite(scores).all():
         raise ValueError("nonfinite evaluated signal; function was not changed or retried")
     return scores
+
+
+def polynomial_basis(card: dict[str, Any], inputs: torch.Tensor) -> torch.Tensor:
+    """Keep the original matrix shape, but never exponentiate inactive columns."""
+    powers = torch.tensor(card["powers"], dtype=torch.long, device=inputs.device)
+    active = torch.zeros(len(powers), dtype=torch.bool, device=inputs.device)
+    active[card["active"]] = True
+    signal = torch.where(active, inputs[:, : len(powers)], 0.0)
+    return signal**powers
+
+
+def fourier_basis(
+    projection: torch.Tensor, phases: torch.Tensor, *, centered: bool = False
+) -> torch.Tensor:
+    if centered:
+        # cos(phase + projection) - cos(phase), without subtracting nearby cosines.
+        return -2 * torch.sin(projection / 2) * torch.sin(phases + projection / 2)
+    return torch.cos(projection + phases)
 
 
 def smooth_scores(
