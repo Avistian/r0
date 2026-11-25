@@ -20,6 +20,13 @@ def depth(expression):
     return 1 + max(depth(child) for child in expression["children"])
 
 
+def interaction_order(expression):
+    if isinstance(expression, int):
+        return 1
+    orders = [interaction_order(child) for child in expression["children"]]
+    return max(orders) if expression["operation"] == "sum" else sum(orders)
+
+
 def fields(recipe):
     """Top-level settings; composed child families are counted separately below."""
     task = recipe.get("task", recipe)
@@ -66,6 +73,7 @@ def fields(recipe):
     if "components" in recipe:
         values["component_count"] = len(recipe["components"])
         values["expression_depth"] = depth(recipe["expression"])
+        values["interaction_order"] = interaction_order(recipe["expression"])
     return values
 
 
@@ -108,6 +116,7 @@ def audit(root, output):
                 "outcomes": Counter(),
                 "settings": {},
                 "component_families": {},
+                "component_strengths": {},
                 "kernel_kinds": {},
             },
         )
@@ -123,6 +132,11 @@ def audit(root, output):
             bins = group["component_families"].setdefault(name, Counter())
             bins["SELECTED_COMPONENTS"] += 1
             bins[f"{status}_PARENT_COMPONENTS"] += 1
+            strengths = group["component_strengths"].setdefault(
+                str(component["strength"]), Counter()
+            )
+            strengths["SELECTED_COMPONENTS"] += 1
+            strengths[f"{status}_PARENT_COMPONENTS"] += 1
         for kernel in request["recipe"].get("kernels", []):
             bins = group["kernel_kinds"].setdefault(kernel["kind"], Counter())
             bins["SELECTED_KERNELS"] += 1

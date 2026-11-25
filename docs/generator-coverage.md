@@ -40,6 +40,7 @@ are retained; nonfinite or numerically unresolved functions fail visibly.
 | --- | --- | --- |
 | Shape | 16–20,000 rows, 1–256 features; explicit context/query sizes | Fixed matrix measures three shapes; separate family walkthroughs include lower boundaries. Exact GP uses its smaller limit |
 | Sparsity | 1 through the candidate signal count; independent nuisance columns | Dense/sparse/group-sparse examples, inactive-feature checks and controlled-pair evidence. Group/axis compatibility is validated |
+| Signal strength | Unit expected variance for Gaussian linear; independent-calibration unit-variance estimate otherwise; relative component and interaction strengths | Global signal variance is normalized, not an independently varied absolute-scale axis. Sampled composition strengths and interaction orders are reported separately from depth and component count |
 | Regression noise | Finite nonnegative noise-to-signal standard-deviation ratio; independent Gaussian noise | Fixed resource matrix uses 0.5; sampled matrix uses 0, 0.5 and 2. Controlled pairs preserve the underlying function and noise stream |
 | Classification difficulty | Nonnegative separation; finite class offsets; 2–100 classes | Fixed matrix includes 100 classes; sampled matrix includes weak separation and one-row contexts. Counts are observed, never forced |
 | Input location/scale | Configurable for the four-distribution families | One-off family walkthroughs cover all four; broad-profile selected and completed histograms must be distinguished |
