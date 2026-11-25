@@ -66,7 +66,8 @@ to finish, so its child process is not abandoned. Saved datasets remain on disk.
 This slice supplies the local creation/inspection loop. Expandable generation
 graphs, reconstructed component values, analytic/conditional GP curves, paired
 comparisons and embedded Colab controls remain required #27 follow-up slices.
-The existing generation notebook still needs its final update and hosted proof.
+The [embedded Colab adapter](colab-explorer.md) shares this UI; its hosted proof
+is tracked separately.
 
 ## Reproducing browser checks
 

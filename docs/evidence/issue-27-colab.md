@@ -31,8 +31,10 @@ successful computations must not be confused with counts of committed tasks.
 
 Local notebook generation/estimate cells were exercised with a temporary output
 directory; install, Drive mount, browser interaction and download require Colab.
-Colab and GPU acceptance are **NOT_RUN**. The embedded explorer and additional
-families remain separate #27 PRs. The small linear smoke is not scale validation.
+Colab and GPU acceptance are **NOT_RUN**. This original setup evidence covers the
+small linear smoke; it is not scale validation. The current
+[embedded explorer adapter and broader notebook](../colab-explorer.md) are a later
+#27 slice and have their own verification status.
 
 Colab setup follows the official [I/O notebook](https://colab.research.google.com/notebooks/io.ipynb)
 and [runtime FAQ](https://research.google.com/colaboratory/faq.html).

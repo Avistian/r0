@@ -9,24 +9,14 @@ from threading import Lock
 from typing import Any, cast
 from urllib.parse import urlsplit
 
+from r0.modules.explorer.lib.page import explorer_page
 from r0.modules.explorer.lib.session import ExplorerSession
-
-
-def explorer_page(token: str) -> str:
-    assets = Path(__file__).parent / "web"
-    return (
-        (assets / "index.html")
-        .read_text()
-        .replace("/* STYLES */", (assets / "style.css").read_text())
-        .replace("/* APPLICATION */", (assets / "app.js").read_text())
-        .replace("/* TRANSPORT */", "window.r0token = " + json.dumps(token) + ";")
-    )
 
 
 def serve_explorer(output_dir: Path, *, port: int = 8765) -> None:
     session = ExplorerSession(output_dir)
     token = secrets.token_urlsafe(32)
-    page = explorer_page(token).encode()
+    page = explorer_page(token=token).encode()
     actions = Lock()
 
     class Handler(BaseHTTPRequestHandler):
