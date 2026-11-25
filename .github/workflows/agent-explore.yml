@@ -19,6 +19,6 @@ jobs:
   factory:
     permissions:
       contents: read
-    uses: Avistian/ml-factory/.github/workflows/agent-explore.yml@462fbd57fca0e3a1b9e18c4eeb453bebe0f1bc2e
+    uses: Avistian/ml-factory/.github/workflows/agent-explore.yml@94ccc691b6c09228767f59b86e96e06290ccb6ff
     secrets:
       FACTORY_PAT: ${{ secrets.FACTORY_PAT }}
