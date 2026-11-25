@@ -63,7 +63,9 @@ The generation timer covers request execution, task construction, serialization,
 archive verification and persistence performed by `run_generation`. It excludes
 interpreter/library startup and the subsequent independent replay/graph check.
 `process_seconds` additionally includes startup and verification. Generation peak
-RSS includes imported libraries; verification peak RSS is reported separately.
+RSS includes imported libraries. Both RSS readings are cumulative process
+high-water marks taken before and after verification; the later reading does not
+isolate verification memory.
 
 After saving, each task is reloaded through `load_group`, replayed from its concrete
 recipe, and compared exactly on inputs, scores, targets, probabilities and split
@@ -73,8 +75,12 @@ family walkthroughs provide worked mathematical checks.
 
 ## Failures and estimates
 
-Every outcome remains in the summary: PASS, FAILED, TIMEOUT or NOT_RUN. The last
-means no terminal result was retained, including an interrupted supervisor. A
+Every outcome remains in the summary: PASS, FAILED, TIMEOUT, INCOMPLETE,
+LAUNCH_UNKNOWN or NOT_RUN. INCOMPLETE means a confirmed process launch has no
+terminal result. LAUNCH_UNKNOWN means a launch was requested but no process-start
+record or terminal result confirms it. NOT_RUN has no launch request. Planned and
+confirmed launched counts are separate. Receipts are published atomically; a damaged
+worker receipt is recorded without erasing the parent's observed timeout or exit. A
 saved timing is published before verification, so a later verification failure
 does not erase a successful generation measurement. Failed cases are not retried,
 resized or replaced. The tool requires a fresh output directory.

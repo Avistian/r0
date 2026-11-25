@@ -2,11 +2,24 @@
 
 import argparse
 import json
+import os
 import platform
 import resource
 import time
 from dataclasses import asdict
 from pathlib import Path
+
+
+def publish(path, record):
+    if path.exists():
+        raise FileExistsError(path)
+    pending = path.with_suffix(".pending")
+    with pending.open("x") as stream:
+        json.dump(record, stream, indent=2, allow_nan=False)
+        stream.write("\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    pending.rename(path)
 
 
 def main():
@@ -15,17 +28,20 @@ def main():
     parser.add_argument("--address-space-bytes", type=int, required=True)
     parser.add_argument("--probe", choices=("memory", "timeout"))
     args = parser.parse_args()
+    publish(args.directory / "worker-started.json", {"pid": os.getpid()})
     resource.setrlimit(resource.RLIMIT_AS, (args.address_space_bytes, args.address_space_bytes))
     assert resource.getrlimit(resource.RLIMIT_AS) == (args.address_space_bytes,) * 2
     if args.probe == "memory":
         try:
             bytearray(args.address_space_bytes + 1)
         except MemoryError:
-            (args.directory / "worker.json").write_text('{"memory_limit": "ENFORCED"}\n')
+            publish(args.directory / "worker.json", {"memory_limit": "ENFORCED"})
             return
         raise AssertionError("address-space limit did not reject allocation")
     if args.probe == "timeout":
-        (args.directory / "started.json").write_text('{"sleep_seconds": 60}\n')
+        # Author a damaged receipt to verify that the supervisor still retains its timeout.
+        (args.directory / "worker.json").write_text('{"interrupted_receipt":')
+        publish(args.directory / "started.json", {"sleep_seconds": 60})
         time.sleep(60)
         raise AssertionError("watchdog failed to interrupt sleep")
 
@@ -53,7 +69,7 @@ def main():
         "verification": "NOT_RUN",
     }
     # Publish the timing before verification; a verification timeout must not erase it.
-    (args.directory / "measurement.json").write_text(json.dumps(result, indent=2) + "\n")
+    publish(args.directory / "measurement.json", result)
     if summary.status != "COMPLETE":
         raise RuntimeError(f"generation did not complete: {summary}")
     archives = list((args.directory / "run").rglob("data-*.zip"))
@@ -79,11 +95,13 @@ def main():
             "graph_signal_error": graph["signal_max_error"],
             "episode_id": task.episode_id,
             "archive_bytes": archives[0].stat().st_size,
-            "verification_peak_rss_bytes": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+            "process_peak_rss_after_verification_bytes": resource.getrusage(
+                resource.RUSAGE_SELF
+            ).ru_maxrss
             * 1024,
         }
     )
-    (args.directory / "worker.json").write_text(json.dumps(result, indent=2) + "\n")
+    publish(args.directory / "worker.json", result)
 
 
 if __name__ == "__main__":

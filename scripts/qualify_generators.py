@@ -10,15 +10,20 @@ import statistics
 import subprocess
 import sys
 import time
+from contextlib import suppress
 from pathlib import Path
 
 
 def write(path, value):
-    with path.open("x") as stream:
+    if path.exists():
+        raise FileExistsError(path)
+    pending = path.with_suffix(".pending")
+    with pending.open("x") as stream:
         json.dump(value, stream, indent=2, allow_nan=False)
         stream.write("\n")
         stream.flush()
         os.fsync(stream.fileno())
+    pending.rename(path)
 
 
 def execute(directory, seconds, memory_bytes, probe=None):
@@ -32,6 +37,7 @@ def execute(directory, seconds, memory_bytes, probe=None):
     ]
     if probe:
         command += ["--probe", probe]
+    write(directory / "launch-request.json", {"command": command, "wall_seconds": seconds})
     started = time.perf_counter()
     process = subprocess.Popen(
         command,
@@ -48,14 +54,17 @@ def execute(directory, seconds, memory_bytes, probe=None):
     )
     timed_out = False
     try:
+        write(directory / "launch.json", {"pid": process.pid})
         stdout, stderr = process.communicate(timeout=seconds)
     except subprocess.TimeoutExpired:
         timed_out = True
-        os.killpg(process.pid, signal.SIGKILL)
+        with suppress(ProcessLookupError):
+            os.killpg(process.pid, signal.SIGKILL)
         stdout, stderr = process.communicate()
     finally:
         if process.poll() is None:
-            os.killpg(process.pid, signal.SIGKILL)
+            with suppress(ProcessLookupError):
+                os.killpg(process.pid, signal.SIGKILL)
             process.communicate()
     (directory / "stdout.txt").write_text(stdout)
     (directory / "stderr.txt").write_text(stderr)
@@ -64,9 +73,15 @@ def execute(directory, seconds, memory_bytes, probe=None):
         "timed_out": timed_out,
         "process_seconds": time.perf_counter() - started,
     }
+    result["receipt_errors"] = {}
     for name in ("measurement", "worker"):
         path = directory / f"{name}.json"
-        result[name] = json.loads(path.read_text()) if path.exists() else None
+        result[name] = None
+        if path.exists():
+            try:
+                result[name] = json.loads(path.read_text())
+            except (OSError, ValueError) as error:
+                result["receipt_errors"][name] = str(error)
     result["status"] = (
         "TIMEOUT"
         if timed_out
@@ -79,10 +94,25 @@ def execute(directory, seconds, memory_bytes, probe=None):
 def summarize(root):
     manifest = json.loads((root / "manifest.json").read_text())
     groups = {}
-    totals = {"PASS": 0, "FAILED": 0, "TIMEOUT": 0, "NOT_RUN": 0}
+    totals = {
+        "PASS": 0,
+        "FAILED": 0,
+        "TIMEOUT": 0,
+        "INCOMPLETE": 0,
+        "LAUNCH_UNKNOWN": 0,
+        "NOT_RUN": 0,
+    }
     for case in manifest["cases"]:
         path = root / case["id"] / "result.json"
-        result = json.loads(path.read_text()) if path.exists() else {"status": "NOT_RUN"}
+        launched = (path.parent / "launch.json").exists() or (
+            path.parent / "worker-started.json"
+        ).exists()
+        missing = (
+            "INCOMPLETE"
+            if launched
+            else ("LAUNCH_UNKNOWN" if (path.parent / "launch-request.json").exists() else "NOT_RUN")
+        )
+        result = json.loads(path.read_text()) if path.exists() else {"status": missing}
         status = result["status"]
         if status == "PASS" and result["worker"].get("verification") != "PASS":
             status = "FAILED"
@@ -105,7 +135,11 @@ def summarize(root):
                 "features": controls["features"],
                 "active_features": controls["active_features"],
                 "classes": controls["classes"],
-                "attempts": len(entries),
+                "planned": len(entries),
+                "confirmed_launched": sum(
+                    s not in ("NOT_RUN", "LAUNCH_UNKNOWN") for _, _, s in entries
+                ),
+                "launch_unknown": sum(s == "LAUNCH_UNKNOWN" for _, _, s in entries),
                 "passed": len(successes),
                 "outcomes": {status: sum(s == status for _, _, s in entries) for status in totals},
                 "qualification": "MEASURED_LOCAL_CPU" if qualified else "NOT_QUALIFIED",
@@ -205,6 +239,7 @@ def main():
         else:
             assert result["timed_out"], result
             assert (directory / "started.json").exists(), "probe never started"
+            assert "worker" in result["receipt_errors"], "damaged receipt was not retained"
     for index, case in enumerate(selected):
         directory = args.out / case["id"]
         directory.mkdir()
