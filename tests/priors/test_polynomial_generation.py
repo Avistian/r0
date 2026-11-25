@@ -73,3 +73,13 @@ def test_saved_polynomial_recipe_replays_through_shared_decoder() -> None:
     original = generate_task(PolynomialRecipe(), seed=11, task_id=4)
     recipe = recipe_from_dict(json.loads(original.recipe_json)["recipe"])
     assert original.episode() == generate_task(recipe, seed=11, task_id=4).episode()
+
+
+@pytest.mark.parametrize("degree", [1, 4, 16])
+def test_small_scale_monomial_retains_normalized_signal(degree: int) -> None:
+    recipe = PolynomialRecipe(
+        task=LinearRecipe(features=1, signal_features=1, active_features=1), degree=degree
+    )
+    original = generate_task(recipe, seed=27, task_id=1)
+    small = generate_task(replace(recipe, inputs=InputDistribution(scale=1e-7)), seed=27, task_id=1)
+    torch.testing.assert_close(original.scores, small.scores, rtol=1e-10, atol=1e-10)
