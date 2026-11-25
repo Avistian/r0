@@ -101,9 +101,7 @@ from pathlib import Path
 from r0.modules.explorer import ExplorerSession
 
 session = ExplorerSession(Path("/tmp/r0-pair-example"))
-base = session.request(
-    "generate", {"recipe": {"noise_ratio": 0.2}, "seed": "27", "task_id": "9"}
-)
+base = session.request("generate", {"recipe": {"noise_ratio": 0.2}, "seed": "27", "task_id": "9"})
 comparison = session.request(
     "pair",
     {

@@ -50,7 +50,7 @@ def create(root: Path) -> None:
             classes=0 if kind == "regression" else 2 if kind == "binary" else 3,
             noise_ratio=0.2 if kind == "regression" else 0,
         )
-        if "calibration_rows" in recipe:
+        if family == "Exact Gaussian process":
             recipe["calibration_rows"] = 32
         session.request("generate", {"recipe": recipe, "seed": str(2**63 - 1), "task_id": i})
         result = session.request(
