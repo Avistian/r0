@@ -27,6 +27,7 @@
 <label>Paste exported recipe.json<textarea id="replay-record" rows="5" spellcheck="false"></textarea></label><button id="replay" type="button">Replay recipe</button>
 <label>Archive path within output folder<input id="archive-path" placeholder="…/groups/0/0/attempt-0.zip"></label>
 <label>Saved task identifier<input id="saved-id" type="text" inputmode="numeric" value="0" min="0"></label><button id="open" type="button">Open saved dataset</button>
+<label>Saved comparison path<input id="pair-path" placeholder="pairs/….json"></label><button id="pair-open" type="button">Open saved comparison</button>
 <p id="output-dir" class="muted path"></p>
 </details>
 </aside>
@@ -44,6 +45,25 @@
 <article><h3>Feature and latent signal</h3><p class="muted">Observed points, not a response curve · other features vary</p><div id="signal-plot" class="plot"></div></article>
 <article><h3 id="diagnostic-title">Signal and observation</h3><p class="muted" id="diagnostic-note"></p><div id="diagnostic-plot" class="plot"></div></article>
 </div>
+<article id="pair-panel">
+<p class="eyebrow">CHANGE ONE PROPERTY</p><h3>Compare two versions of this dataset</h3>
+<p class="muted">Keep the seed, shared input columns and context/query split fixed. Generate one saved variant of the dataset shown above.</p>
+<div class="chart-controls pair-controls"><label>Property<select id="pair-intervention"></select></label><label id="pair-value-label">New value<input id="pair-value" type="number" min="0" step="0.1"></label></div>
+<label class="checkbox-label" id="pair-estimate-label" hidden><input id="pair-estimate" type="checkbox">Allow calibration-based variance estimates for this sparsity comparison</label>
+<p id="pair-policy-note" class="muted"></p><button id="pair-create" class="primary">Generate and save comparison</button>
+<p class="muted">Uses the original generation device and the time/output limits in the sidebar. Editing these controls does not change an already saved comparison.</p>
+<section id="pair-results" hidden>
+<div class="title-row"><div><p class="eyebrow">SAVED COMPARISON</p><h3 id="pair-title"></h3></div><div class="actions"><button id="pair-card">Card JSON</button><button id="pair-export">Download both datasets</button></div></div>
+<p id="pair-variance" class="muted"></p><p id="pair-fixed" class="pair-fixed"></p>
+<div class="chart-controls pair-controls"><label>Common feature<select id="pair-feature"></select></label><label>Plot<select id="pair-metric"></select></label><label>Score / class<select id="pair-channel"></select></label></div>
+<p id="pair-sampling" class="muted"></p>
+<div class="chart-grid"><section><h4 id="pair-before-title">Before</h4><div id="pair-before-plot" class="plot"></div></section><section><h4 id="pair-after-title">After</h4><div id="pair-after-plot" class="plot"></div></section></div>
+<p class="legend">Green: context · orange: query · select a point to inspect the same row in both datasets</p><pre id="pair-row" hidden></pre>
+<h4>Measurements across all rows</h4><div id="pair-measurements" class="table-wrap"></div>
+<div id="pair-classes" hidden><h4>Class counts</h4><div id="pair-counts" class="table-wrap"></div></div>
+<details><summary>Comparison card and saved locations</summary><pre id="pair-details"></pre></details>
+</section>
+</article>
 <article><h3 id="curve-title">Response curve</h3><p id="curve-description" class="muted">Vary the feature selected above. Every other input stays fixed at the chosen row. This shows the saved function, without observation noise or class-separation adjustments.</p>
 <div class="chart-controls"><label>Fixed inputs from row<input id="curve-row" type="number" min="0" value="0"></label><label>Curve points<input id="curve-points" type="number" min="2" max="512" value="129"></label></div>
 <div id="gp-options" hidden>
@@ -70,5 +90,5 @@
 </div>
 </section>
 </main>
-<script>/* TRANSPORT */</script><script>/* APPLICATION */</script><script>/* CURVES */</script><script>/* GRAPHS */</script>
+<script>/* TRANSPORT */</script><script>/* APPLICATION */</script><script>/* CURVES */</script><script>/* GRAPHS */</script><script>/* PAIRS */</script>
 </body></html>
