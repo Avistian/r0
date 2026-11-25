@@ -11,8 +11,10 @@ from r0.modules.priors.lib.fourier import generate_fourier as generate_fourier
 from r0.modules.priors.lib.generate import Recipe as Recipe
 from r0.modules.priors.lib.generate import generate_task as generate_task
 from r0.modules.priors.lib.generate import recipe_from_dict as recipe_from_dict
+from r0.modules.priors.lib.inputs import InputDistribution as InputDistribution
 from r0.modules.priors.lib.linear import LinearRecipe as LinearRecipe
 from r0.modules.priors.lib.linear import generate_linear as generate_linear
+from r0.modules.priors.lib.polynomial import PolynomialRecipe as PolynomialRecipe
 from r0.modules.priors.lib.profile import diagnostic_profile as diagnostic_profile
 from r0.modules.priors.lib.representatives import FAMILIES as FAMILIES
 from r0.modules.priors.lib.representatives import GeneratedTask as GeneratedTask

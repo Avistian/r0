@@ -125,11 +125,11 @@ def test_classification_keeps_its_controls_and_has_valid_agreement_recipes(
         LinearRecipe(**entry)
 
 
-@pytest.mark.parametrize("family", ["fourier", "periodic"])
+@pytest.mark.parametrize("family", ["fourier", "periodic", "polynomial"])
 def test_admission_diagnostics_preserve_the_requested_family(
     launch: tuple[Path, dict[str, str]], family: str
 ) -> None:
-    from r0.modules.priors import FourierRecipe, recipe_from_dict
+    from r0.modules.priors import FourierRecipe, PolynomialRecipe, recipe_from_dict
 
     root, env = launch
     (root / "configs/generation/request.toml").write_text(
@@ -139,13 +139,18 @@ def test_admission_diagnostics_preserve_the_requested_family(
     assert result.returncode == 0, result.stderr
     plan = json.loads((root / "reservation.json").read_text())
     requested = recipe_from_dict(plan["request"]["recipe"])
-    assert isinstance(requested, FourierRecipe)
+    assert isinstance(requested, (FourierRecipe, PolynomialRecipe))
     assert requested.task.rows == 128
     assert requested.task.noise_ratio == 0.5
     for entry in plan["agreement_recipes"]:
         recipe = recipe_from_dict(entry)
-        assert isinstance(recipe, FourierRecipe)
-        assert recipe.family == requested.family
-        assert recipe.terms == requested.terms
+        assert type(recipe) is type(requested)
+        if isinstance(recipe, FourierRecipe) and isinstance(requested, FourierRecipe):
+            assert recipe.family == requested.family
+            assert recipe.terms == requested.terms
+        if isinstance(recipe, PolynomialRecipe) and isinstance(requested, PolynomialRecipe):
+            assert recipe.inputs == requested.inputs
+            assert recipe.degree == requested.degree
+        assert isinstance(recipe, (FourierRecipe, PolynomialRecipe))
         assert recipe.task.rows == 64
         assert recipe.task.noise_ratio == 0

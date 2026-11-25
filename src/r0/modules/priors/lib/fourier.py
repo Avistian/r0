@@ -1,15 +1,14 @@
 """Finite trigonometric functions with independent population calibration."""
 
 import math
-import platform
 from dataclasses import asdict, dataclass, field
 
 import numpy as np
 import torch
 
 from r0.modules.priors.lib.linear import LinearRecipe
-from r0.modules.priors.lib.representatives import encode, record_fingerprint
-from r0.modules.priors.lib.targets import adapt_targets
+from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.task_output import complete_task
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -112,16 +111,6 @@ def generate_fourier(
         ]
     )
     scores = (scores - torch.tensor(center, device=device)) / torch.tensor(scale, device=device)
-    targets, probabilities, classes = adapt_targets(
-        task, scores, noise_rng=rng("noise"), label_rng=rng("labels")
-    )
-    permutation = torch.tensor(rng("split", task.split).permutation(task.rows), device=device)
-    config = asdict(recipe)
-    source_config = {
-        **config,
-        "task": {k: v for k, v in asdict(task).items() if k not in ("context_rows", "split")},
-    }
-    source_id = record_fingerprint((source_config, seed, task_id))
     mechanism = {
         "family": recipe.family,
         "version": recipe.version,
@@ -135,33 +124,6 @@ def generate_fourier(
         "calibration_rows": recipe.calibration_rows,
         "input": "independent standard normal",
     }
-    return TrainingTask(
-        source_id,
-        record_fingerprint((source_id, task.split, task.context_rows)),
-        task.task_type,
-        encode(
-            {
-                "recipe": config,
-                "seed": seed,
-                "task_id": task_id,
-                "execution": {
-                    "implementation": recipe.version,
-                    "device": device,
-                    "python": platform.python_version(),
-                    "numpy": np.__version__,
-                    "torch": str(torch.__version__),
-                    "cpu_threads": torch.get_num_threads(),
-                    "cuda": torch.version.cuda,
-                    "gpu": torch.cuda.get_device_name() if device == "cuda" else None,
-                },
-            }
-        ),
-        encode(mechanism),
-        inputs,
-        targets,
-        scores,
-        probabilities,
-        permutation[: task.context_rows],
-        permutation[task.context_rows :],
-        classes,
+    return complete_task(
+        task, asdict(recipe), mechanism, inputs, scores, seed=seed, task_id=task_id, rng=rng
     )
