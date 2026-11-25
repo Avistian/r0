@@ -52,6 +52,11 @@ use the mechanism selector to return to the whole task. Edit original row indice
 and the first value column before rebuilding to inspect different rows or terms.
 Changing those controls clears the old graph. Dataset changes reset the panel.
 
+Smaller graphs use a compact top-to-bottom flow; wide graphs keep a horizontal
+layout. Color and labels distinguish inputs, random draws, transformations, signals
+and targets. Selecting a node highlights its incoming and outgoing connections.
+Fit and zoom controls keep larger diagrams navigable.
+
 Diagrams scroll within the panel and export as SVG/PNG; PNG keeps the diagram's
 aspect ratio and caps its longest edge at 4096 pixels. Graph JSON preserves the
 returned records. Matrix heatmaps show the first 16 returned matrix rows; tables
