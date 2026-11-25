@@ -58,3 +58,11 @@ baseline checkout's `scripts/run_check.py`, which selects that checkout's source
 No environment installation or editable-metadata changes are needed. These temporary
 JSON files are execution artifacts, not durable published outputs. This compatibility
 check does not establish GPU acceptance, explorer interaction or full #27 completion.
+
+Observed compatibility at `159da72d7031a775a6128030ef2ca4aca1d273bd`: all 32
+complete case records match the baseline exactly. SHA-256 of the cases serialized
+with `json.dumps(cases, sort_keys=True, separators=(",", ":"))` is
+`62b585540807a81bc5af28fc09f0b66eb5d055e90b0a3c259343de6fb2cf33a6` for both.
+Independent spec review compared these artifacts and passed the 27 evaluator tests;
+standards review found no violations or actionable smells. Author full check passed
+417 tests with one CUDA skip. Train/eval smoke commands remain unavailable (exit 2).
