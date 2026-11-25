@@ -6,6 +6,8 @@ import numpy as np
 
 from r0.modules.episodes import Feature, Row, Target, TaskType
 from r0.modules.priors.lib.authored import authored_episode as authored_episode
+from r0.modules.priors.lib.fourier import FourierRecipe as FourierRecipe
+from r0.modules.priors.lib.fourier import generate_fourier as generate_fourier
 from r0.modules.priors.lib.linear import LinearRecipe as LinearRecipe
 from r0.modules.priors.lib.linear import generate_linear as generate_linear
 from r0.modules.priors.lib.profile import diagnostic_profile as diagnostic_profile
