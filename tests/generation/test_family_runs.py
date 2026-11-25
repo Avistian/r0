@@ -21,6 +21,9 @@ from r0.modules.priors import FourierRecipe, LinearRecipe, generate_task, recipe
         'version = "smooth-v1"\nfamily = "radial"\nprojection = "ridge"\nterms = 4',
         'version = "exact-gp-v1"\ncalibration_rows = 32',
         'version = "exact-gp-v1"\ncalibration_rows = 32\n'
+        '[[recipe.kernels]]\nkind = "gibbs"\nlength_slopes = [0.2, -0.3, 0.4, -0.5]\n'
+        "amplitude_slopes = [0.3, 0.2, 0.1, 0.0]",
+        'version = "exact-gp-v1"\ncalibration_rows = 32\n'
         '[[recipe.kernels]]\nkind = "rational_quadratic"\nalpha = 0.2',
         'version = "exact-gp-v1"\ncalibration_rows = 32\n'
         '[[recipe.kernels]]\nkind = "spectral"\nfrequencies = [0.2, 0.3, 0.4, 0.5]\n'

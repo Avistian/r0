@@ -8,6 +8,7 @@ import torch
 from r0.modules.priors.lib.calibration import stable_calibration
 from r0.modules.priors.lib.inputs import InputDistribution, sample_inputs
 from r0.modules.priors.lib.kernels import (
+    GibbsKernel,
     Kernel,
     SpectralKernel,
     StationaryKernel,
@@ -50,6 +51,15 @@ class GaussianProcessRecipe:
                 and len(kernel.frequencies) != len(axes)
             ):
                 raise ValueError("frequencies must match selected kernel axes")
+            if isinstance(kernel, GibbsKernel):
+                for values in (
+                    kernel.centers,
+                    kernel.transition_scales,
+                    kernel.length_slopes,
+                    kernel.amplitude_slopes,
+                ):
+                    if values and len(values) != len(axes):
+                        raise ValueError("Gibbs fields must match selected kernel axes")
             if self.combine == "product" and kernel.weight != 1:
                 raise ValueError("product kernels require unit component weights")
             used.update(axes)
