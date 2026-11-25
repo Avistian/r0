@@ -48,3 +48,7 @@ large shapes are separate from these training-output caps and have their own
 180-second limit. No full-size comparison arrays are retained. Dispatch only
 through the guarded workflow, after local checks and within explicitly authorized
 remaining reservations. A successful CPU preflight is not proof of CUDA agreement.
+
+The [retained T4 results](modal-device-results.md) establish this bounded run at
+its identified source, including 93 passing comparisons and zero-regeneration
+resume. They do not qualify every sampled recipe or establish hosted Colab use.
