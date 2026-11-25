@@ -87,14 +87,23 @@ def main(mode: str, out: Path) -> None:
         assert task.episode_id == record["episode_id"]
         with np.load(out / f"{name}.npz", allow_pickle=False) as arrays:
             for key in ("inputs", "scores", "targets"):
-                assert np.array_equal(getattr(task, key).numpy(), arrays[key]), (name, key)
+                actual = getattr(task, key).numpy()
+                expected = arrays[key]
+                assert actual.dtype == expected.dtype
+                assert actual.shape == expected.shape
+                assert actual.tobytes() == expected.tobytes(), (name, key)
             if task.probabilities is not None:
-                assert np.array_equal(task.probabilities.numpy(), arrays["probabilities"])
+                actual = task.probabilities.numpy()
+                expected = arrays["probabilities"]
+                assert actual.dtype == expected.dtype
+                assert actual.shape == expected.shape
+                assert actual.tobytes() == expected.tobytes()
     result = {
         "baseline_source": baseline["source"],
         "verification_source": subprocess.check_output(
             ["git", "rev-parse", "HEAD"], text=True
         ).strip(),
+        "driver_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "cases": len(baseline["cases"]),
         "bitwise_arrays_and_exact_cards": "PASS",
     }

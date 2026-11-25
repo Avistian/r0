@@ -1,7 +1,7 @@
 # Explorer inside a hosted Colab notebook
 
 [The generation notebook](../notebooks/generation.ipynb) installs the pinned adapter
-revision `e11e3a1e837304558cdbe9cd3b8ae1f53ad805ea`. It offers all ten starting recipes
+revision `b7222226ebd71840d440560338061b564c6f6f44`. It offers all ten starting recipes
 for bounded generation, measurement and larger resumable runs, followed by the
 embedded explorer. The explorer uses the same controls, charts and session actions
 as the local application, including saved side-by-side comparisons with common axes,
