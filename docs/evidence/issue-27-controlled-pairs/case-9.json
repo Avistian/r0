@@ -1,0 +1,163 @@
+{
+  "after": {
+    "active_features": 4,
+    "center": [
+      -0.018903575249383887
+    ],
+    "episode_id": "b9a349b3341a5b8a9f968544759d3655a986924a3e14b0489f828fdd45bab858",
+    "expected_signal_variance": null,
+    "features": 8,
+    "mechanism_sha256": "6759ae7be5597ac3a6f30848c60afb9407e49028522b24310f57c90b2931597f",
+    "normalization": "estimated from an independent generating-distribution sample",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "grouped-linear-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "calibration_rows": 4096,
+        "group_size": 2,
+        "inputs": {
+          "bound": null,
+          "df": 5.0,
+          "distribution": "gaussian",
+          "location": 0.0,
+          "mixture_gap": 2.0,
+          "scale": 1.0,
+          "version": "inputs-v1"
+        },
+        "task": {
+          "active_features": 4,
+          "class_offsets": [],
+          "classes": 0,
+          "context_rows": 48,
+          "features": 8,
+          "noise_ratio": 0.8,
+          "rows": 64,
+          "separation": 1.0,
+          "signal_features": 8,
+          "split": 0,
+          "task_type": "regression",
+          "version": "linear-v1"
+        },
+        "version": "grouped-linear-v1"
+      },
+      "seed": 27,
+      "task_id": 9
+    },
+    "residual_std": 0.7845359085217639,
+    "rows": 64,
+    "scale": [
+      0.9983347490559836
+    ],
+    "signal_std": [
+      1.0107283546145671
+    ],
+    "source_task_id": "2e832ed3bcc3fd4fc929932ce2d205f0898203b3992a519f114e71f568263a8c"
+  },
+  "allow_estimated_variance": false,
+  "before": {
+    "active_features": 4,
+    "center": [
+      -0.018903575249383887
+    ],
+    "episode_id": "eb93658f308c226b3d82cde31a5d20b196fe1a8a8bad709179f7d4976fa7e2c0",
+    "expected_signal_variance": null,
+    "features": 8,
+    "mechanism_sha256": "6759ae7be5597ac3a6f30848c60afb9407e49028522b24310f57c90b2931597f",
+    "normalization": "estimated from an independent generating-distribution sample",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "grouped-linear-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "calibration_rows": 4096,
+        "group_size": 2,
+        "inputs": {
+          "bound": null,
+          "df": 5.0,
+          "distribution": "gaussian",
+          "location": 0.0,
+          "mixture_gap": 2.0,
+          "scale": 1.0,
+          "version": "inputs-v1"
+        },
+        "task": {
+          "active_features": 4,
+          "class_offsets": [],
+          "classes": 0,
+          "context_rows": 48,
+          "features": 8,
+          "noise_ratio": 0.2,
+          "rows": 64,
+          "separation": 1.0,
+          "signal_features": 8,
+          "split": 0,
+          "task_type": "regression",
+          "version": "linear-v1"
+        },
+        "version": "grouped-linear-v1"
+      },
+      "seed": 27,
+      "task_id": 9
+    },
+    "residual_std": 0.19613397713044098,
+    "rows": 64,
+    "scale": [
+      0.9983347490559836
+    ],
+    "signal_std": [
+      1.0107283546145671
+    ],
+    "source_task_id": "b3cbdded95fee20e6e397b4b8204a0cee0e25eaef4780fff8d802d3acf04095c"
+  },
+  "changed_target_fraction": 1.0,
+  "control": {
+    "after": 0.8,
+    "before": 0.2,
+    "field": "noise_ratio"
+  },
+  "independent_source_draws": 1,
+  "intervention": "noise",
+  "observed_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": true,
+    "query_indices": true,
+    "scores": true,
+    "seed": true,
+    "task_id": true
+  },
+  "pair_id": "c8f74a2d4bdb3f7d792f7621a4502da9e78a811ad71ad3217335eced5e1fce66",
+  "required_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": true,
+    "query_indices": true,
+    "scores": true,
+    "seed": true,
+    "task_id": true
+  },
+  "seed": 27,
+  "task_id": 9,
+  "variance_control": "unchanged_mechanism",
+  "variant_count": 2,
+  "version": "controlled-pair-v1"
+}

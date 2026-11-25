@@ -25,6 +25,10 @@ from r0.modules.priors.lib.kernels import SpectralKernel as SpectralKernel
 from r0.modules.priors.lib.kernels import StationaryKernel as StationaryKernel
 from r0.modules.priors.lib.linear import LinearRecipe as LinearRecipe
 from r0.modules.priors.lib.linear import generate_linear as generate_linear
+from r0.modules.priors.lib.pairs import TaskPair as TaskPair
+from r0.modules.priors.lib.pairs import compare_pair as compare_pair
+from r0.modules.priors.lib.pairs import generate_pair as generate_pair
+from r0.modules.priors.lib.pairs import paired_recipe as paired_recipe
 from r0.modules.priors.lib.polynomial import PolynomialRecipe as PolynomialRecipe
 from r0.modules.priors.lib.profile import diagnostic_profile as diagnostic_profile
 from r0.modules.priors.lib.quadratic import QuadraticRecipe as QuadraticRecipe

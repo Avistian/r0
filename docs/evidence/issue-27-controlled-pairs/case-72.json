@@ -1,0 +1,181 @@
+{
+  "after": {
+    "active_features": 4,
+    "center": [
+      -0.49241682634535494
+    ],
+    "episode_id": "15c68c8257dd5d46d534aa0f7ed17532a0ef97a87bd4e7e841cd8b8b6fdc046b",
+    "expected_signal_variance": null,
+    "features": 8,
+    "mechanism_sha256": "202e217777f013e078c2d6d89870a1fa223500136b3a7fce07a29597facb86ac",
+    "normalization": "estimated from independent calibration inputs in the same joint GP draw",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "exact-gp-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "calibration_rows": 256,
+        "combine": "sum",
+        "inputs": {
+          "bound": null,
+          "df": 5.0,
+          "distribution": "gaussian",
+          "location": 0.0,
+          "mixture_gap": 2.0,
+          "scale": 1.0,
+          "version": "inputs-v1"
+        },
+        "kernels": [
+          {
+            "axes": [],
+            "feature_scales": [],
+            "kind": "rbf",
+            "length_scale": 1.0,
+            "weight": 1.0
+          }
+        ],
+        "task": {
+          "active_features": 4,
+          "class_offsets": [],
+          "classes": 0,
+          "context_rows": 48,
+          "features": 8,
+          "noise_ratio": 0.8,
+          "rows": 64,
+          "separation": 1.0,
+          "signal_features": 8,
+          "split": 0,
+          "task_type": "regression",
+          "version": "linear-v1"
+        },
+        "version": "exact-gp-v1"
+      },
+      "seed": 27,
+      "task_id": 72
+    },
+    "residual_std": 0.8138642562092603,
+    "rows": 64,
+    "scale": [
+      0.9185339035535324
+    ],
+    "signal_std": [
+      0.9675652354376607
+    ],
+    "source_task_id": "18a49ced8acb3ca5fea45bc48489d18d158ede0685541be79303f7df65ae0847"
+  },
+  "allow_estimated_variance": false,
+  "before": {
+    "active_features": 4,
+    "center": [
+      -0.49241682634535494
+    ],
+    "episode_id": "0bb9eaaeeac37d7734755dd0ecf4df1c6bc0de2e450c7929ef5ee10dadbaaae7",
+    "expected_signal_variance": null,
+    "features": 8,
+    "mechanism_sha256": "202e217777f013e078c2d6d89870a1fa223500136b3a7fce07a29597facb86ac",
+    "normalization": "estimated from independent calibration inputs in the same joint GP draw",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "exact-gp-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "calibration_rows": 256,
+        "combine": "sum",
+        "inputs": {
+          "bound": null,
+          "df": 5.0,
+          "distribution": "gaussian",
+          "location": 0.0,
+          "mixture_gap": 2.0,
+          "scale": 1.0,
+          "version": "inputs-v1"
+        },
+        "kernels": [
+          {
+            "axes": [],
+            "feature_scales": [],
+            "kind": "rbf",
+            "length_scale": 1.0,
+            "weight": 1.0
+          }
+        ],
+        "task": {
+          "active_features": 4,
+          "class_offsets": [],
+          "classes": 0,
+          "context_rows": 48,
+          "features": 8,
+          "noise_ratio": 0.2,
+          "rows": 64,
+          "separation": 1.0,
+          "signal_features": 8,
+          "split": 0,
+          "task_type": "regression",
+          "version": "linear-v1"
+        },
+        "version": "exact-gp-v1"
+      },
+      "seed": 27,
+      "task_id": 72
+    },
+    "residual_std": 0.20346606405231507,
+    "rows": 64,
+    "scale": [
+      0.9185339035535324
+    ],
+    "signal_std": [
+      0.9675652354376607
+    ],
+    "source_task_id": "91ea32a467eb8295264210ed5a9fe04fcab95c1f35dba9c014a8a1e8b98e4909"
+  },
+  "changed_target_fraction": 1.0,
+  "control": {
+    "after": 0.8,
+    "before": 0.2,
+    "field": "noise_ratio"
+  },
+  "independent_source_draws": 1,
+  "intervention": "noise",
+  "observed_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": true,
+    "query_indices": true,
+    "scores": true,
+    "seed": true,
+    "task_id": true
+  },
+  "pair_id": "fd34c854aeceab2f186207578397b8313aa48b3457480818d842011045bcb1ae",
+  "required_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": true,
+    "query_indices": true,
+    "scores": true,
+    "seed": true,
+    "task_id": true
+  },
+  "seed": 27,
+  "task_id": 72,
+  "variance_control": "unchanged_mechanism",
+  "variant_count": 2,
+  "version": "controlled-pair-v1"
+}

@@ -1,0 +1,280 @@
+{
+  "after": {
+    "active_features": 2,
+    "center": [
+      0.8338909700788699
+    ],
+    "episode_id": "7dfe5844610e8686e3bf10ded787a8d388118ee9deb32a56ed095fb71545a011",
+    "expected_signal_variance": null,
+    "features": 8,
+    "mechanism_sha256": "08327972a309b30ec1ac5ab64fb3705f0229c58ac7fe393385272ac0d5f16329",
+    "normalization": "estimated from independent shared calibration inputs",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "composite-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "calibration_rows": 4096,
+        "components": [
+          {
+            "axes": [],
+            "recipe": {
+              "active_features": 2,
+              "class_offsets": [],
+              "classes": 0,
+              "context_rows": 48,
+              "features": 8,
+              "noise_ratio": 0.0,
+              "rows": 64,
+              "separation": 1.0,
+              "signal_features": 8,
+              "split": 0,
+              "task_type": "regression",
+              "version": "linear-v1"
+            },
+            "strength": 1.0
+          },
+          {
+            "axes": [],
+            "recipe": {
+              "calibration_rows": 4096,
+              "degree": 3,
+              "inputs": {
+                "bound": null,
+                "df": 5.0,
+                "distribution": "gaussian",
+                "location": 0.0,
+                "mixture_gap": 2.0,
+                "scale": 1.0,
+                "version": "inputs-v1"
+              },
+              "task": {
+                "active_features": 2,
+                "class_offsets": [],
+                "classes": 0,
+                "context_rows": 48,
+                "features": 8,
+                "noise_ratio": 0.0,
+                "rows": 64,
+                "separation": 1.0,
+                "signal_features": 8,
+                "split": 0,
+                "task_type": "regression",
+                "version": "linear-v1"
+              },
+              "version": "polynomial-v1"
+            },
+            "strength": 1.0
+          }
+        ],
+        "expression": {
+          "children": [
+            0,
+            1
+          ],
+          "operation": "product",
+          "strength": 1.0
+        },
+        "inputs": {
+          "bound": null,
+          "df": 5.0,
+          "distribution": "gaussian",
+          "location": 0.0,
+          "mixture_gap": 2.0,
+          "scale": 1.0,
+          "version": "inputs-v1"
+        },
+        "task": {
+          "active_features": 2,
+          "class_offsets": [],
+          "classes": 0,
+          "context_rows": 48,
+          "features": 8,
+          "noise_ratio": 0.2,
+          "rows": 64,
+          "separation": 1.0,
+          "signal_features": 8,
+          "split": 0,
+          "task_type": "regression",
+          "version": "linear-v1"
+        },
+        "version": "composite-v1"
+      },
+      "seed": 27,
+      "task_id": 83
+    },
+    "residual_std": 0.19049874018447843,
+    "rows": 64,
+    "scale": [
+      3.0964890907123968
+    ],
+    "signal_std": [
+      1.116384561132306
+    ],
+    "source_task_id": "6a4dd01e041aa6ceb2051ce1bc73c9314018fbe0f69cf4f99b6dc680170c3af9"
+  },
+  "allow_estimated_variance": true,
+  "before": {
+    "active_features": 4,
+    "center": [
+      0.45808833448549274
+    ],
+    "episode_id": "66f8f53b1b4f476d6ed94377829edb00d06e06d651d05253c396c1d8e0452624",
+    "expected_signal_variance": null,
+    "features": 8,
+    "mechanism_sha256": "09cd6c6b3d20376fe5b7025ae5ca572c3379c943e0e6d1358481a0597321480f",
+    "normalization": "estimated from independent shared calibration inputs",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "composite-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "calibration_rows": 4096,
+        "components": [
+          {
+            "axes": [],
+            "recipe": {
+              "active_features": 4,
+              "class_offsets": [],
+              "classes": 0,
+              "context_rows": 48,
+              "features": 8,
+              "noise_ratio": 0.0,
+              "rows": 64,
+              "separation": 1.0,
+              "signal_features": 8,
+              "split": 0,
+              "task_type": "regression",
+              "version": "linear-v1"
+            },
+            "strength": 1.0
+          },
+          {
+            "axes": [],
+            "recipe": {
+              "calibration_rows": 4096,
+              "degree": 3,
+              "inputs": {
+                "bound": null,
+                "df": 5.0,
+                "distribution": "gaussian",
+                "location": 0.0,
+                "mixture_gap": 2.0,
+                "scale": 1.0,
+                "version": "inputs-v1"
+              },
+              "task": {
+                "active_features": 4,
+                "class_offsets": [],
+                "classes": 0,
+                "context_rows": 48,
+                "features": 8,
+                "noise_ratio": 0.0,
+                "rows": 64,
+                "separation": 1.0,
+                "signal_features": 8,
+                "split": 0,
+                "task_type": "regression",
+                "version": "linear-v1"
+              },
+              "version": "polynomial-v1"
+            },
+            "strength": 1.0
+          }
+        ],
+        "expression": {
+          "children": [
+            0,
+            1
+          ],
+          "operation": "product",
+          "strength": 1.0
+        },
+        "inputs": {
+          "bound": null,
+          "df": 5.0,
+          "distribution": "gaussian",
+          "location": 0.0,
+          "mixture_gap": 2.0,
+          "scale": 1.0,
+          "version": "inputs-v1"
+        },
+        "task": {
+          "active_features": 4,
+          "class_offsets": [],
+          "classes": 0,
+          "context_rows": 48,
+          "features": 8,
+          "noise_ratio": 0.2,
+          "rows": 64,
+          "separation": 1.0,
+          "signal_features": 8,
+          "split": 0,
+          "task_type": "regression",
+          "version": "linear-v1"
+        },
+        "version": "composite-v1"
+      },
+      "seed": 27,
+      "task_id": 83
+    },
+    "residual_std": 0.19049874018447843,
+    "rows": 64,
+    "scale": [
+      1.866059151389209
+    ],
+    "signal_std": [
+      1.0015158532919586
+    ],
+    "source_task_id": "902a56cff93675cba268b36d0a31edc197d3c4680b740040bfe24f1a8fde442c"
+  },
+  "changed_target_fraction": 1.0,
+  "control": {
+    "after": 2,
+    "before": 4,
+    "field": "active_features"
+  },
+  "independent_source_draws": 1,
+  "intervention": "sparsity",
+  "observed_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": false,
+    "query_indices": true,
+    "scores": false,
+    "seed": true,
+    "task_id": true
+  },
+  "pair_id": "379d5a06c1dd5061d12ef4ae5c09bd7e19249eea7ffc3e162cf9170819ecb5ef",
+  "required_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "nested_active_features": true,
+    "query_indices": true,
+    "seed": true,
+    "task_id": true
+  },
+  "seed": 27,
+  "task_id": 83,
+  "variance_control": "independent_calibration_unit_variance_estimate",
+  "variant_count": 2,
+  "version": "controlled-pair-v1"
+}

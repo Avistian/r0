@@ -1,0 +1,153 @@
+{
+  "after": {
+    "active_features": 4,
+    "center": [
+      0.0
+    ],
+    "class_counts": [
+      37,
+      27
+    ],
+    "entropy_units": "nats",
+    "episode_id": "9a33ff32d640a838b0ceca6e455428be95d85add65370b6b41e8f25b296606a1",
+    "expected_class_counts": [
+      32.0,
+      32.0
+    ],
+    "expected_signal_variance": 1.0,
+    "features": 8,
+    "mean_entropy": 0.6931471805599453,
+    "mechanism_sha256": "19262cd121e6c579cfa9f306059f05e194d3d049a1c9aeaddd67af25c69b621b",
+    "normalization": "analytic unit variance under independent standard Gaussian inputs",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "r0.priors.linear-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "active_features": 4,
+        "class_offsets": [],
+        "classes": 2,
+        "context_rows": 48,
+        "features": 8,
+        "noise_ratio": 0,
+        "rows": 64,
+        "separation": 0.0,
+        "signal_features": 8,
+        "split": 0,
+        "task_type": "binary",
+        "version": "linear-v1"
+      },
+      "seed": 27,
+      "task_id": 3
+    },
+    "rows": 64,
+    "scale": [
+      1.0
+    ],
+    "signal_std": [
+      1.071524100754264
+    ],
+    "source_task_id": "0e8931d41ed8ede2e4148c906654f7becd4f39af92b1585bd378f675ce20bb2b"
+  },
+  "allow_estimated_variance": false,
+  "before": {
+    "active_features": 4,
+    "center": [
+      0.0
+    ],
+    "class_counts": [
+      31,
+      33
+    ],
+    "entropy_units": "nats",
+    "episode_id": "aba2cd9be96fa74480f83c4989bb902c50310234a1636d6b2819ebf1cc72575b",
+    "expected_class_counts": [
+      31.483472788690825,
+      32.51652721130918
+    ],
+    "expected_signal_variance": 1.0,
+    "features": 8,
+    "mean_entropy": 0.5944860346143896,
+    "mechanism_sha256": "19262cd121e6c579cfa9f306059f05e194d3d049a1c9aeaddd67af25c69b621b",
+    "normalization": "analytic unit variance under independent standard Gaussian inputs",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "r0.priors.linear-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "active_features": 4,
+        "class_offsets": [],
+        "classes": 2,
+        "context_rows": 48,
+        "features": 8,
+        "noise_ratio": 0,
+        "rows": 64,
+        "separation": 1.0,
+        "signal_features": 8,
+        "split": 0,
+        "task_type": "binary",
+        "version": "linear-v1"
+      },
+      "seed": 27,
+      "task_id": 3
+    },
+    "rows": 64,
+    "scale": [
+      1.0
+    ],
+    "signal_std": [
+      1.071524100754264
+    ],
+    "source_task_id": "4e3a5316accf8f8621028958db8e5f098b8ffb055844380150bd50d6e28c6b26"
+  },
+  "changed_target_fraction": 0.1875,
+  "control": {
+    "after": 0.0,
+    "before": 1.0,
+    "field": "separation"
+  },
+  "independent_source_draws": 1,
+  "intervention": "separation",
+  "observed_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": true,
+    "query_indices": true,
+    "scores": true,
+    "seed": true,
+    "task_id": true
+  },
+  "pair_id": "2e76dc2b01a705f009a9b7d3affcc6968a88cff93273ba1c189308961a24a1e6",
+  "required_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": true,
+    "query_indices": true,
+    "scores": true,
+    "seed": true,
+    "task_id": true
+  },
+  "seed": 27,
+  "task_id": 3,
+  "variance_control": "unchanged_mechanism",
+  "variant_count": 2,
+  "version": "controlled-pair-v1"
+}
