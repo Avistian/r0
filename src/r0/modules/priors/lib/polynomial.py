@@ -65,7 +65,11 @@ def generate_polynomial(
         recipe.inputs, recipe.calibration_rows, task.signal_features, rng, "calibration"
     )
     with np.errstate(over="ignore", invalid="ignore"):
-        raw = (calibration**powers) @ weights
+        basis = np.zeros_like(calibration)
+        np.power(
+            calibration, powers, out=basis, where=np.isin(np.arange(task.signal_features), active)
+        )
+        raw = basis @ weights
         center, scale = raw.mean(axis=0), raw.std(axis=0)
     if not np.isfinite(raw).all() or not np.isfinite(scale).all() or np.any(scale <= 0):
         # Preserve existing successful records; rescale only a failed estimate.
