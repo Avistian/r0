@@ -11,6 +11,28 @@ succeeded and its archive contained the notebook adapter and all three shared
 web assets. The external Colab/IPython transport test uses stubs and does not
 claim hosted execution.
 
+The packaging check used the existing offline uv build cache (no environment
+installation or metadata changes). Reproduce the build and archive inspection:
+
+```bash
+uv build --offline --wheel --out-dir /tmp/r0-colab-explorer-wheel
+python3 - <<'PY'
+from pathlib import Path
+from zipfile import ZipFile
+
+wheel = Path('/tmp/r0-colab-explorer-wheel/r0-0.1.0-py3-none-any.whl')
+with ZipFile(wheel) as archive:
+    expected = {
+        'r0/modules/explorer/lib/notebook.py',
+        'r0/modules/explorer/lib/web/index.html',
+        'r0/modules/explorer/lib/web/app.js',
+        'r0/modules/explorer/lib/web/style.css',
+    }
+    assert expected <= set(archive.namelist())
+    print('Packaged adapter and shared web assets:', sorted(expected))
+PY
+```
+
 The retained `linear.json` and `composition.json` come from executing the actual
 notebook generation, resume, estimate and archive-verification cells locally.
 Both generated eight fresh tasks in two groups and resumed with zero generated
