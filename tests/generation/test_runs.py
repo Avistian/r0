@@ -33,7 +33,7 @@ def test_resume_skips_verified_tasks_and_retries_only_when_requested(tmp_path: P
     assert third.attempted == 1
     assert third.completed == 3
     assert third.failed == 0
-    assert "authored numerical failure" in (tmp_path / "groups/0/attempt-0.json").read_text()
+    assert "authored numerical failure" in (tmp_path / "groups/0/0/attempt-0.json").read_text()
 
 
 def test_restart_recovers_an_interrupted_group_without_overwriting_attempt(tmp_path: Path) -> None:
@@ -47,24 +47,24 @@ def test_restart_recovers_an_interrupted_group_without_overwriting_attempt(tmp_p
 
     with pytest.raises(KeyboardInterrupt):
         run_generation(request, tmp_path, produce=interrupted)
-    archive = tmp_path / "groups/0/data-0.zip"
+    archive = tmp_path / "groups/0/0/data-0.zip"
     original = archive.read_bytes()
     result = run_generation(request, tmp_path)
     assert result.completed == 2
     assert result.attempted == 2
     assert archive.read_bytes() == original
-    assert (tmp_path / "groups/0/start-0.json").exists()
-    assert (tmp_path / "groups/0/attempt-1.json").exists()
+    assert (tmp_path / "groups/0/0/start-0.json").exists()
+    assert (tmp_path / "groups/0/0/attempt-1.json").exists()
 
 
 def test_resume_refuses_corrupted_completed_output(tmp_path: Path) -> None:
     request = RunRequest(LinearRecipe(), seed=4, count=2, max_seconds=20, max_bytes=2_000_000)
     run_generation(request, tmp_path)
-    archive = tmp_path / "groups/0/data-0.zip"
+    archive = tmp_path / "groups/0/0/data-0.zip"
     archive.write_bytes(b"corrupt")
     with pytest.raises(ValueError, match="checksum"):
         run_generation(request, tmp_path)
-    assert not (tmp_path / "groups/0/start-1.json").exists()
+    assert not (tmp_path / "groups/0/0/start-1.json").exists()
 
 
 def test_storage_limit_keeps_attempt_and_does_not_claim_completion(tmp_path: Path) -> None:
@@ -92,8 +92,8 @@ def test_valid_archive_from_another_recipe_is_not_accepted(tmp_path: Path) -> No
     run_generation(second, tmp_path / "second")
     for suffix in ("zip", "json"):
         shutil.copyfile(
-            tmp_path / f"second/groups/0/data-0.{suffix}",
-            tmp_path / f"first/groups/0/data-0.{suffix}",
+            tmp_path / f"second/groups/0/0/data-0.{suffix}",
+            tmp_path / f"first/groups/0/0/data-0.{suffix}",
         )
     with pytest.raises(ValueError, match="different recipe"):
         run_generation(first, tmp_path / "first")

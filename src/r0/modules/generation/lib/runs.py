@@ -11,6 +11,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from r0.modules.generation.lib.groups import save_group, verify_group, write_record
+from r0.modules.generation.lib.parallel import parallel_tasks
 from r0.modules.priors import LinearRecipe, TrainingTask, generate_linear
 
 
@@ -105,6 +106,8 @@ def run_generation(
     *,
     retry_failed: bool = False,
     produce: Callable[[int], TrainingTask] | None = None,
+    workers: int = 1,
+    persist: Callable[[], None] | None = None,
 ) -> RunSummary:
     """Resume verified output, preserving all attempts and requiring explicit retries.
 
@@ -113,13 +116,22 @@ def run_generation(
     Only one coordinator may write a directory. Provider flush/commit is the caller's
     responsibility; this routine verifies and fsyncs the locally mounted files.
     """
+    if type(workers) is not int or not 1 <= workers <= 16:
+        raise ValueError("workers must be an integer in 1..16")
     out.mkdir(parents=True, exist_ok=True)
     with (out / ".writer.lock").open("a") as lock:
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as error:
             raise ValueError("another coordinator is writing this run") from error
-        return _run(request, out, retry_failed=retry_failed, produce=produce)
+        return _run(
+            request,
+            out,
+            retry_failed=retry_failed,
+            produce=produce,
+            workers=workers,
+            persist=persist,
+        )
 
 
 def _run(
@@ -128,8 +140,17 @@ def _run(
     *,
     retry_failed: bool,
     produce: Callable[[int], TrainingTask] | None,
+    workers: int,
+    persist: Callable[[], None] | None,
 ) -> RunSummary:
+    def generate(task_id: int) -> TrainingTask:
+        return generate_linear(
+            request.recipe, seed=request.seed, task_id=task_id, device=request.device
+        )
+
+    factory = produce or generate
     config = json.loads(json.dumps(asdict(request), sort_keys=True))
+    config["format"] = "generation-run-v1"
     header = out / "run.json"
     if header.exists():
         if json.loads(header.read_text()) != config:
@@ -141,7 +162,7 @@ def _run(
     attempted = completed_count = failed_count = 0
     status = "COMPLETE"
     for start in range(request.start, request.start + request.count, request.group_size):
-        group = out / "groups" / str(start)
+        group = out / "groups" / str(start // (1024 * request.group_size)) / str(start)
         completed, failed = _previous(group, config)
         stop = min(start + request.group_size, request.start + request.count)
         ids = set(range(start, stop))
@@ -171,22 +192,14 @@ def _run(
                     failure_log: Path = group / f"failures-{attempt}.jsonl",
                 ) -> Iterator[tuple[int, TrainingTask]]:
                     nonlocal attempted, status
-                    for task_id in ids:
-                        if time.monotonic() >= deadline:
-                            status = "TIME_LIMIT"
-                            break
+                    for task_id, outcome in parallel_tasks(
+                        ids, factory, workers=workers, deadline=deadline
+                    ):
                         attempted += 1
                         try:
-                            task = (
-                                produce(task_id)
-                                if produce is not None
-                                else generate_linear(
-                                    request.recipe,
-                                    seed=request.seed,
-                                    task_id=task_id,
-                                    device=request.device,
-                                )
-                            )
+                            if isinstance(outcome, Exception):
+                                raise outcome
+                            task = outcome
                             record = json.loads(task.recipe_json)
                             if (
                                 record["recipe"] != config["recipe"]
@@ -197,6 +210,8 @@ def _run(
                                 raise ValueError("producer returned a different task or recipe")
                         except (ValueError, RuntimeError) as error:
                             failures[str(task_id)] = _record_failure(failure_log, task_id, error)
+                            if persist is not None:
+                                persist()
                             continue
                         emitted.append(task_id)
                         yield task_id, task
@@ -222,6 +237,8 @@ def _run(
                         "status": status,
                     },
                 )
+                if persist is not None:
+                    persist()
                 completed.update(saved)
                 failed.update(int(i) for i in errors)
                 failed.difference_update(completed)
