@@ -14,15 +14,14 @@ import numpy as np
 import torch
 
 from r0.modules.generation import RunRequest, run_generation
-from r0.modules.priors import LinearRecipe, TrainingTask, generate_linear
+from r0.modules.priors import TrainingTask, generate_task, recipe_from_dict
 
 
 def main() -> int:
     data = json.load(sys.stdin)
     config = data["request"]
     recipe = config.pop("recipe")
-    recipe["class_offsets"] = tuple(recipe["class_offsets"])
-    request = RunRequest(LinearRecipe(**recipe), **config)
+    request = RunRequest(recipe_from_dict(recipe), **config)
     sync_path: str | None = data["sync_path"]
     generated = 0
     counter = Lock()
@@ -33,7 +32,7 @@ def main() -> int:
 
     def produce(task_id: int) -> TrainingTask:
         nonlocal generated
-        task = generate_linear(
+        task = generate_task(
             request.recipe, seed=request.seed, task_id=task_id, device=request.device
         )
         with counter:

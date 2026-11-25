@@ -123,3 +123,29 @@ def test_classification_keeps_its_controls_and_has_valid_agreement_recipes(
     for entry in plan["agreement_recipes"]:
         entry["class_offsets"] = tuple(entry["class_offsets"])
         LinearRecipe(**entry)
+
+
+@pytest.mark.parametrize("family", ["fourier", "periodic"])
+def test_admission_diagnostics_preserve_the_requested_family(
+    launch: tuple[Path, dict[str, str]], family: str
+) -> None:
+    from r0.modules.priors import FourierRecipe, recipe_from_dict
+
+    root, env = launch
+    (root / "configs/generation/request.toml").write_text(
+        (ROOT / f"configs/generation/{family}-cpu.toml").read_text()
+    )
+    result = invoke(root, env)
+    assert result.returncode == 0, result.stderr
+    plan = json.loads((root / "reservation.json").read_text())
+    requested = recipe_from_dict(plan["request"]["recipe"])
+    assert isinstance(requested, FourierRecipe)
+    assert requested.task.rows == 128
+    assert requested.task.noise_ratio == 0.5
+    for entry in plan["agreement_recipes"]:
+        recipe = recipe_from_dict(entry)
+        assert isinstance(recipe, FourierRecipe)
+        assert recipe.family == requested.family
+        assert recipe.terms == requested.terms
+        assert recipe.task.rows == 64
+        assert recipe.task.noise_ratio == 0
