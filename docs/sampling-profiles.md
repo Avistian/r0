@@ -154,7 +154,7 @@ No profile is yet marked bulk-training eligible by this document.
 
 ```sh
 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
-  python scripts/run_check.py python scripts/sampling_walkthrough.py \
+  python3 scripts/run_check.py python scripts/sampling_walkthrough.py \
   --out docs/evidence/issue-27-sampling-profiles
 ```
 
