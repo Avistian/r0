@@ -31,7 +31,7 @@ def main() -> None:
     rows: list[dict[str, Any]] = []
     for task in ("binary", "multiclass", "regression"):
         prepared = args.out / f"{task}-prepared"
-        prepare(root / f"docs/evidence/issue-26/fixtures/{task}.json", prepared)
+        prepare(root / f"tests/fixtures/comparison/{task}.json", prepared)
         learner = ExternalPredictor("learner", Path(sys.executable), identity_path, script)
         tabpfn = ExternalPredictor("tabpfn", Path(sys.executable), identity_path, script)
         saved = [args.out / f"{task}-tabpfn-{draw}" for draw in (1, 2, 3)]

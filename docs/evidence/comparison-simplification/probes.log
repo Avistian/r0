@@ -1,9 +1,0 @@
-Running as unit: r0-comparison-probes-simplify-final.service; invocation ID: fb19128929d4464798a517bae7862d6a
-PASS: three task types, separate subprocesses, saved result ingestion, fixture gaps
-PASS: membership, wall deadline, memory limit, descendant termination
-Finished with result: success
-Main processes terminated with: code=exited/status=0
-Service runtime: 33.542s
-CPU time consumed: 29.045s
-Memory peak: 1.2M
-Memory swap peak: 0B

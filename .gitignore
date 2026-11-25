@@ -9,3 +9,6 @@ checkpoints/
 mlruns/
 __pycache__/
 *.py[cod]
+
+# Local run outputs; authored test inputs belong in tests/fixtures/.
+/docs/evidence/

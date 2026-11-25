@@ -1,9 +1,0 @@
-{
-  "rows": 128,
-  "seed": 9223372036854775807,
-  "pair_id": "45d881173555a8e24780f92526431d46d4268916d7e6a8d9dbd44d4de0123dc6",
-  "identical_inputs_and_scores": true,
-  "residual_multiplier": 4,
-  "max_residual_scaling_error": 4.440892098500626e-16,
-  "bytes": 91394
-}

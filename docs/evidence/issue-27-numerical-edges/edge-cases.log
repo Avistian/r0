@@ -1,1 +1,0 @@
-{"passed": 18, "expected_failures": [{"family": "fourier-v1", "error": "nonfinite or degenerate calibration; task was not retried"}, {"family": "polynomial-v1", "error": "nonfinite or degenerate calibration; task was not retried"}]}

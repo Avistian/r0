@@ -1,7 +1,0 @@
-{
-  "baseline_source": "d1623955a6d6e24a25c598308ae6a9206ccc4a5d",
-  "verification_source": "b7222226ebd71840d440560338061b564c6f6f44",
-  "driver_sha256": "543b08b5bddcb795553d75369039f21d9f941d71b50d773484b20b2e790ea100",
-  "cases": 18,
-  "bitwise_arrays_and_exact_cards": "PASS"
-}

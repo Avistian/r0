@@ -45,7 +45,7 @@ artifact limit. CI runs the same `make check` after explicit frozen environment 
 ## Predictive reference walkthrough
 
 Issue #22 provides bounded CPU beta–Bernoulli, Dirichlet–categorical and linear/RBF GP
-references. See [the worked reference cards](docs/evidence/issue-22/README.md) for
+references. See [the worked reference cards](tests/fixtures/oracles/README.md) for
 independent calculations, metric conventions and replay instructions. The
 [accepted specification](docs/specs/0022-oracles.md) defines the scope.
 
@@ -69,3 +69,10 @@ No data is stored in this repo.
 
 ## Licence
 Apache-2.0 (see LICENSE).
+
+## Local execution evidence
+
+Keep generated logs, receipts, screenshots and run outputs under `docs/evidence/`,
+which is ignored by Git. PRs should include concise results and reproduction
+commands. Authored fixtures required by tests and walkthroughs remain versioned
+under `tests/fixtures/`; they are inputs, not generated run outputs.

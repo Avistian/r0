@@ -9,7 +9,7 @@ import pytest
 
 from r0.modules import comparison
 
-FIXTURE = Path("docs/evidence/issue-26/fixtures/binary.json")
+FIXTURE = Path("tests/fixtures/comparison/binary.json")
 
 
 def test_compare_reports_fixture_gaps_and_quality(tmp_path: Path) -> None:

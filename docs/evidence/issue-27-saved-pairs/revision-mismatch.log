@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/tmp/r0-27-saved-pairs/scripts/saved_pair_walkthrough.py", line 166, in <module>
-    (create if args.mode == "create" else verify)(args.out)
-  File "/tmp/r0-27-saved-pairs/scripts/saved_pair_walkthrough.py", line 96, in verify
-    raise ValueError("verify must use the same source revision as create")
-ValueError: verify must use the same source revision as create
