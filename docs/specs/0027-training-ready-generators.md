@@ -214,15 +214,18 @@ invented caps to them. These adopted settings do not reproduce either full prior
   graphs, plots and paired comparisons. Reuse visualization code; local application
   access must not be required to inspect Colab-generated tasks.
 
-## Implementation details to resolve and document
+## Pending work and owners
 
-- Resource caps, measurement repetitions and timing boundaries.
-- CPU/GPU numerical agreement tolerances and reference environments.
-- Exact distributions/ranges for coefficients, frequencies, kernel parameters,
-  input mixtures, noise ratios and classification parameters.
-- Signal normalization construction and its numerical acceptance tolerances.
-- Exact GP row limit and deterministic extension rules for inspection coordinates.
-- Explorer implementation/dependencies, export formats and bounded chart sizes.
+| Kind | Work | Owner | Blocks |
+| --- | --- | --- | --- |
+| Decision | Parameter distributions, normalization, numerical tolerances and exact-GP extension rules | Implementation author, checked by scientific reviewer | Relevant generator PR completion |
+| Decision | Explorer implementation and chart limits using existing dependencies where possible | Implementation author | Explorer PR completion |
+| Decision | Measurement repetitions, timing boundaries and per-run resource-cap validation | Implementation author | Runner and evidence PR completion |
+| Verification | CPU/GPU agreement, maximum supported shapes, exact-GP row limit and throughput | Verifier on recorded hardware | Bulk-training eligibility claims |
+| Authorization | Hosted run configuration, money caps and guarded Modal launch | User | Paid/cloud execution |
+| Verification | Colab/Modal execution, durable restart and notebook interaction | Verifier in the target environments | Hosted-runtime acceptance |
+| Decision | Any additional dependency required by implementation | User, through ticket scope | Adding that dependency |
+
 These details must be explicit in versioned recipes and evidence. They do not
 authorize silently reducing the accepted families, platforms or visualization scope.
 
