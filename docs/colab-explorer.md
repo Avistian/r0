@@ -1,7 +1,7 @@
 # Explorer inside a hosted Colab notebook
 
 [The generation notebook](../notebooks/generation.ipynb) installs the pinned adapter
-revision `b7222226ebd71840d440560338061b564c6f6f44`. It offers all ten starting recipes
+revision `597958f877809836adeef26c11c5ce4a24286650`. It offers all ten starting recipes
 for bounded generation, measurement and larger resumable runs, followed by the
 embedded explorer. The explorer uses the same controls, charts and session actions
 as the local application, including saved side-by-side comparisons with common axes,
@@ -40,5 +40,5 @@ The smoke cell retains its fresh timing before the estimate cell runs. A resumed
 smoke skips completed tasks and uses that retained timing, clearly labelled as an
 earlier measurement. If no timing survived, the estimate stops with instructions
 to choose a new seed explicitly; it never regenerates completed tasks silently.
-The [local notebook walkthrough](evidence/issue-27-colab-explorer/README.md) covers
+The [local notebook walkthrough](https://github.com/Avistian/r0/blob/5313fd70c163fa02fcf77312574fd0154c6f99fc/docs/evidence/issue-27-colab-explorer/README.md) covers
 this cell boundary for linear and composed recipes.
