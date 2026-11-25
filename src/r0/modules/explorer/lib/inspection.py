@@ -11,6 +11,10 @@ from numpy.typing import NDArray
 from r0.modules.priors import TrainingTask, record_fingerprint
 
 
+def _sample_rows(total: int, limit: int, rng: np.random.Generator) -> list[int]:
+    return sorted(rng.choice(total, min(limit, total), replace=False).tolist())
+
+
 def _summary(values: NDArray[np.float64]) -> dict[str, Any]:
     if not np.isfinite(values).all() or not len(values):
         raise ValueError("inspection requires nonempty finite values")
@@ -75,11 +79,7 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
     sample_seed = int(
         record_fingerprint(("explorer-rows-v1", record["seed"], record["task_id"], len(x))), 16
     )
-    indices = sorted(
-        np.random.default_rng(sample_seed)
-        .choice(len(x), min(sample_rows, len(x)), replace=False)
-        .tolist()
-    )
+    indices = _sample_rows(len(x), sample_rows, np.random.default_rng(sample_seed))
     active = set(mechanism["active"])
     view: dict[str, Any] = {
         "version": "inspection-v1",
