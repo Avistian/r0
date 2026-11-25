@@ -154,6 +154,7 @@ def generate_linear(
                     "python": platform.python_version(),
                     "numpy": np.__version__,
                     "torch": str(torch.__version__),
+                    "cpu_threads": torch.get_num_threads(),
                     "cuda": torch.version.cuda,
                     "gpu": torch.cuda.get_device_name() if device == "cuda" else None,
                 },

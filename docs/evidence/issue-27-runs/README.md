@@ -29,7 +29,7 @@ python3 scripts/run_check.py python scripts/generation_walkthrough.py --out /tmp
 ```
 
 Inspect `walkthrough.json`, the three task cards in the ZIP files, and
-`groups/0/attempt-0.json`: the authored failure remains after successful retry.
+`groups/0/0/attempt-0.json`: the authored failure remains after successful retry.
 The walkthrough requires a fresh directory to preserve prior evidence. Tests also
 exercise process-like interruption, checksum corruption, wrong-recipe archives,
 duplicate identities, missing completion receipts and storage exhaustion.

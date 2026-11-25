@@ -29,7 +29,7 @@ def main() -> None:
     assert (first.attempted, first.completed, first.failed) == (3, 2, 1)
     assert (resumed.attempted, resumed.completed, resumed.failed) == (0, 2, 1)
     assert (retried.attempted, retried.completed, retried.failed) == (1, 3, 0)
-    assert "authored walkthrough failure" in (args.out / "groups/0/attempt-0.json").read_text()
+    assert "authored walkthrough failure" in (args.out / "groups/0/0/attempt-0.json").read_text()
     result = {
         name: asdict(value)
         for name, value in (("first", first), ("resume", resumed), ("explicit_retry", retried))
