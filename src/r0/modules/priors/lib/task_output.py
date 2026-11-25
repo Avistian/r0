@@ -23,6 +23,7 @@ def complete_task(
     seed: int,
     task_id: int,
     rng: Callable[..., np.random.Generator],
+    source_config: dict[str, object] | None = None,
 ) -> TrainingTask:
     if not torch.isfinite(scores).all():
         raise ValueError("nonfinite latent function; task was not retried")
@@ -32,7 +33,7 @@ def complete_task(
     )
     permutation = torch.tensor(rng("split", task.split).permutation(task.rows), device=device)
     source_config = {
-        **config,
+        **(config if source_config is None else source_config),
         "task": {k: v for k, v in asdict(task).items() if k not in ("context_rows", "split")},
     }
     source_id = record_fingerprint((source_config, seed, task_id))

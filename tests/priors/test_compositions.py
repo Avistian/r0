@@ -171,3 +171,44 @@ def test_subset_axes_and_controlled_pairs_preserve_the_function() -> None:
     modified = original.inputs.clone()
     modified[:, list(inactive)] = 1e100
     torch.testing.assert_close(evaluate_signal(original, modified), original.scores, rtol=0, atol=0)
+
+
+@pytest.mark.parametrize("linear", [False, True])
+def test_child_split_controls_do_not_create_independent_parent_sources(linear: bool) -> None:
+    from dataclasses import replace
+
+    controls = LinearRecipe(rows=16, context_rows=8)
+    child = controls if linear else PolynomialRecipe(task=controls, degree=1, calibration_rows=256)
+    original_recipe = CompositeRecipe(
+        task=controls, components=(FunctionComponent(child),), calibration_rows=256
+    )
+    original = generate_task(original_recipe, seed=27, task_id=4)
+    changed_child = (
+        replace(controls, split=1, context_rows=4)
+        if linear
+        else PolynomialRecipe(
+            task=replace(controls, split=1, context_rows=4), degree=1, calibration_rows=256
+        )
+    )
+    changed = generate_task(
+        replace(original_recipe, components=(FunctionComponent(changed_child),)), seed=27, task_id=4
+    )
+    assert changed.mechanism_json == original.mechanism_json
+    assert changed.source_task_id == original.source_task_id
+    assert changed.episode_id == original.episode_id
+
+
+@pytest.mark.parametrize(
+    ("task_type", "classes", "offsets"), [("binary", 2, (0.0,)), ("multiclass", 3, (0.0, 0.0, 0.0))]
+)
+def test_explicit_zero_child_offsets_are_neutral(
+    task_type: TaskType, classes: int, offsets: tuple[float, ...]
+) -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, task_type=task_type, classes=classes, class_offsets=offsets
+    )
+    recipe = CompositeRecipe(
+        task=controls, components=(FunctionComponent(controls),), calibration_rows=256
+    )
+    task = generate_task(recipe, seed=27, task_id=0)
+    assert np.isfinite(task.scores.numpy()).all()

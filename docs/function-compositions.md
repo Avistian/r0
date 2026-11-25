@@ -48,7 +48,9 @@ Components sample independent mechanisms using keyed child seeds. Their standalo
 observations/targets initialize the existing sampler but do not become parent
 observations or training examples. Cards retain the child mechanism, seed, feature
 count and parent-column mapping. The final result is one independently sampled source
-task, regardless of the number of components or repeated references.
+task, regardless of the number of components or repeated references. Child split
+and context-size controls are retained for replay but excluded from the parent
+source identity, just as the parent split/context controls are excluded.
 
 The parent and components must use the same input distribution and score-output type.
 Component observation noise, separation and offsets must remain neutral; set these

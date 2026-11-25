@@ -78,7 +78,7 @@ def _degree(recipe: BaseRecipe) -> int:
     return 1 if isinstance(recipe, LinearRecipe) or recipe.version == "grouped-linear-v1" else 0
 
 
-def _stats(
+def _expression_properties(
     expression: Expression, components: tuple[FunctionComponent, ...], depth: int = 0
 ) -> tuple[list[int], int, int]:
     if type(expression) is int:
@@ -87,12 +87,16 @@ def _stats(
         return [expression], 1, _degree(components[expression].recipe)
     if not isinstance(expression, Combination) or depth >= 8:
         raise ValueError("expression depth must be at most 8")
-    children = [_stats(child, components, depth + 1) for child in expression.children]
+    children = [
+        _expression_properties(child, components, depth + 1) for child in expression.children
+    ]
     used = [i for indices, _, _ in children for i in indices]
     if len(used) > 64:
         raise ValueError("expression may contain at most 64 component occurrences")
     combine = sum if expression.operation == "product" else max
-    return used, combine(child[1] for child in children), combine(child[2] for child in children)
+    orders = [order for _, order, _ in children]
+    degrees = [degree for _, _, degree in children]
+    return used, combine(orders), combine(degrees)
 
 
 @dataclass(frozen=True, slots=True)
@@ -113,7 +117,7 @@ class CompositeRecipe:
             raise ValueError("composite-v1 needs 1..64 components")
         if type(self.calibration_rows) is not int or not 256 <= self.calibration_rows <= 16384:
             raise ValueError("calibration rows must be 256..16384")
-        used, _, degree = _stats(self.expression, self.components)
+        used, _, degree = _expression_properties(self.expression, self.components)
         if set(used) != set(range(len(self.components))):
             raise ValueError("expression must use every declared component")
         axes_used: set[int] = set()
@@ -128,7 +132,11 @@ class CompositeRecipe:
                 )
             if (controls.task_type, controls.classes) != (self.task.task_type, self.task.classes):
                 raise ValueError("component output types and class counts must match the parent")
-            if controls.noise_ratio != 0 or controls.separation != 1 or controls.class_offsets:
+            if (
+                controls.noise_ratio != 0
+                or controls.separation != 1
+                or any(offset != 0 for offset in controls.class_offsets)
+            ):
                 raise ValueError(
                     "observation noise and classification controls belong on the parent"
                 )
@@ -181,7 +189,7 @@ def generate_composite(
                 "seed": child_seed,
             }
         )
-    _, order, degree = _stats(recipe.expression, recipe.components)
+    _, order, degree = _expression_properties(recipe.expression, recipe.components)
     expression = (
         asdict(recipe.expression)
         if isinstance(recipe.expression, Combination)
@@ -211,6 +219,23 @@ def generate_composite(
     scores = (
         composite_scores(mechanism, inputs) - torch.tensor(center, device=device)
     ) / torch.tensor(scale, device=device)
+    config = asdict(recipe)
+    source_config = asdict(recipe)
+    for component_config in source_config["components"]:
+        child_config = component_config["recipe"]
+        child_controls = (
+            child_config if child_config["version"] == "linear-v1" else child_config["task"]
+        )
+        child_controls.pop("split", None)
+        child_controls.pop("context_rows", None)
     return complete_task(
-        task, asdict(recipe), mechanism, inputs, scores, seed=seed, task_id=task_id, rng=rng
+        task,
+        config,
+        mechanism,
+        inputs,
+        scores,
+        seed=seed,
+        task_id=task_id,
+        rng=rng,
+        source_config=source_config,
     )
