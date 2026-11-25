@@ -167,8 +167,8 @@ def summarize(root):
         "totals": totals,
         "cases": rows,
         "estimate_scope": (
-            "single CPU worker, fixed settings, one-task archives; excludes startup, verification, "
-            "failures, retries and platform overhead; no production mixture selected"
+            "single CPU worker, this suite's declared draws, one-task archives; excludes startup, "
+            "verification, failures, retries and platform overhead; no production mixture selected"
         ),
         "estimated_cost": "NOT_MEASURED",
         "gpu": "NOT_RUN",
@@ -177,11 +177,21 @@ def summarize(root):
 
 
 def main():
-    from qualification_cases import FAMILIES, SHAPES, TASK_TYPES, cases
+    from qualification_cases import (
+        FAMILIES,
+        REFERENCE_FAMILIES,
+        SHAPES,
+        TASK_TYPES,
+        cases,
+        sampled_cases,
+    )
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, required=True)
-    parser.add_argument("--families", nargs="+", choices=FAMILIES, default=FAMILIES)
+    parser.add_argument(
+        "--suite", choices=("fixed", "broad-v1", "tabiclv2-adapted-v1"), default="fixed"
+    )
+    parser.add_argument("--families", nargs="+", choices=(*FAMILIES, "power", "product"))
     parser.add_argument("--sizes", nargs="+", choices=SHAPES, default=list(SHAPES))
     parser.add_argument("--task-types", nargs="+", choices=TASK_TYPES, default=TASK_TYPES)
     parser.add_argument("--repetitions", type=int, default=3)
@@ -199,6 +209,10 @@ def main():
         parser.error("per-case wall seconds must be 1..600")
     if not 65536 <= args.max_bytes <= 1024**3:
         parser.error("per-case output bytes must be 64 KiB..1 GiB")
+    supported = REFERENCE_FAMILIES if args.suite == "tabiclv2-adapted-v1" else FAMILIES
+    families = args.families or supported
+    if any(family not in supported for family in families):
+        parser.error(f"unsupported family for {args.suite}; choose from {supported}")
     subprocess.run(["git", "diff", "--exit-code", "HEAD", "--", "src", "scripts"], check=True)
     source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
     drivers = {}
@@ -207,19 +221,22 @@ def main():
         committed = subprocess.check_output(["git", "show", f"HEAD:scripts/{name}"])
         assert committed == path.read_bytes(), f"commit measurement driver: {name}"
         drivers[name] = hashlib.sha256(committed).hexdigest()
-    selected = cases(
-        args.families,
+    case_args = (
+        families,
         args.sizes,
         args.task_types,
         args.repetitions,
         args.max_seconds,
         args.max_bytes,
     )
+    selected = cases(*case_args) if args.suite == "fixed" else sampled_cases(args.suite, *case_args)
     if len({case["id"] for case in selected}) != len(selected):
         parser.error("do not repeat family, size or task-type arguments")
     args.out.mkdir(parents=True, exist_ok=False)
     manifest = {
-        "suite": "fixed-cpu-qualification-v1",
+        "suite": "fixed-cpu-qualification-v1"
+        if args.suite == "fixed"
+        else f"{args.suite}-cpu-qualification-v1",
         "source": source,
         "drivers": drivers,
         "address_space_bytes": args.address_space_gib * 1024**3,
