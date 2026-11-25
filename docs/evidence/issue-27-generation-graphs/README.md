@@ -36,12 +36,12 @@ that source with output `/tmp/r0-graph-walkthrough-f2ff586`, then compare:
 import json
 from pathlib import Path
 
-before = json.loads(Path('/tmp/r0-graph-walkthrough-f2ff586/summary.json').read_text())
-after = json.loads(Path('/tmp/r0-graph-walkthrough-final/summary.json').read_text())
-for left, right in zip(before['cases'], after['cases'], strict=True):
-    for key in ('recipe', 'seed', 'task_id', 'identity', 'data_sha256'):
-        assert left[key] == right[key], (left['name'], key)
-print(len(after['cases']), 'task fingerprints unchanged')
+before = json.loads(Path("/tmp/r0-graph-walkthrough-f2ff586/summary.json").read_text())
+after = json.loads(Path("/tmp/r0-graph-walkthrough-final/summary.json").read_text())
+for left, right in zip(before["cases"], after["cases"], strict=True):
+    for key in ("recipe", "seed", "task_id", "identity", "data_sha256"):
+        assert left[key] == right[key], (left["name"], key)
+print(len(after["cases"]), "task fingerprints unchanged")
 ```
 
 The initial helper rename was separately checked against base
