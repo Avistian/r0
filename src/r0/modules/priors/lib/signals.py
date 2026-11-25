@@ -35,7 +35,9 @@ def evaluate_mechanism(card: dict[str, Any], inputs: torch.Tensor) -> torch.Tens
         return torch.tensor(card[key], dtype=torch.float64, device=inputs.device)
 
     version = card["version"]
-    if version in ("linear-v1", "grouped-linear-v1"):
+    if version == "composite-v1":
+        scores = composite_scores(card, inputs)
+    elif version in ("linear-v1", "grouped-linear-v1"):
         weights = tensor("weights")
         scores = inputs[:, : weights.shape[0]] @ weights
     elif version == "polynomial-v1":
@@ -113,3 +115,43 @@ def smooth_scores(
         values = torch.sin(z) if family == "sinusoidal" else torch.exp(-0.5 * z.square())
         parts.append(values @ weight_tensor)
     return torch.cat(parts)
+
+
+def composite_scores(card: dict[str, Any], inputs: torch.Tensor) -> torch.Tensor:
+    parts: list[torch.Tensor] = []
+    for start in range(0, len(inputs), 256):
+        part = inputs[start : start + 256]
+        leaves: list[torch.Tensor] = []
+        for component in card["components"]:
+            child = torch.zeros(
+                (len(part), component["feature_count"]), dtype=inputs.dtype, device=inputs.device
+            )
+            child[:, component["mechanism"]["active"]] = part[:, component["input_columns"]]
+            leaves.append(
+                _multiply(evaluate_mechanism(component["mechanism"], child), component["strength"])
+            )
+
+        result = _evaluate_expression(card["expression"], leaves)
+        if not torch.isfinite(result).all():
+            raise ValueError("nonfinite composition; task was not retried")
+        parts.append(result)
+    return torch.cat(parts)
+
+
+def _evaluate_expression(expression: Any, leaves: list[torch.Tensor]) -> torch.Tensor:
+    if type(expression) is int:
+        return leaves[expression]
+    values = [_evaluate_expression(child, leaves) for child in expression["children"]]
+    result = values[0]
+    for value in values[1:]:
+        result = result + value if expression["operation"] == "sum" else _multiply(result, value)
+    return _multiply(result, expression["strength"])
+
+
+def _multiply(left: torch.Tensor, right: torch.Tensor | float) -> torch.Tensor:
+    result = left * right
+    if torch.any((result == 0) & (left != 0) & (right != 0)):
+        raise ValueError("composition product underflow; task was not retried")
+    if not torch.isfinite(result).all():
+        raise ValueError("nonfinite composition product; task was not retried")
+    return result

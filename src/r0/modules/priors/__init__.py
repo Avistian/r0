@@ -6,6 +6,9 @@ import numpy as np
 
 from r0.modules.episodes import Feature, Row, Target, TaskType
 from r0.modules.priors.lib.authored import authored_episode as authored_episode
+from r0.modules.priors.lib.compositions import Combination as Combination
+from r0.modules.priors.lib.compositions import CompositeRecipe as CompositeRecipe
+from r0.modules.priors.lib.compositions import FunctionComponent as FunctionComponent
 from r0.modules.priors.lib.exact_gp import GaussianProcessRecipe as GaussianProcessRecipe
 from r0.modules.priors.lib.fourier import FourierRecipe as FourierRecipe
 from r0.modules.priors.lib.fourier import generate_fourier as generate_fourier
