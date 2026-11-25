@@ -1,0 +1,29 @@
+{
+  "source": "fd9e169fe87cc5389d1e5de2760844eafc7ca587",
+  "scope": "local CPU API; no UI, hosted or predictive performance evidence",
+  "python": "3.12.3",
+  "numpy": "2.5.5",
+  "torch": "2.15.0+cpu",
+  "process_peak_rss_bytes": 621342720,
+  "sampling": {
+    "draws": 1024,
+    "maximum_mean_standard_errors": 1.4540773033467767,
+    "covariance_max_error": 0.07026578701318054,
+    "expected_max_variance": 0.9369317960757894
+  },
+  "strict_rank_failure": "GP support is numerically rank deficient; use allow_rank_truncation=True only for an explicitly approximate conditional view",
+  "approximate_conditioning": {
+    "support_count": 48,
+    "retained_rank": 11,
+    "approximate": true,
+    "discarded_support_max_error": 2.7814137657010125e-06,
+    "rank_policy": "truncate",
+    "known_points": "return original values with zero uncertainty",
+    "unknown_points": "condition on retained support eigenmodes",
+    "observation_noise": 0,
+    "eigenvalue_tolerance": 2.5711649201390035e-11,
+    "conditional_roundoff_tolerance": 7.247535904753022e-13,
+    "negative_eigenvalue_correction": 8.20831315803305e-16,
+    "normalization": "original independent calibration center and scale"
+  }
+}

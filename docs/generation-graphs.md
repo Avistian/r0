@@ -65,6 +65,7 @@ and GP normals retain their stated axes, rather than being called observations.
 Heatmaps also export as SVG/PNG. Diagram arrows connect actual parent records;
 connections across several levels route around intervening boxes.
 
-Conditional GP inspection and controlled pairs remain pending #27 work. Hosted
+The [conditional GP API](gp-conditional-inspection.md) is available separately.
+Its explorer panel and controlled pairs remain pending #27 work. Hosted
 Colab verification remains **NOT_RUN**; sharing the UI does not establish that
 it has been exercised in an actual hosted notebook.
