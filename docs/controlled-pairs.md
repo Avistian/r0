@@ -25,7 +25,8 @@ recipe before running it through the existing guarded/persistent generation path
 Use `compare_pair(before, after, intervention=...)` to verify already saved tasks.
 `generate_pair` combines those operations in memory on the requested CPU/CUDA
 device. It does not launch cloud work or write files. The shared explorer session
-can save and reopen pairs as described below; the comparison panel follows separately.
+can save and reopen pairs as described below. The shared browser panel displays them
+locally and in the embedded Colab explorer.
 
 | Intervention | `value` means | Properties required to stay fixed |
 | --- | --- | --- |
@@ -84,6 +85,30 @@ or harder for every model or draw. Compare actual model outcomes separately. The
 retained walkthrough uses a fixed ordinary least-squares model with an intercept,
 fits only context inputs/targets and reports query-only observed-target MSE. It
 performs no tuning and makes no claim about frontier-model performance.
+
+## Compare datasets in the explorer
+
+Generate or open a base dataset, then use **Compare two versions of this dataset**.
+Choose noise, total features, active features or classification separation and
+enter the new value. The sidebar's time and output limits apply to generating
+one variant on the base dataset's original device. Generation failure preserves
+the previous comparison. Nonlinear sparsity requires the explicit calibration
+estimate checkbox; its caveat remains visible in the saved result.
+
+The panel plots matched original rows on identical axes. Choose a common feature,
+observed targets, latent signal, regression residuals or class probabilities.
+Feature labels show their before/after roles. Select a point with the mouse or
+keyboard to inspect that row in both variants. These scatter plots contain observed
+points with other features varying; they are not fixed-input response curves.
+Measurements and class counts use all rows, including rows omitted from the plot
+sample. The saved card identifies fixed properties, changed controls and variance
+policy without claiming that every model must become worse.
+
+Download both complete datasets together, download the exact comparison card or
+export either chart as SVG/PNG. Reopen the saved manifest using **Open saved
+comparison** in the sidebar. Creating or opening a different base clears the panel;
+editing comparison controls leaves the last saved result visibly labelled with
+its applied values until another comparison succeeds.
 
 ## Saved comparisons in the shared explorer session
 
@@ -159,6 +184,6 @@ Pair failures are explicit; this API does not retry, replace tasks or silently
 relax the variance policy. Persistent callers retain attempts using the existing
 runner rather than treating a failed pair as two completed independent tasks.
 
-CPU API coverage does not establish GPU agreement, hosted Colab interaction or
-comparison UI acceptance. Those checks, broad sampling recipes, full resource
-coverage and the remaining #27 integration work are tracked separately.
+CPU API and local browser coverage do not establish GPU agreement or hosted Colab
+interaction. Those checks, broad sampling recipes, full resource coverage and the
+remaining #27 integration work are tracked separately.

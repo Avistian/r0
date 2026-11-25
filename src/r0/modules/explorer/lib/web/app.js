@@ -12,7 +12,7 @@ const format = value => {
 };
 
 async function request(action, data = {}) {
-  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
+  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
   if (window.r0request) return window.r0request(action, data);
   const response = await fetch("/api", {
     method: "POST", headers: {"Content-Type": "application/json", "X-r0-explorer": window.r0token},
@@ -207,7 +207,7 @@ function show(result) {
   $("replay-record").value = result.recipe_json; $("seed").value = view.recipe.seed; $("task-id").value = view.recipe.task_id;
   $("curve-row").value = 0; $("curve-row").max = view.total_rows - 1;
   $("gp-approximate").checked = false;
-  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph();
+  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair();
 }
 async function inspectRow(index) {
   await act("Loading row…", async () => {
