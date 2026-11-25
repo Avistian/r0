@@ -59,6 +59,23 @@ distribution counts are pending; settings selected before generation are not yet
 successful-task evidence. These control strata vary several properties together,
 so they are not controlled difficulty comparisons.
 
+After a suite finishes, audit its selections and saved tasks without generating:
+
+```bash
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+python3 scripts/run_check.py python scripts/report_diversity.py \
+  docs/evidence/issue-27-broad-qualification \
+  --output docs/evidence/issue-27-broad-qualification/diversity-audit.json
+```
+
+Use the reference-suite directory for its separate audit. The output must be new.
+This auditor requires a fully finished suite, including terminal failed/timed-out
+cases. For an interrupted suite, use `qualify_generators.py --summarize` to retain
+INCOMPLETE, LAUNCH_UNKNOWN and NOT_RUN states; the artifact auditor does not treat
+missing records as verified failures or successful tasks. An audit PASS means its
+checks succeeded, not that all generation attempts passed. Outcome counts remain
+visible. This is an author-run artifact audit, not an independent formula oracle.
+
 Earlier sampling evidence at `a9490e120e5f0066222bf9a2d46a26f440e985a7`
 contains 1,792 settings selections and 42 generated examples. Settings include every
 polynomial degree, every listed RFF term count, 1/64 components and actual expression
