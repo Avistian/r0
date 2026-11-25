@@ -119,15 +119,18 @@ function plotFrame(container, title, xLabel, yLabel, low, high, yLow, yHigh) {
   label(54, 214, format(yLow), "end"); label(54, 38, format(yHigh), "end");
   label(260, 258, xLabel); label(62, 18, yLabel, "start");
   $(container).replaceChildren(svg);
+  chartExports(container, svg, container, title);
+  return {svg, x: value => 62 + 394 * position(value, low, high), y: value => 210 - 176 * position(value, yLow, yHigh)};
+}
+function chartExports(container, svg, name, title = name) {
   const controls = document.createElement("div"); controls.className = "chart-actions";
   for (const kind of ["SVG", "PNG"]) {
     const button = document.createElement("button"); button.textContent = kind;
     button.setAttribute("aria-label", `Export ${title} as ${kind}`);
-    button.onclick = () => saveChart(svg, container, kind);
+    button.onclick = () => saveChart(svg, name, kind);
     controls.append(button);
   }
   $(container).append(controls);
-  return {svg, x: value => 62 + 394 * position(value, low, high), y: value => 210 - 176 * position(value, yLow, yHigh)};
 }
 function saveChart(svg, name, kind) {
   const xml = new XMLSerializer().serializeToString(svg), blob = new Blob([xml], {type: "image/svg+xml"});

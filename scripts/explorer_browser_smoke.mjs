@@ -141,6 +141,13 @@ for (const family of families) {
     await evaluate("document.querySelector('[data-node=kernel-0]').dispatchEvent(new MouseEvent('click'))");
     assert.match(await evaluate("document.getElementById('graph-formula').textContent"), /exp/);
     await screenshot("gp-graph.png");
+    await evaluate("document.querySelector('[data-node=normals]').dispatchEvent(new MouseEvent('click'))");
+    const normalRows = await evaluate("graphNode.parameters.full_shape[0]");
+    assert.match(await evaluate("document.getElementById('graph-output-plot').textContent"), new RegExp(`16 of ${normalRows} support rows`));
+    graphRuns.at(-1).normal_preview = {shown_rows:16,full_support_rows:normalRows};
+    await evaluate("document.querySelector('#graph-output-plot .chart-actions button').click(); document.querySelectorAll('#graph-output-plot .chart-actions button')[1].click()");
+    await Promise.all([downloaded("graph-output-plot.svg"),downloaded("graph-output-plot.png")]);
+    await screenshot("gp-normals.png");
   }
 }
 await screenshot("composition.png");
@@ -160,6 +167,8 @@ await evaluate("document.querySelector('#graph-downloads button').click(); docum
 await Promise.all([downloaded("generation-graph.svg"), downloaded("generation-graph.png")]);
 assert((await fs.readdir(directory)).includes('generation-graph.svg'));
 assert((await fs.readdir(directory)).includes('generation-graph.png'));
+await fs.copyFile(path.join(directory,"generation-graph.png"),path.join(directory,"composition-diagram.png"));
+await fs.copyFile(path.join(directory,"generation-graph.svg"),path.join(directory,"composition-diagram.svg"));
 await screenshot("composition-graph.png");
 await evaluate("{const recipe=JSON.parse(document.getElementById('recipe').value); recipe.components=Array.from({length:64},()=>structuredClone(recipe.components[0])); recipe.expression={operation:'sum',children:Array.from({length:64},(_,i)=>i),strength:1}; document.getElementById('recipe').value=JSON.stringify(recipe);}");
 await click("generate"); await click("graph");
@@ -167,8 +176,8 @@ assert.equal(await evaluate("generationGraph.component_count"), 64);
 assert.equal(await evaluate("document.querySelectorAll('#generation-graph [data-node]').length"), await evaluate("generationGraph.nodes.length"));
 await evaluate("document.querySelectorAll('#graph-downloads button')[1].click()");
 await downloaded("generation-graph.png", 2);
-const graphPngs = (await fs.readdir(directory)).filter(name => name.startsWith('generation-graph') && name.endsWith('.png'));
-const largePng = await fs.readFile(path.join(directory, graphPngs.find(name => name !== 'generation-graph.png')));
+const largePng = await fs.readFile(path.join(directory, "generation-graph.png"));
+await fs.copyFile(path.join(directory,"generation-graph.png"),path.join(directory,"large-composition-diagram.png"));
 assert.equal(Math.max(largePng.readUInt32BE(16), largePng.readUInt32BE(20)), 4096);
 const largeGraph = await evaluate("({nodes:generationGraph.nodes.length,components:generationGraph.component_count})");
 await evaluate("document.getElementById('family').value='Composition'; document.getElementById('family').dispatchEvent(new Event('change'))");

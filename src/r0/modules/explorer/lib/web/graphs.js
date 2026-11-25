@@ -15,15 +15,6 @@ function graphRequest() {
   if (parts.some(value => !/^\d+$/.test(value))) throw new Error("Enter comma-separated original row indices.");
   return {indices: parts.map(Number), component: $("graph-component").value === "" ? null : number("graph-component"), column_start: number("graph-column")};
 }
-function graphExports(container, svg, name) {
-  const controls = document.createElement("div"); controls.className = "chart-actions";
-  for (const kind of ["SVG", "PNG"]) {
-    const button = document.createElement("button"); button.textContent = kind;
-    button.setAttribute("aria-label", `Export ${name} as ${kind}`);
-    button.onclick = () => saveChart(svg, name, kind); controls.append(button);
-  }
-  $(container).append(controls);
-}
 function drawGenerationGraph(graph) {
   generationGraph = graph;
   const selected = graph.component === null ? "" : String(graph.component);
@@ -70,30 +61,56 @@ function drawGenerationGraph(graph) {
     svg.append(group);
   }
   $("generation-graph").replaceChildren(svg); $("graph-downloads").replaceChildren();
-  graphExports("graph-downloads", svg, "generation-graph");
+  chartExports("graph-downloads", svg, "generation-graph");
   const json = document.createElement("button"); json.textContent = "Graph JSON";
   json.onclick = () => download("generation-graph.json", new Blob([pretty(generationGraph)], {type: "application/json"}));
   $("graph-downloads").append(json);
   $("graph-values").textContent = pretty(graph);
   selectGraphNode(graph.nodes.some(node => node.id === "target") ? "target" : graph.nodes.at(-1).id);
 }
+function matrixContext(node, rowCount = node.values.length) {
+  const p = node.parameters, columns = node.column_indices;
+  let rowLabels = generationGraph.rows, columnLabels = columns, rowHeading = "Original row", columnHeading = "Column";
+  let count = `${rowCount} of ${node.shape[0]} selected rows · ${columns.length} of ${node.shape[1]} columns`;
+  let axes = `Original row order: ${generationGraph.rows.join(", ")}`;
+  if (p.support_indices_shown) {
+    rowLabels = p.support_indices_shown; rowHeading = "Support row";
+    count = `${rowCount} of ${p.full_shape[0]} support rows · ${columns.length} of ${p.full_shape[1]} output columns`;
+    axes = "Original joint standard normals; first support rows, not observation rows.";
+  } else if (p.value_axes || p.display === "selected task-row covariance submatrix") {
+    rowLabels = p.row_indices; columnLabels = columns.map(i => p.row_indices[i]); columnHeading = "Original row";
+    axes = `Covariance on original rows ${p.row_indices.join(", ")}`;
+    if (p.full_shape) axes += `; full joint support ${p.full_shape.join(" × ")}`;
+  } else if (typeof p.axes === "string") {
+    rowLabels = node.values.map((_, i) => i); rowHeading = "Matrix row";
+    count = `${rowCount} of ${node.shape[0]} matrix rows · ${columns.length} of ${node.shape[1]} columns`;
+    axes = p.axes;
+  }
+  return {count, axes, rowLabels, columnLabels, rowHeading, columnHeading};
+}
 function graphMatrix(container, node) {
-  const rows = node.values.slice(0, 16), columns = node.column_indices;
+  const rows = node.values.slice(0, 16), columns = node.column_indices, context = matrixContext(node, Math.min(16, node.values.length));
   const magnitude = Math.max(...rows.flat().map(Math.abs)), scale = magnitude || 1;
-  const svg = element("svg", {viewBox: "0 0 480 270", role: "img", "aria-label": `${node.label} values`});
-  svg.append(element("title", {}, node.label), element("rect", {width: 480, height: 270, fill: "white"}));
+  const svg = element("svg", {viewBox: "0 0 480 334", role: "img", "aria-label": `${node.label} values`});
+  svg.append(element("title", {}, node.label), element("rect", {width: 480, height: 334, fill: "white"}));
   const label = (x, y, text, anchor = "start") => svg.append(element("text", {x, y, "font-family": "sans-serif", "font-size": 11, fill: "#637482", "text-anchor": anchor}, text));
-  label(62, 19, `${rows.length} of ${node.shape[0]} matrix rows · ${columns.length} of ${node.shape[1]} columns`);
+  label(62, 18, node.label); label(62, 34, context.count);
+  const axisLines = [""];
+  for (const word of context.axes.split(" ")) {
+    if ((axisLines.at(-1) + word).length > 61) axisLines.push("");
+    axisLines[axisLines.length - 1] += word + " ";
+  }
+  axisLines.forEach((line, i) => label(62, 52 + i * 14, line.trim()));
   rows.forEach((row, i) => row.forEach((value, j) => {
     const alpha = Math.abs(value) / scale, color = value >= 0 ? [23, 130, 107] : [215, 137, 73];
-    const cell = element("rect", {x: 62 + j * 394 / columns.length, y: 38 + i * 172 / rows.length, width: 394 / columns.length, height: 172 / rows.length, fill: `rgb(${color.map(channel => Math.round(255 + alpha * (channel - 255))).join(",")})`});
-    cell.append(element("title", {}, `Matrix row ${i}, column ${columns[j]}: ${value}`)); svg.append(cell);
+    const cell = element("rect", {x: 62 + j * 394 / columns.length, y: 100 + i * 172 / rows.length, width: 394 / columns.length, height: 172 / rows.length, fill: `rgb(${color.map(channel => Math.round(255 + alpha * (channel - 255))).join(",")})`});
+    cell.append(element("title", {}, `${context.rowHeading} ${context.rowLabels[i]}, ${context.columnHeading} ${context.columnLabels[j]}: ${value}`)); svg.append(cell);
   }));
-  label(54, 47, "0", "end"); label(54, 210, rows.length - 1, "end");
-  label(62, 230, columns[0]); label(456, 230, columns.at(-1), "end");
-  label(62, 252, "Orange < 0 · white = 0 · green > 0");
-  label(456, 252, `Max |value| ${format(magnitude)}`, "end");
-  $(container).replaceChildren(svg); graphExports(container, svg, container);
+  label(54, 109, context.rowLabels[0], "end"); label(54, 272, context.rowLabels[rows.length - 1], "end");
+  label(62, 292, context.columnLabels[0]); label(456, 292, context.columnLabels.at(-1), "end");
+  label(62, 314, "Orange < 0 · white = 0 · green > 0");
+  label(456, 314, `Max |value| ${format(magnitude)}`, "end");
+  $(container).replaceChildren(svg); chartExports(container, svg, container);
 }
 function selectGraphNode(id) {
   graphNode = generationGraph.nodes.find(node => node.id === id);
@@ -107,8 +124,9 @@ function selectGraphNode(id) {
   $("graph-expand").hidden = graphNode.component === undefined;
   $("graph-input").replaceChildren(...graphNode.parents.map(parent => new Option(generationGraph.nodes.find(node => node.id === parent).label, parent)));
   showGraphInput(); graphMatrix("graph-output-plot", graphNode);
-  $("graph-matrix-note").textContent = `Output shape ${graphNode.shape.join(" × ")}; displayed columns ${graphNode.column_indices[0]}–${graphNode.column_indices.at(-1)}. Original observation rows, where applicable: ${generationGraph.rows.join(", ")}. Coefficient, covariance and normal matrices use the axes stated in step parameters. Heatmaps show the first 16 matrix rows; the table contains all returned rows.`;
-  table("graph-output-table", ["Matrix row", ...graphNode.column_indices.map(i => `Column ${i}`)], graphNode.values.map((row, i) => [i, ...row]));
+  const context = matrixContext(graphNode);
+  $("graph-matrix-note").textContent = `${context.count}. ${context.axes}. Heatmaps show the first 16 returned rows; the table contains all returned rows. Column positions ${graphNode.column_indices[0]}–${graphNode.column_indices.at(-1)}.`;
+  table("graph-output-table", [context.rowHeading, ...context.columnLabels.map(i => `${context.columnHeading} ${i}`)], graphNode.values.map((row, i) => [context.rowLabels[i], ...row]));
 }
 function showGraphInput() {
   const input = generationGraph.nodes.find(node => node.id === $("graph-input").value);
