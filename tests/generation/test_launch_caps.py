@@ -180,3 +180,32 @@ def test_sampled_request_admission_keeps_family_and_profile(
         assert recipe.task.noise_ratio == 0
         task_types.add(recipe.task.task_type)
     assert task_types == {"regression", "binary", "multiclass"}
+
+
+def test_composed_request_has_executable_agreement_recipes(
+    launch: tuple[Path, dict[str, str]],
+) -> None:
+    from dataclasses import asdict
+
+    from r0.modules.generation import load_request
+    from r0.modules.priors import CompositeRecipe, generate_task, recipe_from_dict
+
+    root, env = launch
+    config = root / "configs/generation/request.toml"
+    config.write_text((ROOT / "configs/generation/composite-cpu.toml").read_text())
+    requested = json.loads(json.dumps(asdict(load_request(config))))
+    result = invoke(root, env)
+    assert result.returncode == 0, result.stderr
+    plan = json.loads((root / "reservation.json").read_text())
+    assert plan["request"] == requested
+    original = recipe_from_dict(requested["recipe"])
+    assert isinstance(original, CompositeRecipe)
+    task_types: set[str] = set()
+    for entry in plan["agreement_recipes"]:
+        recipe = recipe_from_dict(entry)
+        assert isinstance(recipe, CompositeRecipe)
+        assert recipe.expression == original.expression
+        generated = generate_task(recipe, seed=27, task_id=0)
+        assert generated.inputs.shape[0] == 64
+        task_types.add(generated.task_type)
+    assert task_types == {"regression", "binary", "multiclass"}
