@@ -124,6 +124,14 @@ def kernel_covariance(
         if combine == "sum"
         else np.ones((len(support), len(support)))
     )
+    # Preserve the established stationary-only arithmetic. Variable amplitudes need
+    # log products so later components can cancel earlier shrinking envelopes.
+    log_product = (
+        np.zeros_like(covariance)
+        if combine == "product" and any(isinstance(k, GibbsKernel) for k in kernels)
+        else None
+    )
+    product_sign = np.ones_like(covariance)
     cards: list[dict[str, object]] = []
     for kernel, weight in zip(kernels, weights, strict=True):
         axes = kernel.axes or tuple(range(support.shape[1]))
@@ -132,8 +140,11 @@ def kernel_covariance(
             lengths = np.asarray(multipliers) * kernel.length_scale
         if not np.isfinite(lengths).all() or np.any(lengths <= 0):
             raise ValueError("nonfinite or zero kernel length scales; task was not retried")
+        extra: dict[str, object] = {}
+        value_sign = np.ones_like(covariance)
         if isinstance(kernel, GibbsKernel):
-            values = _gibbs_covariance(support, kernel, axes, lengths)
+            log_values, extra = _gibbs_log_covariance(support, kernel, axes, lengths)
+            values = np.exp(log_values)
         else:
             distance = np.zeros_like(covariance)
             with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
@@ -157,9 +168,11 @@ def kernel_covariance(
                     log_ratio = 2 * np.log(distance) - math.log(2) - math.log(kernel.alpha)
                     log_softplus = np.log(np.logaddexp(0, log_ratio))
                     log_softplus = np.where(log_ratio < -36, log_ratio, log_softplus)
-                    values = np.exp(-np.exp(math.log(kernel.alpha) + log_softplus))
+                    log_values = -np.exp(math.log(kernel.alpha) + log_softplus)
+                    values = np.exp(log_values)
                 elif kernel.kind == "rbf" or isinstance(kernel, SpectralKernel):
-                    values = np.exp(-0.5 * distance**2)
+                    log_values = -0.5 * distance**2
+                    values = np.exp(log_values)
                 else:
                     nu2 = {"matern12": 1, "matern32": 3, "matern52": 5}[kernel.kind]
                     t = math.sqrt(nu2) * distance
@@ -171,8 +184,9 @@ def kernel_covariance(
                         log_polynomial = np.logaddexp(
                             0, np.logaddexp(log_t, 2 * log_t - math.log(3))
                         )
-                    values = np.exp(log_polynomial - t)
-                    values[np.isinf(t)] = 0  # The limiting covariance is zero.
+                    log_values = log_polynomial - t
+                    log_values[np.isinf(t)] = -np.inf  # The limiting covariance is zero.
+                    values = np.exp(log_values)
             if isinstance(kernel, SpectralKernel):
                 frequencies = kernel.frequencies or (0.0,) * len(axes)
                 for axis, frequency in zip(axes, frequencies, strict=True):
@@ -192,11 +206,19 @@ def kernel_covariance(
                             "spectral phase exceeds the declared numerical limit; "
                             "task was not retried"
                         )
-                    values *= np.cos(2 * math.pi * np.remainder(cycles, 1))
+                    cosine = np.cos(2 * math.pi * np.remainder(cycles, 1))
+                    values *= cosine
+                    if log_product is not None:
+                        with np.errstate(divide="ignore"):
+                            log_values += np.log(np.abs(cosine))
+                        value_sign *= np.sign(cosine)
         if not np.isfinite(values).all():
             raise ValueError("nonfinite kernel covariance; task was not retried")
         with np.errstate(over="ignore", invalid="ignore"):
-            if combine == "sum":
+            if log_product is not None:
+                log_product += log_values
+                product_sign *= value_sign
+            elif combine == "sum":
                 covariance += weight * values
             else:
                 covariance *= values
@@ -215,25 +237,21 @@ def kernel_covariance(
         if isinstance(kernel, SpectralKernel):
             cards[-1]["frequencies"] = list(kernel.frequencies or (0.0,) * len(axes))
             cards[-1]["frequency_units"] = "cycles per input unit"
-        if isinstance(kernel, GibbsKernel):
-            cards[-1].update(
-                {
-                    "centers": list(kernel.centers or (0.0,) * len(axes)),
-                    "transition_scales": list(kernel.transition_scales or (1.0,) * len(axes)),
-                    "length_slopes": list(kernel.length_slopes or (0.0,) * len(axes)),
-                    "amplitude_slopes": list(kernel.amplitude_slopes or (0.0,) * len(axes)),
-                    "modulation": "tanh((x_d-center_d)/transition_scale_d)",
-                }
-            )
+        cards[-1].update(extra)
+    if log_product is not None:
+        with np.errstate(over="ignore", invalid="ignore"):
+            covariance = product_sign * np.exp(log_product)
+        if not np.isfinite(covariance).all():
+            raise ValueError("nonfinite combined kernel covariance; task was not retried")
     return covariance, cards
 
 
-def _gibbs_covariance(
+def _gibbs_log_covariance(
     support: NDArray[np.float64],
     kernel: GibbsKernel,
     axes: tuple[int, ...],
     lengths: NDArray[np.float64],
-) -> NDArray[np.float64]:
+) -> tuple[NDArray[np.float64], dict[str, object]]:
     centers = kernel.centers or (0.0,) * len(axes)
     transitions = kernel.transition_scales or (1.0,) * len(axes)
     length_slopes = kernel.length_slopes or (0.0,) * len(axes)
@@ -266,4 +284,10 @@ def _gibbs_covariance(
                 scaled[overflow] = fallback[overflow]
             log_covariance += np.log(prefactor) - (scaled / np.sqrt(denominator)) ** 2
             log_covariance += amplitude * (modulation[:, None] + modulation[None, :])
-    return np.exp(log_covariance)
+    return log_covariance, {
+        "centers": list(centers),
+        "transition_scales": list(transitions),
+        "length_slopes": list(length_slopes),
+        "amplitude_slopes": list(amplitude_slopes),
+        "modulation": "tanh((x_d-center_d)/transition_scale_d)",
+    }

@@ -11,6 +11,7 @@ from r0.modules.episodes import TaskType
 from r0.modules.priors import (
     GaussianProcessRecipe,
     GibbsKernel,
+    InputDistribution,
     LinearRecipe,
     StationaryKernel,
     generate_task,
@@ -119,3 +120,47 @@ def test_spatial_field_shapes_and_numerical_ranges_are_explicit() -> None:
         GibbsKernel(amplitude_slopes=(10, 10))
     with pytest.raises(ValueError, match="finite"):
         GibbsKernel(centers=(math.nan,))
+
+
+def test_opposite_envelopes_cancel_regardless_of_product_order() -> None:
+    base = GaussianProcessRecipe(
+        task=LinearRecipe(
+            rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+        ),
+        inputs=InputDistribution(distribution="uniform", location=1.25, scale=0.25),
+        calibration_rows=32,
+        combine="product",
+        kernels=(StationaryKernel(length_scale=0.001 / 8),),
+    )
+    expected = generate_task(base, seed=27, task_id=5)
+    shrinking = GibbsKernel(length_scale=0.001, amplitude_slopes=(-13.0,))
+    expanding = replace(shrinking, amplitude_slopes=(13.0,))
+    for kernels in ((shrinking,) * 32 + (expanding,) * 32, (shrinking, expanding) * 32):
+        actual = generate_task(replace(base, kernels=kernels), seed=27, task_id=5)
+        np.testing.assert_allclose(
+            actual.scores.numpy(), expected.scores.numpy(), rtol=1e-10, atol=1e-10
+        )
+
+
+def test_log_product_preserves_negative_spectral_covariance() -> None:
+    from r0.modules.priors import SpectralKernel
+
+    base = GaussianProcessRecipe(
+        task=LinearRecipe(
+            rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+        ),
+        inputs=InputDistribution(distribution="uniform", location=1.25, scale=0.25),
+        calibration_rows=32,
+        combine="product",
+        kernels=(SpectralKernel(length_scale=1 / math.sqrt(62 + 0.02**-2), frequencies=(7.0,)),),
+    )
+    expected = generate_task(base, seed=27, task_id=5)
+    shrinking = GibbsKernel(amplitude_slopes=(-13.0,))
+    expanding = replace(shrinking, amplitude_slopes=(13.0,))
+    mixed = (
+        (shrinking,) * 31
+        + (SpectralKernel(length_scale=0.02, frequencies=(7.0,)),)
+        + (expanding,) * 31
+    )
+    actual = generate_task(replace(base, kernels=mixed), seed=27, task_id=5)
+    np.testing.assert_allclose(actual.scores.numpy(), expected.scores.numpy(), rtol=1e-9, atol=1e-9)

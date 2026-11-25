@@ -102,7 +102,9 @@ Cards retain all transition parameters and the modulation formula. Numerical
 limits are explicit: a local length that overflows or rounds to zero fails, as
 does any nonfinite combined covariance. Products of many amplitude-modulated
 kernels may exceed float64 range even when every component is valid individually.
-They fail with their task identity; no component or strength is silently removed.
+Final overflow fails with the task identity; no component or strength is silently removed.
+Products containing Gibbs kernels accumulate signed log covariance before exponentiating,
+so shrinking and expanding envelopes can cancel without intermediate underflow.
 Scaling lengths before squaring avoids intermediate overflow and underflow in the
 Gibbs prefactor and distance calculation.
 
