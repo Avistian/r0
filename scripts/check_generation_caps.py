@@ -11,6 +11,8 @@ import subprocess
 from dataclasses import asdict, replace
 from pathlib import Path
 
+from check_device_agreement import agreement_matrix
+
 from r0.modules.generation import load_request
 from r0.modules.priors import CompositeRecipe, LinearRecipe, sample_recipe
 
@@ -74,7 +76,8 @@ def main() -> None:
     job_minutes = float(os.environ.get("GENERATION_JOB_TIMEOUT_MINUTES", "15"))
     if not math.isfinite(job_minutes) or not 1 <= job_minutes <= 75:
         raise ValueError("generation job timeout must be 1..75 minutes")
-    if 2 * (request.max_seconds + 180) > job_minutes * 60:
+    agreement_seconds = 180 if request.device == "cuda" else 0
+    if 2 * (request.max_seconds + 180 + agreement_seconds) > job_minutes * 60:
         raise ValueError("generation plus resume and startup exceed the workflow deadline")
     gpu = "T4" if request.device == "cuda" else "none"
     if gpu != "none" and os.environ.get("MAX_GPU") != "T4":
@@ -93,14 +96,14 @@ def main() -> None:
         raise ValueError("daily reservations exceed the authorized budget")
     # Two calls (generation + independent-container resume); conservative 2x allowance.
     rate = 0.0000131 + 4 * 0.00000222 + (0.000164 if gpu == "T4" else 0)
-    estimated = 2 * (request.max_seconds + 180) * rate
+    estimated = 2 * (request.max_seconds + 180 + agreement_seconds) * rate
     if estimated * 2 + 0.25 > reservation:
         raise ValueError("resource estimate plus build allowance exceeds run reservation")
     source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
     if source != os.environ["GITHUB_SHA"] or not re.fullmatch(r"[a-f0-9]{40}", source):
         raise ValueError("checkout differs from dispatched immutable source")
     subprocess.run(["git", "diff", "--exit-code", "HEAD", "--", "src", "scripts"], check=True)
-    agreement_recipes = []
+    agreement_cases = []
     for task_type, classes in (("regression", 0), ("binary", 2), ("multiclass", 3)):
         diagnostic = agreement_recipe(request.recipe, task_type, classes)
         if request.sampling is not None:
@@ -113,14 +116,17 @@ def main() -> None:
             )
         else:
             agreement = diagnostic
-        agreement_recipes.append(asdict(agreement))
+        agreement_cases.append({"name": f"requested-{task_type}", "recipe": asdict(agreement)})
+    if gpu != "none":
+        agreement_cases.extend(agreement_matrix())
     plan = {
         "source": source,
         "run": args.run,
         "workflow_run_id": os.environ["GITHUB_RUN_ID"],
         "created_at": dt.datetime.now(dt.UTC).isoformat(),
         "request": asdict(request),
-        "agreement_recipes": agreement_recipes,
+        "agreement_cases": agreement_cases,
+        "agreement_seconds": agreement_seconds,
         "config_sha256": hashlib.sha256(args.config.read_bytes()).hexdigest(),
         "workers": args.workers,
         "retry_failed": args.retry_failed,
