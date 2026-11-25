@@ -29,9 +29,14 @@ the separate [Modal receipt record](https://github.com/Avistian/r0/blob/eead75ab
 
 ## Reproduction
 
-Use the source above and an installed environment. Start the explorer with a fresh
-output directory and a dedicated Chromium debugging profile as described in
-[local explorer checks](local-dataset-explorer.md#reproducing-browser-checks).
+Use the source above and an installed environment. In separate terminals, start
+the explorer with a fresh output directory and Chromium with a dedicated profile:
+
+```bash
+python3 scripts/run_check.py python scripts/explore.py --out /tmp/integrated-data --port 8781
+chromium --headless --remote-debugging-port=9226 --user-data-dir=/tmp/integrated-browser about:blank
+```
+
 Then run these scripts sequentially against that browser and server:
 
 ```bash
