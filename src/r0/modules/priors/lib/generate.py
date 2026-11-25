@@ -2,9 +2,11 @@
 
 from typing import Any, cast
 
+from r0.modules.priors.lib.exact_gp import GaussianProcessRecipe, generate_exact_gp
 from r0.modules.priors.lib.fourier import FourierRecipe, generate_fourier
 from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe, generate_grouped_linear
 from r0.modules.priors.lib.inputs import InputDistribution
+from r0.modules.priors.lib.kernels import StationaryKernel
 from r0.modules.priors.lib.linear import LinearRecipe, generate_linear
 from r0.modules.priors.lib.polynomial import PolynomialRecipe, generate_polynomial
 from r0.modules.priors.lib.quadratic import QuadraticRecipe, generate_quadratic
@@ -18,7 +20,16 @@ type Recipe = (
     | QuadraticRecipe
     | GroupedLinearRecipe
     | SmoothRecipe
+    | GaussianProcessRecipe
 )
+
+
+def _kernel_from_dict(data: dict[str, Any]) -> StationaryKernel:
+    fields = dict(data)
+    for key in ("axes", "feature_scales"):
+        if key in fields:
+            fields[key] = tuple(fields[key])
+    return StationaryKernel(**fields)
 
 
 def recipe_from_dict(data: object) -> Recipe:
@@ -31,13 +42,30 @@ def recipe_from_dict(data: object) -> Recipe:
         if "class_offsets" in fields:
             fields["class_offsets"] = tuple(fields["class_offsets"])
         return LinearRecipe(**fields)
-    if version in ("fourier-v1", "polynomial-v1", "quadratic-v1", "grouped-linear-v1", "smooth-v1"):
+    if version in (
+        "fourier-v1",
+        "polynomial-v1",
+        "quadratic-v1",
+        "grouped-linear-v1",
+        "smooth-v1",
+        "exact-gp-v1",
+    ):
         task = recipe_from_dict(fields.get("task", {}))
         if not isinstance(task, LinearRecipe):
             raise ValueError("task controls must use linear-v1 settings")
         fields["task"] = task
-        if version in ("polynomial-v1", "quadratic-v1", "grouped-linear-v1", "smooth-v1"):
+        if version in (
+            "polynomial-v1",
+            "quadratic-v1",
+            "grouped-linear-v1",
+            "smooth-v1",
+            "exact-gp-v1",
+        ):
             fields["inputs"] = InputDistribution(**fields.get("inputs", {}))
+            if version == "exact-gp-v1":
+                if "kernels" in fields:
+                    fields["kernels"] = tuple(_kernel_from_dict(k) for k in fields["kernels"])
+                return GaussianProcessRecipe(**fields)
             if version == "smooth-v1":
                 return SmoothRecipe(**fields)
             if version == "grouped-linear-v1":
@@ -63,4 +91,6 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
         return generate_grouped_linear(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, SmoothRecipe):
         return generate_smooth(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, GaussianProcessRecipe):
+        return generate_exact_gp(recipe, seed=seed, task_id=task_id, device=device)
     return generate_linear(recipe, seed=seed, task_id=task_id, device=device)

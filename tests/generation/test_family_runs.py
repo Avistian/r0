@@ -19,6 +19,7 @@ from r0.modules.priors import FourierRecipe, LinearRecipe, generate_task, recipe
         'version = "quadratic-v1"\nrank = 4',
         'version = "grouped-linear-v1"\ngroup_size = 2',
         'version = "smooth-v1"\nfamily = "radial"\nprojection = "ridge"\nterms = 4',
+        'version = "exact-gp-v1"\ncalibration_rows = 32',
     ],
 )
 def test_configured_run_saves_exact_recipe_and_resumes(tmp_path: Path, family_fields: str) -> None:
