@@ -249,7 +249,8 @@ def main():
     report = summarize(args.out)
     write(args.out / "report.json", report)
     print(json.dumps(report["totals"]), flush=True)
+    return 0 if report["totals"]["PASS"] == len(selected) else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

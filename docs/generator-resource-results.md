@@ -75,8 +75,9 @@ No provider cost estimate or additional cloud spend was produced by this run.
 The worker reloaded every saved task, compared replay arrays exactly, checked
 finite inputs/scores/targets, and reconstructed first/second/last-row graphs.
 A separate author-run artifact checker then verified **270 distinct source tasks**,
-all archive checksums, requested array shapes, task identities, caps and all 90
-summary calculations, with **zero generation calls**. This is distinct from the
+all archive checksums, requested array shapes, task identities, recorded address-space/
+thread settings, timeout outcomes and all 90 summary calculations, with **zero
+generation calls**. This is distinct from the
 earlier independent scalar family walkthroughs and from independent code review.
 
 Reproduce the matrix using the protocol command and a fresh output directory, then:

@@ -87,6 +87,9 @@ worker receipt is recorded without erasing the parent's observed timeout or exit
 saved timing is published before verification, so a later verification failure
 does not erase a successful generation measurement. Failed cases are not retried,
 resized or replaced. The tool requires a fresh output directory.
+After retaining the terminal report, generation mode exits nonzero if any selected
+task failed or timed out. The read-only `--summarize` mode prints outcomes without
+launching work; its successful exit only means the report was read successfully.
 
 For each case, the report lists successful timing min/median/max and the number of
 every outcome. It supplies 100-million-task time/storage extrapolations only when
