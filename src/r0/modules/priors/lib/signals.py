@@ -128,7 +128,9 @@ def composite_scores(card: dict[str, Any], inputs: torch.Tensor) -> torch.Tensor
             )
             child[:, component["mechanism"]["active"]] = part[:, component["input_columns"]]
             leaves.append(
-                _multiply(evaluate_mechanism(component["mechanism"], child), component["strength"])
+                multiply_signals(
+                    evaluate_mechanism(component["mechanism"], child), component["strength"]
+                )
             )
 
         result = _evaluate_expression(card["expression"], leaves)
@@ -144,11 +146,13 @@ def _evaluate_expression(expression: Any, leaves: list[torch.Tensor]) -> torch.T
     values = [_evaluate_expression(child, leaves) for child in expression["children"]]
     result = values[0]
     for value in values[1:]:
-        result = result + value if expression["operation"] == "sum" else _multiply(result, value)
-    return _multiply(result, expression["strength"])
+        result = (
+            result + value if expression["operation"] == "sum" else multiply_signals(result, value)
+        )
+    return multiply_signals(result, expression["strength"])
 
 
-def _multiply(left: torch.Tensor, right: torch.Tensor | float) -> torch.Tensor:
+def multiply_signals(left: torch.Tensor, right: torch.Tensor | float) -> torch.Tensor:
     result = left * right
     if torch.any((result == 0) & (left != 0) & (right != 0)):
         raise ValueError("composition product underflow; task was not retried")
