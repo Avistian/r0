@@ -11,14 +11,19 @@ from r0.modules.generation import load_request, run_guarded
 from r0.modules.priors import FourierRecipe, LinearRecipe, generate_task, recipe_from_dict
 
 
-@pytest.mark.parametrize("family", ["rff", "periodic"])
-def test_configured_fourier_run_saves_exact_recipe_and_resumes(tmp_path: Path, family: str) -> None:
+@pytest.mark.parametrize(
+    "family_fields",
+    [
+        'version = "fourier-v1"\nfamily = "rff"\nterms = 4',
+        'version = "fourier-v1"\nfamily = "periodic"\nterms = 4',
+        'version = "quadratic-v1"\nrank = 4',
+    ],
+)
+def test_configured_run_saves_exact_recipe_and_resumes(tmp_path: Path, family_fields: str) -> None:
     config = tmp_path / "request.toml"
-    config.write_text(f'''
+    config.write_text(f"""
 [recipe]
-version = "fourier-v1"
-family = "{family}"
-terms = 4
+{family_fields}
 [recipe.task]
 task_type = "binary"
 classes = 2
@@ -29,9 +34,8 @@ count = 2
 group_size = 2
 max_seconds = 30
 max_bytes = 1048576
-''')
+""")
     request = load_request(config)
-    assert isinstance(request.recipe, FourierRecipe)
     first = run_guarded(request, tmp_path / "run", workers=2)
     assert first.returncode == 0, first.stderr
     archive = next((tmp_path / "run").glob("groups/*/*/data-*.zip"))
