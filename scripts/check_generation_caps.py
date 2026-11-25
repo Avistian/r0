@@ -12,7 +12,7 @@ from dataclasses import asdict, replace
 from pathlib import Path
 
 from r0.modules.generation import load_request
-from r0.modules.priors import FourierRecipe
+from r0.modules.priors import LinearRecipe
 
 
 def positive_limit(name: str) -> float:
@@ -76,7 +76,7 @@ def main() -> None:
     if source != os.environ["GITHUB_SHA"] or not re.fullmatch(r"[a-f0-9]{40}", source):
         raise ValueError("checkout differs from dispatched immutable source")
     subprocess.run(["git", "diff", "--exit-code", "HEAD", "--", "src", "scripts"], check=True)
-    controls = request.recipe.task if isinstance(request.recipe, FourierRecipe) else request.recipe
+    controls = request.recipe if isinstance(request.recipe, LinearRecipe) else request.recipe.task
     agreement_recipes = []
     for task_type, classes in (("regression", 0), ("binary", 2), ("multiclass", 3)):
         diagnostic = replace(
@@ -91,9 +91,9 @@ def main() -> None:
         )
         agreement_recipes.append(
             asdict(
-                replace(request.recipe, task=diagnostic)
-                if isinstance(request.recipe, FourierRecipe)
-                else diagnostic
+                diagnostic
+                if isinstance(request.recipe, LinearRecipe)
+                else replace(request.recipe, task=diagnostic)
             )
         )
     plan = {
