@@ -2,16 +2,16 @@
 
 import base64
 import json
-import os
-import uuid
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any, cast
 
+from r0.modules.explorer.lib.comparisons import SavedPair, create_pair, open_pair, pair_bundle
 from r0.modules.explorer.lib.curves import inspect_curve, inspect_gp_curve
 from r0.modules.explorer.lib.exports import replay_bundle
 from r0.modules.explorer.lib.inspection import inspect_rows, inspect_task
-from r0.modules.generation import RunRequest, load_group, run_guarded
+from r0.modules.explorer.lib.saved import load_saved, run_saved
+from r0.modules.generation import RunRequest
 from r0.modules.priors import (
     Combination,
     CompositeRecipe,
@@ -26,17 +26,7 @@ from r0.modules.priors import (
     TrainingTask,
     explain_generation,
     recipe_from_dict,
-    record_fingerprint,
 )
-
-
-def _retain_attempt(path: Path, record: dict[str, Any]) -> None:
-    pending = path.with_suffix(".pending")
-    with pending.open("x") as stream:
-        json.dump(record, stream, allow_nan=False, sort_keys=True)
-        stream.flush()
-        os.fsync(stream.fileno())
-    pending.rename(path)
 
 
 def _identity_numbers(value: Any, *, for_browser: bool) -> Any:
@@ -84,6 +74,7 @@ class ExplorerSession:
         self.task: TrainingTask | None = None
         self.archive: str | None = None
         self.run: dict[str, Any] | None = None
+        self.pair: SavedPair | None = None
 
     def _view(self) -> dict[str, Any]:
         view = None if self.task is None else inspect_task(self.task)
@@ -94,23 +85,38 @@ class ExplorerSession:
             "recipe_json": None if self.task is None else self.task.recipe_json,
             "archive": self.archive,
             "run": self.run,
+            "pair": None
+            if self.pair is None
+            else {
+                "path": self.pair.path,
+                "card": _identity_numbers(self.pair.document["card"], for_browser=True),
+                "card_json": json.dumps(
+                    self.pair.document["card"], sort_keys=True, allow_nan=False
+                ),
+                "run": self.pair.document["after_run"],
+                "after": {
+                    "view": _identity_numbers(inspect_task(self.pair.after), for_browser=True),
+                    "recipe_json": self.pair.after.recipe_json,
+                    "archive": self.pair.document["after_archive"],
+                },
+            },
         }
 
     def _open(self, path: Path, task_id: int) -> None:
-        path = path.resolve()
-        if not path.is_relative_to(self.output_dir):
-            raise ValueError("archive must be inside the explorer output directory")
-        for task in load_group(path):
-            if json.loads(task.recipe_json)["task_id"] == task_id:
-                self.task = task
-                self.archive = str(path.relative_to(self.output_dir))
-                return
-        raise ValueError("task identifier was not found in this archive")
+        task = load_saved(self.output_dir, path, task_id)
+        self.task = task
+        self.archive = str(path.resolve().relative_to(self.output_dir))
+        self.pair = None
 
     def request(self, action: str, data: dict[str, Any]) -> dict[str, Any]:
         if action == "examples":
             return {"examples": recipe_examples(), "output_dir": str(self.output_dir)}
         if action == "view":
+            return self._view()
+        if action == "open_pair":
+            pair = open_pair(self.output_dir, data["path"])
+            self.task, self.archive = pair.before, pair.document["before_archive"]
+            self.run, self.pair = pair.document["before_run"], pair
             return self._view()
         if action == "open":
             self._open(
@@ -139,35 +145,8 @@ class ExplorerSession:
                 max_bytes=data.get("max_bytes", 256 * 1024**2),
                 device=device,
             )
-            out = self.output_dir / record_fingerprint(asdict(request))
-            attempts = self.output_dir / ".attempts" / out.name
-            attempts.mkdir(parents=True, exist_ok=True)
-            attempt = uuid.uuid4().hex
-            record = {"attempt": attempt, "request": asdict(request), "output": str(out)}
-            _retain_attempt(attempts / f"{attempt}-started.json", {**record, "status": "STARTED"})
-            try:
-                run = run_guarded(request, out)
-            except (OSError, RuntimeError, ValueError, KeyboardInterrupt) as error:
-                _retain_attempt(
-                    attempts / f"{attempt}-failed.json",
-                    {**record, "status": "FAILED", "error": repr(error)},
-                )
-                raise
-            failed = run.timed_out or bool(run.returncode) or run.summary is None
-            _retain_attempt(
-                attempts / f"{attempt}-result.json",
-                {**record, "status": "FAILED" if failed else "COMPLETE", "result": asdict(run)},
-            )
-            if failed:
-                raise ValueError(
-                    f"Generation failed; attempt records retained in {attempts}. "
-                    f"Timed out: {run.timed_out}. {run.stderr[-2000:]} {run.summary}"
-                )
-            archives = sorted(out.glob("groups/**/*.zip"))
-            if len(archives) != 1:
-                raise ValueError(f"Expected one completed task archive in {out}")
-            self._open(archives[0], request.start)
-            self.run = asdict(run)
+            self.task, self.archive, self.run = run_saved(self.output_dir, request)
+            self.pair = None
             return self._view()
         if self.task is None:
             raise ValueError("generate or open a dataset first")
@@ -175,6 +154,24 @@ class ExplorerSession:
             raise ValueError(
                 "The active dataset changed in another view. Reopen or replay this dataset first."
             )
+        if action == "pair":
+            if self.archive is None:
+                raise ValueError("save the active dataset before comparing")
+            pair = create_pair(self.output_dir, self.task, self.archive, self.run, data)
+            self.pair = pair
+            return self._view()
+        if action == "pair_export":
+            if self.pair is None:
+                raise ValueError("create or open a comparison first")
+            pair_id = self.pair.document["card"]["pair_id"]
+            if data.get("expected_pair_id", pair_id) != pair_id:
+                raise ValueError("The active comparison changed in another view. Reopen it first.")
+            bundle = pair_bundle(self.pair, max_bytes=data.get("max_bytes", 256 * 1024**2))
+            return {
+                "name": f"comparison-{pair_id}.zip",
+                "data": base64.b64encode(bundle).decode("ascii"),
+                "mime": "application/zip",
+            }
         if action == "row":
             return {"row": inspect_rows(self.task, [data["index"]])[0]}
         if action == "parameters":
