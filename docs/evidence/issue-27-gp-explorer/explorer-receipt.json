@@ -1,0 +1,603 @@
+{
+  "url": "http://127.0.0.1:8774/",
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "HeadlessChrome/153.0.8010.12",
+    "revision": "@971a7443b0c9b0a9b2860529b33331b76077ec62",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+    "jsVersion": "15.3.76.4"
+  },
+  "node": "v24.21.0",
+  "initial": {
+    "id": "da17ab941ec61aad74544b17c7be356663b3c2f7ce2130b29f94f09e78d3d9df",
+    "rows": 64,
+    "plotted": 128,
+    "archive": "1ffbfafa9f50ea8fa64bd9971d6c2a5ebcb91606ca9100e1edde70bd2454ce40/groups/0/0/data-0.zip",
+    "run": {
+      "attempted": 1,
+      "completed": 1,
+      "cuda": null,
+      "device": "cpu",
+      "failed": 0,
+      "generated": 1,
+      "generated_per_second": 38.511953550195315,
+      "generation_seconds": 0.02596596401417628,
+      "gpu_peak_allocated_bytes": null,
+      "hardware": "aarch64",
+      "numpy": "2.5.5",
+      "peak_rss_bytes": 254812160,
+      "pending": 0,
+      "python": "3.12.3",
+      "status": "COMPLETE",
+      "torch": "2.15.0+cpu"
+    }
+  },
+  "familyRuns": [
+    {
+      "family": "Linear",
+      "identity": "da17ab941ec61aad74544b17c7be356663b3c2f7ce2130b29f94f09e78d3d9df",
+      "run": {
+        "attempted": 0,
+        "completed": 1,
+        "cuda": null,
+        "device": "cpu",
+        "failed": 0,
+        "generated": 0,
+        "generated_per_second": 0,
+        "generation_seconds": 0.0011328620021231472,
+        "gpu_peak_allocated_bytes": null,
+        "hardware": "aarch64",
+        "numpy": "2.5.5",
+        "peak_rss_bytes": 254943232,
+        "pending": 0,
+        "python": "3.12.3",
+        "status": "COMPLETE",
+        "torch": "2.15.0+cpu"
+      }
+    },
+    {
+      "family": "Grouped linear",
+      "identity": "6439c0a2f318595e4441fdb22aea8ef5a951e486be88f001d5987966fbfc869d",
+      "run": {
+        "attempted": 1,
+        "completed": 1,
+        "cuda": null,
+        "device": "cpu",
+        "failed": 0,
+        "generated": 1,
+        "generated_per_second": 26.789445194458462,
+        "generation_seconds": 0.0373281339998357,
+        "gpu_peak_allocated_bytes": null,
+        "hardware": "aarch64",
+        "numpy": "2.5.5",
+        "peak_rss_bytes": 255860736,
+        "pending": 0,
+        "python": "3.12.3",
+        "status": "COMPLETE",
+        "torch": "2.15.0+cpu"
+      }
+    },
+    {
+      "family": "Polynomial",
+      "identity": "ef95baf89f48f41a3369f5d12e96fe5d3336b000042370ea0a350ade4727eb05",
+      "run": {
+        "attempted": 1,
+        "completed": 1,
+        "cuda": null,
+        "device": "cpu",
+        "failed": 0,
+        "generated": 1,
+        "generated_per_second": 35.321130006554135,
+        "generation_seconds": 0.028311664995271713,
+        "gpu_peak_allocated_bytes": null,
+        "hardware": "aarch64",
+        "numpy": "2.5.5",
+        "peak_rss_bytes": 256122880,
+        "pending": 0,
+        "python": "3.12.3",
+        "status": "COMPLETE",
+        "torch": "2.15.0+cpu"
+      }
+    },
+    {
+      "family": "Quadratic",
+      "identity": "45d3f1b1b4d35f7bae244d992bcca2ce5d53e912ec9f96d605d0f4a4f4340c54",
+      "run": {
+        "attempted": 1,
+        "completed": 1,
+        "cuda": null,
+        "device": "cpu",
+        "failed": 0,
+        "generated": 1,
+        "generated_per_second": 25.71292756447168,
+        "generation_seconds": 0.03889094298938289,
+        "gpu_peak_allocated_bytes": null,
+        "hardware": "aarch64",
+        "numpy": "2.5.5",
+        "peak_rss_bytes": 256253952,
+        "pending": 0,
+        "python": "3.12.3",
+        "status": "COMPLETE",
+        "torch": "2.15.0+cpu"
+      }
+    },
+    {
+      "family": "Random Fourier features",
+      "identity": "db486ec21575c2ce1159cc16067c4593cfcc21b43fb63c0d2b06d3e7e8cebd62",
+      "run": {
+        "attempted": 1,
+        "completed": 1,
+        "cuda": null,
+        "device": "cpu",
+        "failed": 0,
+        "generated": 1,
+        "generated_per_second": 16.304602055427978,
+        "generation_seconds": 0.06133237699395977,
+        "gpu_peak_allocated_bytes": null,
+        "hardware": "aarch64",
+        "numpy": "2.5.5",
+        "peak_rss_bytes": 256516096,
+        "pending": 0,
+        "python": "3.12.3",
+        "status": "COMPLETE",
+        "torch": "2.15.0+cpu"
+      }
+    },
+    {
+      "family": "Periodic",
+      "identity": "a3fd273c51173316fd82653252fec67cf281fefa6bc2d9f0503739cfaee8041d",
+      "run": {
+        "attempted": 1,
+        "completed": 1,
+        "cuda": null,
+        "device": "cpu",
+        "failed": 0,
+        "generated": 1,
+        "generated_per_second": 15.762619238929366,
+        "generation_seconds": 0.0634412330109626,
+        "gpu_peak_allocated_bytes": null,
+        "hardware": "aarch64",
+        "numpy": "2.5.5",
+        "peak_rss_bytes": 259387392,
+        "pending": 0,
+        "python": "3.12.3",
+        "status": "COMPLETE",
+        "torch": "2.15.0+cpu"
+      }
+    },
+    {
+      "family": "Smooth radial",
+      "identity": "052f076724215e2eeca0055bb240dd63bdac6514e12a0bd578bbfbb02c024da9",
+      "run": {
+        "attempted": 1,
+        "completed": 1,
+        "cuda": null,
+        "device": "cpu",
+        "failed": 0,
+        "generated": 1,
+        "generated_per_second": 33.490931623753944,
+        "generation_seconds": 0.029858828987926245,
+        "gpu_peak_allocated_bytes": null,
+        "hardware": "aarch64",
+        "numpy": "2.5.5",
+        "peak_rss_bytes": 259387392,
+        "pending": 0,
+        "python": "3.12.3",
+        "status": "COMPLETE",
+        "torch": "2.15.0+cpu"
+      }
+    },
+    {
+      "family": "Smooth sinusoidal",
+      "identity": "43f3bedb83561af0f6e964f168750a0d4256c47b702e586ef515aad9ff103a49",
+      "run": {
+        "attempted": 1,
+        "completed": 1,
+        "cuda": null,
+        "device": "cpu",
+        "failed": 0,
+        "generated": 1,
+        "generated_per_second": 33.309786645527495,
+        "generation_seconds": 0.030021206999663264,
+        "gpu_peak_allocated_bytes": null,
+        "hardware": "aarch64",
+        "numpy": "2.5.5",
+        "peak_rss_bytes": 259387392,
+        "pending": 0,
+        "python": "3.12.3",
+        "status": "COMPLETE",
+        "torch": "2.15.0+cpu"
+      }
+    },
+    {
+      "family": "Exact Gaussian process",
+      "identity": "5683a5a835481b98bd8538aafa5791718c0bd65c0386f27cc6a25c626e1ea39f",
+      "run": {
+        "attempted": 1,
+        "completed": 1,
+        "cuda": null,
+        "device": "cpu",
+        "failed": 0,
+        "generated": 1,
+        "generated_per_second": 17.18834762866975,
+        "generation_seconds": 0.058178948995191604,
+        "gpu_peak_allocated_bytes": null,
+        "hardware": "aarch64",
+        "numpy": "2.5.5",
+        "peak_rss_bytes": 260612096,
+        "pending": 0,
+        "python": "3.12.3",
+        "status": "COMPLETE",
+        "torch": "2.15.0+cpu"
+      }
+    },
+    {
+      "family": "Composition",
+      "identity": "9c0033e8ae267439847229e5fcaad84eb89571d1907d171a4f7977e45f5d0911",
+      "run": {
+        "attempted": 1,
+        "completed": 1,
+        "cuda": null,
+        "device": "cpu",
+        "failed": 0,
+        "generated": 1,
+        "generated_per_second": 27.460474288743566,
+        "generation_seconds": 0.03641597699606791,
+        "gpu_peak_allocated_bytes": null,
+        "hardware": "aarch64",
+        "numpy": "2.5.5",
+        "peak_rss_bytes": 269946880,
+        "pending": 0,
+        "python": "3.12.3",
+        "status": "COMPLETE",
+        "torch": "2.15.0+cpu"
+      }
+    }
+  ],
+  "curveRuns": [
+    {
+      "family": "Linear",
+      "identity": "748639858f6d328fbecd9cae3e95e26cf47990539463678f62fc855c4ee7e024",
+      "points": 129,
+      "feature": 1,
+      "bounds": [
+        -3.1973550815449805,
+        3.1373961824209218
+      ]
+    },
+    {
+      "family": "Grouped linear",
+      "identity": "7fa5a88c03d8dd54e0d32484bc1d2b1fae4e3a1a192072f5b0a95d7cb90c6cb5",
+      "points": 129,
+      "feature": 2,
+      "bounds": [
+        -2.3865661397957103,
+        2.763868297472143
+      ]
+    },
+    {
+      "family": "Polynomial",
+      "identity": "01894c9faa7da710a08c5fbddb6eabfbcf045b730be9d11203acd6687f612441",
+      "points": 129,
+      "feature": 0,
+      "bounds": [
+        -2.5380873836410918,
+        2.611383239954344
+      ]
+    },
+    {
+      "family": "Quadratic",
+      "identity": "33b7085227d9a41c35050f47a58adfbc283cdbd75fc9fe09c578351f8ecf2fa0",
+      "points": 129,
+      "feature": 0,
+      "bounds": [
+        -2.1090626977339935,
+        2.58362547965387
+      ]
+    },
+    {
+      "family": "Random Fourier features",
+      "identity": "533370303772063b1c912825c29f3159eb0ca302e1c09a06c89a71ebdfc96731",
+      "points": 129,
+      "feature": 1,
+      "bounds": [
+        -2.7423138989977995,
+        2.2767865607252795
+      ]
+    },
+    {
+      "family": "Periodic",
+      "identity": "405a3a9bfed888791a7c2bfc11ff9118510999be8fc2851345b08a61705d6b75",
+      "points": 129,
+      "feature": 1,
+      "bounds": [
+        -2.0167941944575434,
+        3.0867902336759685
+      ]
+    },
+    {
+      "family": "Smooth radial",
+      "identity": "642ea2020d1725754b4c88dd3f21968695a34a1fb8082818db42cd111c41e108",
+      "points": 129,
+      "feature": 0,
+      "bounds": [
+        -1.88037443298396,
+        1.5965878260607427
+      ]
+    },
+    {
+      "family": "Smooth sinusoidal",
+      "identity": "d8eba3ec327aa3801f856431aaee208fcede61865cea5c60c61067897f3892e9",
+      "points": 129,
+      "feature": 2,
+      "bounds": [
+        -2.8943244547347917,
+        3.0216198421971523
+      ]
+    },
+    {
+      "family": "Exact Gaussian process",
+      "result": "explicit conditional mean with uncertainty"
+    },
+    {
+      "family": "Composition",
+      "identity": "dbe1a672e7ee1ea111fb7448e6fcf4c0cc76fed77928bc25d9356e3008d1c0ae",
+      "points": 129,
+      "feature": 1,
+      "bounds": [
+        -2.432271402639376,
+        2.4969781159151743
+      ]
+    }
+  ],
+  "graphRuns": [
+    {
+      "family": "Linear",
+      "identity": "748639858f6d328fbecd9cae3e95e26cf47990539463678f62fc855c4ee7e024",
+      "nodes": 7,
+      "rows": [
+        0,
+        3
+      ],
+      "signal_error": 0,
+      "target_error": 0
+    },
+    {
+      "family": "Grouped linear",
+      "identity": "7fa5a88c03d8dd54e0d32484bc1d2b1fae4e3a1a192072f5b0a95d7cb90c6cb5",
+      "nodes": 7,
+      "rows": [
+        0,
+        3
+      ],
+      "signal_error": 0,
+      "target_error": 0
+    },
+    {
+      "family": "Polynomial",
+      "identity": "01894c9faa7da710a08c5fbddb6eabfbcf045b730be9d11203acd6687f612441",
+      "nodes": 8,
+      "rows": [
+        0,
+        3
+      ],
+      "signal_error": 0,
+      "target_error": 0
+    },
+    {
+      "family": "Quadratic",
+      "identity": "33b7085227d9a41c35050f47a58adfbc283cdbd75fc9fe09c578351f8ecf2fa0",
+      "nodes": 9,
+      "rows": [
+        0,
+        3
+      ],
+      "signal_error": 0,
+      "target_error": 0
+    },
+    {
+      "family": "Random Fourier features",
+      "identity": "533370303772063b1c912825c29f3159eb0ca302e1c09a06c89a71ebdfc96731",
+      "nodes": 8,
+      "rows": [
+        0,
+        3
+      ],
+      "signal_error": 0,
+      "target_error": 0
+    },
+    {
+      "family": "Periodic",
+      "identity": "405a3a9bfed888791a7c2bfc11ff9118510999be8fc2851345b08a61705d6b75",
+      "nodes": 8,
+      "rows": [
+        0,
+        3
+      ],
+      "signal_error": 0,
+      "target_error": 0
+    },
+    {
+      "family": "Smooth radial",
+      "identity": "642ea2020d1725754b4c88dd3f21968695a34a1fb8082818db42cd111c41e108",
+      "nodes": 9,
+      "rows": [
+        0,
+        3
+      ],
+      "signal_error": 0,
+      "target_error": 0
+    },
+    {
+      "family": "Smooth sinusoidal",
+      "identity": "d8eba3ec327aa3801f856431aaee208fcede61865cea5c60c61067897f3892e9",
+      "nodes": 9,
+      "rows": [
+        0,
+        3
+      ],
+      "signal_error": 0,
+      "target_error": 0
+    },
+    {
+      "family": "Exact Gaussian process",
+      "identity": "447082f32badee85152762d84b5d32fcc2f6b9570603bd470fa250ec3969d493",
+      "nodes": 9,
+      "rows": [
+        0,
+        3
+      ],
+      "signal_error": 0,
+      "target_error": 0,
+      "normal_preview": {
+        "shown_rows": 16,
+        "full_support_rows": 320
+      }
+    },
+    {
+      "family": "Composition",
+      "identity": "dbe1a672e7ee1ea111fb7448e6fcf4c0cc76fed77928bc25d9356e3008d1c0ae",
+      "nodes": 8,
+      "rows": [
+        0,
+        3
+      ],
+      "signal_error": 0,
+      "target_error": 0
+    }
+  ],
+  "largeGraph": {
+    "nodes": 70,
+    "components": 64
+  },
+  "largeIdentity": "e3eed84bf3ddcf084152995595f815d58961f18645fab11ed139c878e76fc445",
+  "largeTask": {
+    "rows": 20000,
+    "features": 256,
+    "shown": 512,
+    "table_rows": 64,
+    "run": {
+      "attempted": 1,
+      "completed": 1,
+      "cuda": null,
+      "device": "cpu",
+      "failed": 0,
+      "generated": 1,
+      "generated_per_second": 2.7576583770958143,
+      "generation_seconds": 0.362626498012105,
+      "gpu_peak_allocated_bytes": null,
+      "hardware": "aarch64",
+      "numpy": "2.5.5",
+      "peak_rss_bytes": 428163072,
+      "pending": 0,
+      "python": "3.12.3",
+      "status": "COMPLETE",
+      "torch": "2.15.0+cpu"
+    }
+  },
+  "files": [
+    "dataset-da17ab941ec61aad74544b17c7be356663b3c2f7ce2130b29f94f09e78d3d9df.zip",
+    "empty.png",
+    "feature-hist.png",
+    "feature-hist.svg",
+    "regression.png"
+  ],
+  "downloads": [
+    {
+      "frameId": "4B4844EFCDA06475B2D67729893E53BE",
+      "guid": "d2512160-1b9d-4e67-94f7-f5ef8ee21727",
+      "url": "blob:http://127.0.0.1:8774/4303a957-7f70-4942-a677-8a9a97ededa8",
+      "suggestedFilename": "dataset-da17ab941ec61aad74544b17c7be356663b3c2f7ce2130b29f94f09e78d3d9df.zip",
+      "state": "completed"
+    },
+    {
+      "frameId": "4B4844EFCDA06475B2D67729893E53BE",
+      "guid": "ee1a0e08-85da-4164-a6e1-f6f9cdeb40ca",
+      "url": "blob:http://127.0.0.1:8774/f8965782-c39b-4666-8fc6-e1a35e18d5c5",
+      "suggestedFilename": "feature-hist.svg",
+      "state": "completed"
+    },
+    {
+      "frameId": "4B4844EFCDA06475B2D67729893E53BE",
+      "guid": "776051d8-ab98-4dad-94ec-14c2df9b9319",
+      "url": "blob:http://127.0.0.1:8774/73d57f4a-397b-4b87-8e32-59ebd408a386",
+      "suggestedFilename": "feature-hist.png",
+      "state": "completed"
+    },
+    {
+      "frameId": "4B4844EFCDA06475B2D67729893E53BE",
+      "guid": "aa849079-1ca6-499c-8403-82a0cbaf8504",
+      "url": "blob:http://127.0.0.1:8774/d309ce72-8b2c-49f8-8743-afd82f05c9ec",
+      "suggestedFilename": "graph-output-plot.svg",
+      "state": "completed"
+    },
+    {
+      "frameId": "4B4844EFCDA06475B2D67729893E53BE",
+      "guid": "770e795d-01fd-419b-a038-d140a7b7b7e4",
+      "url": "blob:http://127.0.0.1:8774/046389d1-059c-4f9f-a8ec-14b573f65c42",
+      "suggestedFilename": "graph-output-plot.png",
+      "state": "completed"
+    },
+    {
+      "frameId": "4B4844EFCDA06475B2D67729893E53BE",
+      "guid": "6de09bba-1367-4d7e-9cbb-065d23b92e7c",
+      "url": "blob:http://127.0.0.1:8774/d6f5675c-2224-4acc-96a1-de510724acaf",
+      "suggestedFilename": "generation-graph.svg",
+      "state": "completed"
+    },
+    {
+      "frameId": "4B4844EFCDA06475B2D67729893E53BE",
+      "guid": "41a667b0-5485-4ce1-a9d6-b4b546cbf662",
+      "url": "blob:http://127.0.0.1:8774/a8271b8c-fc1b-4877-9489-a1e6bdaa9944",
+      "suggestedFilename": "generation-graph.png",
+      "state": "completed"
+    },
+    {
+      "frameId": "4B4844EFCDA06475B2D67729893E53BE",
+      "guid": "9a749099-529e-4535-9f69-bbd0ed5333e6",
+      "url": "blob:http://127.0.0.1:8774/2530a517-cbaa-4f99-8988-ccfa1a8792b4",
+      "suggestedFilename": "generation-graph.png",
+      "state": "completed"
+    },
+    {
+      "frameId": "4B4844EFCDA06475B2D67729893E53BE",
+      "guid": "c8e6ab15-773a-4c22-b009-9ef4daf983e4",
+      "url": "blob:http://127.0.0.1:8774/c3cde75c-7446-4215-b1f4-09e62e5773c2",
+      "suggestedFilename": "response-plot.svg",
+      "state": "completed"
+    },
+    {
+      "frameId": "4B4844EFCDA06475B2D67729893E53BE",
+      "guid": "46821cd2-d38c-40d7-9962-47eb418ed90d",
+      "url": "blob:http://127.0.0.1:8774/33222b27-df3e-4ddd-b182-fb7761c3b5e6",
+      "suggestedFilename": "response-plot.png",
+      "state": "completed"
+    }
+  ],
+  "checks": [
+    "generation graph all ten families",
+    "component expansion",
+    "graph node keyboard selection",
+    "graph SVG/PNG download",
+    "graph numerical label bounds",
+    "analytic curves for nine families",
+    "GP conditional mean and uncertainty",
+    "curve anchor and point controls",
+    "irrelevant feature constant curve",
+    "curve SVG/PNG exports",
+    "generate all ten starting recipes",
+    "row selection",
+    "replay zero-new-generation",
+    "open saved task",
+    "ZIP/SVG/PNG downloads",
+    "classification counts",
+    "advanced recipe preservation",
+    "whole-axis and subset composition controls",
+    "63-bit identity replay",
+    "20000 rows and 256 features",
+    "full vs sampled rows",
+    "failed generation preserves view",
+    "mobile no horizontal overflow"
+  ],
+  "exceptions": []
+}

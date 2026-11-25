@@ -8,7 +8,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any, cast
 
-from r0.modules.explorer.lib.curves import inspect_curve
+from r0.modules.explorer.lib.curves import inspect_curve, inspect_gp_curve
 from r0.modules.explorer.lib.exports import replay_bundle
 from r0.modules.explorer.lib.inspection import inspect_rows, inspect_task
 from r0.modules.generation import RunRequest, load_group, run_guarded
@@ -187,6 +187,19 @@ class ExplorerSession:
                 column_start=data.get("column_start", 0),
             )
             return {"graph": _identity_numbers(graph, for_browser=True)}
+        if action == "gp_curve":
+            data = _identity_numbers(data, for_browser=False)
+            curve = inspect_gp_curve(
+                self.task,
+                feature=data["feature"],
+                anchor_row=data.get("anchor_row", 0),
+                points=data.get("points", 129),
+                bounds=data.get("bounds"),
+                draws=data.get("draws", 0),
+                seed=data.get("seed"),
+                allow_rank_truncation=data.get("allow_rank_truncation", False),
+            )
+            return {"curve": _identity_numbers(curve, for_browser=True)}
         if action == "curve":
             return {
                 "curve": inspect_curve(

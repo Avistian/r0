@@ -4,7 +4,7 @@
 input rows from an exact GP task. It returns normalized latent means, standard
 deviations, the raw conditional covariance and optional additional draws. This
 is an inspection operation; it neither changes the task nor adds training rows.
-The local/Colab UI integration is a separate pending slice of #27.
+The shared local/Colab explorer uses this API for its conditional GP panel.
 
 ```python
 from r0.modules.priors import condition_gp
@@ -74,3 +74,29 @@ Inspection runs on CPU using NumPy's symmetric eigensolver. Replay on other
 software/hardware can differ within numerical precision. Original task generation
 and its existing CPU/GPU contract are unchanged. This bounded reference operation
 is not bulk generation or evidence of predictive model performance.
+
+## Explorer controls and plots
+
+For an exact GP dataset, the response panel becomes a conditional GP view. Choose
+a feature and an anchor row, then evaluate 2–256 points across that feature's
+observed range. Every other input is fixed to the anchor. Optionally request 1–8
+additional draws with an explicit seed. Seeds retain all 63 bits through the browser.
+The approximation checkbox is off by default and resets for each dataset. A strict
+numerical failure stays visible; it does not automatically enable approximation.
+
+The solid green line is the conditional mean, the band is plus/minus two pointwise
+conditional standard deviations, and dashed lines are additional draws. Dark dots
+are original dataset values whose other active coordinates match the slice; their
+irrelevant coordinates can differ. Original points are limited to 512, with shown
+and matching counts. Lines connect evaluated points, not an exact continuous GP
+function. The band describes latent-function uncertainty, not observation noise.
+
+SVG/PNG exports include this legend and the strict/approximate numerical label.
+The JSON export retains inputs, original row indices, values, seed, covariance and
+conditioning metadata. Changing controls clears the old view. Select another class
+channel to redraw the same recorded result without resampling.
+
+The public `explorer.inspect_gp_curve` exposes the same bounded slice operation,
+including optional explicit bounds. The existing analytic `inspect_curve` continues
+to reject direct GP tasks; callers must choose conditional semantics explicitly.
+Actual hosted Colab interaction remains **NOT_RUN** despite sharing the renderer.

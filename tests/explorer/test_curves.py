@@ -67,3 +67,37 @@ def test_curve_limits_and_direct_gp_are_explicit() -> None:
     gp = generate_task(GaussianProcessRecipe(), seed=27, task_id=0)
     with pytest.raises(ValueError, match="conditional"):
         inspect_curve(gp, feature=0)
+
+
+def test_gp_curve_separates_original_points_mean_and_additional_draws() -> None:
+    from r0.modules.explorer import inspect_gp_curve
+    from r0.modules.priors import StationaryKernel
+
+    task = generate_task(
+        GaussianProcessRecipe(
+            task=LinearRecipe(
+                rows=16, context_rows=8, features=2, signal_features=1, active_features=1
+            ),
+            calibration_rows=32,
+            kernels=(StationaryKernel(kind="matern12"),),
+        ),
+        seed=27,
+        task_id=9,
+    )
+    before = task.episode()
+    result = inspect_gp_curve(task, feature=0, anchor_row=7, points=17, draws=2, seed=2**60 + 27)
+    assert result["kind"] == "gp_conditional_curve"
+    assert result["points"] == 17
+    assert result["sampling"]["seed"] == 2**60 + 27
+    np.testing.assert_allclose(np.array(result["inputs"])[:, 1], task.inputs[7, 1].item())
+    np.testing.assert_array_equal(result["original"]["row_indices"], np.arange(16))
+    np.testing.assert_array_equal(result["original"]["scores"], task.scores.numpy())
+    assert len(result["draws"]) == 2
+    assert np.max(result["standard_deviation"]) > 0
+    assert task.episode() == before
+    constant = inspect_gp_curve(task, feature=1, anchor_row=7, points=17, draws=2, seed=41)
+    np.testing.assert_allclose(constant["mean"], np.repeat(task.scores[7:8].numpy(), 17, axis=0))
+    assert np.max(constant["standard_deviation"]) == 0
+    assert constant["original"]["row_indices"] == [7]
+    with pytest.raises(ValueError, match="points"):
+        inspect_gp_curve(task, feature=0, points=257)

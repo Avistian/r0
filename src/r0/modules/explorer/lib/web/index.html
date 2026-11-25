@@ -44,10 +44,15 @@
 <article><h3>Feature and latent signal</h3><p class="muted">Observed points, not a response curve · other features vary</p><div id="signal-plot" class="plot"></div></article>
 <article><h3 id="diagnostic-title">Signal and observation</h3><p class="muted" id="diagnostic-note"></p><div id="diagnostic-plot" class="plot"></div></article>
 </div>
-<article><h3>Response curve</h3><p class="muted">Vary the feature selected above. Every other input stays fixed at the chosen row. This shows the saved function, without observation noise or class-separation adjustments.</p>
+<article><h3 id="curve-title">Response curve</h3><p id="curve-description" class="muted">Vary the feature selected above. Every other input stays fixed at the chosen row. This shows the saved function, without observation noise or class-separation adjustments.</p>
 <div class="chart-controls"><label>Fixed inputs from row<input id="curve-row" type="number" min="0" value="0"></label><label>Curve points<input id="curve-points" type="number" min="2" max="512" value="129"></label></div>
+<div id="gp-options" hidden>
+<div class="chart-controls"><label>Additional draws<input id="gp-draws" type="number" min="0" max="8" value="0"></label><label>Draw seed<input id="gp-seed" inputmode="numeric" value="42"></label></div>
+<label class="checkbox-label"><input id="gp-approximate" type="checkbox">Allow an approximate view if the saved covariance cannot be resolved precisely</label>
+<p class="muted">Unchecked uses strict conditioning. Approximation reports the retained directions and the change to the saved draw.</p>
+</div>
 <button id="curve">Evaluate response curve</button><p id="curve-note" class="muted"></p><div id="response-plot" class="plot"></div>
-<details><summary>Fixed inputs and curve values</summary><pre id="curve-values"></pre></details></article>
+<button id="curve-json" hidden>Download curve JSON</button><details><summary>Fixed inputs and curve values</summary><pre id="curve-values"></pre></details></article>
 <article><p class="eyebrow">FOLLOW THE RECIPE</p><h3>From inputs to targets</h3><p class="muted">Reconstruct saved steps for selected original rows. Select a node to inspect its formula, parameters, inputs and outputs. GP graphs show the original joint draw.</p>
 <div class="chart-controls"><label>Original row indices (1–16)<input id="graph-rows" value="0,3"></label><label>Mechanism<select id="graph-component"><option value="">Whole task</option></select></label><label>First value column<input id="graph-column" type="number" min="0" max="4095" value="0"></label></div>
 <button id="graph">Build generation graph</button><p id="graph-note" class="muted"></p>

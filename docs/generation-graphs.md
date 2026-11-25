@@ -66,6 +66,7 @@ Heatmaps also export as SVG/PNG. Diagram arrows connect actual parent records;
 connections across several levels route around intervening boxes.
 
 The [conditional GP API](gp-conditional-inspection.md) is available separately.
-Its explorer panel and controlled pairs remain pending #27 work. Hosted
+Its explorer panel distinguishes original values from conditional means and
+additional draws. Controlled pairs remain pending #27 work. Hosted
 Colab verification remains **NOT_RUN**; sharing the UI does not establish that
 it has been exercised in an actual hosted notebook.
