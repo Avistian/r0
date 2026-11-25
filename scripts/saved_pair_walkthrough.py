@@ -91,6 +91,9 @@ def create(root: Path) -> None:
 
 def verify(root: Path) -> None:
     records = json.loads((root / "created.json").read_text())
+    verification_source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    if verification_source != records["source"]:
+        raise ValueError("verify must use the same source revision as create")
     output = root / "datasets"
     attempts = sorted(str(path) for path in output.glob(".attempts/*/*.json"))
     cases = []
