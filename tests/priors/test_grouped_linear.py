@@ -76,11 +76,14 @@ def test_partial_groups_and_infinite_variance_are_rejected_explicitly() -> None:
 
 
 @pytest.mark.parametrize("group_size", [1, 4, 8])
-def test_group_sizes_and_small_scale_preserve_valid_tasks(group_size: int) -> None:
+@pytest.mark.parametrize("input_scale", [1e-15, 1e-200, 1e200])
+def test_group_sizes_and_input_scales_preserve_valid_tasks(
+    group_size: int, input_scale: float
+) -> None:
     recipe = GroupedLinearRecipe(
         task=LinearRecipe(active_features=8),
         group_size=group_size,
-        inputs=InputDistribution(scale=1e-15),
+        inputs=InputDistribution(scale=input_scale),
     )
     task = generate_task(recipe, seed=27, task_id=0)
     unit = generate_task(replace(recipe, inputs=InputDistribution()), seed=27, task_id=0)
