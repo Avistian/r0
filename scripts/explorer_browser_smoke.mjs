@@ -66,6 +66,7 @@ await send("Browser.setDownloadBehavior", {behavior: "allow", downloadPath: path
 await send("Page.navigate", {url});
 await waitFor("document.getElementById('family')?.options.length === 10");
 assert.equal(await evaluate("Boolean(document.getElementById('curve'))"), true, "response-curve controls must exist");
+assert.equal(await evaluate("Boolean(document.getElementById('graph'))"), true, "generation graph controls must exist");
 await screenshot("empty.png");
 await click("generate");
 const initial = await evaluate("({id: current.view.source_task_id, rows: current.view.total_rows, plotted: document.querySelectorAll('svg circle').length, archive: current.archive, run: current.run.summary})");
@@ -100,7 +101,7 @@ assert.equal(await evaluate("current.view.classes.length"), 3);
 assert.equal(await evaluate("document.querySelectorAll('#class-counts tbody tr').length"), 3);
 await screenshot("classification.png");
 assert.equal(await evaluate("[...document.querySelectorAll('.plot svg text')].every(text => {const box=text.getBBox(); return box.x>=0 && box.x+box.width<=480;})"), true);
-const families = await evaluate("Object.keys(examples)"), familyRuns = [], curveRuns = [];
+const families = await evaluate("Object.keys(examples)"), familyRuns = [], curveRuns = [], graphRuns = [];
 for (const family of families) {
   await evaluate(`document.getElementById('family').value=${JSON.stringify(family)}; document.getElementById('family').dispatchEvent(new Event('change'))`);
   await click("generate");
@@ -118,8 +119,50 @@ for (const family of families) {
     assert.match(await evaluate("document.getElementById('curve-note').textContent"), /fixed to row 0/);
     curveRuns.push({family, ...await evaluate("({identity:curve.episode_id,points:curve.points,feature:curve.feature,bounds:curve.bounds})")});
   }
+  await click("graph");
+  assert.equal(await evaluate("document.querySelectorAll('#generation-graph [data-node]').length"), await evaluate("generationGraph.nodes.length"));
+  assert.equal(await evaluate("graphNode.id"), "target");
+  assert.equal(await evaluate("generationGraph.target_max_error"), 0);
+  assert.equal(await evaluate("[...document.querySelectorAll('#graph-detail .plot svg text')].every(text => {const box=text.getBBox(); return box.x>=0 && box.x+box.width<=480;})"), true);
+  graphRuns.push({family, ...await evaluate("({identity:generationGraph.episode_id,nodes:generationGraph.nodes.length,rows:generationGraph.rows,signal_error:generationGraph.signal_max_error,target_error:generationGraph.target_max_error})")});
+  if (family === "Exact Gaussian process") {
+    await evaluate("document.querySelector('[data-node=kernel-0]').dispatchEvent(new MouseEvent('click'))");
+    assert.match(await evaluate("document.getElementById('graph-formula').textContent"), /exp/);
+    await screenshot("gp-graph.png");
+  }
 }
 await screenshot("composition.png");
+await evaluate("document.querySelector('[data-node=component-1]').dispatchEvent(new MouseEvent('click'))");
+assert.equal(await evaluate("document.getElementById('graph-expand').hidden"), false);
+await click("graph-expand");
+assert.equal(await evaluate("generationGraph.component"), 1);
+assert.equal(await evaluate("generationGraph.nodes.some(node => node.id==='target')"), false);
+await screenshot("component-graph.png");
+await evaluate("document.getElementById('graph-component').value=''; document.getElementById('graph-component').dispatchEvent(new Event('change')); document.getElementById('graph-rows').value='0,3,63'");
+await click("graph");
+await evaluate("document.querySelector('[data-node=expression-0]').focus()");
+await send("Input.dispatchKeyEvent", {type:"keyDown",key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
+await send("Input.dispatchKeyEvent", {type:"keyUp",key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
+assert.equal(await evaluate("graphNode.id"), "expression-0");
+await evaluate("document.querySelector('#graph-downloads button').click(); document.querySelectorAll('#graph-downloads button')[1].click()");
+await new Promise(resolve => setTimeout(resolve, 1000));
+assert((await fs.readdir(directory)).includes('generation-graph.svg'));
+assert((await fs.readdir(directory)).includes('generation-graph.png'));
+await screenshot("composition-graph.png");
+await evaluate("{const recipe=JSON.parse(document.getElementById('recipe').value); recipe.components=Array.from({length:64},()=>structuredClone(recipe.components[0])); recipe.expression={operation:'sum',children:Array.from({length:64},(_,i)=>i),strength:1}; document.getElementById('recipe').value=JSON.stringify(recipe);}");
+await click("generate"); await click("graph");
+assert.equal(await evaluate("generationGraph.component_count"), 64);
+assert.equal(await evaluate("document.querySelectorAll('#generation-graph [data-node]').length"), await evaluate("generationGraph.nodes.length"));
+await evaluate("document.querySelectorAll('#graph-downloads button')[1].click()");
+await new Promise(resolve => setTimeout(resolve, 1000));
+const graphPngs = (await fs.readdir(directory)).filter(name => name.startsWith('generation-graph') && name.endsWith('.png'));
+const largePng = await fs.readFile(path.join(directory, graphPngs.find(name => name !== 'generation-graph.png')));
+assert.equal(Math.max(largePng.readUInt32BE(16), largePng.readUInt32BE(20)), 4096);
+const largeGraph = await evaluate("({nodes:generationGraph.nodes.length,components:generationGraph.component_count})");
+await evaluate("document.getElementById('family').value='Composition'; document.getElementById('family').dispatchEvent(new Event('change'))");
+await click("generate");
+
+
 await evaluate("document.getElementById('curve-row').value=63; document.getElementById('curve-row').dispatchEvent(new Event('change')); document.getElementById('curve-points').value=65");
 assert.equal(await evaluate("document.querySelectorAll('#response-plot polyline').length"), 0);
 await click("curve");
@@ -178,6 +221,6 @@ await send("Emulation.setDeviceMetricsOverride", {width: 390, height: 844, devic
 await screenshot("mobile.png");
 assert.equal(await evaluate("document.documentElement.scrollWidth > innerWidth"), false);
 assert.deepEqual(exceptions, []);
-await fs.writeFile(path.join(directory, "receipt.json"), JSON.stringify({url, browser: await send("Browser.getVersion"), node: process.version, initial, familyRuns, curveRuns, largeIdentity, largeTask, files, checks: ["analytic curves for nine families", "GP explicitly rejects analytic curve", "curve anchor and point controls", "irrelevant feature constant curve", "curve SVG/PNG exports", "generate all ten starting recipes", "row selection", "replay zero-new-generation", "open saved task", "ZIP/SVG/PNG downloads", "classification counts", "advanced recipe preservation", "whole-axis and subset composition controls", "63-bit identity replay", "20000 rows and 256 features", "full vs sampled rows", "failed generation preserves view", "mobile no horizontal overflow"], exceptions}, null, 2));
+await fs.writeFile(path.join(directory, "receipt.json"), JSON.stringify({url, browser: await send("Browser.getVersion"), node: process.version, initial, familyRuns, curveRuns, graphRuns, largeGraph, largeIdentity, largeTask, files, checks: ["generation graph all ten families", "component expansion", "graph node keyboard selection", "graph SVG/PNG download", "graph numerical label bounds", "analytic curves for nine families", "GP explicitly rejects analytic curve", "curve anchor and point controls", "irrelevant feature constant curve", "curve SVG/PNG exports", "generate all ten starting recipes", "row selection", "replay zero-new-generation", "open saved task", "ZIP/SVG/PNG downloads", "classification counts", "advanced recipe preservation", "whole-axis and subset composition controls", "63-bit identity replay", "20000 rows and 256 features", "full vs sampled rows", "failed generation preserves view", "mobile no horizontal overflow"], exceptions}, null, 2));
 socket.close();
 console.log(`Browser checks passed; evidence in ${directory}`);

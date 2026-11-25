@@ -49,6 +49,8 @@ The interface shows:
 - The first 64 sampled rows in the table preview, with arbitrary full-task row lookup.
 - [Analytic response curves](response-curves.md) with other inputs fixed to a chosen
   row, bounded evaluation points and inspectable values.
+- [Generation graphs](generation-graphs.md) with selectable steps, component
+  expansion, formulas, parameters, input/output matrices and diagram exports.
 - Regression latent signal versus observed target and realized noise deviation;
   classification probabilities and observed/context/query/expected counts for
   every declared class, including absent classes.
@@ -65,9 +67,9 @@ processes dataset actions sequentially while accepting browser connections indep
 Ctrl-C stops accepting connections and waits for an active bounded generation job
 to finish, so its child process is not abandoned. Saved datasets remain on disk.
 
-This slice supplies the local creation/inspection loop. Expandable generation
-graphs, reconstructed component values, conditional GP views and paired
-comparisons remain required #27 follow-up slices.
+This supplies the local creation/inspection loop, response curves and generation
+graphs. Conditional GP views and paired comparisons remain required #27 follow-up
+slices.
 The [embedded Colab adapter](colab-explorer.md) shares this UI; its hosted proof
 is tracked separately.
 

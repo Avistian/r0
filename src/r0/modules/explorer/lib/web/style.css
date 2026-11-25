@@ -258,6 +258,28 @@ article {
 .plot {
   min-width:0
 }
+.graph-scroll {
+  max-height:480px;
+  overflow:auto;
+  margin:16px 0;
+  border:1px solid var(--line);
+  border-radius:6px
+}
+.graph-scroll:empty {
+  display:none
+}
+.graph-scroll svg {
+  display:block
+}
+.formula {
+  font:12px/1.6 ui-monospace,monospace;
+  overflow-wrap:anywhere
+}
+#graph-detail {
+  border-top:1px solid var(--line);
+  margin-top:16px;
+  padding-top:16px
+}
 .chart-grid+article,article+.chart-grid {
   margin-top:16px
 }
@@ -371,3 +393,9 @@ h1 br {
 
 }
 
+
+.graph-matrix-panel {
+  display:grid;
+  grid-template-rows:80px auto;
+  align-content:start
+}

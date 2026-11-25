@@ -48,11 +48,21 @@
 <div class="chart-controls"><label>Fixed inputs from row<input id="curve-row" type="number" min="0" value="0"></label><label>Curve points<input id="curve-points" type="number" min="2" max="512" value="129"></label></div>
 <button id="curve">Evaluate response curve</button><p id="curve-note" class="muted"></p><div id="response-plot" class="plot"></div>
 <details><summary>Fixed inputs and curve values</summary><pre id="curve-values"></pre></details></article>
+<article><h3>How this dataset was generated</h3><p class="muted">Reconstruct saved steps for selected original rows. Select a node to inspect its formula, parameters, inputs and outputs. GP graphs show the original joint draw.</p>
+<div class="chart-controls"><label>Original row indices (1–16)<input id="graph-rows" value="0,3"></label><label>Mechanism<select id="graph-component"><option value="">Whole task</option></select></label><label>First value column<input id="graph-column" type="number" min="0" max="4095" value="0"></label></div>
+<button id="graph">Build generation graph</button><p id="graph-note" class="muted"></p>
+<div id="generation-graph" class="graph-scroll"></div><div id="graph-downloads" class="chart-actions"></div>
+<section id="graph-detail" hidden><div class="title-row"><h3 id="graph-node-title"></h3><button id="graph-expand" hidden>Expand component</button></div><p id="graph-formula" class="formula"></p>
+<details><summary>Step parameters and matrix axes</summary><pre id="graph-parameters"></pre></details>
+<div class="chart-grid"><div class="graph-matrix-panel"><label>Input from step<select id="graph-input"></select></label><div id="graph-input-plot" class="plot"></div></div><div class="graph-matrix-panel"><h4>Step output</h4><div id="graph-output-plot" class="plot"></div></div></div>
+<p id="graph-matrix-note" class="muted"></p><div id="graph-output-table" class="table-wrap"></div>
+<details><summary>Returned graph values</summary><pre id="graph-values"></pre></details></section>
+</article>
 <article id="class-panel" hidden><h3>Class probabilities and counts</h3><div id="class-counts" class="table-wrap"></div></article>
 <article><div class="title-row"><h3>Observations</h3><label>Inspect row<input id="row-index" type="number" value="0" min="0"></label><button id="inspect-row">Show row</button></div><pre id="selected-row" hidden></pre><p class="muted">Preview uses the displayed chart sample. Downloads contain every row.</p><div id="table" class="table-wrap"></div></article>
 <details><summary>Sampled mechanism parameters</summary><button id="parameters">Load parameters</button><pre id="parameter-values"></pre></details>
 </div>
 </section>
 </main>
-<script>/* TRANSPORT */</script><script>/* APPLICATION */</script><script>/* CURVES */</script>
+<script>/* TRANSPORT */</script><script>/* APPLICATION */</script><script>/* CURVES */</script><script>/* GRAPHS */</script>
 </body></html>
