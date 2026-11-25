@@ -112,3 +112,30 @@ def test_gp_curve_session_preserves_draw_seed_and_guards_active_dataset(tmp_path
     assert result == session.request("gp_curve", parameters)["curve"]
     with pytest.raises(ValueError, match="active dataset changed"):
         session.request("gp_curve", {**parameters, "expected_episode_id": "stale"})
+
+
+def test_sampled_recipe_replays_exact_settings_and_origin(tmp_path: Path) -> None:
+    session = ExplorerSession(tmp_path / "original")
+    result = session.request(
+        "generate",
+        {
+            "record": {"recipe": {"rows": 32, "context_rows": 20}, "seed": 27, "task_id": 9},
+            "sampling": {"family": "polynomial", "profile": "broad-v1"},
+        },
+    )
+    record = json.loads(result["recipe_json"])
+    assert record["recipe"]["version"] == "polynomial-v1"
+    assert record["sampling"]["task"]["rows"] == 32
+    assert record["sampling"]["family"] == "polynomial"
+    replay_session = ExplorerSession(tmp_path / "replay")
+    replay = replay_session.request("generate", {"record_json": result["recipe_json"]})
+    assert replay["run"]["summary"]["generated"] == 1
+    assert replay["recipe_json"] == result["recipe_json"]
+    assert replay_session.request("row", {"index": 31}) == session.request("row", {"index": 31})
+    record["recipe"]["degree"] = 16 if record["recipe"]["degree"] != 16 else 1
+    with pytest.raises(ValueError, match="selected recipe"):
+        replay_session.request("generate", {"record": record})
+    with pytest.raises(ValueError, match="already contains sampling"):
+        session.request(
+            "generate", {"record_json": result["recipe_json"], "sampling": {"family": "linear"}}
+        )

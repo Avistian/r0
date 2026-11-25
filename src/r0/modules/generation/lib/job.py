@@ -10,7 +10,7 @@ from contextlib import suppress
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from r0.modules.generation.lib.runs import RunRequest
+from r0.modules.generation.lib.requests import RunRequest
 
 
 @dataclass(frozen=True, slots=True)

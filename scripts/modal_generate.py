@@ -49,7 +49,7 @@ def main() -> int:
         from dataclasses import asdict
         from pathlib import Path
 
-        from r0.modules.generation import RunRequest, run_guarded
+        from r0.modules.generation import request_from_dict, run_guarded
         from r0.modules.priors import recipe_from_dict
 
         root = Path("/outputs")
@@ -65,9 +65,7 @@ def main() -> int:
         with claim.open("x") as handle:
             handle.write(json.dumps(request_plan))
         volume.commit()
-        config = dict(request_plan["request"])
-        recipe = config.pop("recipe")
-        request = RunRequest(recipe_from_dict(recipe), **config)
+        request = request_from_dict(request_plan["request"])
         out = root / "runs" / request_plan["run"]
         try:
             agreement = "NOT_RUN"

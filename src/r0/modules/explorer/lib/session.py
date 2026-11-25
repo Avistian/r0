@@ -11,7 +11,7 @@ from r0.modules.explorer.lib.curves import inspect_curve, inspect_gp_curve
 from r0.modules.explorer.lib.exports import replay_bundle
 from r0.modules.explorer.lib.inspection import inspect_rows, inspect_task
 from r0.modules.explorer.lib.saved import load_saved, run_saved
-from r0.modules.generation import RunRequest
+from r0.modules.generation import RecipeSampling, RunRequest
 from r0.modules.priors import (
     Combination,
     CompositeRecipe,
@@ -26,6 +26,7 @@ from r0.modules.priors import (
     TrainingTask,
     explain_generation,
     recipe_from_dict,
+    sample_recipe,
 )
 
 
@@ -135,8 +136,33 @@ class ExplorerSession:
                 raise ValueError("recipe record must be an object")
             record = _identity_numbers(record, for_browser=False)
             device = data.get("device", record.get("execution", {}).get("device", "cpu"))
+            recipe = recipe_from_dict(record["recipe"])
+            sampling = None
+            if "sampling" in record and "record" not in data and "record_json" not in data:
+                # A direct request uses the same top-level fields as a fresh record.
+                raise ValueError("put sampled task controls in record and sampling beside it")
+            if "sampling" in record:
+                if "sampling" in data:
+                    raise ValueError("record already contains sampling; do not override it")
+                origin = record["sampling"]
+                sampling = RecipeSampling(family=origin["family"], profile=origin["profile"])
+                controls = recipe_from_dict(origin["task"])
+                if not isinstance(controls, LinearRecipe):
+                    raise ValueError("sampling requires LinearRecipe task controls")
+                selected = sample_recipe(
+                    sampling.family,
+                    profile=sampling.profile,
+                    task=controls,
+                    seed=record["seed"],
+                    task_id=record["task_id"],
+                )
+                if selected != recipe:
+                    raise ValueError("selected recipe differs from recorded sampling provenance")
+                recipe = controls
+            elif "sampling" in data:
+                sampling = RecipeSampling(**data["sampling"])
             request = RunRequest(
-                recipe=recipe_from_dict(record["recipe"]),
+                recipe=recipe,
                 seed=record["seed"],
                 start=record["task_id"],
                 count=1,
@@ -144,6 +170,7 @@ class ExplorerSession:
                 max_seconds=data.get("max_seconds", 60),
                 max_bytes=data.get("max_bytes", 256 * 1024**2),
                 device=device,
+                sampling=sampling,
             )
             self.task, self.archive, self.run = run_saved(self.output_dir, request)
             self.pair = None

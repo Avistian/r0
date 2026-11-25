@@ -13,15 +13,14 @@ from threading import Lock
 import numpy as np
 import torch
 
-from r0.modules.generation import RunRequest, run_generation
-from r0.modules.priors import TrainingTask, generate_task, recipe_from_dict
+from r0.modules.generation import run_generation
+from r0.modules.generation.lib.requests import generate_requested, request_from_dict
+from r0.modules.priors import TrainingTask
 
 
 def main() -> int:
     data = json.load(sys.stdin)
-    config = data["request"]
-    recipe = config.pop("recipe")
-    request = RunRequest(recipe_from_dict(recipe), **config)
+    request = request_from_dict(data["request"])
     sync_path: str | None = data["sync_path"]
     generated = 0
     counter = Lock()
@@ -32,9 +31,7 @@ def main() -> int:
 
     def produce(task_id: int) -> TrainingTask:
         nonlocal generated
-        task = generate_task(
-            request.recipe, seed=request.seed, task_id=task_id, device=request.device
-        )
+        task = generate_requested(request, task_id)
         with counter:
             generated += 1
         return task

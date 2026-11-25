@@ -35,7 +35,10 @@ def load_saved(output_dir: Path, path: Path, task_id: int) -> TrainingTask:
 
 
 def run_saved(output_dir: Path, request: RunRequest) -> tuple[TrainingTask, str, dict[str, Any]]:
-    out = output_dir / record_fingerprint(asdict(request))
+    config = asdict(request)
+    if request.sampling is None:
+        config.pop("sampling")
+    out = output_dir / record_fingerprint(config)
     attempts = output_dir / ".attempts" / out.name
     attempts.mkdir(parents=True, exist_ok=True)
     attempt = uuid.uuid4().hex
