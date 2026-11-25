@@ -97,6 +97,7 @@ not committed. The CLI can summarize an interrupted matrix without launching wor
 
 This fixed Gaussian-input suite does not qualify the complete broad-profile
 distribution or every maximum-complexity combination. Existing family walkthroughs
-supply separate one-off input/complexity cases; repeated broad-profile coverage,
-the final eligibility matrix and target-runtime verification remain explicit
-remaining #27 work. Exact GPs remain reference workloads.
+supply separate one-off input/complexity cases. See the separate
+[sampled results](generator-diversity-results.md) and [coverage map](generator-coverage.md)
+for later profile measurements, bounded eligibility and target-runtime evidence.
+Exact GPs remain reference workloads.

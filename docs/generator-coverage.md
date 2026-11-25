@@ -46,7 +46,7 @@ are retained; nonfinite or numerically unresolved functions fail visibly.
 | Input location/scale | Configurable for the four-distribution families | One-off family walkthroughs cover all four; broad-profile selected and completed histograms must be distinguished |
 | Function complexity | Degrees, factors, terms, component counts, depth, kernel geometry | One-off maximum cases and profile-settings histograms exist. They do not validate all maxima simultaneously |
 | Composed functions | Common inputs, mapped component axes, sum/product expression and separate parent calibration | Standalone family results are separate from the five composition walkthrough cases and sampled compositions |
-| Device | Explicit CPU or CUDA; no silent fallback | Current retained Modal agreement is the earlier small linear smoke only. Broader family agreement remains unverified |
+| Device | Explicit CPU or CUDA; no silent fallback | Guarded Modal run 45697210266 passed 93 CPU/CUDA cases covering all ten families; fixed Gaussian representatives, not whole-profile qualification |
 
 The [fixed CPU matrix](generator-resource-results.md), measured at
 `3dd2d3b42ee9d3012e6dafa1d0c3a78764efc364`, passed 270 tasks across 90 cases.
@@ -132,8 +132,20 @@ A bulk recipe must explicitly select its family, concrete settings or versioned
 profile, task geometry and resource limits. It must cite numerical/resource evidence
 for that selection and its target device. No default production mixture or whole
 profile is certified here; mixture weights and training-stream selection remain #30.
-The present GPU gaps and sampled-profile timeouts prevent a final cross-device eligibility
-claim. The 100-million-task figures in the resource report are extrapolations,
+The evidence supports these bounded eligibility conclusions:
+
+| Selection | Eligibility supported by retained evidence | Boundary |
+| --- | --- | --- |
+| Nine analytic families at the fixed CPU workload settings | CPU bulk candidates with three passing draws per case, measured save time and checked replay/graphs | Only the recipes, geometries and local environment in the fixed protocol; no production-mixture or tail-risk guarantee |
+| Ten families at the fixed Modal agreement settings | Numerically checked CPU/CUDA representatives: 90/90 cases passed | No GPU throughput qualification; regression noise is zero and composition is a sum of eight analytic families, unlike the fixed CPU timing composition |
+| Eight sampled polynomial tasks on T4 | Hosted sampled generation and zero-regeneration durable resume verified | A bounded smoke, not certification of every polynomial profile setting |
+| Exact GP, including rich kernel compositions | Reference generation and oracle exploration | Not a bulk recommendation; row/calibration limits remain explicit |
+| Complete broad/reference sampling distributions and maximum-complexity combinations | Exploration only | Sampled CPU timeouts remain failures; whole-profile resource eligibility is not established |
+
+The [Modal result record](https://github.com/Avistian/r0/blob/eead75abafd308212fb17826304a3e1a94ccd82e/docs/modal-device-results.md)
+identifies source, case plan, artifact hashes, measured hardware and reservation.
+Its comparison process came close to the 4-GiB function limit, so the passing
+result does not establish memory headroom for richer settings. The 100-million-task figures in the resource report are extrapolations,
 not observed execution or an estimate for a chosen production mix.
 
 ## Delivery and outstanding acceptance
@@ -144,8 +156,8 @@ not observed execution or an estimate for a chosen production mix.
 | Bounded training consumption | 30-task and 90-task optimizer walkthroughs; saved-group consumption with generation disabled | Full foundation-model training remains separate |
 | Local create/save/explore | Actual browser checks, full-task summaries, sampled chart rows, individual-row inspection, graphs, curves, paired views and ZIP/SVG/PNG exports | Final integrated-head verification |
 | Colab notebook and embedded explorer | Pinned install, local execution of generation/estimate cells, tested callback adapter and shared browser UI | Actual hosted install, interaction/download, Drive persistence and runtime restart are NOT_RUN |
-| Modal generation and durable restart | Earlier CPU/T4 smoke with separate-container resume; both generated eight tasks and resumed with zero new generations | Broader family/device coverage and current sampled request path on Modal |
-| Resource and diversity evidence | Fixed 270-task matrix; sampled 270/108-task matrices with retained timeouts and artifact audits; one-off extremes and mathematical walkthroughs | Explicit final eligibility and broader GPU checks |
+| Modal generation and durable restart | Guarded T4 run 45697210266: 93 comparisons passed, eight sampled tasks generated, separate single-use resume generated zero replacements | Observed billing remains NOT_MEASURED; arbitrary sampled-profile GPU capacity is not established |
+| Resource and diversity evidence | Fixed 270-task matrix; sampled 270/108-task matrices with retained timeouts and artifact audits; one-off extremes and mathematical walkthroughs | Bounded eligibility recorded above; choosing and qualifying a production mixture remains #30 |
 | Published-capability comparison | Separate source-linked comparison PR #117 | Integration with the remaining PRs |
 | Local evidence policy | `docs/evidence/` ignored; raw files removed from current Git tree | History was intentionally not rewritten |
 
