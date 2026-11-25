@@ -65,5 +65,7 @@ export async function openBrowser(port, url, directory) {
   await send("Browser.setDownloadBehavior", {behavior: "allow", eventsEnabled: true, downloadPath: path.resolve(directory)});
   await send("Page.navigate", {url});
   await waitFor("document.getElementById('family')?.options.length === 10");
+  // Existing walkthroughs author concrete recipes; keep that explicit when profiles exist.
+  await evaluate("if (document.getElementById('profile')) { document.getElementById('profile').value='fixed'; document.getElementById('profile').dispatchEvent(new Event('change')); }");
   return {send, evaluate, waitFor, downloaded, screenshot, click, exceptions, downloads, close: () => socket.close()};
 }

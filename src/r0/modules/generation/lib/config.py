@@ -3,12 +3,17 @@
 import tomllib
 from pathlib import Path
 
-from r0.modules.generation.lib.runs import RunRequest
-from r0.modules.priors import recipe_from_dict
+from r0.modules.generation.lib.requests import RunRequest, request_from_dict
 
 
 def load_request(path: Path) -> RunRequest:
     config = tomllib.loads(path.read_text())
-    if set(config) != {"recipe", "run"}:
-        raise ValueError("generation configuration requires only recipe and run tables")
-    return RunRequest(recipe=recipe_from_dict(config["recipe"]), **config["run"])
+    if set(config) not in ({"recipe", "run"}, {"recipe", "run", "sampling"}):
+        raise ValueError(
+            "generation configuration requires recipe/run and optional sampling tables"
+        )
+    if {"recipe", "sampling"} & set(config["run"]):
+        raise ValueError("recipe and sampling belong in their own configuration tables")
+    return request_from_dict(
+        {**config["run"], "recipe": config["recipe"], "sampling": config.get("sampling")}
+    )

@@ -1,0 +1,53 @@
+// node scripts/profile_explorer_browser_smoke.mjs <debug-port> <url> <evidence-dir>
+import fs from "node:fs/promises";
+import path from "node:path";
+import assert from "node:assert/strict";
+import {openBrowser} from "./explorer_browser.mjs";
+const [port="9226",url="http://127.0.0.1:8779/",directory="/tmp/r0-profile-browser"] = process.argv.slice(2);
+const browser = await openBrowser(port,url,directory);
+const {evaluate,send,click,screenshot,exceptions,close} = browser;
+try {
+  assert.equal(await evaluate("Boolean(document.getElementById('profile'))"),true,"Sampling profile control is missing");
+  await evaluate("$('profile').value='broad-v1'; $('profile').dispatchEvent(new Event('change')); $('family').value='Polynomial'; $('family').dispatchEvent(new Event('change')); $('task-id').value='0'");
+  await click("generate");
+  assert.equal(await evaluate("current.run.summary.generated"),1,"Use a fresh server output directory");
+  const first = await evaluate("JSON.parse(current.recipe_json)");
+  assert.equal(first.recipe.version,"polynomial-v1");
+  assert.equal(first.sampling.profile,"broad-v1");
+  assert.equal(first.sampling.family,"polynomial");
+  assert.equal(await evaluate("JSON.parse($('recipe').value).version"),"linear-v1");
+  assert.equal(await evaluate("JSON.parse($('selected-recipe').textContent).version"),"polynomial-v1");
+  await click("graph");
+  assert.equal(await evaluate("generationGraph.target_max_error"),0);
+  await screenshot("sampled-polynomial.png");
+  await click("next");
+  const next = await evaluate("JSON.parse(current.recipe_json)");
+  assert.equal(next.task_id,first.task_id+1);
+  assert.notDeepEqual(next.recipe,first.recipe);
+  assert.deepEqual(next.sampling,first.sampling);
+  await evaluate(`$('replay-record').value=${JSON.stringify(JSON.stringify(first))}`);
+  await click("replay");
+  assert.equal(await evaluate("current.run.summary.generated"),0);
+  assert.deepEqual(await evaluate("JSON.parse(current.recipe_json)"),first);
+  await click("recipe-download"); await browser.downloaded("recipe.json");
+  await evaluate("$('profile').value='tabiclv2-adapted-v1'; $('profile').dispatchEvent(new Event('change')); $('family').value='Integer power'; $('family').dispatchEvent(new Event('change'))");
+  assert.equal(await evaluate("$('family').options.length"),4);
+  await click("generate");
+  assert.equal(await evaluate("current.view.recipe.sampling.family"),"power");
+  assert.equal(await evaluate("current.view.recipe.sampling.profile"),"tabiclv2-adapted-v1");
+  await screenshot("reference-power.png");
+  await evaluate("$('profile').value='fixed'; $('profile').dispatchEvent(new Event('change')); $('family').value='Polynomial'; $('family').dispatchEvent(new Event('change')); const edited=JSON.parse($('recipe').value); edited.degree=3; $('recipe').value=JSON.stringify(edited)");
+  await click("generate");
+  assert.equal(await evaluate("current.view.recipe.recipe.degree"),3);
+  assert.equal(await evaluate("'sampling' in current.view.recipe"),false);
+  await send("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:true});
+  assert.equal(await evaluate("document.documentElement.scrollWidth<=innerWidth+1"),true);
+  await screenshot("mobile-controls.png");
+  assert.deepEqual(exceptions,[]);
+  await fs.writeFile(path.join(directory,"receipt.json"),JSON.stringify({status:"PASS",url,browser:await send("Browser.getVersion"),first,next,checks:["broad profile generation","selected settings visible","next task resamples","exact replay resumes","recipe download","reference profile generation","manual settings preserved","mobile width","graph reconstruction"],exceptions},null,2));
+  console.log(`Profile browser checks passed; evidence in ${directory}`);
+} catch (error) {
+  await screenshot("failure.png");
+  await fs.writeFile(path.join(directory,"failure.json"),JSON.stringify({error:String(error),exceptions},null,2));
+  throw error;
+} finally { close(); }

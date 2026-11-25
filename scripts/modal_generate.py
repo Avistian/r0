@@ -26,7 +26,16 @@ def main() -> int:
     image = (
         modal.Image.debian_slim(python_version=f"{sys.version_info.major}.{sys.version_info.minor}")
         .uv_pip_install("numpy==2.5.5", "torch==2.15.0")
-        .env({"PYTHONPATH": "/opt/r0", "R0_GENERATION_SOURCE": source})
+        .env(
+            {
+                "PYTHONPATH": "/opt/r0",
+                "R0_GENERATION_SOURCE": source,
+                "OMP_NUM_THREADS": "1",
+                "OPENBLAS_NUM_THREADS": "1",
+                "MKL_NUM_THREADS": "1",
+            }
+        )
+        .add_local_file("scripts/check_device_agreement.py", "/opt/check_device_agreement.py")
         .add_local_dir("src/r0", remote_path="/opt/r0/r0", ignore=["**/__pycache__/**"])
     )
 
@@ -37,7 +46,7 @@ def main() -> int:
         cpu=(1, 1),
         memory=(4096, 4096),
         gpu=None if plan["gpu"] == "none" else "T4",
-        timeout=int(plan["request"]["max_seconds"]) + 60,
+        timeout=int(plan["request"]["max_seconds"]) + 60 + plan["agreement_seconds"],
         startup_timeout=120,
         retries=0,
         max_containers=1,
@@ -46,11 +55,12 @@ def main() -> int:
     def execute(request_plan, phase):
         import json
         import os
+        import subprocess
+        import sys
         from dataclasses import asdict
         from pathlib import Path
 
-        from r0.modules.generation import RunRequest, run_guarded
-        from r0.modules.priors import recipe_from_dict
+        from r0.modules.generation import request_from_dict, run_guarded
 
         root = Path("/outputs")
         receipt_dir = root / "receipts"
@@ -65,40 +75,61 @@ def main() -> int:
         with claim.open("x") as handle:
             handle.write(json.dumps(request_plan))
         volume.commit()
-        config = dict(request_plan["request"])
-        recipe = config.pop("recipe")
-        request = RunRequest(recipe_from_dict(recipe), **config)
+        request = request_from_dict(request_plan["request"])
         out = root / "runs" / request_plan["run"]
         try:
             agreement = "NOT_RUN"
             if request.device == "cuda" and phase == "generate":
-                import torch
-
-                from r0.modules.priors import generate_task
-
-                for diagnostic in request_plan["agreement_recipes"]:
-                    recipe = recipe_from_dict(diagnostic)
-                    cpu = generate_task(recipe, seed=request.seed, task_id=request.start)
-                    gpu = generate_task(
-                        recipe, seed=request.seed, task_id=request.start, device="cuda"
-                    )
-                    assert cpu.source_task_id == gpu.source_task_id
-                    assert cpu.mechanism_json == gpu.mechanism_json
-                    for field in (
-                        "inputs",
-                        "scores",
-                        "targets",
-                        "context_indices",
-                        "query_indices",
-                    ):
-                        torch.testing.assert_close(
-                            getattr(cpu, field), getattr(gpu, field).cpu(), rtol=1e-10, atol=1e-10
+                agreement_dir = receipt_dir / f"{name}-agreement"
+                agreement_dir.mkdir(exist_ok=False)
+                plan_path = agreement_dir / "request-plan.json"
+                plan_path.write_text(json.dumps(request_plan))
+                comparison_dir = agreement_dir / "comparison"
+                timed_out = False
+                with (agreement_dir / "command.log").open("x") as log:
+                    try:
+                        completed = subprocess.run(
+                            [
+                                sys.executable,
+                                "/opt/check_device_agreement.py",
+                                "--plan",
+                                str(plan_path),
+                                "--out",
+                                str(comparison_dir),
+                                "--candidate",
+                                "cuda",
+                            ],
+                            stdout=log,
+                            stderr=subprocess.STDOUT,
+                            timeout=request_plan["agreement_seconds"],
+                            check=False,
                         )
-                    if cpu.probabilities is not None:
-                        torch.testing.assert_close(
-                            cpu.probabilities, gpu.probabilities.cpu(), rtol=1e-10, atol=1e-10
-                        )
-                agreement = "PASS: regression/binary/multiclass; rtol=atol=1e-10"
+                        returncode = completed.returncode
+                    except subprocess.TimeoutExpired:
+                        timed_out = True
+                        returncode = 124
+                records = {
+                    path.name: json.loads(path.read_text())
+                    for path in comparison_dir.glob("*.json")
+                }
+                summary = records.get("summary.json", {})
+                agreement = {
+                    "status": "TIMEOUT" if timed_out else summary.get("status", "INCOMPLETE"),
+                    "returncode": returncode,
+                    "timed_out": timed_out,
+                    "records": records,
+                    "log": (agreement_dir / "command.log").read_text(),
+                }
+                if returncode != 0 or agreement["status"] != "PASS":
+                    report = {
+                        "returncode": returncode or 1,
+                        "timed_out": timed_out,
+                        "summary": {"generated": 0},
+                        "source": os.environ["R0_GENERATION_SOURCE"],
+                        "device_agreement": agreement,
+                    }
+                    receipt.write_text(json.dumps(report))
+                    return report
             result = run_guarded(
                 request,
                 out,

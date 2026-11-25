@@ -30,6 +30,8 @@ task = generate_task(recipe, seed=27, task_id=7)
 
 A profile is a versioned distribution over settings, not a bulk-training
 eligibility claim. Save the selected recipe and the profile request together.
+For bounded saved runs, use the optional [sampling configuration](sampled-generation-runs.md);
+the coordinator retains selected recipes before admitting tasks.
 The selected recipe contains all concrete settings; generated task cards separately
 retain the sampled mechanism and execution environment. JSON round-trips through
 `recipe_from_dict` preserve the selected recipe. Sampling is independent of call

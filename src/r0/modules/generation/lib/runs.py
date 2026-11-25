@@ -2,7 +2,6 @@
 
 import fcntl
 import json
-import math
 import os
 import time
 import zipfile
@@ -19,36 +18,13 @@ from r0.modules.generation.lib.groups import (
     write_record,
 )
 from r0.modules.generation.lib.parallel import parallel_tasks
-from r0.modules.priors import Recipe, TrainingTask, generate_task
-
-
-@dataclass(frozen=True, slots=True)
-class RunRequest:
-    recipe: Recipe
-    seed: int
-    count: int
-    max_seconds: float
-    max_bytes: int
-    start: int = 0
-    group_size: int = 64
-    device: str = "cpu"
-
-    def __post_init__(self) -> None:
-        if any(
-            type(v) is not int
-            for v in (self.seed, self.count, self.start, self.group_size, self.max_bytes)
-        ):
-            raise ValueError("run counts, identities and storage limits must be integers")
-        if not (0 <= self.seed < 2**63 and 0 <= self.start < self.start + self.count <= 2**63):
-            raise ValueError("invalid seed or task interval")
-        if not (1 <= self.count <= 100_000_000 and 1 <= self.group_size <= 1024):
-            raise ValueError("count must be 1..100M and group_size 1..1024")
-        if self.max_bytes < 65_536 or self.device not in ("cpu", "cuda"):
-            raise ValueError("at least 64 KiB storage and an explicit CPU/CUDA device are required")
-        if type(self.max_seconds) not in (int, float) or not (
-            math.isfinite(self.max_seconds) and self.max_seconds > 0
-        ):
-            raise ValueError("max_seconds must be finite and positive")
+from r0.modules.generation.lib.requests import (
+    RunRequest,
+    generate_requested,
+    record_matches,
+    selected_recipe,
+)
+from r0.modules.priors import TrainingTask
 
 
 @dataclass(frozen=True, slots=True)
@@ -64,7 +40,7 @@ def _size(root: Path) -> int:
     return sum(p.stat().st_size for p in root.rglob("*") if p.is_file())
 
 
-def _previous(group: Path, config: dict[str, object]) -> tuple[set[int], set[int]]:
+def _previous(group: Path, request: RunRequest) -> tuple[set[int], set[int]]:
     completed: set[int] = set()
     failed: set[int] = set()
     for record in sorted(group.glob("attempt-*.json")):
@@ -84,11 +60,7 @@ def _previous(group: Path, config: dict[str, object]) -> tuple[set[int], set[int
             with zipfile.ZipFile(archive) as data:
                 for task_id in receipt.task_ids:
                     record = json.loads(data.read(f"{task_id}/card.json"))["recipe"]
-                    if (
-                        record["recipe"] != config["recipe"]
-                        or record["seed"] != config["seed"]
-                        or record["task_id"] != task_id
-                    ):
+                    if not record_matches(record, request, task_id):
                         raise ValueError("saved group belongs to a different recipe or task")
             completed.update(receipt.task_ids)
     failed.difference_update(completed)
@@ -151,13 +123,13 @@ def _run(
     persist: Callable[[], None] | None,
 ) -> RunSummary:
     def generate(task_id: int) -> TrainingTask:
-        return generate_task(
-            request.recipe, seed=request.seed, task_id=task_id, device=request.device
-        )
+        return generate_requested(request, task_id)
 
     factory = produce or generate
     config = json.loads(json.dumps(asdict(request), sort_keys=True))
-    config["format"] = "generation-run-v1"
+    if request.sampling is None:
+        config.pop("sampling")
+    config["format"] = "generation-run-v1" if request.sampling is None else "generation-run-v2"
     header = out / "run.json"
     if header.exists():
         if json.loads(header.read_text()) != config:
@@ -170,7 +142,7 @@ def _run(
     status = "COMPLETE"
     for start in range(request.start, request.start + request.count, request.group_size):
         group = out / "groups" / str(start // (1024 * request.group_size)) / str(start)
-        completed, failed = _previous(group, config)
+        completed, failed = _previous(group, request)
         stop = min(start + request.group_size, request.start + request.count)
         ids = set(range(start, stop))
         if not completed.issubset(ids) or not failed.issubset(ids):
@@ -180,6 +152,13 @@ def _run(
             remaining = request.max_bytes - used_bytes
             # Reserve bounded attempt metadata before writing any more archive data.
             reserve = 4096 + 4096 * len(pending)
+            start_record: dict[str, object] = {"task_ids": pending}
+            if request.sampling is not None:
+                start_record["recipes"] = {
+                    str(task_id): asdict(selected_recipe(request, task_id)) for task_id in pending
+                }
+                # Include the complete proposal record before admitting any task.
+                reserve += len(json.dumps(start_record, allow_nan=False).encode()) + 1
             if remaining < reserve + 4096:
                 status = "STORAGE_LIMIT"
             elif time.monotonic() >= deadline:
@@ -188,7 +167,9 @@ def _run(
                 group.mkdir(parents=True, exist_ok=True)
                 previous_bytes = _size(group)
                 attempt = len(list(group.glob("start-*.json")))
-                write_record(group / f"start-{attempt}.json", {"task_ids": pending})
+                write_record(group / f"start-{attempt}.json", start_record)
+                if request.sampling is not None and persist is not None:
+                    persist()
                 errors: dict[str, str] = {}
                 yielded: list[int] = []
 
@@ -207,9 +188,7 @@ def _run(
                         task = outcome
                         record = json.loads(task.recipe_json)
                         if (
-                            record["recipe"] != config["recipe"]
-                            or record["seed"] != request.seed
-                            or record["task_id"] != task_id
+                            not record_matches(record, request, task_id)
                             or task.inputs.device.type != request.device
                         ):
                             raise ValueError("producer returned a different task or recipe")
