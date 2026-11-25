@@ -97,3 +97,38 @@ def test_valid_archive_from_another_recipe_is_not_accepted(tmp_path: Path) -> No
         )
     with pytest.raises(ValueError, match="different recipe"):
         run_generation(first, tmp_path / "first")
+
+
+def test_failure_is_retained_when_a_later_task_interrupts_the_group(tmp_path: Path) -> None:
+    recipe = LinearRecipe()
+    request = RunRequest(recipe, seed=4, count=2, max_seconds=20, max_bytes=2_000_000)
+
+    def interrupted(task_id: int) -> TrainingTask:
+        if task_id == 0:
+            raise ValueError("failure before interruption")
+        raise KeyboardInterrupt("interrupted")
+
+    with pytest.raises(KeyboardInterrupt):
+        run_generation(request, tmp_path, produce=interrupted)
+    called: list[int] = []
+
+    def recovered(task_id: int) -> TrainingTask:
+        called.append(task_id)
+        return generate_linear(recipe, seed=4, task_id=task_id)
+
+    result = run_generation(request, tmp_path, produce=recovered)
+    assert called == [1]
+    assert result.failed == 1
+    assert any("failure before interruption" in p.read_text() for p in tmp_path.rglob("*.jsonl"))
+
+
+@pytest.mark.parametrize("message", ["\u2603" * 1024, "\x00" * 1024])
+def test_escaped_error_records_respect_total_storage_limit(tmp_path: Path, message: str) -> None:
+    request = RunRequest(LinearRecipe(), seed=4, count=11, max_seconds=20, max_bytes=65_536)
+
+    def fail(_: int) -> TrainingTask:
+        raise ValueError(message)
+
+    result = run_generation(request, tmp_path, produce=fail)
+    assert result.completed == 0
+    assert sum(p.stat().st_size for p in tmp_path.rglob("*") if p.is_file()) <= request.max_bytes

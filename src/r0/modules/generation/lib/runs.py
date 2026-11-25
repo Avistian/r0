@@ -3,6 +3,7 @@
 import fcntl
 import json
 import math
+import os
 import time
 import zipfile
 from collections.abc import Callable, Iterator
@@ -61,6 +62,10 @@ def _previous(group: Path, config: dict[str, object]) -> tuple[set[int], set[int
     for record in sorted(group.glob("attempt-*.json")):
         data = json.loads(record.read_text())
         failed.update(int(i) for i in data["failed"])
+    for record in group.glob("failures-*.jsonl"):
+        with record.open() as handle:
+            for line in handle:
+                failed.add(int(json.loads(line)["task_id"]))
     # The archive receipt is the completion oracle, including a saved archive whose
     # process was interrupted before writing its separate attempt summary.
     for archive in sorted(group.glob("data-*.zip")):
@@ -80,6 +85,18 @@ def _previous(group: Path, config: dict[str, object]) -> tuple[set[int], set[int
             completed.update(receipt.task_ids)
     failed.difference_update(completed)
     return completed, failed
+
+
+def _record_failure(path: Path, task_id: int, error: Exception) -> str:
+    message = f"{type(error).__name__}: {error}"
+    # Bound encoded JSON bytes, including escaping, rather than character count.
+    while len(json.dumps(message).encode()) > 1024:
+        message = message[: len(message) // 2] + "... [truncated]"
+    with path.open("a") as handle:
+        handle.write(json.dumps({"task_id": task_id, "error": message}) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+    return message
 
 
 def run_generation(
@@ -134,7 +151,7 @@ def _run(
         if pending and status == "COMPLETE":
             remaining = request.max_bytes - used_bytes
             # Reserve bounded attempt metadata before writing any more archive data.
-            reserve = 4096 + 2048 * len(pending)
+            reserve = 4096 + 4096 * len(pending)
             if remaining < reserve + 4096:
                 status = "STORAGE_LIMIT"
             elif time.monotonic() >= deadline:
@@ -151,6 +168,7 @@ def _run(
                     ids: list[int] = pending,
                     failures: dict[str, str] = errors,
                     emitted: list[int] = yielded,
+                    failure_log: Path = group / f"failures-{attempt}.jsonl",
                 ) -> Iterator[tuple[int, TrainingTask]]:
                     nonlocal attempted, status
                     for task_id in ids:
@@ -178,7 +196,7 @@ def _run(
                             ):
                                 raise ValueError("producer returned a different task or recipe")
                         except (ValueError, RuntimeError) as error:
-                            failures[str(task_id)] = f"{type(error).__name__}: {error}"[:1024]
+                            failures[str(task_id)] = _record_failure(failure_log, task_id, error)
                             continue
                         emitted.append(task_id)
                         yield task_id, task

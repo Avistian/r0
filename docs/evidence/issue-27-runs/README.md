@@ -43,3 +43,14 @@ Local fsync/verification is not evidence of durable remote storage. Only one
 coordinator may own a provider run directory. This PR does not complete #27 or
 claim that 100 million tasks were generated. Initial public-interface tests failed
 on the absent generation module/run API before implementation.
+
+## Review repairs
+
+Independent review rejected `dae7406`: a failure followed by interruption lost the
+failure and permitted an implicit retry; 11 escaped 1,024-character errors wrote
+67,517 bytes despite a 65,536-byte cap. The retained tests
+`test_failure_is_retained_when_a_later_task_interrupts_the_group` and
+`test_escaped_error_records_respect_total_storage_limit` reproduced three failures
+before repair. Failures are now fsynced to an append-only log before another task
+starts. Error text is bounded by its serialized JSON size, with space reserved for
+both the log and attempt summary. These three regression cases pass after repair.
