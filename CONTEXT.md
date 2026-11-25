@@ -64,3 +64,9 @@
 - **Generation recipe**: The declared mechanisms and parameter distributions used to sample synthetic tasks.
 - **Generation run**: An identified collection of task-generation attempts under one recipe and explicit resource limits.
 - **Generation trace**: The steps and sampled values explaining how a task's observations and targets were produced.
+
+**Dataset explorer**: An interactive view of a generated task, its observations, diagnostic truth and generation trace.
+
+**Chart sample**: A declared subset of a task's rows used for visualization; full-task summaries and exports still cover every row.
+
+**Replay bundle**: A collection of a task's identity, recipe, sampled mechanism and observations, with predictor data separated from diagnostic truth.
