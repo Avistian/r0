@@ -32,6 +32,7 @@ from r0.modules.priors.lib.pairs import paired_recipe as paired_recipe
 from r0.modules.priors.lib.polynomial import PolynomialRecipe as PolynomialRecipe
 from r0.modules.priors.lib.profile import diagnostic_profile as diagnostic_profile
 from r0.modules.priors.lib.quadratic import QuadraticRecipe as QuadraticRecipe
+from r0.modules.priors.lib.recipe_sampling import sample_recipe as sample_recipe
 from r0.modules.priors.lib.representatives import FAMILIES as FAMILIES
 from r0.modules.priors.lib.representatives import GeneratedTask as GeneratedTask
 from r0.modules.priors.lib.representatives import Proposal as Proposal
