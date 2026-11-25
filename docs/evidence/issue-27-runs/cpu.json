@@ -1,0 +1,28 @@
+{
+  "first": {
+    "attempted": 3,
+    "completed": 2,
+    "failed": 1,
+    "pending": 0,
+    "status": "FAILED_TASKS"
+  },
+  "resume": {
+    "attempted": 0,
+    "completed": 2,
+    "failed": 1,
+    "pending": 0,
+    "status": "FAILED_TASKS"
+  },
+  "explicit_retry": {
+    "attempted": 1,
+    "completed": 3,
+    "failed": 0,
+    "pending": 0,
+    "status": "COMPLETE"
+  },
+  "execution": {
+    "device": "cpu",
+    "hosted": "NOT_RUN",
+    "hard_timeout": "NOT_IMPLEMENTED_IN_THIS_SLICE"
+  }
+}

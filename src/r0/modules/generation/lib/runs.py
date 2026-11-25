@@ -1,0 +1,218 @@
+"""Single-coordinator resumable runs. Platform entrypoints own hard execution limits."""
+
+import fcntl
+import json
+import math
+import time
+import zipfile
+from collections.abc import Callable, Iterator
+from dataclasses import asdict, dataclass
+from pathlib import Path
+
+from r0.modules.generation.lib.groups import save_group, verify_group, write_record
+from r0.modules.priors import LinearRecipe, TrainingTask, generate_linear
+
+
+@dataclass(frozen=True, slots=True)
+class RunRequest:
+    recipe: LinearRecipe
+    seed: int
+    count: int
+    max_seconds: float
+    max_bytes: int
+    start: int = 0
+    group_size: int = 64
+    device: str = "cpu"
+
+    def __post_init__(self) -> None:
+        if any(
+            type(v) is not int
+            for v in (self.seed, self.count, self.start, self.group_size, self.max_bytes)
+        ):
+            raise ValueError("run counts, identities and storage limits must be integers")
+        if not (0 <= self.seed < 2**63 and 0 <= self.start < self.start + self.count <= 2**63):
+            raise ValueError("invalid seed or task interval")
+        if not (1 <= self.count <= 100_000_000 and 1 <= self.group_size <= 1024):
+            raise ValueError("count must be 1..100M and group_size 1..1024")
+        if self.max_bytes < 65_536 or self.device not in ("cpu", "cuda"):
+            raise ValueError("at least 64 KiB storage and an explicit CPU/CUDA device are required")
+        if type(self.max_seconds) not in (int, float) or not (
+            math.isfinite(self.max_seconds) and self.max_seconds > 0
+        ):
+            raise ValueError("max_seconds must be finite and positive")
+
+
+@dataclass(frozen=True, slots=True)
+class RunSummary:
+    attempted: int
+    completed: int
+    failed: int
+    pending: int
+    status: str
+
+
+def _size(root: Path) -> int:
+    return sum(p.stat().st_size for p in root.rglob("*") if p.is_file())
+
+
+def _previous(group: Path, config: dict[str, object]) -> tuple[set[int], set[int]]:
+    completed: set[int] = set()
+    failed: set[int] = set()
+    for record in sorted(group.glob("attempt-*.json")):
+        data = json.loads(record.read_text())
+        failed.update(int(i) for i in data["failed"])
+    # The archive receipt is the completion oracle, including a saved archive whose
+    # process was interrupted before writing its separate attempt summary.
+    for archive in sorted(group.glob("data-*.zip")):
+        marker = archive.with_suffix(".json")
+        # Archive receipts have their own stem to avoid collision with attempt summaries.
+        if marker.exists():
+            receipt = verify_group(archive)
+            with zipfile.ZipFile(archive) as data:
+                for task_id in receipt.task_ids:
+                    record = json.loads(data.read(f"{task_id}/card.json"))["recipe"]
+                    if (
+                        record["recipe"] != config["recipe"]
+                        or record["seed"] != config["seed"]
+                        or record["task_id"] != task_id
+                    ):
+                        raise ValueError("saved group belongs to a different recipe or task")
+            completed.update(receipt.task_ids)
+    failed.difference_update(completed)
+    return completed, failed
+
+
+def run_generation(
+    request: RunRequest,
+    out: Path,
+    *,
+    retry_failed: bool = False,
+    produce: Callable[[int], TrainingTask] | None = None,
+) -> RunSummary:
+    """Resume verified output, preserving all attempts and requiring explicit retries.
+
+    Time is an admission deadline checked between tasks, not a process kill limit.
+    A platform watchdog must enforce a hard wall limit around this coordinator.
+    Only one coordinator may write a directory. Provider flush/commit is the caller's
+    responsibility; this routine verifies and fsyncs the locally mounted files.
+    """
+    out.mkdir(parents=True, exist_ok=True)
+    with (out / ".writer.lock").open("a") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as error:
+            raise ValueError("another coordinator is writing this run") from error
+        return _run(request, out, retry_failed=retry_failed, produce=produce)
+
+
+def _run(
+    request: RunRequest,
+    out: Path,
+    *,
+    retry_failed: bool,
+    produce: Callable[[int], TrainingTask] | None,
+) -> RunSummary:
+    config = json.loads(json.dumps(asdict(request), sort_keys=True))
+    header = out / "run.json"
+    if header.exists():
+        if json.loads(header.read_text()) != config:
+            raise ValueError("run configuration changed; choose a new output directory")
+    else:
+        write_record(header, config)
+    deadline = time.monotonic() + request.max_seconds
+    used_bytes = _size(out)
+    attempted = completed_count = failed_count = 0
+    status = "COMPLETE"
+    for start in range(request.start, request.start + request.count, request.group_size):
+        group = out / "groups" / str(start)
+        completed, failed = _previous(group, config)
+        stop = min(start + request.group_size, request.start + request.count)
+        ids = set(range(start, stop))
+        if not completed.issubset(ids) or not failed.issubset(ids):
+            raise ValueError("saved group task IDs do not match requested interval")
+        pending = sorted(ids - completed - (set() if retry_failed else failed))
+        if pending and status == "COMPLETE":
+            remaining = request.max_bytes - used_bytes
+            # Reserve bounded attempt metadata before writing any more archive data.
+            reserve = 4096 + 2048 * len(pending)
+            if remaining < reserve + 4096:
+                status = "STORAGE_LIMIT"
+            elif time.monotonic() >= deadline:
+                status = "TIME_LIMIT"
+            else:
+                group.mkdir(parents=True, exist_ok=True)
+                previous_bytes = _size(group)
+                attempt = len(list(group.glob("start-*.json")))
+                write_record(group / f"start-{attempt}.json", {"task_ids": pending})
+                errors: dict[str, str] = {}
+                yielded: list[int] = []
+
+                def tasks(
+                    ids: list[int] = pending,
+                    failures: dict[str, str] = errors,
+                    emitted: list[int] = yielded,
+                ) -> Iterator[tuple[int, TrainingTask]]:
+                    nonlocal attempted, status
+                    for task_id in ids:
+                        if time.monotonic() >= deadline:
+                            status = "TIME_LIMIT"
+                            break
+                        attempted += 1
+                        try:
+                            task = (
+                                produce(task_id)
+                                if produce is not None
+                                else generate_linear(
+                                    request.recipe,
+                                    seed=request.seed,
+                                    task_id=task_id,
+                                    device=request.device,
+                                )
+                            )
+                            record = json.loads(task.recipe_json)
+                            if (
+                                record["recipe"] != config["recipe"]
+                                or record["seed"] != request.seed
+                                or record["task_id"] != task_id
+                                or task.inputs.device.type != request.device
+                            ):
+                                raise ValueError("producer returned a different task or recipe")
+                        except (ValueError, RuntimeError) as error:
+                            failures[str(task_id)] = f"{type(error).__name__}: {error}"[:1024]
+                            continue
+                        emitted.append(task_id)
+                        yield task_id, task
+
+                archive = group / f"data-{attempt}.zip"
+                saved: tuple[int, ...] = ()
+                try:
+                    receipt = save_group(archive, tasks(), max_bytes=remaining - reserve)
+                    saved = receipt.task_ids
+                except ValueError as error:
+                    if "byte limit" in str(error):
+                        status = "STORAGE_LIMIT"
+                    elif not yielded:
+                        pass
+                    else:
+                        raise
+                write_record(
+                    group / f"attempt-{attempt}.json",
+                    {
+                        "completed": saved,
+                        "failed": errors,
+                        "uncommitted": sorted(set(yielded) - set(saved)),
+                        "status": status,
+                    },
+                )
+                completed.update(saved)
+                failed.update(int(i) for i in errors)
+                failed.difference_update(completed)
+                used_bytes += _size(group) - previous_bytes
+        completed_count += len(completed)
+        failed_count += len(failed)
+    pending_count = request.count - completed_count - failed_count
+    if status == "COMPLETE" and failed_count:
+        status = "FAILED_TASKS"
+    if time.monotonic() > deadline and status == "COMPLETE":
+        status = "TIME_LIMIT"
+    return RunSummary(attempted, completed_count, failed_count, pending_count, status)

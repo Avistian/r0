@@ -68,7 +68,7 @@ type = "layers"
 layers = [
   "r0.cli",
   "r0.modules.cli",
-  "r0.modules.replay",
+  "r0.modules.replay | r0.modules.generation",
   "r0.modules.diagnostics",
   "r0.modules.leaderboard",
   "r0.modules.training | r0.modules.evaluation | r0.modules.comparison",
