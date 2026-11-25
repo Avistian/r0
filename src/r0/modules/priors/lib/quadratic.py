@@ -10,6 +10,7 @@ from r0.modules.priors.lib.calibration import stable_calibration
 from r0.modules.priors.lib.inputs import InputDistribution, sample_inputs
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.signals import evaluate_mechanism
 from r0.modules.priors.lib.task_output import complete_task
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -88,15 +89,6 @@ def generate_quadratic(
         center, scale = stable_calibration(raw)
     x = sample_inputs(recipe.inputs, task.rows, task.features, rng, "input")
     inputs = torch.tensor(x, dtype=torch.float64, device=device)
-    signal = inputs[:, : task.signal_features]
-    direction_tensor = torch.tensor(directions, device=device)
-    weight_tensor = torch.tensor(weights, device=device)
-    scores = (
-        strength * ((signal @ direction_tensor.T) ** 2 @ weight_tensor)
-        + (1 - strength) * (signal**2 @ torch.tensor(diagonal, device=device))
-        + recipe.linear_strength * (signal @ torch.tensor(linear, device=device))
-    )
-    scores = (scores - torch.tensor(center, device=device)) / torch.tensor(scale, device=device)
     mechanism = {
         "family": "quadratic",
         "version": recipe.version,
@@ -112,6 +104,7 @@ def generate_quadratic(
         "calibration_rows": recipe.calibration_rows,
         "normalization": "estimated from an independent generating-distribution sample",
     }
+    scores = evaluate_mechanism(mechanism, inputs)
     return complete_task(
         task, asdict(recipe), mechanism, inputs, scores, seed=seed, task_id=task_id, rng=rng
     )

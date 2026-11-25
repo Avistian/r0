@@ -9,6 +9,7 @@ from r0.modules.priors.lib.calibration import stable_calibration
 from r0.modules.priors.lib.inputs import InputDistribution, sample_inputs
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.signals import evaluate_mechanism
 from r0.modules.priors.lib.task_output import complete_task
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -74,8 +75,6 @@ def generate_grouped_linear(
     center, scale = stable_calibration(raw)
     x = sample_inputs(recipe.inputs, task.rows, task.features, rng, "input")
     inputs = torch.tensor(x, dtype=torch.float64, device=device)
-    scores = inputs[:, : task.signal_features] @ torch.tensor(weights, device=device)
-    scores = (scores - torch.tensor(center, device=device)) / torch.tensor(scale, device=device)
     mechanism = {
         "family": "grouped_linear",
         "version": recipe.version,
@@ -89,6 +88,7 @@ def generate_grouped_linear(
         "calibration_rows": recipe.calibration_rows,
         "normalization": "estimated from an independent generating-distribution sample",
     }
+    scores = evaluate_mechanism(mechanism, inputs)
     return complete_task(
         task, asdict(recipe), mechanism, inputs, scores, seed=seed, task_id=task_id, rng=rng
     )

@@ -5,12 +5,12 @@ from dataclasses import asdict, dataclass, field
 
 import numpy as np
 import torch
-from numpy.typing import NDArray
 
 from r0.modules.priors.lib.calibration import stable_calibration
 from r0.modules.priors.lib.inputs import InputDistribution, sample_inputs
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.signals import evaluate_mechanism, smooth_scores
 from r0.modules.priors.lib.task_output import complete_task
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -43,29 +43,6 @@ class SmoothRecipe:
             raise ValueError("width_spread must be at least 1")
         if type(self.calibration_rows) is not int or not 256 <= self.calibration_rows <= 16384:
             raise ValueError("calibration rows must be 256..16384")
-
-
-def _raw_scores(
-    x: torch.Tensor,
-    directions: NDArray[np.float64],
-    centers: NDArray[np.float64],
-    widths: NDArray[np.float64],
-    weights: NDArray[np.float64],
-    family: str,
-) -> torch.Tensor:
-    direction_tensor = torch.tensor(directions, device=x.device)
-    center_tensor = torch.tensor(centers, device=x.device)
-    width_tensor = torch.tensor(widths, device=x.device)
-    weight_tensor = torch.tensor(weights, device=x.device)
-    parts: list[torch.Tensor] = []
-    for start in range(0, x.shape[0], 256):
-        part = x[start : start + 256]
-        z = (part @ direction_tensor.T - center_tensor) / width_tensor
-        if not torch.isfinite(z).all():
-            raise ValueError("nonfinite smooth arguments; task was not retried")
-        values = torch.sin(z) if family == "sinusoidal" else torch.exp(-0.5 * z.square())
-        parts.append(values @ weight_tensor)
-    return torch.cat(parts)
 
 
 def generate_smooth(
@@ -112,7 +89,7 @@ def generate_smooth(
     calibration = sample_inputs(
         recipe.inputs, recipe.calibration_rows, task.signal_features, rng, "calibration"
     )
-    raw = _raw_scores(
+    raw = smooth_scores(
         torch.tensor(calibration), directions, centers, widths, weights, recipe.family
     )
     center, scale = stable_calibration(np.asarray(raw.numpy(), dtype=np.float64))
@@ -121,10 +98,6 @@ def generate_smooth(
         dtype=torch.float64,
         device=device,
     )
-    scores = _raw_scores(
-        inputs[:, : task.signal_features], directions, centers, widths, weights, recipe.family
-    )
-    scores = (scores - torch.tensor(center, device=device)) / torch.tensor(scale, device=device)
     mechanism = {
         "family": f"{recipe.projection}_{recipe.family}",
         "version": recipe.version,
@@ -139,6 +112,7 @@ def generate_smooth(
         "calibration_rows": recipe.calibration_rows,
         "normalization": "estimated from an independent generating-distribution sample",
     }
+    scores = evaluate_mechanism(mechanism, inputs)
     return complete_task(
         task, asdict(recipe), mechanism, inputs, scores, seed=seed, task_id=task_id, rng=rng
     )
