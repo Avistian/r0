@@ -43,7 +43,9 @@ previous attempts remain retained.
 
 For CUDA, the first invocation also compares CPU/GPU task identity, mechanism,
 inputs, scores, targets, split and probabilities on regression, binary and three-class
-recipes, with `rtol=atol=1e-10`. This is a small agreement check, not coverage of all
+64-row neutral recipes, with `rtol=atol=1e-10`. The admission plan validates these
+separately from the requested recipe, preserving its classification controls.
+This is a small agreement check, not coverage of all
 shapes. CUDA allocation and child RSS are reported separately.
 
 ## Evidence and reproduction
@@ -62,6 +64,13 @@ is inspected. A missing remote receipt is an uncertain outcome, not proof of no 
 Hosted execution is initially **NOT_RUN**; attach exact workflow/source identities
 and retained results after the authorized smoke. No 100M-task scale claim follows
 from a small smoke. Colab target-runtime acceptance remains separate.
+
+Independent review rejected the first adapter's diagnostic conversion: valid
+classification offsets/separation became invalid regression controls after submission.
+Credential-free CLI regressions now cover both requests and their separate valid
+diagnostic recipes. The requested recipe remains unchanged. The factory pin update
+also moves all callers together, as required by the existing workflow contract;
+the other reusable workflow implementations are unchanged between those revisions.
 
 Implementation follows Modal's [resource limits](https://modal.com/docs/guide/resources),
 [Volumes](https://modal.com/docs/guide/volumes),

@@ -73,16 +73,13 @@ def main() -> int:
         try:
             agreement = "NOT_RUN"
             if request.device == "cuda" and phase == "generate":
-                from dataclasses import replace
-
                 import torch
 
                 from r0.modules.priors import generate_linear
 
-                for task_type, classes in (("regression", 0), ("binary", 2), ("multiclass", 3)):
-                    recipe = replace(
-                        request.recipe, task_type=task_type, classes=classes, noise_ratio=0.0
-                    )
+                for diagnostic in request_plan["agreement_recipes"]:
+                    diagnostic["class_offsets"] = tuple(diagnostic["class_offsets"])
+                    recipe = LinearRecipe(**diagnostic)
                     cpu = generate_linear(recipe, seed=request.seed, task_id=request.start)
                     gpu = generate_linear(
                         recipe, seed=request.seed, task_id=request.start, device="cuda"

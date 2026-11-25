@@ -12,6 +12,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from r0.modules.generation import load_request
+from r0.modules.priors import LinearRecipe
 
 
 def positive_limit(name: str) -> float:
@@ -81,6 +82,10 @@ def main() -> None:
         "workflow_run_id": os.environ["GITHUB_RUN_ID"],
         "created_at": dt.datetime.now(dt.UTC).isoformat(),
         "request": asdict(request),
+        "agreement_recipes": [
+            asdict(LinearRecipe(task_type=task_type, classes=classes))
+            for task_type, classes in (("regression", 0), ("binary", 2), ("multiclass", 3))
+        ],
         "config_sha256": hashlib.sha256(args.config.read_bytes()).hexdigest(),
         "workers": args.workers,
         "retry_failed": args.retry_failed,

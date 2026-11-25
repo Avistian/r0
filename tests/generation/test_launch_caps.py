@@ -99,3 +99,27 @@ def test_launch_rejects_invalid_or_over_budget_requests(
     result = invoke(root, {**env, variable: value})
     assert result.returncode != 0
     assert not (root / "reservation.json").exists()
+
+
+@pytest.mark.parametrize(
+    "controls",
+    [
+        'task_type = "binary"\nclasses = 2\nseparation = 2.0',
+        'task_type = "multiclass"\nclasses = 4\nclass_offsets = [0, 1, 2, 3]',
+    ],
+)
+def test_classification_keeps_its_controls_and_has_valid_agreement_recipes(
+    launch: tuple[Path, dict[str, str]], controls: str
+) -> None:
+    root, env = launch
+    config = root / "configs/generation/request.toml"
+    config.write_text(config.read_text().replace("noise_ratio = 0.5", controls))
+    result = invoke(root, env)
+    assert result.returncode == 0, result.stderr
+    plan = json.loads((root / "reservation.json").read_text())
+    assert plan["request"]["recipe"]["task_type"] != "regression"
+    from r0.modules.priors import LinearRecipe
+
+    for entry in plan["agreement_recipes"]:
+        entry["class_offsets"] = tuple(entry["class_offsets"])
+        LinearRecipe(**entry)
