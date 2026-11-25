@@ -11,6 +11,7 @@ from r0.modules.priors.lib.fourier import generate_fourier as generate_fourier
 from r0.modules.priors.lib.generate import Recipe as Recipe
 from r0.modules.priors.lib.generate import generate_task as generate_task
 from r0.modules.priors.lib.generate import recipe_from_dict as recipe_from_dict
+from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe as GroupedLinearRecipe
 from r0.modules.priors.lib.inputs import InputDistribution as InputDistribution
 from r0.modules.priors.lib.linear import LinearRecipe as LinearRecipe
 from r0.modules.priors.lib.linear import generate_linear as generate_linear

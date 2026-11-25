@@ -17,6 +17,7 @@ from r0.modules.priors import FourierRecipe, LinearRecipe, generate_task, recipe
         'version = "fourier-v1"\nfamily = "rff"\nterms = 4',
         'version = "fourier-v1"\nfamily = "periodic"\nterms = 4',
         'version = "quadratic-v1"\nrank = 4',
+        'version = "grouped-linear-v1"\ngroup_size = 2',
     ],
 )
 def test_configured_run_saves_exact_recipe_and_resumes(tmp_path: Path, family_fields: str) -> None:
