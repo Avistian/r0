@@ -71,3 +71,44 @@ It includes three alpha values, eight frequency bands, a mixed subset product an
 maximum supported GP shape, plus the pre-existing intentional numerical failure.
 It saves and resumes each case. These bounded cases do not establish bulk throughput,
 hosted Colab interaction, GPU acceptance, or complete issue #27 coverage.
+
+
+## Spatially varying smoothness and amplitude
+
+`GibbsKernel` uses the same axes, effective lengths and weights. Each extra tuple
+has one entry per selected axis. Empty tuples select the defaults below:
+
+| Field | Default | Effect |
+| --- | --- | --- |
+| `centers` | zeros | Position of each smooth transition |
+| `transition_scales` | ones | Positive transition width in input units |
+| `length_slopes` | zeros | Signed change in log length; magnitude at most log(1e6) per axis |
+| `amplitude_slopes` | zeros | Signed change in log amplitude; total absolute magnitude at most log(1e6) |
+
+For `t_d(x) = tanh((x_d - center_d)/transition_scale_d)`, local lengths are
+`l_d(x) = effective_length_d * exp(length_slope_d * t_d(x))` and the amplitude
+is `a(x) = exp(sum_d amplitude_slope_d * t_d(x))`. This gives smooth bounded
+transitions, positive lengths and amplitude between 1e-6 and 1e6. Values are
+specified in the recipe. They are not fitted from task observations.
+
+The covariance is the product over selected axes of
+`sqrt(2*l_d(x)*l_d(y)/(l_d(x)^2+l_d(y)^2)) * exp(-(x_d-y_d)^2/(l_d(x)^2+l_d(y)^2))`,
+multiplied by `a(x)*a(y)`. This uses [GPML equation 4.32 and section 4.2.4](https://gaussianprocess.org/gpml/chapters/RW4.pdf).
+The prefactor is required: substituting varying lengths into ordinary RBF alone
+would not in general give a valid covariance. Zero slopes recover stationary RBF;
+zero length slopes with nonzero amplitude slopes vary only amplitude.
+
+Cards retain all transition parameters and the modulation formula. Numerical
+limits are explicit: a local length that overflows or rounds to zero fails, as
+does any nonfinite combined covariance. Products of many amplitude-modulated
+kernels may exceed float64 range even when every component is valid individually.
+They fail with their task identity; no component or strength is silently removed.
+Scaling lengths before squaring avoids intermediate overflow and underflow in the
+Gibbs prefactor and distance calculation.
+
+`--nonstationary` on the same walkthrough checks varying lengths, amplitude-only,
+a subset product with a spectral component and the largest supported GP shape.
+It retains an intentional amplitude-product overflow failure. The numerical oracle
+uses the elementary formula directly, separately from production scaling and logs.
+These options are bounded reference examples; hosted verification, exploration
+recipes and visual inspection remain separate requirements.

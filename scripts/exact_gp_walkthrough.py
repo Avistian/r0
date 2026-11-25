@@ -15,6 +15,7 @@ import numpy as np
 from r0.modules.generation import RunRequest, run_guarded
 from r0.modules.priors import (
     GaussianProcessRecipe,
+    GibbsKernel,
     InputDistribution,
     LinearRecipe,
     RationalQuadraticKernel,
@@ -54,6 +55,25 @@ def scalar_from_card(card: dict[str, Any], row: int) -> float:
             for axis, frequency in zip(kernel["axes"], kernel["frequencies"], strict=True):
                 delta = support[:, axis, None] - support[None, :, axis]
                 values *= np.cos(2 * math.pi * frequency * delta)
+        elif kernel["kind"] == "gibbs":
+            values = np.ones_like(covariance)
+            for axis, base, center, transition, slope, amplitude in zip(
+                kernel["axes"],
+                kernel["length_scales"],
+                kernel["centers"],
+                kernel["transition_scales"],
+                kernel["length_slopes"],
+                kernel["amplitude_slopes"],
+                strict=True,
+            ):
+                x_axis = support[:, axis]
+                t = np.tanh((x_axis - center) / transition)
+                local = base * np.exp(slope * t)
+                denominator = local[:, None] ** 2 + local[None, :] ** 2
+                values *= np.sqrt(2 * local[:, None] * local[None, :] / denominator)
+                values *= np.exp(-((x_axis[:, None] - x_axis[None, :]) ** 2) / denominator)
+                envelope = np.exp(amplitude * t)
+                values *= envelope[:, None] * envelope[None, :]
         else:
             raise ValueError(f"unsupported walkthrough kernel: {kernel['kind']}")
         if card["combine"] == "sum":
@@ -106,11 +126,59 @@ def extended_cases() -> list[GaussianProcessRecipe]:
     ]
 
 
+def nonstationary_cases() -> list[GaussianProcessRecipe]:
+    return [
+        GaussianProcessRecipe(
+            task=LinearRecipe(
+                rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+            ),
+            calibration_rows=32,
+            kernels=(GibbsKernel(length_scale=0.3, length_slopes=(1.0,)),),
+        ),
+        GaussianProcessRecipe(
+            task=LinearRecipe(rows=256, context_rows=128, task_type="binary", classes=2),
+            kernels=(GibbsKernel(centers=(0.2,) * 4, amplitude_slopes=(0.3, -0.4, 0.2, 0.1)),),
+        ),
+        GaussianProcessRecipe(
+            task=LinearRecipe(task_type="multiclass", classes=3),
+            inputs=InputDistribution(distribution="uniform"),
+            combine="product",
+            kernels=(
+                GibbsKernel(axes=(0, 1), length_slopes=(0.5, -0.7), amplitude_slopes=(0.4, 0.8)),
+                SpectralKernel(axes=(2, 3), frequencies=(0.3, 1.5)),
+            ),
+        ),
+        GaussianProcessRecipe(
+            task=LinearRecipe(
+                rows=1024,
+                context_rows=512,
+                features=256,
+                signal_features=256,
+                active_features=256,
+                task_type="multiclass",
+                classes=100,
+            ),
+            calibration_rows=512,
+            kernels=(
+                GibbsKernel(
+                    length_scale=12,
+                    length_slopes=(0.4,) * 256,
+                    amplitude_slopes=(0.2,) + (0.0,) * 255,
+                ),
+            ),
+        ),
+    ]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", required=True, type=Path)
-    parser.add_argument(
+    cases_parser = parser.add_mutually_exclusive_group()
+    cases_parser.add_argument(
         "--extended", action="store_true", help="check rational quadratic and spectral bands"
+    )
+    cases_parser.add_argument(
+        "--nonstationary", action="store_true", help="check varying lengths and amplitude"
     )
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=False)
@@ -167,6 +235,8 @@ def main() -> None:
     ]
     if args.extended:
         cases = extended_cases()
+    if args.nonstationary:
+        cases = nonstationary_cases()
     records = []
     for i, recipe in enumerate(cases):
         request = RunRequest(
@@ -209,6 +279,15 @@ def main() -> None:
         max_seconds=30,
         max_bytes=1048576,
     )
+    if args.nonstationary:
+        failed_request = replace(
+            failed_request,
+            recipe=GaussianProcessRecipe(
+                calibration_rows=32,
+                combine="product",
+                kernels=(GibbsKernel(centers=(-1e100,) * 4, amplitude_slopes=(3.0,) * 4),) * 32,
+            ),
+        )
     failed = run_guarded(failed_request, args.out / "failure")
     assert failed.summary is not None
     assert failed.summary["failed"] == 1
