@@ -134,7 +134,10 @@ def main(directory: Path, archive: Path | None, output: Path):
     assert max_rows == summary["max_batch_rows"]
     assert max_cells == summary["max_batch_distance_cells"]
     assert parameter == summary["final_log_bandwidth"]
-    assert episodes == summary["requested_episodes"] or saved is not None
+    assert episodes <= summary["requested_episodes"]
+    if episodes < summary["requested_episodes"]:
+        assert saved is not None
+        assert next(saved, None) is None, "saved source stopped before archive exhaustion"
     result = {
         "status": "PASS",
         "source": source,

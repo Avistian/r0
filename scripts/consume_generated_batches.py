@@ -99,6 +99,7 @@ def produce(
             }
             task = generate_task(recipe, seed=args.seed, task_id=task_id)
         else:
+            progress["attempt"] = {"archive_index": task_id}
             try:
                 task = next(saved)
             except StopIteration:
@@ -114,6 +115,7 @@ def produce(
         del task
         progress["produced"] += 1
         yield record, episode
+        del record, episode
 
 
 def predict(view: PredictorView, log_bandwidth: torch.Tensor) -> torch.Tensor:
@@ -150,6 +152,7 @@ def step(
     batch: tuple[tuple[dict[str, Any], Episode], ...],
     parameter: torch.Tensor,
     optimizer: torch.optim.Optimizer,
+    progress: dict[str, Any],
 ) -> tuple[dict[str, Any], dict[str, np.ndarray]]:
     """Accumulate one mean objective and update the shared scalar once per batch."""
     losses = []
@@ -158,6 +161,7 @@ def step(
     before = float(parameter.detach())
     optimizer.zero_grad()
     for i, (record, episode) in enumerate(batch):
+        progress["attempt"] = record
         rows = len(episode.context) + len(episode.queries)
         if rows > 128 or len(episode.features) > 256 or len(episode.classes) > 100:
             raise ValueError(
@@ -260,7 +264,7 @@ def main(args: argparse.Namespace) -> None:
                 if not batch:
                     break
                 assert progress["produced"] - progress["consumed"] == len(batch)
-                report, predictions = step(batch, parameter, optimizer)
+                report, predictions = step(batch, parameter, optimizer, progress)
                 progress["max_batch_episodes"] = max(progress["max_batch_episodes"], len(batch))
                 progress["max_batch_rows"] = max(
                     progress["max_batch_rows"],
