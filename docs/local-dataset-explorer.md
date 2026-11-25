@@ -59,7 +59,9 @@ Each chart exports as SVG or PNG; the recipe also downloads separately. Output
 limits bound persisted bytes, not process RAM. Dataset exports are built in memory.
 The browser serves only on loopback, requires a per-process token for actions and
 does not contact cloud services. One server session has one active dataset and
-processes actions sequentially. Stop it with Ctrl-C; saved datasets remain on disk.
+processes dataset actions sequentially while accepting browser connections independently.
+Ctrl-C stops accepting connections and waits for an active bounded generation job
+to finish, so its child process is not abandoned. Saved datasets remain on disk.
 
 This slice supplies the local creation/inspection loop. Expandable generation
 graphs, reconstructed component values, analytic/conditional GP curves, paired

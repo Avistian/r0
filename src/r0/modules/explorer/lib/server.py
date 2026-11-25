@@ -3,8 +3,9 @@
 import json
 import secrets
 from contextlib import suppress
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from threading import Lock
 from typing import Any, cast
 from urllib.parse import urlsplit
 
@@ -26,8 +27,13 @@ def serve_explorer(output_dir: Path, *, port: int = 8765) -> None:
     session = ExplorerSession(output_dir)
     token = secrets.token_urlsafe(32)
     page = explorer_page(token).encode()
+    actions = Lock()
 
     class Handler(BaseHTTPRequestHandler):
+        def setup(self) -> None:
+            super().setup()
+            self.connection.settimeout(5)
+
         def _reply(self, status: int, data: bytes, content_type: str) -> None:
             self.send_response(status)
             self.send_header("Content-Type", content_type)
@@ -70,13 +76,16 @@ def serve_explorer(output_dir: Path, *, port: int = 8765) -> None:
                 payload = cast(dict[str, Any], payload)
                 if not isinstance(payload.get("data", {}), dict):
                     raise ValueError("action data must be an object")
-                result = session.request(payload["action"], payload.get("data", {}))
+                with actions:
+                    result = session.request(payload["action"], payload.get("data", {}))
                 data = json.dumps(result, allow_nan=False).encode()
                 self._reply(200, data, "application/json")
             except (ValueError, TypeError, KeyError, OSError, RuntimeError) as error:
                 self._reply(400, json.dumps({"error": str(error)}).encode(), "application/json")
 
-    with HTTPServer(("127.0.0.1", port), Handler) as server:
+    with ThreadingHTTPServer(("127.0.0.1", port), Handler) as server:
+        # Wait for the bounded generation job on shutdown; never abandon its child process.
+        server.daemon_threads = False
         print(f"Dataset explorer: http://127.0.0.1:{port}/", flush=True)
         print(f"Saved generation runs: {session.output_dir}", flush=True)
         with suppress(KeyboardInterrupt):

@@ -3,9 +3,19 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import assert from "node:assert/strict";
+import net from "node:net";
 
 const [port = "9224", url = "http://127.0.0.1:8767/", directory = "/tmp/r0-explorer-browser"] = process.argv.slice(2);
 await fs.mkdir(directory, {recursive: true});
+const address = new URL(url);
+const idle = net.createConnection({host: address.hostname, port: Number(address.port || 80)});
+await new Promise(resolve => idle.once("connect", resolve));
+await new Promise(resolve => setTimeout(resolve, 100));
+try {
+  assert.equal((await fetch(url, {signal: AbortSignal.timeout(1500)})).status, 200);
+} finally {
+  idle.end();
+}
 const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
 const socket = new WebSocket(targets.find(target => target.type === "page").webSocketDebuggerUrl);
 await new Promise(resolve => socket.addEventListener("open", resolve, {once: true}));
