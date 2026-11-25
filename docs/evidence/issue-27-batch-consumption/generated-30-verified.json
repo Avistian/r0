@@ -1,0 +1,156 @@
+{
+  "status": "PASS",
+  "source": "268a60199c773f3af8ab6304db44ccb44e82dd01",
+  "consumption_source": "268a60199c773f3af8ab6304db44ccb44e82dd01",
+  "verifier_sha256": "a7b48f97f01408378b80a4c425b554c5a564ccd829980c6f3eb2040c9a8e28b7",
+  "batches": 8,
+  "episodes": 30,
+  "batch_sizes": [
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    2
+  ],
+  "family_task_type_coverage": [
+    [
+      "composition",
+      "binary"
+    ],
+    [
+      "composition",
+      "multiclass"
+    ],
+    [
+      "composition",
+      "regression"
+    ],
+    [
+      "gp",
+      "binary"
+    ],
+    [
+      "gp",
+      "multiclass"
+    ],
+    [
+      "gp",
+      "regression"
+    ],
+    [
+      "grouped",
+      "binary"
+    ],
+    [
+      "grouped",
+      "multiclass"
+    ],
+    [
+      "grouped",
+      "regression"
+    ],
+    [
+      "linear",
+      "binary"
+    ],
+    [
+      "linear",
+      "multiclass"
+    ],
+    [
+      "linear",
+      "regression"
+    ],
+    [
+      "periodic",
+      "binary"
+    ],
+    [
+      "periodic",
+      "multiclass"
+    ],
+    [
+      "periodic",
+      "regression"
+    ],
+    [
+      "polynomial",
+      "binary"
+    ],
+    [
+      "polynomial",
+      "multiclass"
+    ],
+    [
+      "polynomial",
+      "regression"
+    ],
+    [
+      "quadratic",
+      "binary"
+    ],
+    [
+      "quadratic",
+      "multiclass"
+    ],
+    [
+      "quadratic",
+      "regression"
+    ],
+    [
+      "radial",
+      "binary"
+    ],
+    [
+      "radial",
+      "multiclass"
+    ],
+    [
+      "radial",
+      "regression"
+    ],
+    [
+      "rff",
+      "binary"
+    ],
+    [
+      "rff",
+      "multiclass"
+    ],
+    [
+      "rff",
+      "regression"
+    ],
+    [
+      "sinusoidal",
+      "binary"
+    ],
+    [
+      "sinusoidal",
+      "multiclass"
+    ],
+    [
+      "sinusoidal",
+      "regression"
+    ]
+  ],
+  "episodes_with_absent_context_classes": 1,
+  "max_absolute_errors": {
+    "prediction": 4.440892098500626e-16,
+    "loss": 1.7763568394002505e-15,
+    "gradient": 1.601744778478853e-11,
+    "update": 0.0
+  },
+  "finite_difference_step": 1e-05,
+  "prediction_tolerance": {
+    "rtol": 1e-11,
+    "atol": 1e-12
+  },
+  "gradient_tolerance": {
+    "rtol": 1e-06,
+    "atol": 1e-08
+  }
+}
