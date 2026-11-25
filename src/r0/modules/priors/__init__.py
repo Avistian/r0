@@ -23,6 +23,7 @@ from r0.modules.priors.lib.representatives import GeneratedTask as GeneratedTask
 from r0.modules.priors.lib.representatives import Proposal as Proposal
 from r0.modules.priors.lib.representatives import record_fingerprint as record_fingerprint
 from r0.modules.priors.lib.representatives import sample_proposal as sample_proposal
+from r0.modules.priors.lib.smooth import SmoothRecipe as SmoothRecipe
 from r0.modules.priors.lib.training_task import TrainingTask as TrainingTask
 
 
