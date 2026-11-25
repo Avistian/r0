@@ -48,9 +48,10 @@
 <div class="chart-controls"><label>Fixed inputs from row<input id="curve-row" type="number" min="0" value="0"></label><label>Curve points<input id="curve-points" type="number" min="2" max="512" value="129"></label></div>
 <button id="curve">Evaluate response curve</button><p id="curve-note" class="muted"></p><div id="response-plot" class="plot"></div>
 <details><summary>Fixed inputs and curve values</summary><pre id="curve-values"></pre></details></article>
-<article><h3>How this dataset was generated</h3><p class="muted">Reconstruct saved steps for selected original rows. Select a node to inspect its formula, parameters, inputs and outputs. GP graphs show the original joint draw.</p>
+<article><p class="eyebrow">FOLLOW THE RECIPE</p><h3>From inputs to targets</h3><p class="muted">Reconstruct saved steps for selected original rows. Select a node to inspect its formula, parameters, inputs and outputs. GP graphs show the original joint draw.</p>
 <div class="chart-controls"><label>Original row indices (1–16)<input id="graph-rows" value="0,3"></label><label>Mechanism<select id="graph-component"><option value="">Whole task</option></select></label><label>First value column<input id="graph-column" type="number" min="0" max="4095" value="0"></label></div>
 <button id="graph">Build generation graph</button><p id="graph-note" class="muted"></p>
+<div id="graph-tools" class="graph-toolbar" hidden><div class="graph-legend"><span class="legend-input">Inputs</span><span class="legend-parameter">Parameters &amp; draws</span><span class="legend-function">Functions</span><span class="legend-target">Signals &amp; targets</span></div><div class="graph-zoom"><button id="graph-fit">Fit</button><button id="graph-zoom-out" aria-label="Zoom graph out">−</button><button id="graph-zoom-label" aria-label="Reset graph zoom to 100 percent">100%</button><button id="graph-zoom-in" aria-label="Zoom graph in">+</button></div></div>
 <div id="generation-graph" class="graph-scroll"></div><div id="graph-downloads" class="chart-actions"></div>
 <section id="graph-detail" hidden><div class="title-row"><h3 id="graph-node-title"></h3><button id="graph-expand" hidden>Expand component</button></div><p id="graph-formula" class="formula"></p>
 <details><summary>Step parameters and matrix axes</summary><pre id="graph-parameters"></pre></details>
