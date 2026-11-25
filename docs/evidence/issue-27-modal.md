@@ -65,6 +65,9 @@ Hosted execution is initially **NOT_RUN**; attach exact workflow/source identiti
 and retained results after the authorized smoke. No 100M-task scale claim follows
 from a small smoke. Colab target-runtime acceptance remains separate.
 
+The subsequent [CPU/T4 smoke receipts](issue-27-hosted/README.md) establish the bounded
+generation and separate-container resume path at their identified source revision.
+
 Independent review rejected the first adapter's diagnostic conversion: valid
 classification offsets/separation became invalid regression controls after submission.
 Credential-free CLI regressions now cover both requests and their separate valid
