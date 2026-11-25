@@ -25,8 +25,11 @@ The restart answer confirms the requested check at the user-report level. Numeri
 output was not supplied; do not present the expected eight-completed/zero-new
 counts as an independently inspected Colab receipt. Exact environment/version
 output, saved-group checksums and the executed notebook have not yet been supplied
-to the author. Retain that output to complete the hosted evidence record. No
-additional paid run or larger Colab generation was requested by these checks.
+to the author. The user subsequently approved acceptance without those outputs:
+“whats left? I approve it without outputs its working”. This explicit approval
+closes the Colab acceptance requirement; missing outputs are a recorded evidence
+limitation, not an outstanding deliverable. No additional paid run or larger Colab
+generation was requested by these checks.
 
 Question/answer summaries remain ignored under
 `docs/evidence/issue-27-colab-user-acceptance/`. The notebook itself prints source,

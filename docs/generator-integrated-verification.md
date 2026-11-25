@@ -56,6 +56,6 @@ commands were run in the required order: `make check`, `make smoke`, `make eval-
 
 This closes the local combined-branch verification gap. It does not turn the
 candidate into merged main, certify a production sampling mixture, or close #27
-without its full hosted evidence record and merge acceptance. The later user reports
-are recorded separately; exact runtime output remains outstanding. Raw evidence
-remains out of Git.
+before merge acceptance. The user subsequently accepted the hosted Colab behavior
+without supplying runtime outputs; that evidence limitation and explicit approval
+are recorded separately. Raw evidence remains out of Git.
