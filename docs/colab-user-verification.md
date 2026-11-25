@@ -28,7 +28,7 @@ output, saved-group checksums and the executed notebook have not yet been suppli
 to the author. Retain that output to complete the hosted evidence record. No
 additional paid run or larger Colab generation was requested by these checks.
 
-Authoritative raw question/answer records remain ignored under
+Question/answer summaries remain ignored under
 `docs/evidence/issue-27-colab-user-acceptance/`. The notebook itself prints source,
 actual hardware/software, bounded-run measurements and verified archive receipts;
 its outputs should be saved after execution. Its shared UI retains task identity,
