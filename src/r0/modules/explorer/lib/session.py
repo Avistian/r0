@@ -1,0 +1,217 @@
+"""One active dataset, generated with the shared bounded runner and saved on disk."""
+
+import base64
+import json
+from dataclasses import asdict
+from pathlib import Path
+from typing import Any, cast
+
+from r0.modules.explorer.lib.comparisons import SavedPair, create_pair, open_pair, pair_bundle
+from r0.modules.explorer.lib.curves import inspect_curve, inspect_gp_curve
+from r0.modules.explorer.lib.exports import replay_bundle
+from r0.modules.explorer.lib.inspection import inspect_rows, inspect_task
+from r0.modules.explorer.lib.saved import load_saved, run_saved
+from r0.modules.generation import RunRequest
+from r0.modules.priors import (
+    Combination,
+    CompositeRecipe,
+    FourierRecipe,
+    FunctionComponent,
+    GaussianProcessRecipe,
+    GroupedLinearRecipe,
+    LinearRecipe,
+    PolynomialRecipe,
+    QuadraticRecipe,
+    SmoothRecipe,
+    TrainingTask,
+    explain_generation,
+    recipe_from_dict,
+)
+
+
+def _identity_numbers(value: Any, *, for_browser: bool) -> Any:
+    """Keep 63-bit identities exact across JavaScript's 53-bit integer boundary."""
+    if isinstance(value, list):
+        return [_identity_numbers(item, for_browser=for_browser) for item in cast(list[Any], value)]
+    if not isinstance(value, dict):
+        return value
+    result: dict[str, Any] = {}
+    for key, item in cast(dict[str, Any], value).items():
+        if key in ("seed", "task_id", "split"):
+            if for_browser and type(item) is int and item > 2**53 - 1:
+                item = str(item)
+            elif not for_browser and isinstance(item, str) and item.isascii() and item.isdecimal():
+                item = int(item)
+        result[key] = _identity_numbers(item, for_browser=for_browser)
+    return result
+
+
+def recipe_examples() -> dict[str, Any]:
+    """Editable starting points; not a production mixture or throughput claim."""
+    recipes = {
+        "Linear": LinearRecipe(),
+        "Grouped linear": GroupedLinearRecipe(),
+        "Polynomial": PolynomialRecipe(),
+        "Quadratic": QuadraticRecipe(),
+        "Random Fourier features": FourierRecipe(),
+        "Periodic": FourierRecipe(family="periodic", terms=16),
+        "Smooth radial": SmoothRecipe(),
+        "Smooth sinusoidal": SmoothRecipe(family="sinusoidal"),
+        "Exact Gaussian process": GaussianProcessRecipe(),
+        "Composition": CompositeRecipe(
+            components=(FunctionComponent(LinearRecipe()), FunctionComponent(PolynomialRecipe())),
+            expression=Combination("product", (0, 1)),
+        ),
+    }
+    return {name: asdict(recipe) for name, recipe in recipes.items()}
+
+
+class ExplorerSession:
+    """Shared actions for local browser and embedded notebook transports."""
+
+    def __init__(self, output_dir: Path) -> None:
+        self.output_dir = output_dir.resolve()
+        self.task: TrainingTask | None = None
+        self.archive: str | None = None
+        self.run: dict[str, Any] | None = None
+        self.pair: SavedPair | None = None
+
+    def _view(self) -> dict[str, Any]:
+        view = None if self.task is None else inspect_task(self.task)
+        if view is not None:
+            view["recipe"] = _identity_numbers(view["recipe"], for_browser=True)
+        return {
+            "view": view,
+            "recipe_json": None if self.task is None else self.task.recipe_json,
+            "archive": self.archive,
+            "run": self.run,
+            "pair": None
+            if self.pair is None
+            else {
+                "path": self.pair.path,
+                "card": _identity_numbers(self.pair.document["card"], for_browser=True),
+                "card_json": json.dumps(
+                    self.pair.document["card"], sort_keys=True, allow_nan=False
+                ),
+                "run": self.pair.document["after_run"],
+                "after": {
+                    "view": _identity_numbers(inspect_task(self.pair.after), for_browser=True),
+                    "recipe_json": self.pair.after.recipe_json,
+                    "archive": self.pair.document["after_archive"],
+                },
+            },
+        }
+
+    def _open(self, path: Path, task_id: int) -> None:
+        task = load_saved(self.output_dir, path, task_id)
+        self.task = task
+        self.archive = str(path.resolve().relative_to(self.output_dir))
+        self.pair = None
+
+    def request(self, action: str, data: dict[str, Any]) -> dict[str, Any]:
+        if action == "examples":
+            return {"examples": recipe_examples(), "output_dir": str(self.output_dir)}
+        if action == "view":
+            return self._view()
+        if action == "open_pair":
+            pair = open_pair(self.output_dir, data["path"])
+            self.task, self.archive = pair.before, pair.document["before_archive"]
+            self.run, self.pair = pair.document["before_run"], pair
+            return self._view()
+        if action == "open":
+            self._open(
+                self.output_dir / data["archive"],
+                _identity_numbers(data, for_browser=False)["task_id"],
+            )
+            self.run = None
+            return self._view()
+        if action == "generate":
+            record = (
+                json.loads(data["record_json"])
+                if "record_json" in data
+                else data.get("record", data)
+            )
+            if not isinstance(record, dict):
+                raise ValueError("recipe record must be an object")
+            record = _identity_numbers(record, for_browser=False)
+            device = data.get("device", record.get("execution", {}).get("device", "cpu"))
+            request = RunRequest(
+                recipe=recipe_from_dict(record["recipe"]),
+                seed=record["seed"],
+                start=record["task_id"],
+                count=1,
+                group_size=1,
+                max_seconds=data.get("max_seconds", 60),
+                max_bytes=data.get("max_bytes", 256 * 1024**2),
+                device=device,
+            )
+            self.task, self.archive, self.run = run_saved(self.output_dir, request)
+            self.pair = None
+            return self._view()
+        if self.task is None:
+            raise ValueError("generate or open a dataset first")
+        if data.get("expected_episode_id", self.task.episode_id) != self.task.episode_id:
+            raise ValueError(
+                "The active dataset changed in another view. Reopen or replay this dataset first."
+            )
+        if action == "pair":
+            if self.archive is None:
+                raise ValueError("save the active dataset before comparing")
+            pair = create_pair(self.output_dir, self.task, self.archive, self.run, data)
+            self.pair = pair
+            return self._view()
+        if action == "pair_export":
+            if self.pair is None:
+                raise ValueError("create or open a comparison first")
+            pair_id = self.pair.document["card"]["pair_id"]
+            if data.get("expected_pair_id", pair_id) != pair_id:
+                raise ValueError("The active comparison changed in another view. Reopen it first.")
+            bundle = pair_bundle(self.pair, max_bytes=data.get("max_bytes", 256 * 1024**2))
+            return {
+                "name": f"comparison-{pair_id}.zip",
+                "data": base64.b64encode(bundle).decode("ascii"),
+                "mime": "application/zip",
+            }
+        if action == "row":
+            return {"row": inspect_rows(self.task, [data["index"]])[0]}
+        if action == "parameters":
+            return {"parameters": json.loads(self.task.mechanism_json)}
+        if action == "graph":
+            graph = explain_generation(
+                self.task,
+                data["indices"],
+                component=data.get("component"),
+                column_start=data.get("column_start", 0),
+            )
+            return {"graph": _identity_numbers(graph, for_browser=True)}
+        if action == "gp_curve":
+            data = _identity_numbers(data, for_browser=False)
+            curve = inspect_gp_curve(
+                self.task,
+                feature=data["feature"],
+                anchor_row=data.get("anchor_row", 0),
+                points=data.get("points", 129),
+                bounds=data.get("bounds"),
+                draws=data.get("draws", 0),
+                seed=data.get("seed"),
+                allow_rank_truncation=data.get("allow_rank_truncation", False),
+            )
+            return {"curve": _identity_numbers(curve, for_browser=True)}
+        if action == "curve":
+            return {
+                "curve": inspect_curve(
+                    self.task,
+                    feature=data["feature"],
+                    anchor_row=data.get("anchor_row", 0),
+                    points=data.get("points", 129),
+                    bounds=data.get("bounds"),
+                )
+            }
+        if action == "export":
+            bundle = replay_bundle(self.task, max_bytes=data.get("max_bytes", 256 * 1024**2))
+            return {
+                "name": f"dataset-{self.task.source_task_id}.zip",
+                "data": base64.b64encode(bundle).decode("ascii"),
+                "mime": "application/zip",
+            }
+        raise ValueError(f"unknown explorer action: {action}")

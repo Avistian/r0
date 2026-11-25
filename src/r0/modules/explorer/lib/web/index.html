@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r0 · Dataset explorer</title><style>/* STYLES */</style></head>
+<body>
+<header><div class="brand">r0 <span>/ dataset explorer</span></div><span class="badge">Synthetic data · <!-- RUNTIME --></span></header>
+<main>
+<aside>
+<p class="eyebrow">CREATE A DATASET</p><h1>Explore the data<br>behind the model.</h1>
+<p class="muted">Choose a mechanism, generate a task, and inspect its signal, labels and inputs.</p>
+<form id="generator">
+<label>Mechanism<select id="family"></select></label>
+<div class="fields"><label>Seed<input id="seed" type="text" inputmode="numeric" min="0" value="27"></label><label>Task identifier<input id="task-id" type="text" inputmode="numeric" min="0" value="0"></label></div>
+<div class="fields"><label>Total rows<input id="rows" type="number" min="16" max="20000" value="64"></label><label>Context rows<input id="context" type="number" min="1" value="48"></label></div>
+<div class="fields"><label>Features<input id="features" type="number" min="1" max="256" value="8"></label><label>Active features<input id="active" type="number" min="1" max="256" value="4"></label></div>
+<label>Prediction task<select id="task-type"><option value="regression">Regression</option><option value="binary">Binary classification</option><option value="multiclass">Multiclass classification</option></select></label>
+<div class="fields"><label>Classes<input id="classes" type="number" value="0" min="0" max="100"></label><label id="difficulty-label">Noise / signal<input id="difficulty" type="number" value="0" min="0" step="0.1"></label></div>
+<details><summary>Recipe and run limits</summary>
+<p class="muted">The JSON recipe is editable. Field changes above update it; edits below are used as written.</p>
+<label>Full recipe<textarea id="recipe" rows="15" spellcheck="false"></textarea></label>
+<div class="fields"><label>Device<select id="device"><option value="cpu">CPU</option><option value="cuda">CUDA GPU</option></select></label><label>Time limit (s)<input id="seconds" type="number" value="60" min="1"></label></div>
+<label>Output limit (MiB)<input id="bytes" type="number" value="256" min="1"></label>
+</details>
+<div class="actions"><button id="generate" type="submit" class="primary">Generate dataset</button><button id="next" type="button">Next task</button></div>
+</form>
+<details><summary>Replay or open saved data</summary>
+<label>Paste exported recipe.json<textarea id="replay-record" rows="5" spellcheck="false"></textarea></label><button id="replay" type="button">Replay recipe</button>
+<label>Archive path within output folder<input id="archive-path" placeholder="…/groups/0/0/attempt-0.zip"></label>
+<label>Saved task identifier<input id="saved-id" type="text" inputmode="numeric" value="0" min="0"></label><button id="open" type="button">Open saved dataset</button>
+<label>Saved comparison path<input id="pair-path" placeholder="pairs/….json"></label><button id="pair-open" type="button">Open saved comparison</button>
+<p id="output-dir" class="muted path"></p>
+</details>
+</aside>
+<section class="workspace">
+<div id="status" role="status" aria-live="polite">Choose a mechanism to begin.</div>
+<div id="empty"><div class="empty-art">x → f(x) → y</div><h2>A dataset you can explain.</h2><p>View every feature distribution, inspect individual rows,<br>and export all observations with their generation recipe.</p></div>
+<div id="results" hidden>
+<div class="title-row"><div><p class="eyebrow" id="family-title"></p><h2 id="task-title"></h2></div><div class="actions"><button id="recipe-download">Recipe JSON</button><button id="export">Download dataset</button></div></div>
+<div class="metrics" id="metrics"></div><p class="muted" id="sampling"></p>
+<details><summary>Identity, saved location and run measurements</summary><pre id="identity"></pre></details>
+<div class="chart-controls"><label>Feature<select id="feature"></select></label><label>Score / class<select id="channel"></select></label></div>
+<div class="chart-grid">
+<article><h3>Feature distribution</h3><p class="muted">All rows · active and irrelevant roles shown above</p><div id="feature-hist" class="plot"></div></article>
+<article><h3>Target distribution</h3><p class="muted">All rows · observed labels</p><div id="target-hist" class="plot"></div></article>
+<article><h3>Feature and latent signal</h3><p class="muted">Observed points, not a response curve · other features vary</p><div id="signal-plot" class="plot"></div></article>
+<article><h3 id="diagnostic-title">Signal and observation</h3><p class="muted" id="diagnostic-note"></p><div id="diagnostic-plot" class="plot"></div></article>
+</div>
+<article id="pair-panel">
+<p class="eyebrow">CHANGE ONE PROPERTY</p><h3>Compare two versions of this dataset</h3>
+<p class="muted">Keep the seed, shared input columns and context/query split fixed. Generate one saved variant of the dataset shown above.</p>
+<div class="chart-controls pair-controls"><label>Property<select id="pair-intervention"></select></label><label id="pair-value-label">New value<input id="pair-value" type="number" min="0" step="0.1"></label></div>
+<label class="checkbox-label" id="pair-estimate-label" hidden><input id="pair-estimate" type="checkbox">Allow calibration-based variance estimates for this sparsity comparison</label>
+<p id="pair-policy-note" class="muted"></p><button id="pair-create" class="primary">Generate and save comparison</button>
+<p class="muted">Uses the original generation device and the time/output limits in the sidebar. Editing these controls does not change an already saved comparison.</p>
+<section id="pair-results" hidden>
+<div class="title-row"><div><p class="eyebrow">SAVED COMPARISON</p><h3 id="pair-title"></h3></div><div class="actions"><button id="pair-card">Card JSON</button><button id="pair-export">Download both datasets</button></div></div>
+<p id="pair-variance" class="muted"></p><p id="pair-fixed" class="pair-fixed"></p>
+<div class="chart-controls pair-controls"><label>Common feature<select id="pair-feature"></select></label><label>Plot<select id="pair-metric"></select></label><label>Score / class<select id="pair-channel"></select></label></div>
+<p id="pair-sampling" class="muted"></p>
+<div class="chart-grid"><section><h4 id="pair-before-title">Before</h4><div id="pair-before-plot" class="plot"></div></section><section><h4 id="pair-after-title">After</h4><div id="pair-after-plot" class="plot"></div></section></div>
+<p class="legend">Green: context · orange: query · select a point to inspect the same row in both datasets</p><pre id="pair-row" hidden></pre>
+<h4>Measurements across all rows</h4><div id="pair-measurements" class="table-wrap"></div>
+<div id="pair-classes" hidden><h4>Class counts</h4><div id="pair-counts" class="table-wrap"></div></div>
+<details><summary>Comparison card and saved locations</summary><pre id="pair-details"></pre></details>
+</section>
+</article>
+<article><h3 id="curve-title">Response curve</h3><p id="curve-description" class="muted">Vary the feature selected above. Every other input stays fixed at the chosen row. This shows the saved function, without observation noise or class-separation adjustments.</p>
+<div class="chart-controls"><label>Fixed inputs from row<input id="curve-row" type="number" min="0" value="0"></label><label>Curve points<input id="curve-points" type="number" min="2" max="512" value="129"></label></div>
+<div id="gp-options" hidden>
+<div class="chart-controls"><label>Additional draws<input id="gp-draws" type="number" min="0" max="8" value="0"></label><label>Draw seed<input id="gp-seed" inputmode="numeric" value="42"></label></div>
+<label class="checkbox-label"><input id="gp-approximate" type="checkbox">Allow an approximate view if the saved covariance cannot be resolved precisely</label>
+<p class="muted">Unchecked uses strict conditioning. Approximation reports the retained directions and the change to the saved draw.</p>
+</div>
+<button id="curve">Evaluate response curve</button><p id="curve-note" class="muted"></p><div id="response-plot" class="plot"></div>
+<button id="curve-json" hidden>Download curve JSON</button><details><summary>Fixed inputs and curve values</summary><pre id="curve-values"></pre></details></article>
+<article><p class="eyebrow">FOLLOW THE RECIPE</p><h3>From inputs to targets</h3><p class="muted">Reconstruct saved steps for selected original rows. Select a node to inspect its formula, parameters, inputs and outputs. GP graphs show the original joint draw.</p>
+<div class="chart-controls"><label>Original row indices (1–16)<input id="graph-rows" value="0,3"></label><label>Mechanism<select id="graph-component"><option value="">Whole task</option></select></label><label>First value column<input id="graph-column" type="number" min="0" max="4095" value="0"></label></div>
+<button id="graph">Build generation graph</button><p id="graph-note" class="muted"></p>
+<div id="graph-tools" class="graph-toolbar" hidden><div class="graph-legend"><span class="legend-input">Inputs</span><span class="legend-parameter">Parameters &amp; draws</span><span class="legend-function">Functions</span><span class="legend-target">Signals &amp; targets</span></div><div class="graph-zoom"><button id="graph-fit">Fit</button><button id="graph-zoom-out" aria-label="Zoom graph out">−</button><button id="graph-zoom-label" aria-label="Reset graph zoom to 100 percent">100%</button><button id="graph-zoom-in" aria-label="Zoom graph in">+</button></div></div>
+<div id="generation-graph" class="graph-scroll"></div><div id="graph-downloads" class="chart-actions"></div>
+<section id="graph-detail" hidden><div class="title-row"><h3 id="graph-node-title"></h3><button id="graph-expand" hidden>Expand component</button></div><p id="graph-formula" class="formula"></p>
+<details><summary>Step parameters and matrix axes</summary><pre id="graph-parameters"></pre></details>
+<div class="chart-grid"><div class="graph-matrix-panel"><label>Input from step<select id="graph-input"></select></label><div id="graph-input-plot" class="plot"></div></div><div class="graph-matrix-panel"><h4>Step output</h4><div id="graph-output-plot" class="plot"></div></div></div>
+<p id="graph-matrix-note" class="muted"></p><div id="graph-output-table" class="table-wrap"></div>
+<details><summary>Returned graph values</summary><pre id="graph-values"></pre></details></section>
+</article>
+<article id="class-panel" hidden><h3>Class probabilities and counts</h3><div id="class-counts" class="table-wrap"></div></article>
+<article><div class="title-row"><h3>Observations</h3><label>Inspect row<input id="row-index" type="number" value="0" min="0"></label><button id="inspect-row">Show row</button></div><pre id="selected-row" hidden></pre><p class="muted">Preview uses the displayed chart sample. Downloads contain every row.</p><div id="table" class="table-wrap"></div></article>
+<details><summary>Sampled mechanism parameters</summary><button id="parameters">Load parameters</button><pre id="parameter-values"></pre></details>
+</div>
+</section>
+</main>
+<script>/* TRANSPORT */</script><script>/* APPLICATION */</script><script>/* CURVES */</script><script>/* GRAPHS */</script><script>/* PAIRS */</script>
+</body></html>

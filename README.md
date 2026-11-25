@@ -53,6 +53,15 @@ independent calculations, metric conventions and replay instructions. The
 python3 scripts/run_check.py python scripts/oracle_walkthrough.py --out /tmp/r0-oracle-evidence
 ```
 
+## Training generator kernels
+
+See [bounded batch consumption](docs/bounded-batch-consumption.md) for a runnable
+example that feeds generated or saved episodes into an optimizer through the
+shared episode interface.
+
+See [direct GP kernel recipes](docs/gp-kernels.md) for RBF, Matérn, rational-quadratic
+and spectral-mixture configuration, numerical limits and saved-task walkthroughs.
+
 ## Data attributions
 The planned benchmark suite uses RelBench databases, each under its own terms:
 rel-f1 (CC BY-NC-SA 3.0), rel-stack (CC BY-SA 4.0), rel-trial (ClinicalTrials.gov terms).
