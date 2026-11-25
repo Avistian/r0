@@ -1,0 +1,137 @@
+{
+  "python": "3.12.3",
+  "numpy": "2.5.5",
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "device": "cpu",
+  "cases": [
+    {
+      "recipe": {
+        "task": {
+          "rows": 128,
+          "features": 8,
+          "signal_features": 8,
+          "active_features": 4,
+          "context_rows": 64,
+          "split": 0,
+          "noise_ratio": 0.0,
+          "task_type": "regression",
+          "classes": 0,
+          "separation": 1.0,
+          "class_offsets": [],
+          "version": "linear-v1"
+        },
+        "family": "periodic",
+        "terms": 4,
+        "length_scale": 1.0,
+        "calibration_rows": 4096,
+        "version": "fourier-v1"
+      },
+      "warmup_seconds": 0.014443660009419546,
+      "generation_seconds": [
+        0.004459399991901591,
+        0.001748890004819259,
+        0.005708779994165525
+      ],
+      "scalar_expected": -1.020568918821797,
+      "scalar_actual": -1.020568918821797,
+      "memory": "NOT_MEASURED"
+    },
+    {
+      "recipe": {
+        "task": {
+          "rows": 2048,
+          "features": 64,
+          "signal_features": 64,
+          "active_features": 64,
+          "context_rows": 1024,
+          "split": 0,
+          "noise_ratio": 0.0,
+          "task_type": "regression",
+          "classes": 0,
+          "separation": 1.0,
+          "class_offsets": [],
+          "version": "linear-v1"
+        },
+        "family": "rff",
+        "terms": 256,
+        "length_scale": 1.0,
+        "calibration_rows": 4096,
+        "version": "fourier-v1"
+      },
+      "warmup_seconds": 0.050695040001301095,
+      "generation_seconds": [
+        0.053439100011019036,
+        0.06714939000084996,
+        0.07248031999915838
+      ],
+      "scalar_expected": 0.715942289643039,
+      "scalar_actual": 0.7159422896430383,
+      "memory": "NOT_MEASURED"
+    },
+    {
+      "recipe": {
+        "task": {
+          "rows": 20000,
+          "features": 256,
+          "signal_features": 256,
+          "active_features": 256,
+          "context_rows": 10000,
+          "split": 0,
+          "noise_ratio": 0.0,
+          "task_type": "regression",
+          "classes": 0,
+          "separation": 1.0,
+          "class_offsets": [],
+          "version": "linear-v1"
+        },
+        "family": "rff",
+        "terms": 64,
+        "length_scale": 1.0,
+        "calibration_rows": 4096,
+        "version": "fourier-v1"
+      },
+      "warmup_seconds": 0.27813401000457816,
+      "generation_seconds": [
+        0.2554061400005594,
+        0.2606933999923058,
+        0.21447976000490598
+      ],
+      "scalar_expected": 1.5052637599497225,
+      "scalar_actual": 1.505263759949706,
+      "memory": "NOT_MEASURED"
+    },
+    {
+      "recipe": {
+        "task": {
+          "rows": 128,
+          "features": 8,
+          "signal_features": 8,
+          "active_features": 8,
+          "context_rows": 64,
+          "split": 0,
+          "noise_ratio": 0.0,
+          "task_type": "regression",
+          "classes": 0,
+          "separation": 1.0,
+          "class_offsets": [],
+          "version": "linear-v1"
+        },
+        "family": "rff",
+        "terms": 4096,
+        "length_scale": 1.0,
+        "calibration_rows": 4096,
+        "version": "fourier-v1"
+      },
+      "warmup_seconds": 0.49873043000116013,
+      "generation_seconds": [
+        0.5269750199804548,
+        0.6403379400144331,
+        0.5011533999931999
+      ],
+      "scalar_expected": -0.6056368603030715,
+      "scalar_actual": -0.6056368603030706,
+      "memory": "NOT_MEASURED"
+    }
+  ]
+}

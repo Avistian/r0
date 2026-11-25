@@ -9,6 +9,7 @@ import torch
 
 from r0.modules.episodes import TaskType
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.targets import adapt_targets
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -110,29 +111,9 @@ def generate_linear(
     inputs = torch.tensor(x, dtype=torch.float64, device=device)
     coefficients = torch.tensor(weights, dtype=torch.float64, device=device)
     scores = inputs[:, : recipe.signal_features] @ coefficients
-    noise = torch.tensor(rng("noise").normal(size=recipe.rows), dtype=torch.float64, device=device)
-    targets = scores[:, 0] + recipe.noise_ratio * noise
-    probabilities: torch.Tensor | None = None
-    classes: tuple[str, ...] = ()
-    if recipe.task_type != "regression":
-        offsets = torch.tensor(
-            recipe.class_offsets or (0.0,) * outputs, dtype=torch.float64, device=device
-        )
-        logits = recipe.separation * scores + offsets
-        if not torch.isfinite(logits).all():
-            raise ValueError("nonfinite class scores; task was not retried")
-        if recipe.task_type == "binary":
-            positive = torch.sigmoid(logits[:, 0])
-            probabilities = torch.stack((1 - positive, positive), dim=1)
-        else:
-            probabilities = torch.softmax(logits, dim=1)
-        uniforms = torch.tensor(
-            rng("labels").uniform(size=recipe.rows), dtype=torch.float64, device=device
-        )
-        targets = torch.sum(uniforms[:, None] >= probabilities.cumsum(dim=1)[:, :-1], dim=1)
-        classes = tuple(f"class-{i}" for i in range(recipe.classes))
-    if not torch.isfinite(targets).all():
-        raise ValueError("nonfinite generated targets; task was not retried")
+    targets, probabilities, classes = adapt_targets(
+        recipe, scores, noise_rng=rng("noise"), label_rng=rng("labels")
+    )
     permutation = torch.tensor(
         rng("split", recipe.split).permutation(recipe.rows), dtype=torch.long, device=device
     )
