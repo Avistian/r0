@@ -59,17 +59,17 @@ import hashlib
 import json
 from pathlib import Path
 
-result = json.loads(Path('/tmp/r0-modal-receipts/result.json').read_text())
-records = result['generation']['device_agreement']['records']
-plan, manifest = records['plan.json'], records['manifest.json']
-assert hashlib.sha256(json.dumps(plan).encode()).hexdigest() == manifest['plan_sha256']
-cases = [records[f'case-{i}.json'] for i in range(93)]
-assert [c['name'] for c in cases] == [c['name'] for c in plan['agreement_cases']]
-assert all(c['status'] == 'PASS' for c in cases)
-print(records['summary.json'])
-print(sum(c['elapsed_seconds'] for c in cases))
-print(max(v for c in cases for v in c['max_absolute_error'].values()))
-print(result['generation']['summary'], result['resume']['summary'])
+result = json.loads(Path("/tmp/r0-modal-receipts/result.json").read_text())
+records = result["generation"]["device_agreement"]["records"]
+plan, manifest = records["plan.json"], records["manifest.json"]
+assert hashlib.sha256(json.dumps(plan).encode()).hexdigest() == manifest["plan_sha256"]
+cases = [records[f"case-{i}.json"] for i in range(93)]
+assert [c["name"] for c in cases] == [c["name"] for c in plan["agreement_cases"]]
+assert all(c["status"] == "PASS" for c in cases)
+print(records["summary.json"])
+print(sum(c["elapsed_seconds"] for c in cases))
+print(max(v for c in cases for v in c["max_absolute_error"].values()))
+print(result["generation"]["summary"], result["resume"]["summary"])
 ```
 
 Generation and resume were two separate remote invocations using
