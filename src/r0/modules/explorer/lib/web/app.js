@@ -54,6 +54,14 @@ function updateRecipe(changed) {
   if (fields[changed]) task[fields[changed]] = number(changed);
   if (changed === "difficulty") task[task.task_type === "regression" ? "noise_ratio" : "separation"] = number("difficulty");
   if (changed === "features" || changed === "active") task.signal_features = Math.max(task.active_features, Math.min(task.features, task.signal_features));
+  if (changed === "active" && recipe.components) for (const component of recipe.components) {
+    if (!component.axes?.length) {
+      const child = taskControls(component.recipe);
+      child.active_features = task.active_features;
+      child.signal_features = Math.max(child.signal_features, child.active_features);
+      child.features = Math.max(child.features, child.signal_features);
+    }
+  }
   if (changed === "task-type") {
     Object.assign(task, {task_type: $("task-type").value, classes: number("classes"), noise_ratio: 0, separation: 1, class_offsets: []});
     if (recipe.components) for (const component of recipe.components) {

@@ -95,6 +95,10 @@ for (const family of families) {
   assert.equal(await evaluate("current.view.total_rows"), 64);
 }
 await screenshot("composition.png");
+await evaluate("document.getElementById('active').value=3; document.getElementById('active').dispatchEvent(new Event('change'))");
+await waitFor("!busy");
+await click("generate");
+assert.equal(await evaluate("current.view.recipe.recipe.components[0].recipe.active_features"), 3);
 await evaluate("document.getElementById('family').value='Linear'; document.getElementById('family').dispatchEvent(new Event('change')); document.getElementById('seed').value='9223372036854775807'; document.getElementById('task-id').value='9007199254741115'");
 await click("generate");
 assert.equal(await evaluate("document.getElementById('seed').value"), "9223372036854775807");
