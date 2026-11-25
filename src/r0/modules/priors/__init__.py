@@ -6,12 +6,15 @@ import numpy as np
 
 from r0.modules.episodes import Feature, Row, Target, TaskType
 from r0.modules.priors.lib.authored import authored_episode as authored_episode
+from r0.modules.priors.lib.linear import LinearRecipe as LinearRecipe
+from r0.modules.priors.lib.linear import generate_linear as generate_linear
 from r0.modules.priors.lib.profile import diagnostic_profile as diagnostic_profile
 from r0.modules.priors.lib.representatives import FAMILIES as FAMILIES
 from r0.modules.priors.lib.representatives import GeneratedTask as GeneratedTask
 from r0.modules.priors.lib.representatives import Proposal as Proposal
 from r0.modules.priors.lib.representatives import record_fingerprint as record_fingerprint
 from r0.modules.priors.lib.representatives import sample_proposal as sample_proposal
+from r0.modules.priors.lib.training_task import TrainingTask as TrainingTask
 
 
 @dataclass(frozen=True)
