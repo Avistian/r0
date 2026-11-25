@@ -37,6 +37,9 @@ def test_session_generates_reopens_inspects_and_exports(tmp_path: Path) -> None:
     )
     assert reopened["view"] == result["view"]
     assert session.request("row", {"index": 31})["row"]["index"] == 31
+    curve = session.request("curve", {"feature": 0, "anchor_row": 31, "points": 5})["curve"]
+    assert curve["episode_id"] == result["view"]["episode_id"]
+    assert len(curve["scores"]) == 5
     exported = session.request("export", {})
     with zipfile.ZipFile(io.BytesIO(base64.b64decode(exported["data"]))) as archive:
         assert len(archive.read("truth.csv").decode().splitlines()) == 33

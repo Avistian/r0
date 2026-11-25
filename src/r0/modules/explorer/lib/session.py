@@ -8,6 +8,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any, cast
 
+from r0.modules.explorer.lib.curves import inspect_curve
 from r0.modules.explorer.lib.exports import replay_bundle
 from r0.modules.explorer.lib.inspection import inspect_rows, inspect_task
 from r0.modules.generation import RunRequest, load_group, run_guarded
@@ -177,6 +178,16 @@ class ExplorerSession:
             return {"row": inspect_rows(self.task, [data["index"]])[0]}
         if action == "parameters":
             return {"parameters": json.loads(self.task.mechanism_json)}
+        if action == "curve":
+            return {
+                "curve": inspect_curve(
+                    self.task,
+                    feature=data["feature"],
+                    anchor_row=data.get("anchor_row", 0),
+                    points=data.get("points", 129),
+                    bounds=data.get("bounds"),
+                )
+            }
         if action == "export":
             bundle = replay_bundle(self.task, max_bytes=data.get("max_bytes", 256 * 1024**2))
             return {

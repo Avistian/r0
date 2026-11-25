@@ -44,11 +44,15 @@
 <article><h3>Feature and latent signal</h3><p class="muted">Observed points, not a response curve · other features vary</p><div id="signal-plot" class="plot"></div></article>
 <article><h3 id="diagnostic-title">Signal and observation</h3><p class="muted" id="diagnostic-note"></p><div id="diagnostic-plot" class="plot"></div></article>
 </div>
+<article><h3>Response curve</h3><p class="muted">Vary the feature selected above. Every other input stays fixed at the chosen row. This shows the saved function, without observation noise or class-separation adjustments.</p>
+<div class="chart-controls"><label>Fixed inputs from row<input id="curve-row" type="number" min="0" value="0"></label><label>Curve points<input id="curve-points" type="number" min="2" max="512" value="129"></label></div>
+<button id="curve">Evaluate response curve</button><p id="curve-note" class="muted"></p><div id="response-plot" class="plot"></div>
+<details><summary>Fixed inputs and curve values</summary><pre id="curve-values"></pre></details></article>
 <article id="class-panel" hidden><h3>Class probabilities and counts</h3><div id="class-counts" class="table-wrap"></div></article>
 <article><div class="title-row"><h3>Observations</h3><label>Inspect row<input id="row-index" type="number" value="0" min="0"></label><button id="inspect-row">Show row</button></div><pre id="selected-row" hidden></pre><p class="muted">Preview uses the displayed chart sample. Downloads contain every row.</p><div id="table" class="table-wrap"></div></article>
 <details><summary>Sampled mechanism parameters</summary><button id="parameters">Load parameters</button><pre id="parameter-values"></pre></details>
 </div>
 </section>
 </main>
-<script>/* TRANSPORT */</script><script>/* APPLICATION */</script>
+<script>/* TRANSPORT */</script><script>/* APPLICATION */</script><script>/* CURVES */</script>
 </body></html>
