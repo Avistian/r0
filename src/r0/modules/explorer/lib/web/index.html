@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r0 · Dataset explorer</title><style>/* STYLES */</style></head>
+<body>
+<header><div class="brand">r0 <span>/ dataset explorer</span></div><span class="badge">Synthetic data · local generation</span></header>
+<main>
+<aside>
+<p class="eyebrow">CREATE A DATASET</p><h1>Explore the data<br>behind the model.</h1>
+<p class="muted">Choose a mechanism, generate a task, and inspect its signal, labels and inputs.</p>
+<form id="generator">
+<label>Mechanism<select id="family"></select></label>
+<div class="fields"><label>Seed<input id="seed" type="text" inputmode="numeric" min="0" value="27"></label><label>Task identifier<input id="task-id" type="text" inputmode="numeric" min="0" value="0"></label></div>
+<div class="fields"><label>Total rows<input id="rows" type="number" min="16" max="20000" value="64"></label><label>Context rows<input id="context" type="number" min="1" value="48"></label></div>
+<div class="fields"><label>Features<input id="features" type="number" min="1" max="256" value="8"></label><label>Active features<input id="active" type="number" min="1" max="256" value="4"></label></div>
+<label>Prediction task<select id="task-type"><option value="regression">Regression</option><option value="binary">Binary classification</option><option value="multiclass">Multiclass classification</option></select></label>
+<div class="fields"><label>Classes<input id="classes" type="number" value="0" min="0" max="100"></label><label id="difficulty-label">Noise / signal<input id="difficulty" type="number" value="0" min="0" step="0.1"></label></div>
+<details><summary>Recipe and run limits</summary>
+<p class="muted">The JSON recipe is editable. Field changes above update it; edits below are used as written.</p>
+<label>Full recipe<textarea id="recipe" rows="15" spellcheck="false"></textarea></label>
+<div class="fields"><label>Device<select id="device"><option value="cpu">CPU</option><option value="cuda">CUDA GPU</option></select></label><label>Time limit (s)<input id="seconds" type="number" value="60" min="1"></label></div>
+<label>Output limit (MiB)<input id="bytes" type="number" value="256" min="1"></label>
+</details>
+<div class="actions"><button id="generate" type="submit" class="primary">Generate dataset</button><button id="next" type="button">Next task</button></div>
+</form>
+<details><summary>Replay or open saved data</summary>
+<label>Paste exported recipe.json<textarea id="replay-record" rows="5" spellcheck="false"></textarea></label><button id="replay" type="button">Replay recipe</button>
+<label>Archive path within output folder<input id="archive-path" placeholder="…/groups/0/0/attempt-0.zip"></label>
+<label>Saved task identifier<input id="saved-id" type="text" inputmode="numeric" value="0" min="0"></label><button id="open" type="button">Open saved dataset</button>
+<p id="output-dir" class="muted path"></p>
+</details>
+</aside>
+<section class="workspace">
+<div id="status" role="status" aria-live="polite">Choose a mechanism to begin.</div>
+<div id="empty"><div class="empty-art">x → f(x) → y</div><h2>A dataset you can explain.</h2><p>View every feature distribution, inspect individual rows,<br>and export all observations with their generation recipe.</p></div>
+<div id="results" hidden>
+<div class="title-row"><div><p class="eyebrow" id="family-title"></p><h2 id="task-title"></h2></div><div class="actions"><button id="recipe-download">Recipe JSON</button><button id="export">Download dataset</button></div></div>
+<div class="metrics" id="metrics"></div><p class="muted" id="sampling"></p>
+<details><summary>Identity, saved location and run measurements</summary><pre id="identity"></pre></details>
+<div class="chart-controls"><label>Feature<select id="feature"></select></label><label>Score / class<select id="channel"></select></label></div>
+<div class="chart-grid">
+<article><h3>Feature distribution</h3><p class="muted">All rows · active and irrelevant roles shown above</p><div id="feature-hist" class="plot"></div></article>
+<article><h3>Target distribution</h3><p class="muted">All rows · observed labels</p><div id="target-hist" class="plot"></div></article>
+<article><h3>Feature and latent signal</h3><p class="muted">Observed points, not a response curve · other features vary</p><div id="signal-plot" class="plot"></div></article>
+<article><h3 id="diagnostic-title">Signal and observation</h3><p class="muted" id="diagnostic-note"></p><div id="diagnostic-plot" class="plot"></div></article>
+</div>
+<article id="class-panel" hidden><h3>Class probabilities and counts</h3><div id="class-counts" class="table-wrap"></div></article>
+<article><div class="title-row"><h3>Observations</h3><label>Inspect row<input id="row-index" type="number" value="0" min="0"></label><button id="inspect-row">Show row</button></div><pre id="selected-row" hidden></pre><p class="muted">Preview uses the displayed chart sample. Downloads contain every row.</p><div id="table" class="table-wrap"></div></article>
+<details><summary>Sampled mechanism parameters</summary><button id="parameters">Load parameters</button><pre id="parameter-values"></pre></details>
+</div>
+</section>
+</main>
+<script>/* TRANSPORT */</script><script>/* APPLICATION */</script>
+</body></html>
