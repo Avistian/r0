@@ -6,6 +6,9 @@ saved-generation interface. It separates these timing workloads from the broad
 listed settings on the recorded local CPU environment. It does not establish
 production mixture weights, general bulk eligibility, GPU throughput or model quality.
 
+See the [measured fixed CPU results](generator-resource-results.md) for the retained
+270-task run. CI exercises only the short preflight and interruption-reporting checks.
+
 ## Measurement matrix
 
 The default matrix has ten families, three sizes, three task types and three
