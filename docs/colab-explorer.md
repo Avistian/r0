@@ -1,10 +1,13 @@
 # Explorer inside a hosted Colab notebook
 
 [The generation notebook](../notebooks/generation.ipynb) installs the pinned adapter
-revision `716d63068ebd9d9d95baaaec3736d92c7a9054fc`. It offers all ten starting recipes
+revision `e11e3a1e837304558cdbe9cd3b8ae1f53ad805ea`. It offers all ten starting recipes
 for bounded generation, measurement and larger resumable runs, followed by the
 embedded explorer. The explorer uses the same controls, charts and session actions
-as the local application. Its CPU/CUDA selector is independent of the bulk-run cell.
+as the local application, including saved side-by-side comparisons with common axes,
+matched rows, explicit variance policy and complete pair downloads. Its CPU/CUDA
+selector is independent of the bulk-run cell. Comparisons reuse the base dataset's
+original generation device.
 
 ```python
 from pathlib import Path

@@ -1,0 +1,52 @@
+[
+  {
+    "path": "classification.png",
+    "bytes": 455069,
+    "sha256": "2a6db32c8e546eed8963c0ea3a64ec309619aeced70e59e2e4604084eed2682e"
+  },
+  {
+    "path": "comparison-45d881173555a8e24780f92526431d46d4268916d7e6a8d9dbd44d4de0123dc6.zip",
+    "bytes": 91394,
+    "sha256": "8fa0494330453e3fc9ba478ee8ddd9b8843663878699c9f3c11807619b671338"
+  },
+  {
+    "path": "comparison-card.json",
+    "bytes": 2831,
+    "sha256": "cd1ae6729d920580cea4ebcaff6843b7dbe7639b9e7b799f4b327168ab035f03"
+  },
+  {
+    "path": "estimated-sparsity.png",
+    "bytes": 446179,
+    "sha256": "c65e9e4ca68b999aa3c4f3adf6071d5884066e0ef5356f109379fd7d95c477a4"
+  },
+  {
+    "path": "mobile.png",
+    "bytes": 375374,
+    "sha256": "60495f6b9b63286b9249a07151bdb770f10ad24b7041f667f89b9bda4525c2a6"
+  },
+  {
+    "path": "noise.png",
+    "bytes": 475407,
+    "sha256": "0f5bd87c53568c48157320390b954d1537c2b7499a71a6ebd04ca81619d6663f"
+  },
+  {
+    "path": "pair-after-plot.png",
+    "bytes": 77246,
+    "sha256": "4cd57d831398c68c1ba2d3d15b52fbff7be71f966ab1bd18b1b2329c374974bf"
+  },
+  {
+    "path": "pair-before-plot.svg",
+    "bytes": 35847,
+    "sha256": "cefc6ed89cf9380508a1563f4c40b592a0c74745a0a8d4bf3e9c69a0a55eb958"
+  },
+  {
+    "path": "receipt.json",
+    "bytes": 14295,
+    "sha256": "fc4a42319d794906669d022362e3fbf39521ab59948a0815ea1f38101e734dd5"
+  },
+  {
+    "path": "sparsity.png",
+    "bytes": 461376,
+    "sha256": "9dbd57dc7b2c64a5ab8bca8fbfeb6c6f724eac5821395f338751efc0dec9f43a"
+  }
+]
