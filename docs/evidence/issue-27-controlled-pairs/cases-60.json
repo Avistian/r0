@@ -1,0 +1,272 @@
+[
+  {
+    "case": 60,
+    "family": "Smooth radial",
+    "task_type": "multiclass",
+    "intervention": "separation",
+    "pair_id": "e68ffcc94c5432d949a12acfa63b9350cce74d78623fd5bbf17187b3866b7f4b",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.00414339400595054
+  },
+  {
+    "case": 61,
+    "family": "Smooth radial",
+    "task_type": "multiclass",
+    "intervention": "irrelevant",
+    "pair_id": "fa8993ad4acb21cd8e822eea661197026206f74e3ceddca3af351d23370f8a62",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.0042009339958895
+  },
+  {
+    "case": 62,
+    "family": "Smooth radial",
+    "task_type": "multiclass",
+    "intervention": "sparsity",
+    "pair_id": "4fb5b3683e7d49b95d7f290cefe2b9982efd6baf8c073a0f08ea7987b72878ad",
+    "variance_control": "independent_calibration_unit_variance_estimate",
+    "seconds": 0.004118394019315019
+  },
+  {
+    "case": 63,
+    "family": "Smooth sinusoidal",
+    "task_type": "regression",
+    "intervention": "noise",
+    "pair_id": "2821c986228bb8c326834d90eb9cd53bafb9b9b4e389f8c435808605ea190488",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.0035745020140893757
+  },
+  {
+    "case": 64,
+    "family": "Smooth sinusoidal",
+    "task_type": "regression",
+    "intervention": "irrelevant",
+    "pair_id": "d0876a51f4f955a3ffb8e923eb8ed234db52243cc7546b045568b558b31dfdd1",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.003573676018277183
+  },
+  {
+    "case": 65,
+    "family": "Smooth sinusoidal",
+    "task_type": "regression",
+    "intervention": "sparsity",
+    "pair_id": "3400549a6cb206953d4fe01557b7214c5172911f6544034296bf6920f85a3c0d",
+    "variance_control": "independent_calibration_unit_variance_estimate",
+    "seconds": 0.0035190280177630484
+  },
+  {
+    "case": 66,
+    "family": "Smooth sinusoidal",
+    "task_type": "binary",
+    "intervention": "separation",
+    "pair_id": "4dfa62457f07e1aeb0a3f03949a0edbb5bfddb68cd05a0950e765558e7a5f933",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.003616442991187796
+  },
+  {
+    "case": 67,
+    "family": "Smooth sinusoidal",
+    "task_type": "binary",
+    "intervention": "irrelevant",
+    "pair_id": "c1c2a3f63ed70aeaf1e1a555148453239fe6ecbca236bf3e28f2122182a674e1",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.003633694985182956
+  },
+  {
+    "case": 68,
+    "family": "Smooth sinusoidal",
+    "task_type": "binary",
+    "intervention": "sparsity",
+    "pair_id": "02c05eaf80853b62fffb19cbd24ec363a7b37a573f7d31254269911177042b70",
+    "variance_control": "independent_calibration_unit_variance_estimate",
+    "seconds": 0.0036245009978301823
+  },
+  {
+    "case": 69,
+    "family": "Smooth sinusoidal",
+    "task_type": "multiclass",
+    "intervention": "separation",
+    "pair_id": "98999b848973a8b8f6fc3ec1c37f3eed562cc6155c20451e2a45ef1d636ec8ad",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.004088332992978394
+  },
+  {
+    "case": 70,
+    "family": "Smooth sinusoidal",
+    "task_type": "multiclass",
+    "intervention": "irrelevant",
+    "pair_id": "5bf2e7b4b7aacc921e635da82565ca6ee089c811c0efae1241ac57bc8153d421",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.004148661973886192
+  },
+  {
+    "case": 71,
+    "family": "Smooth sinusoidal",
+    "task_type": "multiclass",
+    "intervention": "sparsity",
+    "pair_id": "84d6bfff433ab4e2c8dd13d380c31241aeaa20d785c79c5905f9b751273434dd",
+    "variance_control": "independent_calibration_unit_variance_estimate",
+    "seconds": 0.004135955998208374
+  },
+  {
+    "case": 72,
+    "family": "Exact Gaussian process",
+    "task_type": "regression",
+    "intervention": "noise",
+    "pair_id": "fd34c854aeceab2f186207578397b8313aa48b3457480818d842011045bcb1ae",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.042333504010457546
+  },
+  {
+    "case": 73,
+    "family": "Exact Gaussian process",
+    "task_type": "regression",
+    "intervention": "irrelevant",
+    "pair_id": "17346eadab35d82e149b3ed2e71ba59bf012aa3078eaa86d691d0e0be003766b",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.04177876497851685
+  },
+  {
+    "case": 74,
+    "family": "Exact Gaussian process",
+    "task_type": "regression",
+    "intervention": "sparsity",
+    "pair_id": "085ea73bdf10a927ab07fc6c21cd3b13efafa7cdda64a2cf75fae9e1e61d2491",
+    "variance_control": "independent_calibration_unit_variance_estimate",
+    "seconds": 0.03753279100055806
+  },
+  {
+    "case": 75,
+    "family": "Exact Gaussian process",
+    "task_type": "binary",
+    "intervention": "separation",
+    "pair_id": "eed0b5027a90478803f5cee213b518f405f9440ed87c5a1fbc3f1c67f76401a2",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.07470381498569623
+  },
+  {
+    "case": 76,
+    "family": "Exact Gaussian process",
+    "task_type": "binary",
+    "intervention": "irrelevant",
+    "pair_id": "75987bbe31c9287e65c66e28beb5ff5c5bf9aec9c66fcd70746d76bc72a7389c",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.04106359701836482
+  },
+  {
+    "case": 77,
+    "family": "Exact Gaussian process",
+    "task_type": "binary",
+    "intervention": "sparsity",
+    "pair_id": "b66554b8366a20176e0a98c7ed4ee91da929ebddb715b8bc1d12e4ee22a511a9",
+    "variance_control": "independent_calibration_unit_variance_estimate",
+    "seconds": 0.03819083300186321
+  },
+  {
+    "case": 78,
+    "family": "Exact Gaussian process",
+    "task_type": "multiclass",
+    "intervention": "separation",
+    "pair_id": "1cd32d86611c33c77b911f4131ef9d3aca7a95eaa174fc111355c8329ee0ed02",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.04430298300576396
+  },
+  {
+    "case": 79,
+    "family": "Exact Gaussian process",
+    "task_type": "multiclass",
+    "intervention": "irrelevant",
+    "pair_id": "f99ca68455a9b3a274d14b480aeb6f1dc87d2e691bfa5dfcd72824d54e45c4a3",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.04287026898236945
+  },
+  {
+    "case": 80,
+    "family": "Exact Gaussian process",
+    "task_type": "multiclass",
+    "intervention": "sparsity",
+    "pair_id": "9e113d960efe1caf52f759b44437c9310f1c8ace8baa2d7d7eb149eeb5a0407e",
+    "variance_control": "independent_calibration_unit_variance_estimate",
+    "seconds": 0.039782117994036525
+  },
+  {
+    "case": 81,
+    "family": "Composition",
+    "task_type": "regression",
+    "intervention": "noise",
+    "pair_id": "dd7a2b2f569c4eed2055cbd5a54019252e758b3cbf2b5f823e77bd5683e031d1",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.012286073993891478
+  },
+  {
+    "case": 82,
+    "family": "Composition",
+    "task_type": "regression",
+    "intervention": "irrelevant",
+    "pair_id": "2bcf3c60769b7346fa303718bfc3a17680660299708b5b117866b4d50f579513",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.011503240995807573
+  },
+  {
+    "case": 83,
+    "family": "Composition",
+    "task_type": "regression",
+    "intervention": "sparsity",
+    "pair_id": "379d5a06c1dd5061d12ef4ae5c09bd7e19249eea7ffc3e162cf9170819ecb5ef",
+    "variance_control": "independent_calibration_unit_variance_estimate",
+    "seconds": 0.01316766400123015
+  },
+  {
+    "case": 84,
+    "family": "Composition",
+    "task_type": "binary",
+    "intervention": "separation",
+    "pair_id": "5627c7f80506c7f0f4f0828fee7ce59f625f95430fbd7abd6d26ac82112fe39a",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.011582887993426993
+  },
+  {
+    "case": 85,
+    "family": "Composition",
+    "task_type": "binary",
+    "intervention": "irrelevant",
+    "pair_id": "28b7bed55b3a64fb03434eb2571047d3dbbfe180b876635d8b93694bdda9142b",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.01169652200769633
+  },
+  {
+    "case": 86,
+    "family": "Composition",
+    "task_type": "binary",
+    "intervention": "sparsity",
+    "pair_id": "a7724b37dcd7d93c0f37eba309bee7c0744e3232d1de5f873c6e895be2f7da63",
+    "variance_control": "independent_calibration_unit_variance_estimate",
+    "seconds": 0.011481752997497097
+  },
+  {
+    "case": 87,
+    "family": "Composition",
+    "task_type": "multiclass",
+    "intervention": "separation",
+    "pair_id": "23fb3aa695b9b726379433541e9fcc46d55ba8723fbfe75dffb1dffab6de4331",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.012727074994472787
+  },
+  {
+    "case": 88,
+    "family": "Composition",
+    "task_type": "multiclass",
+    "intervention": "irrelevant",
+    "pair_id": "47cf3eaca9e3bcaaa8e8abfe6bfc21a2a95d170ff77e278ebbfe0d712da10535",
+    "variance_control": "unchanged_mechanism",
+    "seconds": 0.012820152012864128
+  },
+  {
+    "case": 89,
+    "family": "Composition",
+    "task_type": "multiclass",
+    "intervention": "sparsity",
+    "pair_id": "9ab86146470f9488e26c8fabd9dfcf68c7fe66d7bea250a91cb3c3e5d7717205",
+    "variance_control": "independent_calibration_unit_variance_estimate",
+    "seconds": 0.012655589991481975
+  }
+]

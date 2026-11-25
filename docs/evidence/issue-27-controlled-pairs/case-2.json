@@ -1,0 +1,134 @@
+{
+  "after": {
+    "active_features": 2,
+    "center": [
+      0.0
+    ],
+    "episode_id": "0eeb48325ae069897cec4be0b5f5c3932bf8cda332654697036269a33d5baa0e",
+    "expected_signal_variance": 1.0,
+    "features": 8,
+    "mechanism_sha256": "29b409c8922b16d3d88da8c498d282a60a92631cf7c7b8f5a2fc49f796df8bc1",
+    "normalization": "analytic unit variance under independent standard Gaussian inputs",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "r0.priors.linear-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "active_features": 2,
+        "class_offsets": [],
+        "classes": 0,
+        "context_rows": 48,
+        "features": 8,
+        "noise_ratio": 0.2,
+        "rows": 64,
+        "separation": 1.0,
+        "signal_features": 8,
+        "split": 0,
+        "task_type": "regression",
+        "version": "linear-v1"
+      },
+      "seed": 27,
+      "task_id": 2
+    },
+    "residual_std": 0.1644178838628858,
+    "rows": 64,
+    "scale": [
+      1.0
+    ],
+    "signal_std": [
+      1.1007169880849992
+    ],
+    "source_task_id": "ca9ecf9a5ee8154c8baae9581ba616df6641c2c60d5f95d709314991d42e8e06"
+  },
+  "allow_estimated_variance": false,
+  "before": {
+    "active_features": 4,
+    "center": [
+      0.0
+    ],
+    "episode_id": "07fcb21c4c8f3966849f6250c22b78fbbc827dc15dbd23ad7f9d5569904f8154",
+    "expected_signal_variance": 1.0,
+    "features": 8,
+    "mechanism_sha256": "50a1af2fe2ce9c4dd340a5963f019124a14158f3b50eed3d7dc44764e0e3c72f",
+    "normalization": "analytic unit variance under independent standard Gaussian inputs",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "r0.priors.linear-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "active_features": 4,
+        "class_offsets": [],
+        "classes": 0,
+        "context_rows": 48,
+        "features": 8,
+        "noise_ratio": 0.2,
+        "rows": 64,
+        "separation": 1.0,
+        "signal_features": 8,
+        "split": 0,
+        "task_type": "regression",
+        "version": "linear-v1"
+      },
+      "seed": 27,
+      "task_id": 2
+    },
+    "residual_std": 0.1644178838628858,
+    "rows": 64,
+    "scale": [
+      1.0
+    ],
+    "signal_std": [
+      0.8685401255104669
+    ],
+    "source_task_id": "11b1322860e39f71f5a586b6f78acc8898d932f4858d43eef9bca28a3379f69f"
+  },
+  "changed_target_fraction": 1.0,
+  "control": {
+    "after": 2,
+    "before": 4,
+    "field": "active_features"
+  },
+  "independent_source_draws": 1,
+  "intervention": "sparsity",
+  "observed_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "mechanism": false,
+    "query_indices": true,
+    "scores": false,
+    "seed": true,
+    "task_id": true
+  },
+  "pair_id": "f97c561d22f91c6ea13d27303f21e5ac40a0e616069317340e4698f4129a24be",
+  "required_equalities": {
+    "classes": true,
+    "common_inputs": true,
+    "context_indices": true,
+    "execution": true,
+    "nested_active_features": true,
+    "query_indices": true,
+    "seed": true,
+    "task_id": true
+  },
+  "seed": 27,
+  "task_id": 2,
+  "variance_control": "analytic_unit_variance",
+  "variant_count": 2,
+  "version": "controlled-pair-v1"
+}
