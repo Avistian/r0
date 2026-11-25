@@ -13,7 +13,8 @@ Base angular frequencies are uniform on [0.25, 4] divided by `length_scale`;
 successive components on a feature use integer harmonics, preserving its period.
 Phases are uniform on [-pi, pi], and output coefficients are Gaussian with standard
 deviation `1 / sqrt(terms)`. All draws have explicitly keyed streams. Supported
-term counts are 1–4096 for RFF and 1–64 for periodic mixtures.
+term counts are 1–4096 for RFF and 1–64 for periodic mixtures. Periodic mixtures
+require at least one component per declared active feature.
 
 For a row x and output c, the raw function is
 `sum_j coefficients[j,c] * cos(dot(x, frequencies[j]) + phases[j])`.

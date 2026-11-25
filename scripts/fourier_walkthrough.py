@@ -25,7 +25,7 @@ def main() -> None:
                 rows=rows,
                 features=features,
                 signal_features=features,
-                active_features=features,
+                active_features=min(features, terms) if family == "periodic" else features,
                 context_rows=rows // 2,
             ),
             family=family,

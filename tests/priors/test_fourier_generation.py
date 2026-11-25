@@ -64,3 +64,19 @@ def test_classification_uses_shared_adapter_and_retains_weak_tasks(classes: int)
 def test_invalid_length_scale_fails_before_sampling(length_scale: float) -> None:
     with pytest.raises(ValueError, match="length_scale"):
         FourierRecipe(length_scale=length_scale)
+
+
+def test_periodic_components_cover_declared_active_features_and_share_a_period() -> None:
+    with pytest.raises(ValueError, match="active feature"):
+        FourierRecipe(family="periodic", terms=2)
+    task = generate_fourier(FourierRecipe(family="periodic", terms=12), seed=7, task_id=0)
+    card = json.loads(task.mechanism_json)
+    used = {j for row in card["frequencies"] for j, value in enumerate(row) if value != 0}
+    assert used == set(card["active"])
+    for feature in used:
+        frequencies = [row[feature] for row in card["frequencies"] if row[feature] != 0]
+        period = 2 * math.pi / min(frequencies)
+        for frequency in frequencies:
+            assert math.cos(frequency * (0.37 + period)) == pytest.approx(
+                math.cos(frequency * 0.37)
+            )

@@ -29,6 +29,8 @@ class FourierRecipe:
             raise ValueError("terms must be 1..4096")
         if self.family == "periodic" and self.terms > 64:
             raise ValueError("periodic mixtures support at most 64 components")
+        if self.family == "periodic" and self.terms < self.task.active_features:
+            raise ValueError("periodic mixtures need at least one component per active feature")
         if type(self.length_scale) not in (int, float) or not (
             math.isfinite(self.length_scale) and self.length_scale > 0
         ):
