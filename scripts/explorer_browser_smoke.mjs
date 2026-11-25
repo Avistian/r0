@@ -13,7 +13,9 @@ const idle = net.createConnection({host: address.hostname, port: Number(address.
 await new Promise(resolve => idle.once("connect", resolve));
 await new Promise(resolve => setTimeout(resolve, 100));
 try {
-  assert.equal((await fetch(url, {signal: AbortSignal.timeout(1500)})).status, 200);
+  const response = await fetch(url, {signal: AbortSignal.timeout(1500)});
+  assert.equal(response.status, 200);
+  await response.arrayBuffer();
 } finally {
   idle.end();
 }
