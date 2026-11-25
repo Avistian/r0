@@ -6,11 +6,18 @@ import math
 import os
 import time
 import zipfile
-from collections.abc import Callable, Iterator
+from collections.abc import Callable
+from contextlib import closing
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from r0.modules.generation.lib.groups import save_group, verify_group, write_record
+from r0.modules.generation.lib.groups import (
+    EmptyGroupError,
+    GroupLimitError,
+    save_group,
+    verify_group,
+    write_record,
+)
 from r0.modules.generation.lib.parallel import parallel_tasks
 from r0.modules.priors import LinearRecipe, TrainingTask, generate_linear
 
@@ -185,49 +192,51 @@ def _run(
                 errors: dict[str, str] = {}
                 yielded: list[int] = []
 
-                def tasks(
-                    ids: list[int] = pending,
+                def observe(
+                    task_id: int,
+                    outcome: TrainingTask | Exception,
                     failures: dict[str, str] = errors,
                     emitted: list[int] = yielded,
                     failure_log: Path = group / f"failures-{attempt}.jsonl",
-                ) -> Iterator[tuple[int, TrainingTask]]:
-                    nonlocal attempted, status
-                    for task_id, outcome in parallel_tasks(
-                        ids, factory, workers=workers, deadline=deadline
-                    ):
-                        attempted += 1
-                        try:
-                            if isinstance(outcome, Exception):
-                                raise outcome
-                            task = outcome
-                            record = json.loads(task.recipe_json)
-                            if (
-                                record["recipe"] != config["recipe"]
-                                or record["seed"] != request.seed
-                                or record["task_id"] != task_id
-                                or task.inputs.device.type != request.device
-                            ):
-                                raise ValueError("producer returned a different task or recipe")
-                        except (ValueError, RuntimeError) as error:
-                            failures[str(task_id)] = _record_failure(failure_log, task_id, error)
-                            if persist is not None:
-                                persist()
-                            continue
-                        emitted.append(task_id)
-                        yield task_id, task
+                ) -> TrainingTask | None:
+                    nonlocal attempted
+                    attempted += 1
+                    try:
+                        if isinstance(outcome, Exception):
+                            raise outcome
+                        task = outcome
+                        record = json.loads(task.recipe_json)
+                        if (
+                            record["recipe"] != config["recipe"]
+                            or record["seed"] != request.seed
+                            or record["task_id"] != task_id
+                            or task.inputs.device.type != request.device
+                        ):
+                            raise ValueError("producer returned a different task or recipe")
+                    except (ValueError, RuntimeError) as error:
+                        failures[str(task_id)] = _record_failure(failure_log, task_id, error)
+                        if persist is not None:
+                            persist()
+                        return None
+                    emitted.append(task_id)
+                    return task
 
                 archive = group / f"data-{attempt}.zip"
                 saved: tuple[int, ...] = ()
                 try:
-                    receipt = save_group(archive, tasks(), max_bytes=remaining - reserve)
-                    saved = receipt.task_ids
-                except ValueError as error:
-                    if "byte limit" in str(error):
-                        status = "STORAGE_LIMIT"
-                    elif not yielded:
-                        pass
-                    else:
-                        raise
+                    with closing(
+                        parallel_tasks(
+                            pending, factory, workers=workers, deadline=deadline, observe=observe
+                        )
+                    ) as tasks:
+                        receipt = save_group(archive, tasks, max_bytes=remaining - reserve)
+                        saved = receipt.task_ids
+                except GroupLimitError:
+                    status = "STORAGE_LIMIT"
+                except EmptyGroupError:
+                    pass
+                if status == "COMPLETE" and time.monotonic() > deadline:
+                    status = "TIME_LIMIT"
                 write_record(
                     group / f"attempt-{attempt}.json",
                     {
@@ -246,8 +255,8 @@ def _run(
         completed_count += len(completed)
         failed_count += len(failed)
     pending_count = request.count - completed_count - failed_count
-    if status == "COMPLETE" and failed_count:
-        status = "FAILED_TASKS"
     if time.monotonic() > deadline and status == "COMPLETE":
         status = "TIME_LIMIT"
+    if status == "COMPLETE" and failed_count:
+        status = "FAILED_TASKS"
     return RunSummary(attempted, completed_count, failed_count, pending_count, status)

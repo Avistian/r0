@@ -16,6 +16,14 @@ import torch
 from r0.modules.priors import TrainingTask
 
 
+class GroupLimitError(ValueError):
+    """The archive cannot fit within its declared byte limit."""
+
+
+class EmptyGroupError(ValueError):
+    """No successful tasks were supplied for an archive."""
+
+
 @dataclass(frozen=True, slots=True)
 class GroupReceipt:
     sha256: str
@@ -125,12 +133,12 @@ def save_group(
                     # Conservative ZIP/ZIP64 local and directory header reservation.
                     next_central = central_bytes + 128 + len(name)
                     if handle.tell() + 128 + len(name) + len(data) + next_central > max_bytes:
-                        raise ValueError("group archive byte limit exceeded")
+                        raise GroupLimitError("group archive byte limit exceeded")
                     archive.writestr(name, data)
                     central_bytes = next_central
                 ids.append(task_id)
             if not ids:
-                raise ValueError("cannot complete an empty group")
+                raise EmptyGroupError("cannot complete an empty group")
         handle.flush()
         os.fsync(handle.fileno())
     with zipfile.ZipFile(path) as archive:

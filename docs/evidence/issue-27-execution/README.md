@@ -39,3 +39,13 @@ These tests failed on missing worker/guarded interfaces before implementation.
 
 Colab/Modal entrypoints and their guarded launch wiring follow in the next slice.
 Neither target environment has been executed or accepted by this local evidence.
+
+## Review repairs
+
+Independent review rejected `baa7e91`: storage exhaustion lost an admitted worker's
+failure; a provider `ValueError` could be mistaken for an empty archive; a deadline
+could be hidden by a failed-task status. All three cases were reproduced with
+failing public-interface regressions before repair. The writer now explicitly
+closes/drains its bounded worker stream, recording already-started outcomes. Typed
+archive-limit/empty exceptions preserve provider failures, and deadline exhaustion
+takes precedence over a completed interval containing failed tasks.
