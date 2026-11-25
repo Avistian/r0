@@ -1,6 +1,7 @@
 """Addressable Gaussian linear tasks with independently keyed random streams."""
 
 import math
+import platform
 from dataclasses import asdict, dataclass
 
 import numpy as np
@@ -142,7 +143,22 @@ def generate_linear(
         source_id,
         record_fingerprint((source_id, recipe.split, recipe.context_rows)),
         recipe.task_type,
-        encode({"recipe": config, "seed": seed, "task_id": task_id}),
+        encode(
+            {
+                "recipe": config,
+                "seed": seed,
+                "task_id": task_id,
+                "execution": {
+                    "implementation": "r0.priors.linear-v1",
+                    "device": device,
+                    "python": platform.python_version(),
+                    "numpy": np.__version__,
+                    "torch": str(torch.__version__),
+                    "cuda": torch.version.cuda,
+                    "gpu": torch.cuda.get_device_name() if device == "cuda" else None,
+                },
+            }
+        ),
         encode(mechanism),
         inputs,
         targets,

@@ -1,6 +1,7 @@
 """Retained independent arithmetic and size evidence for the first #27 slice."""
 
 import argparse
+import hashlib
 import json
 import math
 import platform
@@ -77,6 +78,17 @@ def main() -> None:
                 else "see numerical device tests",
                 "peak_memory": "NOT_MEASURED",
                 "hosted_execution": "NOT_RUN",
+                "source_sha256": {
+                    name: hashlib.sha256(
+                        (Path(__file__).resolve().parents[1] / name).read_bytes()
+                    ).hexdigest()
+                    for name in (
+                        "src/r0/modules/priors/lib/linear.py",
+                        "src/r0/modules/priors/lib/training_task.py",
+                        "src/r0/modules/priors/lib/representatives.py",
+                        "scripts/linear_walkthrough.py",
+                    )
+                },
             },
             indent=2,
             allow_nan=False,

@@ -4,6 +4,15 @@
   "torch": "2.15.0+cpu",
   "cpu_threads": 1,
   "recipe": {
+    "execution": {
+      "cuda": null,
+      "device": "cpu",
+      "gpu": null,
+      "implementation": "r0.priors.linear-v1",
+      "numpy": "2.5.5",
+      "python": "3.12.3",
+      "torch": "2.15.0+cpu"
+    },
     "recipe": {
       "active_features": 2,
       "class_offsets": [],
@@ -61,32 +70,38 @@
       "rows": 128,
       "features": 8,
       "seconds": [
-        0.00028621999081224203,
-        0.0003224099928047508,
-        0.0002522300055716187
+        0.0003856599796563387,
+        0.00040028998046182096,
+        0.0003278000222053379
       ]
     },
     {
       "rows": 2048,
       "features": 64,
       "seconds": [
-        0.004071650007972494,
-        0.0026628800260368735,
-        0.0035187900066375732
+        0.0025122899969574064,
+        0.0027937800041399896,
+        0.002815009996993467
       ]
     },
     {
       "rows": 20000,
       "features": 256,
       "seconds": [
-        0.11572902000625618,
-        0.1753792699892074,
-        0.15246934999595396
+        0.1457273399864789,
+        0.15422967998893,
+        0.14819067998905666
       ]
     }
   ],
   "timing_scope": "generation including canonical CPU sampling and device transfer; excludes episode conversion/export",
   "gpu_agreement": "NOT_RUN",
   "peak_memory": "NOT_MEASURED",
-  "hosted_execution": "NOT_RUN"
+  "hosted_execution": "NOT_RUN",
+  "source_sha256": {
+    "src/r0/modules/priors/lib/linear.py": "cbe95e4b4978484d30270081c6e4b17bd4e25e17fddcbbfee86b09f919ef8cab",
+    "src/r0/modules/priors/lib/training_task.py": "0c3ab0c67ada2c557d61cf3ee9820b19c4c790d2920be6bac2c428e6fed9f03d",
+    "src/r0/modules/priors/lib/representatives.py": "3bf12298117208a9ac937b880f5d61178aee75f9c7778530615eb600eb459faa",
+    "scripts/linear_walkthrough.py": "ca4da65ae3766696f6b22dcabf15c77ee41394a7267baa51750b4a170c0b1e78"
+  }
 }

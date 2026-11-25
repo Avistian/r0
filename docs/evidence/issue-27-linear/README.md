@@ -29,7 +29,8 @@ python3 scripts/run_check.py pytest tests/priors/test_linear_generation.py
 python3 scripts/run_check.py python scripts/linear_walkthrough.py --out /tmp/linear-cpu.json
 ```
 
-On a compatible CUDA environment, repeat the test and walkthrough with `--device cuda`.
+On a compatible CUDA environment, rerun pytest unchanged; its device test covers
+both devices. Add `--device cuda` only to the walkthrough command.
 The device test requires identical sampled inputs and score agreement within
 `rtol=1e-10, atol=1e-12` in float64. CPU/GPU agreement is NOT_RUN in the retained
 CPU-only environment; a skipped test is not GPU evidence.
