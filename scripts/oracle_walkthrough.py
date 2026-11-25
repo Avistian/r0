@@ -25,7 +25,7 @@ def main() -> None:
         report = write_oracle_report(
             path,
             args.out / f"{path.stem}.json",
-            ROOT / "docs/evidence/issue-22/cards" / f"{path.stem}.json",
+            ROOT / "tests/fixtures/oracles" / f"{path.stem}.json",
         )
         assert report["verification"]["status"] == "PASS"
         config = parse_oracle_config(path.read_text())

@@ -29,4 +29,4 @@ reproduce claimed calculations/checks in the declared environment. Compare what 
 checks with the claim; a printed PASS or another reviewer's independent calculation is not
 itself a reproduction recipe. Keep unsupported portions explicitly unverified. Hand calculations
 remain valid evidence when their inputs and derivation are retained; executable-check claims
-also need the executed procedure. See the [worked review example](docs/evidence/issue-25-retro/README.md).
+also need the executed procedure. See the [worked review example](https://github.com/Avistian/r0/blob/0e4801bde17896383862d0d695ae81334ebb7aee/docs/evidence/issue-25-retro/README.md).

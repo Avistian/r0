@@ -1,6 +1,0 @@
-python3 scripts/run_check.py r0 eval --suite dev --checkpoint /tmp/r0-smoke/last.pt --out /tmp/r0-eval  # [T12]
-usage: r0 [--quiet] [-h] [--version] [--hello] [--config CONFIG] [--out OUT]
-          [--expected EXPECTED]
-          [{replay,oracle,diagnose-priors}]
-r0: error: argument command: invalid choice: 'eval' (choose from 'replay', 'oracle', 'diagnose-priors')
-make: *** [Makefile:23: eval-smoke] Error 2

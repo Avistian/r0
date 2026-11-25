@@ -14,7 +14,7 @@ def main() -> None:
     parser.add_argument("--cgroup-root", type=Path, default=Path("/sys/fs/cgroup"))
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=False)
-    fixtures = Path(__file__).resolve().parents[1] / "docs/evidence/issue-26/fixtures"
+    fixtures = Path(__file__).resolve().parents[1] / "tests/fixtures/comparison"
     rows: list[dict[str, object]] = []
     for task in ("binary", "multiclass", "regression"):
         prepared = args.out / f"{task}-prepared"
