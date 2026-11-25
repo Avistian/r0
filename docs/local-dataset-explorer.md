@@ -25,7 +25,11 @@ are explicit choices; unavailable CUDA fails without CPU fallback. The output
 folder retains the run request, attempts, measurements, archive and receipt.
 The UI reports the archive's path and task identifier so it can be reopened later.
 Opening a saved task never invokes generation. Failed generation leaves the
-previous displayed task intact and retains failure records in the output folder.
+previous displayed task intact. A parent-process request record is saved before
+launch, and a separate result record preserves timeout, unavailable-device and
+worker failures even when the child never initializes. These UI audit records
+live under `OUTPUT/.attempts/`, outside the runner's output-storage limit; each
+attempt keeps its own records. A started record without a result is incomplete.
 
 **Replay recipe** accepts the full exported `recipe.json`; **Next task** increments
 the task identifier. Exact seeds, task identifiers and split identities support

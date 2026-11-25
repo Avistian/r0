@@ -2,6 +2,8 @@
 
 import base64
 import json
+import os
+import uuid
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any, cast
@@ -24,6 +26,15 @@ from r0.modules.priors import (
     recipe_from_dict,
     record_fingerprint,
 )
+
+
+def _retain_attempt(path: Path, record: dict[str, Any]) -> None:
+    pending = path.with_suffix(".pending")
+    with pending.open("x") as stream:
+        json.dump(record, stream, allow_nan=False, sort_keys=True)
+        stream.flush()
+        os.fsync(stream.fileno())
+    pending.rename(path)
 
 
 def _identity_numbers(value: Any, *, for_browser: bool) -> Any:
@@ -127,10 +138,27 @@ class ExplorerSession:
                 device=device,
             )
             out = self.output_dir / record_fingerprint(asdict(request))
-            run = run_guarded(request, out)
-            if run.timed_out or run.returncode or run.summary is None:
+            attempts = self.output_dir / ".attempts" / out.name
+            attempts.mkdir(parents=True, exist_ok=True)
+            attempt = uuid.uuid4().hex
+            record = {"attempt": attempt, "request": asdict(request), "output": str(out)}
+            _retain_attempt(attempts / f"{attempt}-started.json", {**record, "status": "STARTED"})
+            try:
+                run = run_guarded(request, out)
+            except (OSError, RuntimeError, ValueError, KeyboardInterrupt) as error:
+                _retain_attempt(
+                    attempts / f"{attempt}-failed.json",
+                    {**record, "status": "FAILED", "error": repr(error)},
+                )
+                raise
+            failed = run.timed_out or bool(run.returncode) or run.summary is None
+            _retain_attempt(
+                attempts / f"{attempt}-result.json",
+                {**record, "status": "FAILED" if failed else "COMPLETE", "result": asdict(run)},
+            )
+            if failed:
                 raise ValueError(
-                    f"Generation failed; records retained in {out}. "
+                    f"Generation failed; attempt records retained in {attempts}. "
                     f"Timed out: {run.timed_out}. {run.stderr[-2000:]} {run.summary}"
                 )
             archives = sorted(out.glob("groups/**/*.zip"))

@@ -61,3 +61,20 @@ def test_browser_identities_keep_all_63_bits(tmp_path: Path) -> None:
     replay = session.request("generate", {"record": result["view"]["recipe"], "max_seconds": 30})
     assert replay["view"]["episode_id"] == expected.episode_id
     assert replay["run"]["summary"]["generated"] == 0
+
+
+def test_startup_timeout_retains_request_and_failure_before_worker_initialization(
+    tmp_path: Path,
+) -> None:
+    session = ExplorerSession(tmp_path)
+    with pytest.raises(ValueError, match="Timed out: True"):
+        session.request("generate", {"recipe": {}, "seed": 27, "task_id": 12, "max_seconds": 0.001})
+    attempts = list(tmp_path.glob(".attempts/*/*.json"))
+    assert len(attempts) == 2
+    records = [json.loads(path.read_text()) for path in attempts]
+    assert {record["status"] for record in records} == {"STARTED", "FAILED"}
+    failure = next(record for record in records if record["status"] == "FAILED")
+    assert failure["request"]["start"] == 12
+    assert failure["request"]["seed"] == 27
+    assert failure["request"]["recipe"]["version"] == "linear-v1"
+    assert failure["result"]["timed_out"] is True

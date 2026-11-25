@@ -48,17 +48,21 @@ function fillControls(recipe) {
   $("difficulty-label").firstChild.textContent = task.task_type === "regression" ? "Noise / signal" : "Class separation";
   $("recipe").value = pretty(recipe);
 }
-function updateRecipe() {
+function updateRecipe(changed) {
   const recipe = parseRecipe(), task = taskControls(recipe);
-  Object.assign(task, {rows: number("rows"), context_rows: number("context"), features: number("features"), active_features: number("active"), task_type: $("task-type").value, classes: number("classes")});
-  task.signal_features = Math.max(task.active_features, Math.min(task.features, task.signal_features));
-  task.noise_ratio = task.task_type === "regression" ? number("difficulty") : 0;
-  task.separation = task.task_type === "regression" ? 1 : number("difficulty");
-  task.class_offsets = [];
-  if (recipe.components) for (const component of recipe.components) {
-    Object.assign(taskControls(component.recipe), {features: task.features, signal_features: task.signal_features, active_features: task.active_features, task_type: task.task_type, classes: task.classes, noise_ratio: 0, separation: 1, class_offsets: []});
+  const fields = {rows: "rows", context: "context_rows", features: "features", active: "active_features", classes: "classes"};
+  if (fields[changed]) task[fields[changed]] = number(changed);
+  if (changed === "difficulty") task[task.task_type === "regression" ? "noise_ratio" : "separation"] = number("difficulty");
+  if (changed === "features" || changed === "active") task.signal_features = Math.max(task.active_features, Math.min(task.features, task.signal_features));
+  if (changed === "task-type") {
+    Object.assign(task, {task_type: $("task-type").value, classes: number("classes"), noise_ratio: 0, separation: 1, class_offsets: []});
+    if (recipe.components) for (const component of recipe.components) {
+      Object.assign(taskControls(component.recipe), {task_type: task.task_type, classes: task.classes, noise_ratio: 0, separation: 1, class_offsets: []});
+    }
+  } else if (changed === "classes" && recipe.components) {
+    for (const component of recipe.components) taskControls(component.recipe).classes = task.classes;
   }
-  $("recipe").value = pretty(recipe);
+  fillControls(recipe);
 }
 function limits() { return {device: $("device").value, max_seconds: number("seconds"), max_bytes: number("bytes") * 1024 ** 2}; }
 async function generate() {
@@ -191,12 +195,13 @@ async function inspectRow(index) {
 $("generator").onsubmit = event => {event.preventDefault(); act("Generating and saving dataset…", generate);};
 $("next").onclick = () => act("Generating next task…", async () => {$("task-id").value = String(BigInt($("task-id").value) + 1n); await generate();});
 $("family").onchange = () => fillControls(examples[$("family").value]);
-for (const id of ["rows", "context", "features", "active", "classes", "difficulty"]) $(id).onchange = () => act("Updating recipe…", async () => updateRecipe());
+for (const id of ["rows", "context", "features", "active", "classes", "difficulty"]) $(id).onchange = () => act("Updating recipe…", async () => updateRecipe(id));
+$("recipe").onchange = () => act("Updating controls…", async () => fillControls(parseRecipe()));
 $("task-type").onchange = () => {
   const kind = $("task-type").value; $("classes").value = kind === "regression" ? 0 : kind === "binary" ? 2 : 3;
   $("difficulty").value = kind === "regression" ? 0 : 1;
   $("difficulty-label").firstChild.textContent = kind === "regression" ? "Noise / signal" : "Class separation";
-  act("Updating recipe…", async () => updateRecipe());
+  act("Updating recipe…", async () => updateRecipe("task-type"));
 };
 $("feature").onchange = charts; $("channel").onchange = charts;
 $("inspect-row").onclick = () => inspectRow(number("row-index"));
