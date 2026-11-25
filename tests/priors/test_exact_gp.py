@@ -150,3 +150,33 @@ def test_weight_normalization_cannot_silently_remove_a_kernel() -> None:
     )
     with pytest.raises(ValueError, match="weight.*underflow"):
         generate_task(recipe, seed=27, task_id=0)
+
+
+@pytest.mark.parametrize("kind", ["rbf", "matern12", "matern32", "matern52"])
+def test_finite_scaled_distances_survive_raw_coordinate_overflow(kind: str) -> None:
+    recipe = GaussianProcessRecipe(
+        task=LinearRecipe(rows=16, context_rows=8, active_features=8),
+        calibration_rows=32,
+        inputs=InputDistribution(distribution="uniform", scale=8e307),
+        kernels=(StationaryKernel(kind=kind, length_scale=1e308),),
+    )
+    task = generate_task(recipe, seed=27, task_id=0)
+    card = json.loads(task.mechanism_json)
+    x = np.asarray(card["support"], dtype=np.float64) / 1e308
+    distance = np.linalg.norm(x[:, None, :] - x[None, :, :], axis=2)
+    if kind == "rbf":
+        covariance = np.exp(-(distance**2) / 2)
+    else:
+        t = distance * math.sqrt({"matern12": 1, "matern32": 3, "matern52": 5}[kind])
+        covariance = np.exp(-t)
+        if kind == "matern32":
+            covariance *= 1 + t
+        if kind == "matern52":
+            covariance *= 1 + t + t * t / 3
+    values, vectors = np.linalg.eigh(covariance)
+    raw = ((vectors * np.sqrt(values)) @ vectors.T) @ np.asarray(card["standard_normal"])
+    calibration = raw[np.asarray(card["calibration_support_indices"], dtype=np.int64)]
+    expected = (
+        raw[np.asarray(card["task_support_indices"], dtype=np.int64)] - calibration.mean(axis=0)
+    ) / calibration.std(axis=0)
+    np.testing.assert_allclose(task.scores.numpy(), expected, rtol=1e-10, atol=1e-10)

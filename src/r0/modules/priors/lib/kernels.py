@@ -54,9 +54,15 @@ def kernel_covariance(
         distance = np.zeros_like(covariance)
         with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
             for axis, length in zip(axes, lengths, strict=True):
-                distance = np.hypot(
-                    distance, (support[:, axis, None] - support[None, :, axis]) / length
-                )
+                difference = support[:, axis, None] - support[None, :, axis]
+                normalized = difference / length
+                overflow = np.isinf(difference)
+                if overflow.any():
+                    # Opposite-sign coordinates can overflow before a large divisor.
+                    scaled = support[:, axis] / length
+                    fallback = scaled[:, None] - scaled[None, :]
+                    normalized[overflow] = fallback[overflow]
+                distance = np.hypot(distance, normalized)
             if kernel.kind == "rbf":
                 values = np.exp(-0.5 * distance**2)
             else:
