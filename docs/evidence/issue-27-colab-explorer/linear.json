@@ -1,0 +1,80 @@
+{
+  "scope": "local notebook generation cells, not hosted Colab/UI/Drive proof",
+  "pinned_source": "8794ad9581eafa3fa17ef77d279613058512acdc",
+  "family": "Linear",
+  "first": {
+    "returncode": 0,
+    "timed_out": false,
+    "elapsed_seconds": 1.1351986119989306,
+    "summary": {
+      "attempted": 8,
+      "completed": 8,
+      "cuda": null,
+      "device": "cpu",
+      "failed": 0,
+      "generated": 8,
+      "generated_per_second": 116.5819642401501,
+      "generation_seconds": 0.06862124902545474,
+      "gpu_peak_allocated_bytes": null,
+      "hardware": "aarch64",
+      "numpy": "2.5.5",
+      "peak_rss_bytes": 251842560,
+      "pending": 0,
+      "python": "3.12.3",
+      "status": "COMPLETE",
+      "torch": "2.15.0+cpu"
+    },
+    "stdout": "{\"attempted\": 8, \"completed\": 8, \"cuda\": null, \"device\": \"cpu\", \"failed\": 0, \"generated\": 8, \"generated_per_second\": 116.5819642401501, \"generation_seconds\": 0.06862124902545474, \"gpu_peak_allocated_bytes\": null, \"hardware\": \"aarch64\", \"numpy\": \"2.5.5\", \"peak_rss_bytes\": 251842560, \"pending\": 0, \"python\": \"3.12.3\", \"status\": \"COMPLETE\", \"torch\": \"2.15.0+cpu\"}\n",
+    "stderr": ""
+  },
+  "resume": {
+    "returncode": 0,
+    "timed_out": false,
+    "elapsed_seconds": 0.9621838540188037,
+    "summary": {
+      "attempted": 0,
+      "completed": 8,
+      "cuda": null,
+      "device": "cpu",
+      "failed": 0,
+      "generated": 0,
+      "generated_per_second": 0.0,
+      "generation_seconds": 0.002049410017207265,
+      "gpu_peak_allocated_bytes": null,
+      "hardware": "aarch64",
+      "numpy": "2.5.5",
+      "peak_rss_bytes": 239955968,
+      "pending": 0,
+      "python": "3.12.3",
+      "status": "COMPLETE",
+      "torch": "2.15.0+cpu"
+    },
+    "stdout": "{\"attempted\": 0, \"completed\": 8, \"cuda\": null, \"device\": \"cpu\", \"failed\": 0, \"generated\": 0, \"generated_per_second\": 0.0, \"generation_seconds\": 0.002049410017207265, \"gpu_peak_allocated_bytes\": null, \"hardware\": \"aarch64\", \"numpy\": \"2.5.5\", \"peak_rss_bytes\": 239955968, \"pending\": 0, \"python\": \"3.12.3\", \"status\": \"COMPLETE\", \"torch\": \"2.15.0+cpu\"}\n",
+    "stderr": ""
+  },
+  "groups": [
+    {
+      "sha256": "47b12fa644963c9310fa87287a56f71a7e409a37703ebd5ebe032e35bb01c8a9",
+      "size_bytes": 54100,
+      "task_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "version": "task-group-v1"
+    },
+    {
+      "sha256": "50b7c115b233b902b745a97ecd471856a1616f85895a03e5c31360e15e3f1446",
+      "size_bytes": 54101,
+      "task_ids": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "version": "task-group-v1"
+    }
+  ],
+  "larger_run": "NOT_RUN"
+}
