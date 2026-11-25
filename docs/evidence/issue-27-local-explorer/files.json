@@ -1,0 +1,47 @@
+{
+  "source_commit": "e849b5414114c8fcf4b3df96ba0be8932f91b41b",
+  "raw_evidence": "/tmp/r0-explorer-browser-e849b54-evidence",
+  "generation_outputs": "/tmp/r0-explorer-browser-e849b54",
+  "files": {
+    "classification.png": {
+      "bytes": 237233,
+      "sha256": "baf9c23efd3d02a34eb4cc41341cdd8402954e4d6ff758ed829c2c6325187e3b"
+    },
+    "composition.png": {
+      "bytes": 220065,
+      "sha256": "2aeaef2d508dee3db571cb8bd3b725e3cb61a2e916835cf23c8c10c82f999bff"
+    },
+    "dataset-da17ab941ec61aad74544b17c7be356663b3c2f7ce2130b29f94f09e78d3d9df.zip": {
+      "bytes": 23987,
+      "sha256": "7915b839763254a3633214e3f9517d582d533de25de2f36b95b97dbad1f9a9b7"
+    },
+    "empty.png": {
+      "bytes": 80163,
+      "sha256": "ee483ce3dc5d5367bd87a6f584c3f2d87d2663672ce539f648b1c613e7c03955"
+    },
+    "feature-hist.png": {
+      "bytes": 22669,
+      "sha256": "315386272359f57d2b26316096834ee0569e48415bccbe7cb2b39a4f03922712"
+    },
+    "feature-hist.svg": {
+      "bytes": 3990,
+      "sha256": "84d39a90fac9099944da2b17a2dd70fff1fcfb2dc5a9d325ab714e1bfb127247"
+    },
+    "large-linear.png": {
+      "bytes": 256568,
+      "sha256": "8c3df561c0a195ed97c1bd44ff7d4b1dcb3cb1d65c7126c646bee919d9fb3c63"
+    },
+    "mobile.png": {
+      "bytes": 199605,
+      "sha256": "ea6004a078fdafefe7266dc9f67c6366a586c93d9565ad9b03c8e8ba44913ea3"
+    },
+    "receipt.json": {
+      "bytes": 8864,
+      "sha256": "6039bcb35327cea07ba176dbcb9af70ddc5412b4bf91b5560385e15a20d56916"
+    },
+    "regression.png": {
+      "bytes": 220358,
+      "sha256": "6bf8f7a243ac8b892fb64f1e3dc075c6c177940d045ee1aa0a812b815e001525"
+    }
+  }
+}
