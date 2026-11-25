@@ -123,10 +123,7 @@ def composite_scores(card: dict[str, Any], inputs: torch.Tensor) -> torch.Tensor
         part = inputs[start : start + 256]
         leaves: list[torch.Tensor] = []
         for component in card["components"]:
-            child = torch.zeros(
-                (len(part), component["feature_count"]), dtype=inputs.dtype, device=inputs.device
-            )
-            child[:, component["mechanism"]["active"]] = part[:, component["input_columns"]]
+            child = component_inputs(component, part)
             leaves.append(
                 multiply_signals(
                     evaluate_mechanism(component["mechanism"], child), component["strength"]
@@ -144,12 +141,24 @@ def _evaluate_expression(expression: Any, leaves: list[torch.Tensor]) -> torch.T
     if type(expression) is int:
         return leaves[expression]
     values = [_evaluate_expression(child, leaves) for child in expression["children"]]
+    return combine_signals(values, expression["operation"], expression["strength"])
+
+
+def component_inputs(component: dict[str, Any], inputs: torch.Tensor) -> torch.Tensor:
+    """Map parent columns onto a child's active columns, zeroing unused inputs."""
+    child = torch.zeros(
+        (len(inputs), component["feature_count"]), dtype=inputs.dtype, device=inputs.device
+    )
+    child[:, component["mechanism"]["active"]] = inputs[:, component["input_columns"]]
+    return child
+
+
+def combine_signals(values: list[torch.Tensor], operation: str, strength: float) -> torch.Tensor:
+    """Reduce validated child values in recorded order with the shared product guard."""
     result = values[0]
     for value in values[1:]:
-        result = (
-            result + value if expression["operation"] == "sum" else multiply_signals(result, value)
-        )
-    return multiply_signals(result, expression["strength"])
+        result = result + value if operation == "sum" else multiply_signals(result, value)
+    return multiply_signals(result, strength)
 
 
 def multiply_signals(left: torch.Tensor, right: torch.Tensor | float) -> torch.Tensor:

@@ -9,7 +9,12 @@ import torch
 from r0.modules.priors.lib.exact_gp import GaussianProcessRecipe
 from r0.modules.priors.lib.generate import recipe_from_dict
 from r0.modules.priors.lib.kernels import kernel_covariance
-from r0.modules.priors.lib.signals import evaluate_mechanism, multiply_signals
+from r0.modules.priors.lib.signals import (
+    combine_signals,
+    component_inputs,
+    evaluate_mechanism,
+    multiply_signals,
+)
 
 
 def _normalize(
@@ -165,8 +170,7 @@ def composite_steps(
 ) -> torch.Tensor:
     leaves: list[torch.Tensor] = []
     for i, child in enumerate(card["components"]):
-        mapped = torch.zeros((len(x), child["feature_count"]), dtype=torch.float64)
-        mapped[:, child["mechanism"]["active"]] = x[:, child["input_columns"]]
+        mapped = component_inputs(child, x)
         value = multiply_signals(evaluate_mechanism(child["mechanism"], mapped), child["strength"])
         leaves.append(value)
         add(
@@ -191,12 +195,9 @@ def composite_steps(
         key = f"expression-{counter}"
         counter += 1
         children = [expression(child) for child in node["children"]]
-        result = children[0][1]
-        for _, value in children[1:]:
-            result = (
-                result + value if node["operation"] == "sum" else multiply_signals(result, value)
-            )
-        result = multiply_signals(result, node["strength"])
+        result = combine_signals(
+            [value for _, value in children], node["operation"], node["strength"]
+        )
         add(
             key,
             node["operation"].capitalize(),
@@ -250,8 +251,8 @@ def gp_steps(
                 "rational_quadratic": "(1+r²/(2*alpha))**(-alpha)",
                 "spectral": "exp(-r²/2) * product_d cos(2*pi*frequency_d*delta_d)",
                 "gibbs": (
-                    "A(x)*A(x') * product_d sqrt(2*l_d(x)*l_d(x')/(l_d(x)²+l_d(x')²)) "
-                    "* exp(-delta_d²/(l_d(x)²+l_d(x')²))"
+                    "A(x)*A(x') * product_d [sqrt(2*l_d(x)*l_d(x')/(l_d(x)²+l_d(x')²)) "
+                    "* exp(-delta_d²/(l_d(x)²+l_d(x')²))]"
                 ),
             }[kernel.kind],
             torch.tensor(values),

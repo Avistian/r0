@@ -9,6 +9,7 @@ import torch
 
 from r0.modules.priors.lib.graph_functions import analytic_steps, composite_steps, gp_steps
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.signals import component_inputs, multiply_signals
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -79,8 +80,7 @@ def explain_generation(
         if type(component) is not int or not 0 <= component < len(components):
             raise ValueError("component must identify a saved composition child")
         child = components[component]
-        mapped = torch.zeros((len(inputs), child["feature_count"]), dtype=torch.float64)
-        mapped[:, child["mechanism"]["active"]] = inputs[:, child["input_columns"]]
+        mapped = component_inputs(child, inputs)
         add(
             "inputs",
             "Mapped component inputs",
@@ -100,7 +100,7 @@ def explain_generation(
             "Component strength",
             ["signal"],
             "strength * normalized child signal",
-            signal * child["strength"],
+            multiply_signals(signal, child["strength"]),
             {"strength": child["strength"]},
         )
         return {
