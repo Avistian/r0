@@ -8,11 +8,11 @@ import math
 import os
 import re
 import subprocess
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 
 from r0.modules.generation import load_request
-from r0.modules.priors import LinearRecipe
+from r0.modules.priors import FourierRecipe
 
 
 def positive_limit(name: str) -> float:
@@ -76,16 +76,33 @@ def main() -> None:
     if source != os.environ["GITHUB_SHA"] or not re.fullmatch(r"[a-f0-9]{40}", source):
         raise ValueError("checkout differs from dispatched immutable source")
     subprocess.run(["git", "diff", "--exit-code", "HEAD", "--", "src", "scripts"], check=True)
+    controls = request.recipe.task if isinstance(request.recipe, FourierRecipe) else request.recipe
+    agreement_recipes = []
+    for task_type, classes in (("regression", 0), ("binary", 2), ("multiclass", 3)):
+        diagnostic = replace(
+            controls,
+            rows=64,
+            context_rows=48,
+            task_type=task_type,
+            classes=classes,
+            separation=1.0,
+            class_offsets=(),
+            noise_ratio=0.0,
+        )
+        agreement_recipes.append(
+            asdict(
+                replace(request.recipe, task=diagnostic)
+                if isinstance(request.recipe, FourierRecipe)
+                else diagnostic
+            )
+        )
     plan = {
         "source": source,
         "run": args.run,
         "workflow_run_id": os.environ["GITHUB_RUN_ID"],
         "created_at": dt.datetime.now(dt.UTC).isoformat(),
         "request": asdict(request),
-        "agreement_recipes": [
-            asdict(LinearRecipe(task_type=task_type, classes=classes))
-            for task_type, classes in (("regression", 0), ("binary", 2), ("multiclass", 3))
-        ],
+        "agreement_recipes": agreement_recipes,
         "config_sha256": hashlib.sha256(args.config.read_bytes()).hexdigest(),
         "workers": args.workers,
         "retry_failed": args.retry_failed,

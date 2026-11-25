@@ -50,7 +50,7 @@ def main() -> int:
         from pathlib import Path
 
         from r0.modules.generation import RunRequest, run_guarded
-        from r0.modules.priors import LinearRecipe
+        from r0.modules.priors import recipe_from_dict
 
         root = Path("/outputs")
         receipt_dir = root / "receipts"
@@ -67,21 +67,19 @@ def main() -> int:
         volume.commit()
         config = dict(request_plan["request"])
         recipe = config.pop("recipe")
-        recipe["class_offsets"] = tuple(recipe["class_offsets"])
-        request = RunRequest(LinearRecipe(**recipe), **config)
+        request = RunRequest(recipe_from_dict(recipe), **config)
         out = root / "runs" / request_plan["run"]
         try:
             agreement = "NOT_RUN"
             if request.device == "cuda" and phase == "generate":
                 import torch
 
-                from r0.modules.priors import generate_linear
+                from r0.modules.priors import generate_task
 
                 for diagnostic in request_plan["agreement_recipes"]:
-                    diagnostic["class_offsets"] = tuple(diagnostic["class_offsets"])
-                    recipe = LinearRecipe(**diagnostic)
-                    cpu = generate_linear(recipe, seed=request.seed, task_id=request.start)
-                    gpu = generate_linear(
+                    recipe = recipe_from_dict(diagnostic)
+                    cpu = generate_task(recipe, seed=request.seed, task_id=request.start)
+                    gpu = generate_task(
                         recipe, seed=request.seed, task_id=request.start, device="cuda"
                     )
                     assert cpu.source_task_id == gpu.source_task_id

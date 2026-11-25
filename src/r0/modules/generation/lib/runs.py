@@ -19,12 +19,12 @@ from r0.modules.generation.lib.groups import (
     write_record,
 )
 from r0.modules.generation.lib.parallel import parallel_tasks
-from r0.modules.priors import LinearRecipe, TrainingTask, generate_linear
+from r0.modules.priors import Recipe, TrainingTask, generate_task
 
 
 @dataclass(frozen=True, slots=True)
 class RunRequest:
-    recipe: LinearRecipe
+    recipe: Recipe
     seed: int
     count: int
     max_seconds: float
@@ -151,7 +151,7 @@ def _run(
     persist: Callable[[], None] | None,
 ) -> RunSummary:
     def generate(task_id: int) -> TrainingTask:
-        return generate_linear(
+        return generate_task(
             request.recipe, seed=request.seed, task_id=task_id, device=request.device
         )
 
