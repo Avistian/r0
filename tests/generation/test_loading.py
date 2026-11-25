@@ -1,5 +1,6 @@
 """Saved tasks remain usable by the shared training/inspection contract."""
 
+import weakref
 from pathlib import Path
 
 import pytest
@@ -40,3 +41,18 @@ def test_saved_group_reconstructs_tasks_and_episodes_without_generation(tmp_path
         handle.write(b"modified")
     with pytest.raises(ValueError, match="checksum mismatch"):
         next(load_group(archive))
+
+
+def test_loader_does_not_retain_the_task_after_consumer_releases_it(tmp_path: Path) -> None:
+    archive = tmp_path / "group.zip"
+    save_group(
+        archive,
+        ((i, generate_task(LinearRecipe(), seed=27, task_id=i)) for i in range(2)),
+        max_bytes=1024**2,
+    )
+    stream = load_group(archive)
+    first = next(stream)
+    inputs = weakref.ref(first.inputs)
+    del first
+    assert inputs() is None
+    assert next(stream).source_task_id

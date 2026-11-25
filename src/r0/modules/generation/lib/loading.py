@@ -33,36 +33,40 @@ def load_group(path: Path) -> Iterator[TrainingTask]:
     receipt = verify_group(path)
     with zipfile.ZipFile(path) as archive:
         for task_id in receipt.task_ids:
-            metadata = _document(archive, f"{task_id}/predictor.json")
-            card = _document(archive, f"{task_id}/card.json")
-            predictor = _tensors(archive, f"{task_id}/predictor.npz")
-            truth = _tensors(archive, f"{task_id}/truth.npz")
-            context = torch.tensor(metadata["context_rows"], dtype=torch.long)
-            query = torch.tensor(metadata["query_rows"], dtype=torch.long)
-            rows = len(context) + len(query)
-            if not torch.equal(torch.sort(torch.cat((context, query))).values, torch.arange(rows)):
-                raise ValueError("saved context/query indices must partition all rows")
-            if card["recipe"]["task_id"] != task_id:
-                raise ValueError("saved task identity disagrees with its receipt")
-            inputs = torch.empty((rows, len(metadata["feature_names"])), dtype=torch.float64)
-            targets = torch.empty(rows, dtype=predictor["context_y"].dtype)
-            inputs[context], inputs[query] = predictor["context_x"], predictor["query_x"]
-            targets[context], targets[query] = predictor["context_y"], truth["query_y"]
-            yield TrainingTask(
-                source_task_id=card["source_task_id"],
-                episode_id=card["episode_id"],
-                task_type=metadata["task_type"],
-                recipe_json=json.dumps(
-                    card["recipe"], sort_keys=True, separators=(",", ":"), allow_nan=False
-                ),
-                mechanism_json=json.dumps(
-                    card["mechanism"], sort_keys=True, separators=(",", ":"), allow_nan=False
-                ),
-                inputs=inputs,
-                targets=targets,
-                scores=truth["scores"],
-                probabilities=truth.get("probabilities"),
-                context_indices=context,
-                query_indices=query,
-                classes=tuple(metadata["classes"]),
-            )
+            yield _load_task(archive, task_id)
+
+
+def _load_task(archive: zipfile.ZipFile, task_id: int) -> TrainingTask:
+    metadata = _document(archive, f"{task_id}/predictor.json")
+    card = _document(archive, f"{task_id}/card.json")
+    predictor = _tensors(archive, f"{task_id}/predictor.npz")
+    truth = _tensors(archive, f"{task_id}/truth.npz")
+    context = torch.tensor(metadata["context_rows"], dtype=torch.long)
+    query = torch.tensor(metadata["query_rows"], dtype=torch.long)
+    rows = len(context) + len(query)
+    if not torch.equal(torch.sort(torch.cat((context, query))).values, torch.arange(rows)):
+        raise ValueError("saved context/query indices must partition all rows")
+    if card["recipe"]["task_id"] != task_id:
+        raise ValueError("saved task identity disagrees with its receipt")
+    inputs = torch.empty((rows, len(metadata["feature_names"])), dtype=torch.float64)
+    targets = torch.empty(rows, dtype=predictor["context_y"].dtype)
+    inputs[context], inputs[query] = predictor["context_x"], predictor["query_x"]
+    targets[context], targets[query] = predictor["context_y"], truth["query_y"]
+    return TrainingTask(
+        source_task_id=card["source_task_id"],
+        episode_id=card["episode_id"],
+        task_type=metadata["task_type"],
+        recipe_json=json.dumps(
+            card["recipe"], sort_keys=True, separators=(",", ":"), allow_nan=False
+        ),
+        mechanism_json=json.dumps(
+            card["mechanism"], sort_keys=True, separators=(",", ":"), allow_nan=False
+        ),
+        inputs=inputs,
+        targets=targets,
+        scores=truth["scores"],
+        probabilities=truth.get("probabilities"),
+        context_indices=context,
+        query_indices=query,
+        classes=tuple(metadata["classes"]),
+    )
