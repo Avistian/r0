@@ -4,6 +4,12 @@ name: agent-train
 on:
   workflow_dispatch:
     inputs:
+      mode:
+        type: choice
+        default: train
+        options: [train, generation]
+      workers: { type: number, default: 2 }
+      retry_failed: { type: boolean, default: false }
       config: { required: true, type: string }
       run:    { required: true, type: string }
   issues:
@@ -16,11 +22,15 @@ concurrency:
 jobs:
   factory:
     permissions:
+      actions: read
       contents: read
       issues: write
       pull-requests: write
-    uses: Avistian/ml-factory/.github/workflows/agent-train.yml@462fbd57fca0e3a1b9e18c4eeb453bebe0f1bc2e
+    uses: Avistian/ml-factory/.github/workflows/agent-train.yml@94ccc691b6c09228767f59b86e96e06290ccb6ff
     with:
+      mode: ${{ inputs.mode || 'train' }}
+      workers: ${{ inputs.workers || 2 }}
+      retry_failed: ${{ inputs.retry_failed || false }}
       config: ${{ inputs.config }}
       run: ${{ inputs.run }}
     secrets:
