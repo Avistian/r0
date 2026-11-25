@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import assert from "node:assert/strict";
 import net from "node:net";
+import {openBrowser} from "./explorer_browser.mjs";
 
 const [port = "9224", url = "http://127.0.0.1:8767/", directory = "/tmp/r0-explorer-browser"] = process.argv.slice(2);
 await fs.mkdir(directory, {recursive: true});
@@ -16,67 +17,7 @@ try {
 } finally {
   idle.end();
 }
-const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
-const socket = new WebSocket(targets.find(target => target.type === "page").webSocketDebuggerUrl);
-await new Promise(resolve => socket.addEventListener("open", resolve, {once: true}));
-const pending = new Map(), exceptions = [], downloads = [];
-let counter = 0;
-socket.addEventListener("message", event => {
-  const message = JSON.parse(event.data);
-  if (message.method === "Runtime.exceptionThrown") exceptions.push(message.params);
-  if (message.method === "Browser.downloadWillBegin") downloads.push({...message.params,state:"started"});
-  if (message.method === "Browser.downloadProgress") {
-    const download = downloads.find(item => item.guid === message.params.guid);
-    if (download) download.state = message.params.state;
-  }
-  if (message.id) {
-    const {resolve, reject} = pending.get(message.id);
-    pending.delete(message.id);
-    message.error ? reject(new Error(JSON.stringify(message.error))) : resolve(message.result);
-  }
-});
-function send(method, params = {}) {
-  return new Promise((resolve, reject) => {
-    const id = ++counter;
-    pending.set(id, {resolve, reject});
-    socket.send(JSON.stringify({id, method, params}));
-  });
-}
-async function evaluate(expression) {
-  const result = await send("Runtime.evaluate", {expression, awaitPromise: true, returnByValue: true});
-  if (result.exceptionDetails) throw new Error(JSON.stringify(result.exceptionDetails));
-  return result.result.value;
-}
-async function waitFor(expression, timeout = 60000) {
-  const start = Date.now();
-  while (!await evaluate(expression)) {
-    if (Date.now() - start > timeout) throw new Error(`Timed out: ${expression}`);
-    await new Promise(resolve => setTimeout(resolve, 100));
-  }
-}
-async function downloaded(name, count = 1) {
-  const start = Date.now();
-  while (downloads.filter(item => item.suggestedFilename === name && item.state === "completed").length < count) {
-    if (Date.now() - start > 30000) throw new Error(`Download did not complete: ${name}`);
-    await new Promise(resolve => setTimeout(resolve, 100));
-  }
-}
-async function screenshot(name) {
-  const result = await send("Page.captureScreenshot", {captureBeyondViewport: true});
-  await fs.writeFile(path.join(directory, name), Buffer.from(result.data, "base64"));
-}
-async function click(id) {
-  await evaluate(`document.getElementById(${JSON.stringify(id)}).click()`);
-  await waitFor("!busy");
-  const error = await evaluate("document.getElementById('status').className === 'error' ? document.getElementById('status').textContent : null");
-  if (error) throw new Error(error);
-}
-await send("Page.enable");
-await send("Runtime.enable");
-await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false});
-await send("Browser.setDownloadBehavior", {behavior: "allow", eventsEnabled: true, downloadPath: path.resolve(directory)});
-await send("Page.navigate", {url});
-await waitFor("document.getElementById('family')?.options.length === 10");
+const {send, evaluate, waitFor, downloaded, screenshot, click, exceptions, downloads, close} = await openBrowser(port, url, directory);
 assert.equal(await evaluate("Boolean(document.getElementById('curve'))"), true, "response-curve controls must exist");
 assert.equal(await evaluate("Boolean(document.getElementById('graph'))"), true, "generation graph controls must exist");
 await screenshot("empty.png");
@@ -121,10 +62,10 @@ for (const family of families) {
   familyRuns.push({family, ...await evaluate("({identity: current.view.source_task_id, run: current.run.summary})")});
   await evaluate("document.getElementById('feature').value = current.view.features.find(f => f.role === 'active').index; document.getElementById('feature').dispatchEvent(new Event('change'))");
   if (family === "Exact Gaussian process") {
-    await evaluate("document.getElementById('curve').click()"); await waitFor("!busy");
-    assert.match(await evaluate("document.getElementById('status').textContent"), /conditional/);
-    assert.equal(await evaluate("document.querySelectorAll('#response-plot polyline').length"), 0);
-    curveRuns.push({family, result: "explicit conditional-inspection requirement"});
+    await click("curve");
+    assert.equal(await evaluate("curve.kind"), "gp_conditional_curve");
+    assert.equal(await evaluate("document.querySelectorAll('[data-kind=conditional-mean]').length"), 1);
+    curveRuns.push({family, result: "explicit conditional mean with uncertainty"});
   } else {
     await click("curve");
     assert.equal(await evaluate("document.querySelector('#response-plot polyline').points.numberOfItems"), 129);
@@ -245,6 +186,6 @@ await click("graph");
 await screenshot("mobile.png");
 assert.equal(await evaluate("document.documentElement.scrollWidth > innerWidth"), false);
 assert.deepEqual(exceptions, []);
-await fs.writeFile(path.join(directory, "receipt.json"), JSON.stringify({url, browser: await send("Browser.getVersion"), node: process.version, initial, familyRuns, curveRuns, graphRuns, largeGraph, largeIdentity, largeTask, files, downloads, checks: ["generation graph all ten families", "component expansion", "graph node keyboard selection", "graph SVG/PNG download", "graph numerical label bounds", "analytic curves for nine families", "GP explicitly rejects analytic curve", "curve anchor and point controls", "irrelevant feature constant curve", "curve SVG/PNG exports", "generate all ten starting recipes", "row selection", "replay zero-new-generation", "open saved task", "ZIP/SVG/PNG downloads", "classification counts", "advanced recipe preservation", "whole-axis and subset composition controls", "63-bit identity replay", "20000 rows and 256 features", "full vs sampled rows", "failed generation preserves view", "mobile no horizontal overflow"], exceptions}, null, 2));
-socket.close();
+await fs.writeFile(path.join(directory, "receipt.json"), JSON.stringify({url, browser: await send("Browser.getVersion"), node: process.version, initial, familyRuns, curveRuns, graphRuns, largeGraph, largeIdentity, largeTask, files, downloads, checks: ["generation graph all ten families", "component expansion", "graph node keyboard selection", "graph SVG/PNG download", "graph numerical label bounds", "analytic curves for nine families", "GP conditional mean and uncertainty", "curve anchor and point controls", "irrelevant feature constant curve", "curve SVG/PNG exports", "generate all ten starting recipes", "row selection", "replay zero-new-generation", "open saved task", "ZIP/SVG/PNG downloads", "classification counts", "advanced recipe preservation", "whole-axis and subset composition controls", "63-bit identity replay", "20000 rows and 256 features", "full vs sampled rows", "failed generation preserves view", "mobile no horizontal overflow"], exceptions}, null, 2));
+close();
 console.log(`Browser checks passed; evidence in ${directory}`);

@@ -90,3 +90,25 @@ def test_startup_timeout_retains_request_and_failure_before_worker_initializatio
     assert failure["request"]["seed"] == 27
     assert failure["request"]["recipe"]["version"] == "linear-v1"
     assert failure["result"]["timed_out"] is True
+
+
+def test_gp_curve_session_preserves_draw_seed_and_guards_active_dataset(tmp_path: Path) -> None:
+    session = ExplorerSession(tmp_path)
+    recipe = session.request("examples", {})["examples"]["Exact Gaussian process"]
+    recipe["task"].update(rows=16, context_rows=8)
+    recipe["calibration_rows"] = 32
+    recipe["kernels"] = [{"kind": "matern12"}]
+    view = session.request("generate", {"recipe": recipe, "seed": 27, "task_id": 12})["view"]
+    parameters = {
+        "feature": 0,
+        "points": 5,
+        "draws": 2,
+        "seed": str(2**63 - 1),
+        "expected_episode_id": view["episode_id"],
+    }
+    result = session.request("gp_curve", parameters)["curve"]
+    assert result["sampling"]["seed"] == str(2**63 - 1)
+    assert result["kind"] == "gp_conditional_curve"
+    assert result == session.request("gp_curve", parameters)["curve"]
+    with pytest.raises(ValueError, match="active dataset changed"):
+        session.request("gp_curve", {**parameters, "expected_episode_id": "stale"})
