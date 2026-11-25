@@ -46,7 +46,7 @@ are retained; nonfinite or numerically unresolved functions fail visibly.
 | Input location/scale | Configurable for the four-distribution families | One-off family walkthroughs cover all four; broad-profile selected and completed histograms must be distinguished |
 | Function complexity | Degrees, factors, terms, component counts, depth, kernel geometry | One-off maximum cases and profile-settings histograms exist. They do not validate all maxima simultaneously |
 | Composed functions | Common inputs, mapped component axes, sum/product expression and separate parent calibration | Standalone family results are separate from the five composition walkthrough cases and sampled compositions |
-| Device | Explicit CPU or CUDA; no silent fallback | Guarded Modal run 45697210266 passed 93 CPU/CUDA cases covering all ten families; fixed Gaussian representatives, not whole-profile qualification |
+| Device | Explicit CPU or CUDA; no silent fallback | Guarded Modal run 45697210266 passed 93 comparisons: 90 fixed Gaussian representatives across ten families plus three sampled polynomial diagnostics; not whole-profile qualification |
 
 The [fixed CPU matrix](generator-resource-results.md), measured at
 `3dd2d3b42ee9d3012e6dafa1d0c3a78764efc364`, passed 270 tasks across 90 cases.
