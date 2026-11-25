@@ -8,6 +8,7 @@ import torch
 
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.signals import evaluate_mechanism
 from r0.modules.priors.lib.task_output import complete_task
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -97,20 +98,6 @@ def generate_fourier(
         raise ValueError("nonfinite or degenerate calibration; task was not retried")
     x = np.column_stack([rng("input", j).normal(size=task.rows) for j in range(task.features)])
     inputs = torch.tensor(x, dtype=torch.float64, device=device)
-    frequency_tensor = torch.tensor(frequencies, dtype=torch.float64, device=device)
-    phase_tensor = torch.tensor(phases, dtype=torch.float64, device=device)
-    coefficient_tensor = torch.tensor(coefficients, dtype=torch.float64, device=device)
-    scores = torch.cat(
-        [
-            torch.cos(
-                inputs[start : start + 256, : task.signal_features] @ frequency_tensor.T
-                + phase_tensor
-            )
-            @ coefficient_tensor
-            for start in range(0, task.rows, 256)
-        ]
-    )
-    scores = (scores - torch.tensor(center, device=device)) / torch.tensor(scale, device=device)
     mechanism = {
         "family": recipe.family,
         "version": recipe.version,
@@ -124,6 +111,7 @@ def generate_fourier(
         "calibration_rows": recipe.calibration_rows,
         "input": "independent standard normal",
     }
+    scores = evaluate_mechanism(mechanism, inputs)
     return complete_task(
         task, asdict(recipe), mechanism, inputs, scores, seed=seed, task_id=task_id, rng=rng
     )

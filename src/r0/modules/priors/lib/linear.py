@@ -9,6 +9,7 @@ import torch
 
 from r0.modules.episodes import TaskType
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.signals import evaluate_mechanism
 from r0.modules.priors.lib.targets import adapt_targets
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -109,8 +110,7 @@ def generate_linear(
         "expected_signal_variance": 1.0,
     }
     inputs = torch.tensor(x, dtype=torch.float64, device=device)
-    coefficients = torch.tensor(weights, dtype=torch.float64, device=device)
-    scores = inputs[:, : recipe.signal_features] @ coefficients
+    scores = evaluate_mechanism(mechanism, inputs)
     targets, probabilities, classes = adapt_targets(
         recipe, scores, noise_rng=rng("noise"), label_rng=rng("labels")
     )
