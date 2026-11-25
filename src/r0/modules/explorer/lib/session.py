@@ -67,6 +67,30 @@ def recipe_examples() -> dict[str, Any]:
     return {name: asdict(recipe) for name, recipe in recipes.items()}
 
 
+def sampling_profiles() -> dict[str, dict[str, str]]:
+    """Display names and sampler families shared by the browser and notebook."""
+    return {
+        "broad-v1": {
+            "Linear": "linear",
+            "Grouped linear": "grouped",
+            "Polynomial": "polynomial",
+            "Quadratic": "quadratic",
+            "Random Fourier features": "rff",
+            "Periodic": "periodic",
+            "Smooth radial": "radial",
+            "Smooth sinusoidal": "sinusoidal",
+            "Exact Gaussian process": "gp",
+            "Composition": "composition",
+        },
+        "tabiclv2-adapted-v1": {
+            "Integer power": "power",
+            "Quadratic": "quadratic",
+            "Random Fourier features": "rff",
+            "Product": "product",
+        },
+    }
+
+
 class ExplorerSession:
     """Shared actions for local browser and embedded notebook transports."""
 
@@ -111,7 +135,11 @@ class ExplorerSession:
 
     def request(self, action: str, data: dict[str, Any]) -> dict[str, Any]:
         if action == "examples":
-            return {"examples": recipe_examples(), "output_dir": str(self.output_dir)}
+            return {
+                "examples": recipe_examples(),
+                "profiles": sampling_profiles(),
+                "output_dir": str(self.output_dir),
+            }
         if action == "view":
             return self._view()
         if action == "open_pair":

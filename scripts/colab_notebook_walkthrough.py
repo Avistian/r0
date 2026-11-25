@@ -15,6 +15,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--family", default="Linear")
+    parser.add_argument("--profile", default="broad-v1")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     assert Path(r0.__file__).resolve().is_relative_to(root / "src")
@@ -37,6 +38,8 @@ def main() -> None:
     namespace = {"ROOT": args.out, "REVISION": revision}
     assert cells[4].count('FAMILY = "Linear"') == 1
     generation = cells[4].replace('FAMILY = "Linear"', f"FAMILY = {args.family!r}")
+    assert generation.count('PROFILE = "broad-v1"') == 1
+    generation = generation.replace('PROFILE = "broad-v1"', f"PROFILE = {args.profile!r}")
     exec(compile(generation, "<generation-cell>", "exec"), namespace)
     first = asdict(namespace["smoke"])
     assert first["summary"]["generated"] == 8
@@ -55,6 +58,7 @@ def main() -> None:
         "scope": "local notebook generation cells, not hosted Colab/UI/Drive proof",
         "pinned_source": revision,
         "family": args.family,
+        "profile": args.profile,
         "first": first,
         "resume": resumed,
         "groups": receipts,

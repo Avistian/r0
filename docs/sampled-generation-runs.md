@@ -90,8 +90,8 @@ replayed = session.request("generate", {"record_json": result["recipe_json"]})
 Replay restores the original controls and validates that they select the recorded
 recipe. A conflicting recipe or sampling override is rejected. A replay in another
 output directory generates the same data; a replay in the same directory resumes
-the verified archive. This slice supplies the backend; visible profile selectors
-in the explorer and notebook are a separate change.
+the verified archive. The local and embedded Colab explorer expose these choices
+under **Mechanism settings**. The notebook smoke cell exposes `PROFILE` and `FAMILY`.
 
 ## Reproduce the integration walkthrough
 

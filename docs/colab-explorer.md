@@ -9,6 +9,13 @@ matched rows, explicit variance policy and complete pair downloads. Its CPU/CUDA
 selector is independent of the bulk-run cell. Comparisons reuse the base dataset's
 original generation device.
 
+The notebook smoke cell has explicit `PROFILE` and `FAMILY` choices. `broad-v1`
+samples settings for ten families; `tabiclv2-adapted-v1` offers four named adaptations;
+`fixed` uses an editable concrete recipe. The embedded explorer exposes the same
+three modes independently. Concrete settings and their sampling provenance survive
+saved groups, next-task generation, replay and exports. Eight smoke tasks provide
+only a rough throughput estimate for a sampled profile, not bulk eligibility.
+
 ```python
 from pathlib import Path
 from google.colab import output

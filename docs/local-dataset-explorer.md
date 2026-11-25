@@ -10,7 +10,19 @@ Open the printed `http://127.0.0.1:8765/` address. For a deliberately reused
 verification environment, prefix the command with `python3 scripts/run_check.py`
 and set `UV_PROJECT_ENVIRONMENT` as described in the repository README.
 
-Select a mechanism, edit rows/features/task type, and click **Generate dataset**.
+Select a settings mode and mechanism, edit rows/features/task type, and click
+**Generate dataset**. **Sample broad settings** chooses versioned settings for
+each task identity across ten families. **Sample TabICLv2 adaptations** offers
+power, quadratic, Fourier and product recipes; it does not reproduce the complete
+TabICLv2 prior. **Edit fixed settings** keeps your concrete settings across tasks.
+See [sampling profiles](sampling-profiles.md) for exact distributions and exclusions.
+
+In sampling mode, the JSON editor holds task controls; **Settings used for this
+dataset** shows the selected concrete recipe. **Next task** samples fresh settings
+while preserving task controls. Recipe downloads retain both the selected settings
+and sampling provenance, and replay restores them. Broad exploration includes
+expensive or numerically difficult settings; errors stay visible without resampling.
+
 The advanced section exposes the complete versioned recipe, device, time limit
 and output-storage limit. Ten starting recipes cover linear, grouped linear,
 polynomial, quadratic, random Fourier features, periodic, smooth radial,
