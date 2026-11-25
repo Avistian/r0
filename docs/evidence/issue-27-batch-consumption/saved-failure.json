@@ -1,0 +1,55 @@
+{
+  "source": "268a60199c773f3af8ab6304db44ccb44e82dd01",
+  "driver_sha256": "986e54d9ea784a13b58973a8a4b2016a7097c11e0f4bae9515fce443fff99298",
+  "seed": 27,
+  "requested_episodes": 30,
+  "batch_size": 4,
+  "archive": "/tmp/r0-batch-final-failures/oversized.zip",
+  "archive_sha256": "ccc9e2abafe745438339ec21941ac30d2459f1f9cc34d8c864632f2a45858e83",
+  "learning_rate": 0.05,
+  "torch": "2.15.0+cpu",
+  "numpy": "2.5.5",
+  "python": "3.12.3",
+  "device": "cpu",
+  "status": "FAILED",
+  "produced": 3,
+  "consumed": 0,
+  "batches": 0,
+  "max_batch_episodes": 0,
+  "max_batch_rows": 0,
+  "max_batch_distance_cells": 0,
+  "attempt": {
+    "source_task_id": "5e4f806b2572ab535dd3e0ae53b5ee00013c548a387edb531ce5b188dd9ab7f5",
+    "episode_id": "5f0408df6f6ff232317fc2e3e674a13e7515dcbcd1282824e5c600178e28065c",
+    "family": "saved",
+    "recipe": {
+      "execution": {
+        "cpu_threads": 1,
+        "cuda": null,
+        "device": "cpu",
+        "gpu": null,
+        "implementation": "r0.priors.linear-v1",
+        "numpy": "2.5.5",
+        "python": "3.12.3",
+        "torch": "2.15.0+cpu"
+      },
+      "recipe": {
+        "active_features": 4,
+        "class_offsets": [],
+        "classes": 0,
+        "context_rows": 20,
+        "features": 8,
+        "noise_ratio": 0.0,
+        "rows": 256,
+        "separation": 1.0,
+        "signal_features": 8,
+        "split": 0,
+        "task_type": "regression",
+        "version": "linear-v1"
+      },
+      "seed": 92,
+      "task_id": 1
+    }
+  },
+  "error": "ValueError('bounded consumer example accepts at most 128 rows, 256 features and 100 classes')"
+}
