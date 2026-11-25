@@ -1,0 +1,107 @@
+{
+  "source": "ae212c791036906299cd0867970147c5d4450906",
+  "case": {
+    "request": {
+      "recipe": {
+        "task": {
+          "rows": 64,
+          "features": 8,
+          "signal_features": 8,
+          "active_features": 4,
+          "context_rows": 48,
+          "split": 0,
+          "noise_ratio": 0.0,
+          "task_type": "regression",
+          "classes": 0,
+          "separation": 1.0,
+          "class_offsets": [],
+          "version": "linear-v1"
+        },
+        "inputs": {
+          "distribution": "mixture",
+          "location": 0.0,
+          "scale": 1.0,
+          "df": 5.0,
+          "mixture_gap": 2.0,
+          "bound": null,
+          "version": "inputs-v1"
+        },
+        "family": "radial",
+        "projection": "ridge",
+        "terms": 16,
+        "length_scale": 1.0,
+        "width_spread": 3,
+        "calibration_rows": 4096,
+        "version": "smooth-v1"
+      },
+      "seed": 27,
+      "count": 1,
+      "max_seconds": 120,
+      "max_bytes": 268435456,
+      "start": 0,
+      "group_size": 1,
+      "device": "cpu"
+    },
+    "row_index": 2,
+    "scalar_expected": -0.31891059669437133,
+    "scalar_actual": -0.3189105966943716,
+    "receipt": {
+      "sha256": "2e1e3114c457e2d786c321347e737c70ac92d1ce4b737e7d048d9a4e2850454e",
+      "size_bytes": 11290,
+      "task_ids": [
+        0
+      ],
+      "version": "task-group-v1"
+    },
+    "result": {
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 1.1900733899965417,
+      "summary": {
+        "attempted": 1,
+        "completed": 1,
+        "cuda": null,
+        "device": "cpu",
+        "failed": 0,
+        "generated": 1,
+        "generated_per_second": 24.35210612650415,
+        "generation_seconds": 0.0410642100032419,
+        "gpu_peak_allocated_bytes": null,
+        "hardware": "aarch64",
+        "numpy": "2.5.5",
+        "peak_rss_bytes": 252821504,
+        "pending": 0,
+        "python": "3.12.3",
+        "status": "COMPLETE",
+        "torch": "2.15.0+cpu"
+      },
+      "stdout": "{\"attempted\": 1, \"completed\": 1, \"cuda\": null, \"device\": \"cpu\", \"failed\": 0, \"generated\": 1, \"generated_per_second\": 24.35210612650415, \"generation_seconds\": 0.0410642100032419, \"gpu_peak_allocated_bytes\": null, \"hardware\": \"aarch64\", \"numpy\": \"2.5.5\", \"peak_rss_bytes\": 252821504, \"pending\": 0, \"python\": \"3.12.3\", \"status\": \"COMPLETE\", \"torch\": \"2.15.0+cpu\"}\n",
+      "stderr": ""
+    },
+    "resume": {
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 1.2543180100037716,
+      "summary": {
+        "attempted": 0,
+        "completed": 1,
+        "cuda": null,
+        "device": "cpu",
+        "failed": 0,
+        "generated": 0,
+        "generated_per_second": 0.0,
+        "generation_seconds": 0.001540989993372932,
+        "gpu_peak_allocated_bytes": null,
+        "hardware": "aarch64",
+        "numpy": "2.5.5",
+        "peak_rss_bytes": 239185920,
+        "pending": 0,
+        "python": "3.12.3",
+        "status": "COMPLETE",
+        "torch": "2.15.0+cpu"
+      },
+      "stdout": "{\"attempted\": 0, \"completed\": 1, \"cuda\": null, \"device\": \"cpu\", \"failed\": 0, \"generated\": 0, \"generated_per_second\": 0.0, \"generation_seconds\": 0.001540989993372932, \"gpu_peak_allocated_bytes\": null, \"hardware\": \"aarch64\", \"numpy\": \"2.5.5\", \"peak_rss_bytes\": 239185920, \"pending\": 0, \"python\": \"3.12.3\", \"status\": \"COMPLETE\", \"torch\": \"2.15.0+cpu\"}\n",
+      "stderr": ""
+    }
+  }
+}
