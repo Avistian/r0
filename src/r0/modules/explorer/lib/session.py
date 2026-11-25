@@ -169,6 +169,10 @@ class ExplorerSession:
             return self._view()
         if self.task is None:
             raise ValueError("generate or open a dataset first")
+        if data.get("expected_episode_id", self.task.episode_id) != self.task.episode_id:
+            raise ValueError(
+                "The active dataset changed in another view. Reopen or replay this dataset first."
+            )
         if action == "row":
             return {"row": inspect_rows(self.task, [data["index"]])[0]}
         if action == "parameters":

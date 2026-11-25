@@ -12,6 +12,7 @@ const format = value => {
 };
 
 async function request(action, data = {}) {
+  if (current && ["row", "parameters", "export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
   if (window.r0request) return window.r0request(action, data);
   const response = await fetch("/api", {
     method: "POST", headers: {"Content-Type": "application/json", "X-r0-explorer": window.r0token},

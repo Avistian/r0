@@ -45,6 +45,11 @@ def test_session_generates_reopens_inspects_and_exports(tmp_path: Path) -> None:
     assert session.request("view", {})["view"]["source_task_id"] == identity
     with pytest.raises(ValueError, match="inside"):
         session.request("open", {"archive": "../outside.zip", "task_id": 9})
+    session.request(
+        "generate", {"recipe": {"rows": 32, "context_rows": 20}, "seed": 27, "task_id": 10}
+    )
+    with pytest.raises(ValueError, match="active dataset changed"):
+        session.request("export", {"expected_episode_id": result["view"]["episode_id"]})
 
 
 def test_browser_identities_keep_all_63_bits(tmp_path: Path) -> None:
