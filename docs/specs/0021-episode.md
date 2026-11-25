@@ -1,6 +1,6 @@
 # Issue 21 episode contract
 
-Status: implemented locally. Acceptance evidence is in ../evidence/issue-21/. Integration review remains pending.
+Status: implemented locally. Local acceptance artifacts are in the ignored `docs/evidence/issue-21/` directory. Integration review remains pending.
 
 ## Accepted decisions
 
