@@ -54,11 +54,12 @@ It uses fixed Gaussian-input settings and three independent task identities per
 case. Its separate author-run artifact audit verified all saved tasks and summary
 calculations. This does not replace independent mathematical checks.
 
-The [sampled matrix protocol](generator-diversity-qualification.md) declares 270
-broad-profile and 108 adapted-reference draws. Measurement results and completed
-distribution counts are pending; settings selected before generation are not yet
-successful-task evidence. These control strata vary several properties together,
-so they are not controlled difficulty comparisons.
+The [sampled matrix results](generator-diversity-results.md) retain 260 fully verified
+broad-profile tasks, ten timeouts and 108 fully verified adapted-reference tasks.
+Seven timed-out tasks had already saved their output before verification ran out
+of time. The results distinguish selected, recorded-save and fully verified counts.
+These control strata vary several properties together, so they are not controlled
+difficulty comparisons.
 
 After a suite finishes, audit its selections and saved tasks without generating:
 
@@ -131,7 +132,7 @@ A bulk recipe must explicitly select its family, concrete settings or versioned
 profile, task geometry and resource limits. It must cite numerical/resource evidence
 for that selection and its target device. No default production mixture or whole
 profile is certified here; mixture weights and training-stream selection remain #30.
-The present GPU and sampled-profile gaps prevent a final cross-device eligibility
+The present GPU gaps and sampled-profile timeouts prevent a final cross-device eligibility
 claim. The 100-million-task figures in the resource report are extrapolations,
 not observed execution or an estimate for a chosen production mix.
 
@@ -144,7 +145,7 @@ not observed execution or an estimate for a chosen production mix.
 | Local create/save/explore | Actual browser checks, full-task summaries, sampled chart rows, individual-row inspection, graphs, curves, paired views and ZIP/SVG/PNG exports | Final integrated-head verification |
 | Colab notebook and embedded explorer | Pinned install, local execution of generation/estimate cells, tested callback adapter and shared browser UI | Actual hosted install, interaction/download, Drive persistence and runtime restart are NOT_RUN |
 | Modal generation and durable restart | Earlier CPU/T4 smoke with separate-container resume; both generated eight tasks and resumed with zero new generations | Broader family/device coverage and current sampled request path on Modal |
-| Resource and diversity evidence | Fixed 270-task matrix, one-off extremes, profile selection histograms and mathematical walkthroughs | Sampled matrix results, explicit final eligibility and broader GPU checks |
+| Resource and diversity evidence | Fixed 270-task matrix; sampled 270/108-task matrices with retained timeouts and artifact audits; one-off extremes and mathematical walkthroughs | Explicit final eligibility and broader GPU checks |
 | Published-capability comparison | Separate source-linked comparison PR #117 | Integration with the remaining PRs |
 | Local evidence policy | `docs/evidence/` ignored; raw files removed from current Git tree | History was intentionally not rewritten |
 
