@@ -46,3 +46,33 @@ def test_uniform_root_law_is_saved_replayed_and_named_in_the_trace() -> None:
     assert nodes["causal-0"]["values"][0][0] == float(task.inputs[0, 0])
     card = json.loads(task.mechanism_json)
     assert "recorded exogenous" in card["innovation"]
+
+
+def test_correlated_exogenous_channels_keep_their_factor_and_shared_ancestry() -> None:
+    controls = LinearRecipe(
+        rows=32, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(bias=(0.0, 0.0), noise_scale=(1.0, 1.0)),),
+            observed=((0, 0),),
+            target=((0, 1),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][0]["exogenous"] = {"factor": [[1, 2], [0, 0]]}
+    recipe = recipe_from_dict(data)
+    task = generate_task(recipe, seed=28, task_id=0)
+    torch.testing.assert_close(task.scores[:, 0], 2 * task.inputs[:, 0], rtol=0, atol=0)
+    card = json.loads(task.mechanism_json)
+    assert "disconnected_target" not in card["flags"]
+    assert card["nodes"][0]["exogenous"]["factor"] == [[1, 2], [0, 0]]
+    trace = explain_generation(task, [1, 31])
+    assert trace["target_max_error"] == 0
+    assert (
+        generate_task(
+            recipe_from_dict(json.loads(json.dumps(asdict(recipe)))), seed=28, task_id=0
+        ).episode()
+        == task.episode()
+    )
