@@ -8,7 +8,12 @@ from typing import Any
 import numpy as np
 
 from r0.modules.priors.lib.activation_sampling import finite_number
-from r0.modules.priors.lib.weight_vectors import UniformWeightVector, weight_vector_from_dict
+from r0.modules.priors.lib.weight_vectors import (
+    PolynomialWeightVector,
+    UniformWeightVector,
+    WeightVector,
+    weight_vector_from_dict,
+)
 
 type Matrix = tuple[tuple[float, ...], ...]
 
@@ -125,7 +130,7 @@ class FactorizedWeights:
 @dataclass(frozen=True, slots=True)
 class ImportanceWeights:
     gaussian: Matrix = ((1.0,),)
-    importance: tuple[UniformWeightVector, ...] = (UniformWeightVector(),)
+    importance: tuple[WeightVector, ...] = (UniformWeightVector(),)
     epsilon: float = 1e-6
     version: str = "importance-weights-v1"
 
@@ -135,7 +140,8 @@ class ImportanceWeights:
             type(self.importance) is not tuple
             or len(self.importance) != rows
             or any(
-                type(v) is not UniformWeightVector or len(v.draws) != columns
+                type(v) not in (UniformWeightVector, PolynomialWeightVector)
+                or len(v.draws) != columns
                 for v in self.importance
             )
         ):
@@ -163,14 +169,13 @@ class ImportanceWeights:
 
 
 def _importance_row(
-    gaussian: tuple[float, ...], vector: UniformWeightVector, epsilon: float
+    gaussian: tuple[float, ...], vector: WeightVector, epsilon: float
 ) -> tuple[float, ...]:
     weights = vector.values()
     with np.errstate(over="ignore", invalid="ignore", under="ignore"):
         row = np.asarray(gaussian, dtype=np.float64) * weights
     unsafe = not np.isfinite(row).all() or any(
-        g != 0 and w != 0 and abs(v) < np.finfo(np.float64).tiny
-        for g, w, v in zip(gaussian, weights, row, strict=True)
+        g != 0 and abs(v) < np.finfo(np.float64).tiny for g, v in zip(gaussian, row, strict=True)
     )
     if not unsafe:
         scale = max(float(np.abs(row).max()), epsilon)
@@ -178,10 +183,15 @@ def _importance_row(
             return (0.0,) * len(row)
         scaled = row / scale
         return tuple(float(v) for v in scaled / (epsilon / scale + np.linalg.norm(scaled)))
+    weight_logs = (
+        vector.centered_logs(tuple(i for i, g in enumerate(gaussian) if g))
+        if epsilon == 0
+        else vector.log_values()
+    )
     logs = np.asarray(
         [
             math.log(abs(g)) + w if g else -math.inf
-            for g, w in zip(gaussian, vector.log_values(), strict=True)
+            for g, w in zip(gaussian, weight_logs, strict=True)
         ]
     )
     largest = float(logs.max())
