@@ -82,7 +82,7 @@ def run(destination: Path, profile: str = "causal-affine-v1") -> None:
             ),
             "exogenous_laws": dict(
                 Counter(
-                    node["exogenous"]["inputs"]["family"]
+                    node["exogenous"]["inputs"]["distribution"]
                     for r in records
                     for node in r.get("recipe", {}).get("nodes", [])
                     if "exogenous" in node
