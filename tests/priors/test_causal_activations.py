@@ -275,3 +275,50 @@ def test_channel_activations_preserve_tie_rules_and_cross_channel_ancestry(
     trace = explain_generation(task, [0])
     output = next(n for n in trace["nodes"] if n["id"] == "causal-1")
     torch.testing.assert_close(torch.tensor(output["values"][0]), torch.tensor(expected))
+
+
+def test_saturated_activation_is_retained_with_stage_and_channel_diagnostics() -> None:
+    recipe = CausalRecipe(
+        task=LinearRecipe(
+            rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+        ),
+        nodes=(
+            CausalNode(),
+            ActivatedCausalNode(
+                parents=(0,),
+                weights=((1.0,),),
+                bias=(1000.0,),
+                noise_scale=(0.0,),
+                output_activation=CausalActivation("tanh"),
+            ),
+        ),
+        observed=((0, 0),),
+        target=((1, 0),),
+        version="causal-v2",
+        normalize=True,
+    )
+    task = generate_task(recipe, seed=28, task_id=13)
+    assert torch.equal(task.targets, torch.ones(16, dtype=torch.float64))
+    card = json.loads(task.mechanism_json)
+    assert "saturated_activation" in card["flags"]
+    diagnostic = next(
+        d for d in card["activation_diagnostics"] if d["node"] == 1 and d["stage"] == "output"
+    )
+    assert diagnostic["kind"] == "tanh"
+    assert diagnostic["boundary_fraction"] == [1.0]
+    assert diagnostic["rows"] == 16
+    assert card["calibration"]["constant_channels"] == [0]
+
+
+@pytest.mark.parametrize(
+    ("kind", "argument", "message"),
+    [
+        ("log", -1, "strictly positive"),
+        ("exp", 1000, "nonfinite exp"),
+    ],
+)
+def test_activation_domain_and_overflow_failures_are_not_clipped(
+    kind: str, argument: float, message: str
+) -> None:
+    with pytest.raises(ValueError, match=message):
+        test_activation_parameters_change_the_frozen_function(CausalActivation(kind), argument, 0)
