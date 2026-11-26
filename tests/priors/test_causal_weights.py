@@ -243,3 +243,48 @@ def test_polynomial_importance_records_decay_log_noise_and_permutation(
         ).episode()
         == task.episode()
     )
+
+
+def test_factor_coefficients_retain_their_positive_vector_law() -> None:
+    data = asdict(
+        CausalRecipe(
+            task=LinearRecipe(
+                rows=16, context_rows=8, features=2, signal_features=2, active_features=2
+            ),
+            nodes=(
+                CausalNode(bias=(0.0, 0.0), noise_scale=(1.0, 1.0)),
+                CausalNode(
+                    parents=(0,),
+                    weights=((6.0, 7.0), (14.5, 17.0)),
+                    bias=(0.0, 0.0),
+                    noise_scale=(0.0, 0.0),
+                ),
+            ),
+            observed=((0, 0), (0, 1)),
+            target=((1, 0),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][1]["weight_construction"] = {
+        "version": "importance-factorized-weights-v1",
+        "left": ((1.0, 2.0), (3.0, 4.0)),
+        "right": ((5.0, 6.0), (7.0, 8.0)),
+        "diagonal": {"version": "uniform-weight-vector-v1", "draws": (0.5, 0.25)},
+    }
+    recipe = recipe_from_dict(data)
+    task = generate_task(recipe, seed=28, task_id=17)
+    torch.testing.assert_close(
+        task.scores[:, 0], 6 * task.inputs[:, 0] + 14.5 * task.inputs[:, 1], rtol=1e-14, atol=1e-14
+    )
+    trace = {n["id"]: n for n in explain_generation(task, [0])["nodes"]}
+    assert trace["causal-1"]["parameters"]["weight_construction"]["diagonal"]["draws"] == (
+        0.5,
+        0.25,
+    )
+    assert json.loads(task.mechanism_json)["resource_admission"]["parameters"] == 29
+    assert (
+        generate_task(
+            recipe_from_dict(json.loads(json.dumps(asdict(recipe)))), seed=28, task_id=17
+        ).episode()
+        == task.episode()
+    )
