@@ -1,0 +1,12 @@
+[
+  {
+    "kind": "admission",
+    "result": {
+      "estimated_working_bytes": 74112,
+      "largest_node_channels": 4,
+      "nodes": 12,
+      "parameters": 353,
+      "total_channels": 26
+    }
+  }
+]

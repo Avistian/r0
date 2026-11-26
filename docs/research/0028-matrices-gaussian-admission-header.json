@@ -1,0 +1,31 @@
+{
+  "allocation_events": [
+    121,
+    123,
+    125,
+    127,
+    129,
+    131,
+    133,
+    135,
+    137,
+    139,
+    141,
+    143,
+    145,
+    147,
+    149,
+    151
+  ],
+  "expected": {
+    "estimated_working_bytes": 139904,
+    "largest_node_channels": 4,
+    "nodes": 22,
+    "parameters": 693,
+    "total_channels": 54
+  },
+  "matching_admissions": [
+    119,
+    152
+  ]
+}

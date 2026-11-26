@@ -1,0 +1,786 @@
+[
+  {
+    "kind": "choice",
+    "sha256": "2da671ae0a6358d0b98d616819fa61749284495aa48a735e4b931c30317945e7",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "3f710ac088db33363087de2b9a657541fe5447821debaa9fe5cbd538eb1a5f29",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "400c52dd5bd0047d64c0582af027b387a7938a64283d0d4f727331140cb6462c",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "400c52dd5bd0047d64c0582af027b387a7938a64283d0d4f727331140cb6462c",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "3f710ac088db33363087de2b9a657541fe5447821debaa9fe5cbd538eb1a5f29",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "400c52dd5bd0047d64c0582af027b387a7938a64283d0d4f727331140cb6462c",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "400c52dd5bd0047d64c0582af027b387a7938a64283d0d4f727331140cb6462c",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "400c52dd5bd0047d64c0582af027b387a7938a64283d0d4f727331140cb6462c",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "3f710ac088db33363087de2b9a657541fe5447821debaa9fe5cbd538eb1a5f29",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "3f710ac088db33363087de2b9a657541fe5447821debaa9fe5cbd538eb1a5f29",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "3f710ac088db33363087de2b9a657541fe5447821debaa9fe5cbd538eb1a5f29",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "400c52dd5bd0047d64c0582af027b387a7938a64283d0d4f727331140cb6462c",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "3f710ac088db33363087de2b9a657541fe5447821debaa9fe5cbd538eb1a5f29",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "6c3c396ed6b5c36dcae172271f462051b1266b851e92df3deea8ac65478fd712",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "3f710ac088db33363087de2b9a657541fe5447821debaa9fe5cbd538eb1a5f29",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "6c3c396ed6b5c36dcae172271f462051b1266b851e92df3deea8ac65478fd712",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "6c3c396ed6b5c36dcae172271f462051b1266b851e92df3deea8ac65478fd712",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "6c3c396ed6b5c36dcae172271f462051b1266b851e92df3deea8ac65478fd712",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "400c52dd5bd0047d64c0582af027b387a7938a64283d0d4f727331140cb6462c",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "400c52dd5bd0047d64c0582af027b387a7938a64283d0d4f727331140cb6462c",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "6c3c396ed6b5c36dcae172271f462051b1266b851e92df3deea8ac65478fd712",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "6c3c396ed6b5c36dcae172271f462051b1266b851e92df3deea8ac65478fd712",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "3f710ac088db33363087de2b9a657541fe5447821debaa9fe5cbd538eb1a5f29",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shape": [
+      0
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "5c0262b94eb5efa03bb0e57c18aae4f4e8e4c7078cf50d1a17ac2860cefac704",
+    "shape": [
+      1
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "57bf34b7dd699b5c3474003f42fdb3f99213ae6b63dd07de2645629e73d985d0",
+    "shape": [
+      2
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "32d7e29b524a445f91791ef1567330fce28c438a232a0dd7e853714b81778a30",
+    "shape": [
+      3
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "5dc529fadc5b456aae6bf4d571a205bd53727a8a4bd8ffed0e098ace4377d443",
+    "shape": [
+      4
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "7ceb4581d40125a1c8da25eee0056f038f8c69ec98385c6918f92e91dcea564a",
+    "shape": [
+      5
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "1b4acec0ac225fa65fcd0752725bd40daa568fc0b5772f205a65512c357213f3",
+    "shape": [
+      6
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shape": [
+      0
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "8dee6dcae93da4d10fcfb24005c0a2032ad4c0d344577fdaf2b8fc4a8baaf1dd",
+    "shape": [
+      1
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "528ee31186adbb3999b8310acd52a485fdf1eef718dcf64c65856fb0e54fc46e",
+    "shape": [
+      2
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "9fe1abd24f14a0a2e0580a7fdc9035aab14ce5f20d15ed3b23871ff16d3fc3cc",
+    "shape": [
+      3
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "7f4f96a690f02fb7bfb5fb6bf175dfaae7440b04250c84d42aa484fbad0265e1",
+    "shape": [
+      4
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "81898c81cb072089a2e88bc0131ce1de1793198fc56e32ca252d5b0572580e12",
+    "shape": [
+      5
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "268a230e7e4041bd628a219e67948e9194031cc69256f8693df481c24aaafd5c",
+    "shape": [
+      6
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shape": [
+      0
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "59984854ef03b25ab3ea261cde70b0220ce6f6f3ac11961fc56018e6e9f2a9c6",
+    "shape": [
+      1
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "25d62f23ac61cb97163a6b5ff4eba49ed128a6f128d4324e60eee4b48297748b",
+    "shape": [
+      2
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "50c95b31fbed899247c509a060ee151e0ff94b7213e0b354d618f63cd7a092c9",
+    "shape": [
+      3
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "e43104d69a9181f294109cdf0d39bbe5a8ae214df4288b8b1c66a54f8c8c22e1",
+    "shape": [
+      4
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "391316bd0b08ca24336027a8eda5409a3910dffc22cd78708e29dc64adf01369",
+    "shape": [
+      5
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "d1cead1929f7ca1605cbb6da6d9f454311afec1b846f4800263ad2fd0e7cb909",
+    "shape": [
+      6
+    ]
+  },
+  {
+    "kind": "random",
+    "sha256": "22f0eae18fb19713bc595bbf19cf2646184e27430e90b1a2ab9b79b36cd0b574",
+    "shape": [
+      7
+    ]
+  },
+  {
+    "kind": "admission",
+    "result": {
+      "estimated_working_bytes": 79744,
+      "largest_node_channels": 4,
+      "nodes": 22,
+      "parameters": 255,
+      "total_channels": 54
+    }
+  },
+  {
+    "kind": "normal",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shape": [
+      0,
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "1cc44e9812588e0dc0d37b2f988d38d4f9c23fc9b33dfbe44755cf0a6a5bf2dc",
+    "shape": [
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "8f9e34ff222cccfff117f1f5773436c680300aa16a04c101f5d3cade51705ae0",
+    "shape": [
+      2,
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "41e568cff16a9c15c732cd0373935aecaeab3b7ea49a869066158588899788e5",
+    "shape": [
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shape": [
+      0,
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "4d1ee50525f058386c138538b7e8f5c377959f350d0c5ccc24f1d50a1b362d69",
+    "shape": [
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shape": [
+      0,
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "c2e2e728d805bde9bb2801bac50bc11161eff8180c4e3d873018fd0c6d6db489",
+    "shape": [
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "098078b721ca3101fdb2e4021a16ecf406172ec2b4444f5d9d67e5273fbfeb48",
+    "shape": [
+      4,
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "d97c991f268167bcecd7afa2d9805a268887e32e5646fee5476d1c935b1816ab",
+    "shape": [
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "69f398885a8a631f3c975fc0e44a3048db35b1ad10798bf3bab21eb64b489576",
+    "shape": [
+      10,
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "fe82ba9c31bdc04977a84a30b577dbe34d6c6e31b0645abea22ed1922aac2150",
+    "shape": [
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "cb90399eace960a9ac774590469460fff74dc91b19bc56aec6a1df2e14205826",
+    "shape": [
+      2,
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "c250be86213cf16fd7a36776097e6299ca26205463cd80b06e4c72eba903f903",
+    "shape": [
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shape": [
+      0,
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "647998e6be6fefdfe1fd9516bfbec2a91927738217b981adecc4075145c54ee2",
+    "shape": [
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "fc2ef5c377ca13a240840f52deaf2186d820caf9854148bdceeabf722d2d3744",
+    "shape": [
+      2,
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "a563a6f23b62f3cb26004e50def114e34868a827cf304929060882c19b0a4b45",
+    "shape": [
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "9e78ddbe3539f105b4529e230dca17a56deaeeb8f18eaa758dd1c21f2971ad2f",
+    "shape": [
+      2,
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "69aeafb4b0ee461de5d85781705e08e81972c97448ed3fda366263b7768dd8fe",
+    "shape": [
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "09cb40f92867dfd3baae9d0ea7bc9f16beb9a0262cef6787fdfb3dc04ff25f4d",
+    "shape": [
+      2,
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "88759770a588917616531e19ac96fd9eae67b69bacbc3fc19a4213b8a334f76d",
+    "shape": [
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "f98c2b847fdc6a6351ce5755e175a118f4ce5ec4eddd8c6f6c457479723b0bb6",
+    "shape": [
+      4,
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "fb9b47dcb0741706628e47b769cc75e19fa19885e3ff11bc4dcca083cbd99e81",
+    "shape": [
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "d5709422e05f7d35c46473e338aa9a353343fcc3389aebd5986dc5038ec9bf7f",
+    "shape": [
+      6,
+      1
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "6fefd5c4cc361b702bf1004c87e596831fb4a10b4442fdb28c1fdad601ff1b95",
+    "shape": [
+      1
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "f4d6c4ff754c4d47df2e7aeb3957f8354a93890ac4659386c3afafe2944f682b",
+    "shape": [
+      5,
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "7d2c6cf5109491f229c67fed78ac7ee490e53cb5e58168236937b3782a13ebc1",
+    "shape": [
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shape": [
+      0,
+      1
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "1fe2182f1aab3189e3520cb972a267614d31d8a91fbe6e1fcb369463628dfb70",
+    "shape": [
+      1
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shape": [
+      0,
+      1
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "e9df24ec4659208cb8051074eb5e0a6379c28060d36ef7e8ec6ce45a9d14e263",
+    "shape": [
+      1
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "3c5ca0d959471263d384851198cd0a2621c2a93691e3ba153bdbcf4d70543967",
+    "shape": [
+      1,
+      1
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "a55ee3317bb216b1535bf1385a55f2984d80b8435eee8893eb8d46f5290fe9aa",
+    "shape": [
+      1
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "540736c3a42a49b24d16df4c5a7a462344ad8fa1320b22595daa355303387188",
+    "shape": [
+      2,
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "ec079a97e94170939692ed36e6614c81592b3a9ada17e413a24ff4f6e646a82b",
+    "shape": [
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "51578155c8a5ef719597fdc9ef4d604b1e3212a6261695d97f30950012f9e08e",
+    "shape": [
+      5,
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "cb19676ab95bb9bc211ebd85b548dbba83d966464700fb5b66c6cf8f3c50b238",
+    "shape": [
+      4
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "357fe71ad3bdcebabf1bf79bee1edc4a639dc0c530e542b10a9c998d11e5a430",
+    "shape": [
+      1,
+      1
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "51daf4339e1f2e1b2ade147abc68ad7d270b8487e39804c7b19812d32b38771a",
+    "shape": [
+      1
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "62dba57b8cefeb184e3af05f8191ce8684a2ed226106dc33324d274d756c22af",
+    "shape": [
+      1,
+      1
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "bd53eb514dada6d8a217aef6447d80b62cf7a0181192c8e7f5b1e536ad25491a",
+    "shape": [
+      1
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "9ba88d6e3d8087ca01d062c17b0c243e20d17be19108b48a3efae386462f5ac2",
+    "shape": [
+      2,
+      2
+    ]
+  },
+  {
+    "kind": "normal",
+    "sha256": "13542f97cbcd957ee81ed3a4712e0cdacd31907d2c771bf7dd95d522b15bd527",
+    "shape": [
+      2
+    ]
+  },
+  {
+    "kind": "permutation",
+    "sha256": "f7e6d8e408e43aaac5d457c5cfbefb45c24b4714665b7acee1d233adf78c6cc8",
+    "shape": [
+      54
+    ]
+  },
+  {
+    "kind": "admission",
+    "result": {
+      "estimated_working_bytes": 79744,
+      "largest_node_channels": 4,
+      "nodes": 22,
+      "parameters": 255,
+      "total_channels": 54
+    }
+  },
+  {
+    "kind": "choice",
+    "sha256": null,
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": null,
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "6c3c396ed6b5c36dcae172271f462051b1266b851e92df3deea8ac65478fd712",
+    "shape": []
+  },
+  {
+    "kind": "choice",
+    "sha256": "edf70214d121bd8d6093c4e07f821f6b0d978c44e51d95d30d514eb27d3ee1e0",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "adbae999d8f1a2cff0d3bb03392812b67439aba41157a54d7e215b857f7c7ca7",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "9788f5cd2a53734c9ecc92de930204d569a23fb1e5020761fcd21186cd100961",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "4144f5ccd27388dd6118536c1bf88d32805d70d5d470779ac1ba48b6f4f1f749",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "50d95fc62098533cd15eb53715cb2072f5cec7aaa33ca0b704cc12c34070ba47",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "9bbceb5f01494e717141c83e700e5f7ce2a594566cc1d7c62b649c455715f4c7",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "39742a0b149aa416685cf29e757a7cedd90a220c5bca3156b85eaf3f20dcf11f",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "ca6ff3e284eba01d094c8dc15f1494c6fc69a54beef216828a81b76da8bf882e",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "9722320b0caae5921afb646aabaf0f61d9f8a0ffae4d4a6a699f775b54131d2a",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "af13aeba53d08c15ef383822a7b25735532d7af766d73c337c9d3aa24c54d6d8",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "00cfe29da083d30203c102a4def86a050e7cd8c7b1a5ce72b6bd494fe5b756e8",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "8fdf8008c9b26dc8100c505c64411ba7cc370b25584a60e5a6898bde2c019da3",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "6e7323f38f4aecea5584f035b0532e328cfa1a77432b3fe709cf54b63e9c3b50",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "b444772a5d6047e80dc9982eb969618682427ba2fadb1915b51ceb63adeead22",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "eaf3a3627802bf4e512b41e80203a350b83e5bb29152e7d4beddb1a65d8f568f",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "599b071bc0431fca48d48d78966dd2fa10d18dedb1b9c9c6da60c59ed12368bd",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "3896b8f752849be20c64c9c2658e258ccec7d993cb9a1f692bce24e1272a8282",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "7fd5eddc169783877e4faa5848296076dca98556b20067dc2004b77ab1204af9",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "c2cc2160c6df178ec11cb696d3749fc6a2d1682d5c07fa8a5aea3882833c2758",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "3f17f12e8339635f69729382c8a67cda6efae6e39c049f7d601cd974e8a5eea3",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "e3245c5fe6298195d932aa0a91a48ba60b312e9b721f95f85838a346dec4842c",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "0e7a365e174b6b85d4a588395fb33e44c96c1efd3338faafd05cb2c777afd826",
+    "shape": []
+  },
+  {
+    "kind": "random",
+    "sha256": "8f045de979a09696d5ff1beaeb2d8281bbb94290decbb3a044c311e1a306c94f",
+    "shape": []
+  },
+  {
+    "kind": "admission",
+    "result": {
+      "estimated_working_bytes": 79744,
+      "largest_node_channels": 4,
+      "nodes": 22,
+      "parameters": 255,
+      "total_channels": 54
+    }
+  },
+  {
+    "kind": "admission",
+    "result": {
+      "estimated_working_bytes": 139904,
+      "largest_node_channels": 4,
+      "nodes": 22,
+      "parameters": 693,
+      "total_channels": 54
+    }
+  },
+  {
+    "kind": "normal",
+    "sha256": "3e2e67a22744f4020cfe3a0860da5829c9d658b6b88698db3314209b361839db",
+    "shape": [
+      2,
+      4
+    ]
+  }
+]

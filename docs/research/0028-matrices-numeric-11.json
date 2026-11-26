@@ -1,0 +1,865 @@
+[
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 177",
+    "record": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          1e+308,
+          -1e+308
+        ]
+      ],
+      "jitter_scale": 1e+308,
+      "source": {
+        "draws": [
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 178",
+    "record": {
+      "epsilon": 1e+308,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          1e+308,
+          -1e+308
+        ]
+      ],
+      "jitter_scale": 1e+308,
+      "source": {
+        "draws": [
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "name": "jitter exact budget",
+    "rejection": "exact matrix stage term limit exceeded",
+    "status": "PASS"
+  },
+  {
+    "name": "normalization direct nesting",
+    "rejection": "normalization requires a raw finite matrix construction",
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        1.0,
+        3.0
+      ],
+      [
+        0.0,
+        2.0
+      ]
+    ],
+    "expected": [
+      [
+        1.0,
+        3.0
+      ],
+      [
+        0.0,
+        2.0
+      ]
+    ],
+    "name": "whole flattened rank",
+    "record": {
+      "activation": {
+        "kind": "rank",
+        "parameters": []
+      },
+      "child": {
+        "epsilon": 0.0,
+        "exact_terms_limit": 1000000,
+        "jitter": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "jitter_scale": 0.0,
+        "source": {
+          "draws": [
+            [
+              3.0,
+              4.0
+            ],
+            [
+              -4.0,
+              3.0
+            ]
+          ],
+          "version": "gaussian-weights-v1"
+        },
+        "version": "normalized-weights-v1"
+      },
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "version": "transformed-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.0,
+        1.0
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "expected": [
+      [
+        0.0,
+        1.0
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "name": "whole flattened argmax",
+    "record": {
+      "activation": {
+        "kind": "argmax",
+        "parameters": []
+      },
+      "child": {
+        "epsilon": 0.0,
+        "exact_terms_limit": 1000000,
+        "jitter": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "jitter_scale": 0.0,
+        "source": {
+          "draws": [
+            [
+              3.0,
+              4.0
+            ],
+            [
+              -4.0,
+              3.0
+            ]
+          ],
+          "version": "gaussian-weights-v1"
+        },
+        "version": "normalized-weights-v1"
+      },
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "version": "transformed-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        2.0,
+        0.0
+      ],
+      [
+        3.0,
+        1.0
+      ]
+    ],
+    "expected": [
+      [
+        2.0,
+        0.0
+      ],
+      [
+        3.0,
+        1.0
+      ]
+    ],
+    "name": "whole flattened argsort",
+    "record": {
+      "activation": {
+        "kind": "argsort",
+        "parameters": []
+      },
+      "child": {
+        "epsilon": 0.0,
+        "exact_terms_limit": 1000000,
+        "jitter": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "jitter_scale": 0.0,
+        "source": {
+          "draws": [
+            [
+              3.0,
+              4.0
+            ],
+            [
+              -4.0,
+              3.0
+            ]
+          ],
+          "version": "gaussian-weights-v1"
+        },
+        "version": "normalized-weights-v1"
+      },
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "version": "transformed-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.28835065747754773,
+        0.3521922883603752
+      ],
+      [
+        0.07110639668452935,
+        0.28835065747754773
+      ]
+    ],
+    "expected": [
+      [
+        0.28835065747754773,
+        0.35219228836037525
+      ],
+      [
+        0.07110639668452935,
+        0.28835065747754773
+      ]
+    ],
+    "name": "whole flattened softmax",
+    "record": {
+      "activation": {
+        "kind": "softmax",
+        "parameters": []
+      },
+      "child": {
+        "epsilon": 0.0,
+        "exact_terms_limit": 1000000,
+        "jitter": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "jitter_scale": 0.0,
+        "source": {
+          "draws": [
+            [
+              3.0,
+              4.0
+            ],
+            [
+              -4.0,
+              3.0
+            ]
+          ],
+          "version": "gaussian-weights-v1"
+        },
+        "version": "normalized-weights-v1"
+      },
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "version": "transformed-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "name": "recursive transformed child",
+    "rejection": "activation matrices require a normalized nonrecursive simple child",
+    "status": "PASS"
+  },
+  {
+    "name": "raw activation nonfinite",
+    "rejection": "nonfinite exp activation output; task was not retried",
+    "status": "PASS"
+  },
+  {
+    "name": "outer normalization cannot rescue activation",
+    "rejection": "nonfinite exp activation output; task was not retried",
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        -1.6500000000000001,
+        -3.3000000000000003
+      ],
+      [
+        0.8,
+        0.050000000000000086
+      ]
+    ],
+    "expected": [
+      [
+        -1.6500000000000001,
+        -3.3000000000000003
+      ],
+      [
+        0.8,
+        0.050000000000000086
+      ]
+    ],
+    "name": "point formula 0",
+    "record": {
+      "assignments": [
+        0,
+        0
+      ],
+      "base_law": "uniform",
+      "centers": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "component_weights": {
+        "draws": [
+          0.5
+        ],
+        "version": "uniform-weight-vector-v1"
+      },
+      "exact_terms_limit": 1000000,
+      "factor_weights": [
+        {
+          "draws": [
+            0.25,
+            0.75
+          ],
+          "version": "uniform-weight-vector-v1"
+        }
+      ],
+      "factors": [
+        [
+          [
+            2.0,
+            3.0
+          ],
+          [
+            -4.0,
+            5.0
+          ]
+        ]
+      ],
+      "innovations": [
+        [
+          0.3,
+          -0.8
+        ],
+        [
+          0.7,
+          0.2
+        ]
+      ],
+      "law": "random-covariance",
+      "scale_coefficient": 0.0,
+      "scale_draws": [
+        0.0
+      ],
+      "scale_mean": 0.0,
+      "version": "kernel-point-cloud-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        -1.1123195677852586,
+        -8.102256529157414
+      ],
+      [
+        6.572076861500147,
+        0.7851308246498684
+      ]
+    ],
+    "expected": [
+      [
+        -1.1123195677852586,
+        -8.102256529157414
+      ],
+      [
+        6.572076861500147,
+        0.7851308246498684
+      ]
+    ],
+    "name": "point formula 1",
+    "record": {
+      "assignments": [
+        0,
+        1
+      ],
+      "base_law": "gaussian",
+      "centers": [
+        [
+          1.0,
+          -2.0
+        ],
+        [
+          3.0,
+          4.0
+        ]
+      ],
+      "component_weights": {
+        "draws": [
+          0.25,
+          0.75
+        ],
+        "version": "uniform-weight-vector-v1"
+      },
+      "exact_terms_limit": 1000000,
+      "factor_weights": [
+        {
+          "decay": 0,
+          "draws": [
+            0.0,
+            0.0
+          ],
+          "exact_scores_limit": 1000000,
+          "log_noise_scale": 0,
+          "permutation": [],
+          "version": "polynomial-weight-vector-v1"
+        },
+        {
+          "decay": 0,
+          "draws": [
+            0.0,
+            0.0
+          ],
+          "exact_scores_limit": 1000000,
+          "log_noise_scale": 0,
+          "permutation": [],
+          "version": "polynomial-weight-vector-v1"
+        }
+      ],
+      "factors": [
+        [
+          [
+            2.0,
+            3.0
+          ],
+          [
+            -4.0,
+            5.0
+          ]
+        ],
+        [
+          [
+            2.0,
+            3.0
+          ],
+          [
+            -4.0,
+            5.0
+          ]
+        ]
+      ],
+      "innovations": [
+        [
+          0.3,
+          -0.8
+        ],
+        [
+          0.7,
+          0.2
+        ]
+      ],
+      "law": "gaussian-mixture",
+      "scale_coefficient": -0.7,
+      "scale_draws": [
+        0.2,
+        -0.4
+      ],
+      "scale_mean": 0.3,
+      "version": "kernel-point-cloud-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.8485281374238569,
+        -1.6970562748477138
+      ],
+      [
+        1.9798989873223327,
+        -3.9597979746446654
+      ]
+    ],
+    "expected": [
+      [
+        0.848528137423857,
+        -1.697056274847714
+      ],
+      [
+        1.9798989873223332,
+        -3.9597979746446663
+      ]
+    ],
+    "name": "point formula 2",
+    "record": {
+      "assignments": [
+        0,
+        0
+      ],
+      "base_law": "uniform",
+      "centers": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "component_weights": {
+        "draws": [
+          0.5
+        ],
+        "version": "uniform-weight-vector-v1"
+      },
+      "exact_terms_limit": 1000000,
+      "factor_weights": [
+        {
+          "decay": 0,
+          "draws": [
+            0.0,
+            -1000.0
+          ],
+          "exact_scores_limit": 1000000,
+          "log_noise_scale": 1,
+          "permutation": [],
+          "version": "polynomial-weight-vector-v1"
+        }
+      ],
+      "factors": [
+        [
+          [
+            2.0,
+            3.0
+          ],
+          [
+            -4.0,
+            5.0
+          ]
+        ]
+      ],
+      "innovations": [
+        [
+          0.3,
+          -0.8
+        ],
+        [
+          0.7,
+          0.2
+        ]
+      ],
+      "law": "random-covariance",
+      "scale_coefficient": 0.0,
+      "scale_draws": [
+        0.0
+      ],
+      "scale_mean": 0.0,
+      "version": "kernel-point-cloud-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.9999999999999999,
+        -5.542095990830297
+      ],
+      [
+        6.7981579921589255,
+        -2.2485825032292004
+      ]
+    ],
+    "expected": [
+      [
+        0.9999999999999999,
+        -5.542095990830297
+      ],
+      [
+        6.7981579921589255,
+        -2.2485825032292004
+      ]
+    ],
+    "name": "point formula 3",
+    "record": {
+      "assignments": [
+        0,
+        1
+      ],
+      "base_law": "gaussian",
+      "centers": [
+        [
+          1.0,
+          -2.0
+        ],
+        [
+          3.0,
+          4.0
+        ]
+      ],
+      "component_weights": {
+        "draws": [
+          0.25,
+          0.75
+        ],
+        "version": "uniform-weight-vector-v1"
+      },
+      "exact_terms_limit": 1000000,
+      "factor_weights": [
+        {
+          "decay": 2,
+          "draws": [
+            1e+308,
+            1e+308
+          ],
+          "exact_scores_limit": 1000000,
+          "log_noise_scale": 1e+308,
+          "permutation": [],
+          "version": "polynomial-weight-vector-v1"
+        },
+        {
+          "decay": 2,
+          "draws": [
+            1e+308,
+            1e+308
+          ],
+          "exact_scores_limit": 1000000,
+          "log_noise_scale": 1e+308,
+          "permutation": [],
+          "version": "polynomial-weight-vector-v1"
+        }
+      ],
+      "factors": [
+        [
+          [
+            2.0,
+            3.0
+          ],
+          [
+            -4.0,
+            5.0
+          ]
+        ],
+        [
+          [
+            2.0,
+            3.0
+          ],
+          [
+            -4.0,
+            5.0
+          ]
+        ]
+      ],
+      "innovations": [
+        [
+          0.3,
+          -0.8
+        ],
+        [
+          0.7,
+          0.2
+        ]
+      ],
+      "law": "gaussian-mixture",
+      "scale_coefficient": -0.7,
+      "scale_draws": [
+        0.2,
+        -0.4
+      ],
+      "scale_mean": 0.3,
+      "version": "kernel-point-cloud-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        -1.6500000000000001,
+        -3.3000000000000003
+      ],
+      [
+        0.8,
+        0.050000000000000086
+      ]
+    ],
+    "expected": [
+      [
+        -1.6500000000000001,
+        -3.3000000000000003
+      ],
+      [
+        0.8,
+        0.050000000000000086
+      ]
+    ],
+    "name": "point formula 4",
+    "record": {
+      "assignments": [
+        0,
+        0
+      ],
+      "base_law": "uniform",
+      "centers": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "component_weights": {
+        "draws": [
+          0.5
+        ],
+        "version": "uniform-weight-vector-v1"
+      },
+      "exact_terms_limit": 1000000,
+      "factor_weights": [
+        {
+          "draws": [
+            0.25,
+            0.75
+          ],
+          "version": "uniform-weight-vector-v1"
+        }
+      ],
+      "factors": [
+        [
+          [
+            2.0,
+            3.0
+          ],
+          [
+            -4.0,
+            5.0
+          ]
+        ]
+      ],
+      "innovations": [
+        [
+          0.3,
+          -0.8
+        ],
+        [
+          0.7,
+          0.2
+        ]
+      ],
+      "law": "random-covariance",
+      "scale_coefficient": 0.0,
+      "scale_draws": [
+        0.0
+      ],
+      "scale_mean": 0.0,
+      "version": "kernel-point-cloud-v1"
+    },
+    "status": "PASS"
+  }
+]

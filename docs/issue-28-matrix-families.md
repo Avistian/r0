@@ -1,8 +1,8 @@
 # Issue 28: recorded matrix families and kernel point laws
 
-Candidate implementation following published importance checkpoint `9871fda`.
-This extends the accepted scope; it does not close issue 28 or replace its ledger.
-Repository checks, independent review and census are PENDING for this revision.
+Implemented and independently reviewed at `7eea0bd`, following importance
+checkpoint `9871fda`. This extends the accepted scope; it does not close issue 28
+or replace its ledger. The evidence below is scoped to these matrix additions.
 
 ## Mathematical records
 
@@ -143,5 +143,112 @@ acceptance.
 - Retained point construction and disagreement rejection: RED `095191e`, GREEN `11ea5ea`.
 - Positive-vector factor coefficients: RED `a42355e`, GREEN `7b7bb7a`.
 - Both sampled profiles through three saved backend workflows: RED `a608f79`,
-  GREEN `de89f5b` (six cases passed before the unchanged helper was relocated;
-  full checks and legacy evidence remain pending).
+  GREEN `de89f5b`; the full check and independent legacy comparison below also
+  cover relocation of the unchanged polynomial-vector sampling helper.
+
+
+## Verification at the frozen revision
+
+`make check` at `7eea0bd` passes **623 tests, 1 skipped**, with all static gates
+passing. The [complete log](research/0028-matrices-check-7eea0bd.txt) retains the
+exact output. Publication adds only documentation and verification programs;
+package and test bytes remain identical to that checked revision. Reproduce with
+`UV_CACHE_DIR=/tmp/r0-28-uv-cache UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv make check`.
+The skip is the existing CUDA agreement check on this CPU-only environment.
+T7/T12 train/eval commands are absent from this checkout; smoke/eval-smoke remain
+NOT_AVAILABLE. These checks are not hosted CI or scientific acceptance.
+
+The [independent spec report](research/0028-matrices-spec-review.md) found no scoped
+implementation defect. Fraction/Decimal/analytic calculations pass **224 numerical
+checks**, covering worked geometry, zero/cancellation/extreme inputs, normalization,
+point assignments, raw-stage rejection, parameter accounting and arithmetic limits.
+The separate [source review](research/0028-matrices-source-review.md) confirms the
+paper/code distinctions and the explicitly adapted sampling law.
+
+The independent sample contains **72 recipes**: **71 generated and replayed**, and
+one retained generation failure (mixed profile, forward graph, multiclass, seed 1,
+task 10; nonfinite square activation). All five matrix families, four transformed
+child families and three point-law/base combinations occur. The
+[outcomes](research/0028-matrices-outcomes.json) preserve its denominator and error;
+the [artifact manifest](research/0028-matrices-artifacts.json) retains the complete
+failed recipe through a header and ordered compact node arrays. Six actual saved
+backend workflows cover both profiles and all graph families, with zero maximum
+trace target error. This is backend evidence, not browser or Colab interaction.
+
+Independent counting of numeric record leaves agrees with admitted parameters.
+Public resource/RNG instrumentation and source inspection verify admission before
+new matrix-array allocation. **378 legacy outcomes** across all six earlier profiles
+match exactly: 376 successes and two preserved failures. The independent runner
+uses one OpenMP/MKL thread for both archived revisions; it records actual imports,
+archive hashes, commands and script hashes. This is exact equality in that declared
+environment, not a cross-platform determinism claim.
+
+The first oracle attempt incorrectly expected a factor exact-work rejection when
+its positive coefficient had rounded to zero, making fallback unnecessary. That
+[harness error](research/0028-matrices-harness-error.json) remains separate from the
+successful corrected run. No candidate source changed to satisfy that correction.
+[Standards review](research/0028-matrices-standards.md) found no hard violations;
+duplicated component-probability normalization is a nonblocking maintainability
+heuristic. Standards and numerical/spec findings are separate axes.
+
+The [receipt](research/0028-matrices-receipt.json) and
+[final package check](research/0028-matrices-final-package.json) bind the published
+programs to their independently executed bytes. The ordered artifact manifest
+preserves all 224 numeric records, admission events, legacy outcomes and the
+independent failed recipe; concatenation reconstructs each original value exactly.
+Raw per-case recipes, output and saved archives remain in
+`/tmp/matrix-spec-7eea0bd/run-2/`; the earlier harness run remains in `run-1/`.
+
+The portable [runner](../scripts/verify_causal_matrices.py),
+[numerical cases](../scripts/causal_matrix_numeric.py),
+[sampling/workflow cases](../scripts/causal_matrix_cases.py), and
+[legacy recorder](../scripts/causal_matrix_legacy.py) require no retained `/tmp`
+inputs. From a checkout containing both pinned revisions and a compatible existing
+environment, use a new output directory:
+
+```sh
+UV_CACHE_DIR=/tmp/r0-28-uv-cache \
+UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
+python3 scripts/run_check.py python scripts/verify_causal_matrices.py \
+  /tmp/r0-28-matrices-independent-reproduction --repo .
+```
+
+Defaults pin candidate `7eea0bd` and base `9871fda`. The runner archives both, makes
+the archives read-only, sets their import paths, and retains all check outcomes.
+Only override `--candidate`/`--base` deliberately when assessing other revisions.
+
+## Unfiltered author censuses
+
+Each census attempts 64 recipes per graph family at seed 28, cycling regression,
+binary and multiclass controls. Recipes are captured in memory before generation;
+JSONL is written after each family completes, not durably before every attempt.
+Both retain all failures with no retry, replacement or selection filter.
+
+- **Mixed profile: 192 valid / 192 attempted.** Its 1,523 top-level projections
+  contain 1,840 normalization stages, including 317 transformed children. Across
+  all stages there are 367 Gaussian, 388 importance, 377 importance-factorized and
+  391 kernel records. Kernel records split into 193 mixture and 198 covariance
+  point clouds, with component counts 1..15 observed. The existing 26-choice matrix
+  activation support appears in full. These are record counts, not numerical ranks
+  or proof of complete source activation weighting. Valid flags overlap: 73
+  disconnected, 20 inactive ReLU, 23 saturation and three zero target dispersion.
+  [Summary and raw hashes](research/0028-matrices-mixed-census.json).
+- **Gaussian-only: 190 valid / 192 attempted.** All 1,591 retained projections are
+  normalized Gaussian constructions. Forward task 57 (regression) fails in signed
+  power; task 58 (binary) fails in integer power. Both full failed recipes are
+  retained and reconstructible from the [summary and ordered parts](research/0028-matrices-gaussian-census.json).
+
+Raw JSONL and saved groups remain at `/tmp/r0-28-matrix-census-7eea0bd/` and
+`/tmp/r0-28-gaussian-matrix-census-7eea0bd/`. Timing and peak memory are NOT_MEASURED.
+Reproduce each in a new output directory using:
+
+```sh
+UV_CACHE_DIR=/tmp/r0-28-uv-cache \
+UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
+python3 scripts/run_check.py python scripts/causal_topology_census.py \
+  /tmp/r0-28-matrices-census-reproduction --profile causal-matrices-v1
+```
+
+For the other census, change both the destination and profile to
+`causal-gaussian-matrices-v1`. Whole-issue, GPU, supported-size, browser/Colab,
+source joint-prior and scientific acceptance remain incomplete.

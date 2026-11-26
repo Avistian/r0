@@ -186,3 +186,14 @@ polynomial/log-Gaussian row importance. Records retain Gaussian draws, vector
 parameters/permutations and epsilon-normalized projections. See the
 [exact law, source adaptations, admission and unfiltered census](issue-28-importance-weights.md).
 Source shared numerical preferences remain separate pending work.
+
+
+### Recorded matrix-family profiles
+
+`causal-matrices-v1` samples Gaussian, importance, positive-vector factorized,
+signed-kernel and flattened-activation projections, with recorded jitter and row
+normalization. `causal-gaussian-matrices-v1` restricts the raw source to Gaussian.
+Both support `forward`, `layered` and `redirection` with widths 1/2/4 and existing
+node activation preferences. Kernel records distinguish Gaussian-mixture and
+random-covariance points. [Exact laws, local adaptations, limits and retained failures](issue-28-matrix-families.md)
+remain separate from complete source joint-prior reproduction.

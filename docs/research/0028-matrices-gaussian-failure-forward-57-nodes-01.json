@@ -1,0 +1,510 @@
+[
+  {
+    "bias": [
+      0.46545821951991617,
+      0.28979821533028205,
+      -0.04717264761899861,
+      0.21791261577456672
+    ],
+    "input_activation": {
+      "kind": "identity",
+      "parameters": []
+    },
+    "noise_position": "after_output",
+    "noise_scale": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "output_activation": {
+      "kind": "identity",
+      "parameters": []
+    },
+    "parents": [],
+    "weights": []
+  },
+  {
+    "bias": [
+      0.04676491815645003
+    ],
+    "exogenous": {
+      "factor": [],
+      "geometry": "independent",
+      "inputs": {
+        "bound": null,
+        "df": 5.0,
+        "distribution": "gaussian",
+        "location": 0.0,
+        "mixture_gap": 2.0,
+        "scale": 1.0,
+        "version": "inputs-v1"
+      },
+      "version": "exogenous-v1"
+    },
+    "input_activation": {
+      "kind": "signed_power",
+      "parameters": [
+        [
+          "exponent",
+          8.451517619792316
+        ]
+      ]
+    },
+    "noise_position": "before_output",
+    "noise_response": {
+      "offset": 1.0,
+      "power": 1.0,
+      "strength": 0.0
+    },
+    "noise_scale": [
+      0.1
+    ],
+    "output_activation": {
+      "kind": "identity",
+      "parameters": []
+    },
+    "parents": [
+      0
+    ],
+    "weight_construction": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          -1.123714140863881
+        ],
+        [
+          0.5670215702385493
+        ],
+        [
+          -0.12821700051926666
+        ],
+        [
+          -1.780783294248505
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            -0.30217355007672597
+          ],
+          [
+            -0.19635666858547332
+          ],
+          [
+            0.582115025933189
+          ],
+          [
+            -1.7282826433472305
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "weights": [
+      [
+        -0.9999966906667652
+      ],
+      [
+        -0.9999949072379251
+      ],
+      [
+        0.9999982821290333
+      ],
+      [
+        -0.9999994213918685
+      ]
+    ]
+  },
+  {
+    "bias": [
+      0.0068521035991329
+    ],
+    "exogenous": {
+      "factor": [],
+      "geometry": "independent",
+      "inputs": {
+        "bound": null,
+        "df": 5.0,
+        "distribution": "gaussian",
+        "location": 0.0,
+        "mixture_gap": 2.0,
+        "scale": 1.0,
+        "version": "inputs-v1"
+      },
+      "version": "exogenous-v1"
+    },
+    "input_activation": {
+      "kind": "signed_power",
+      "parameters": [
+        [
+          "exponent",
+          8.451517619792316
+        ]
+      ]
+    },
+    "noise_position": "before_output",
+    "noise_response": {
+      "offset": 1.0,
+      "power": 1.0,
+      "strength": 0.0
+    },
+    "noise_scale": [
+      0.1
+    ],
+    "output_activation": {
+      "kind": "identity",
+      "parameters": []
+    },
+    "parents": [
+      1
+    ],
+    "weight_construction": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          -1.5679772239490468
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            -0.09268384904827973
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "weights": [
+      [
+        -0.9999892109326037
+      ]
+    ]
+  },
+  {
+    "bias": [
+      -0.23374230314739083
+    ],
+    "exogenous": {
+      "factor": [],
+      "geometry": "independent",
+      "inputs": {
+        "bound": null,
+        "df": 5.0,
+        "distribution": "gaussian",
+        "location": 0.0,
+        "mixture_gap": 2.0,
+        "scale": 1.0,
+        "version": "inputs-v1"
+      },
+      "version": "exogenous-v1"
+    },
+    "input_activation": {
+      "kind": "signed_power",
+      "parameters": [
+        [
+          "exponent",
+          8.451517619792316
+        ]
+      ]
+    },
+    "noise_position": "after_output",
+    "noise_response": {
+      "offset": 1.0,
+      "power": 1.0,
+      "strength": 0.0
+    },
+    "noise_scale": [
+      0.1
+    ],
+    "output_activation": {
+      "kind": "identity",
+      "parameters": []
+    },
+    "parents": [
+      1,
+      2
+    ],
+    "weight_construction": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          1.8891679873780114
+        ],
+        [
+          -0.19391742614678106
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            1.828024606903402
+          ],
+          [
+            -0.509141959729963
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "weights": [
+      [
+        0.9999994529622763
+      ],
+      [
+        -0.9999980359158462
+      ]
+    ]
+  },
+  {
+    "bias": [
+      0.22377444082117615,
+      -0.1272841309345926,
+      -0.05437962077457679,
+      0.43245031580537496
+    ],
+    "exogenous": {
+      "factor": [],
+      "geometry": "independent",
+      "inputs": {
+        "bound": null,
+        "df": 5.0,
+        "distribution": "gaussian",
+        "location": 0.0,
+        "mixture_gap": 2.0,
+        "scale": 1.0,
+        "version": "inputs-v1"
+      },
+      "version": "exogenous-v1"
+    },
+    "input_activation": {
+      "kind": "signed_power",
+      "parameters": [
+        [
+          "exponent",
+          8.451517619792316
+        ]
+      ]
+    },
+    "noise_position": "before_output",
+    "noise_response": {
+      "offset": 1.0,
+      "power": 1.0,
+      "strength": 0.0
+    },
+    "noise_scale": [
+      0.1,
+      0.1,
+      0.1,
+      0.1
+    ],
+    "output_activation": {
+      "kind": "identity",
+      "parameters": []
+    },
+    "parents": [
+      1,
+      2,
+      3
+    ],
+    "weight_construction": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.49334275071460043,
+          -1.2187487106291497,
+          0.33299038632401773,
+          -0.4288782830877792
+        ],
+        [
+          -0.635087104464282,
+          -0.9586913187129348,
+          -0.46076901152978245,
+          1.1761253439284025
+        ],
+        [
+          -0.7995622960875616,
+          0.5624606123105865,
+          -0.40313536966225877,
+          1.577031085350692
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            0.4303113804812336,
+            0.5487235000728232,
+            0.058827200783395026,
+            0.6559255738936965
+          ],
+          [
+            -1.136742562419422,
+            -0.3248105783567854,
+            0.8500679068535393,
+            -2.2329903379338276
+          ],
+          [
+            0.4794490132008213,
+            0.7605189832306463,
+            -0.05370270885493598,
+            1.6893253553485807
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "weights": [
+      [
+        0.4486397132693521,
+        0.5720934557768026,
+        0.06133311556122195,
+        0.6838623028706936
+      ],
+      [
+        -0.4264155270899706,
+        -0.12184342345666477,
+        0.3188776135887788,
+        -0.8376397171387422
+      ],
+      [
+        0.25044147986209425,
+        0.3972600899720233,
+        -0.028052011578026267,
+        0.8824259323135789
+      ]
+    ]
+  },
+  {
+    "bias": [
+      0.05251227519986754,
+      -0.009955464028514646,
+      0.2997573191700798,
+      0.33794388198487235
+    ],
+    "exogenous": {
+      "factor": [],
+      "geometry": "independent",
+      "inputs": {
+        "bound": null,
+        "df": 5.0,
+        "distribution": "gaussian",
+        "location": 0.0,
+        "mixture_gap": 2.0,
+        "scale": 1.0,
+        "version": "inputs-v1"
+      },
+      "version": "exogenous-v1"
+    },
+    "input_activation": {
+      "kind": "signed_power",
+      "parameters": [
+        [
+          "exponent",
+          8.451517619792316
+        ]
+      ]
+    },
+    "noise_position": "before_output",
+    "noise_response": {
+      "offset": 1.0,
+      "power": 1.0,
+      "strength": 0.0
+    },
+    "noise_scale": [
+      0.1,
+      0.1,
+      0.1,
+      0.1
+    ],
+    "output_activation": {
+      "kind": "identity",
+      "parameters": []
+    },
+    "parents": [
+      1,
+      2,
+      3
+    ],
+    "weight_construction": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          -0.14594026886502173,
+          0.7572258140846897,
+          1.1813643120859507,
+          -0.6897515182128487
+        ],
+        [
+          -1.0387489504418448,
+          -1.3195807472449106,
+          1.0076076381202383,
+          -0.42074003620057676
+        ],
+        [
+          1.387011700803943,
+          -0.14666315772857128,
+          1.4462881666378236,
+          1.585897667464231
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            0.20449785045368052,
+            -1.11064347151443,
+            -0.033426397018152615,
+            0.05924880392497531
+          ],
+          [
+            0.3168841355831032,
+            0.42937264777227796,
+            -0.47589560682030085,
+            1.7914241213999926
+          ],
+          [
+            0.0061272757071098635,
+            0.6373431976084014,
+            0.8897488998171016,
+            -0.42427678730480795
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "weights": [
+      [
+        0.18075380855960813,
+        -0.9816877946592402,
+        -0.02954426821432448,
+        0.05236891197536408
+      ],
+      [
+        0.1642862287212364,
+        0.22260510874309378,
+        -0.2467248324525536,
+        0.928753369187428
+      ],
+      [
+        0.005221016991076537,
+        0.5429535040191327,
+        0.757979658527093,
+        -0.36144068242492117
+      ]
+    ]
+  }
+]

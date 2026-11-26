@@ -1,0 +1,274 @@
+{
+  "capture_semantics": "Recipe captured in memory before generation; JSONL written after each family finishes. No retry, substitution or filtering; new output directory required.",
+  "command": "UV_CACHE_DIR=/tmp/r0-28-uv-cache UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv python3 scripts/run_check.py python scripts/causal_topology_census.py NEW_OUTPUT_DIRECTORY --profile causal-gaussian-matrices-v1",
+  "device": "cpu",
+  "failures": [
+    {
+      "error": "ValueError: nonfinite signed_power activation output; task was not retried",
+      "family": "forward",
+      "header": "0028-matrices-gaussian-failure-forward-57-header.json",
+      "ordered_node_parts": [
+        "0028-matrices-gaussian-failure-forward-57-nodes-01.json",
+        "0028-matrices-gaussian-failure-forward-57-nodes-02.json"
+      ],
+      "reconstruction": "Load header; assign recipe.nodes the ordered concatenation of node arrays. SHA256 of json.dumps(record, sort_keys=True, allow_nan=False).encode() with no newline must equal record_sha256.",
+      "record_sha256": "5a17d75c6e4759a4e2fa6c05e7b454558f318c905bef0604063d10efc94f078e",
+      "seed": 28,
+      "task_id": 57
+    },
+    {
+      "error": "ValueError: nonfinite integer_power activation output; task was not retried",
+      "family": "forward",
+      "header": "0028-matrices-gaussian-failure-forward-58-header.json",
+      "ordered_node_parts": [
+        "0028-matrices-gaussian-failure-forward-58-nodes-01.json",
+        "0028-matrices-gaussian-failure-forward-58-nodes-02.json",
+        "0028-matrices-gaussian-failure-forward-58-nodes-03.json"
+      ],
+      "reconstruction": "Load header; assign recipe.nodes the ordered concatenation of node arrays. SHA256 of json.dumps(record, sort_keys=True, allow_nan=False).encode() with no newline must equal record_sha256.",
+      "record_sha256": "3ca59cfbf5636295bdc96c17688e1fbce572cde4cc5f6cf82d59176dc57b3ad9",
+      "seed": 28,
+      "task_id": 58
+    }
+  ],
+  "families": {
+    "forward": {
+      "activation_modes": {
+        "dirichlet": 21,
+        "homogeneous": 22,
+        "independent": 21
+      },
+      "attempted": 64,
+      "exogenous_geometry": {
+        "independent": 513
+      },
+      "exogenous_laws": {
+        "gaussian": 513
+      },
+      "factor_inner_dimensions": {},
+      "failed": 2,
+      "failure_reasons": {
+        "ValueError: nonfinite integer_power activation output; task was not retried": 1,
+        "ValueError: nonfinite signed_power activation output; task was not retried": 1
+      },
+      "flag_counts": {
+        "disconnected_target": 26,
+        "inactive_relu": 7,
+        "saturated_activation": 10
+      },
+      "importance_vectors": {},
+      "kernel_component_counts": {},
+      "kernel_point_base_laws": {},
+      "kernel_point_laws": {},
+      "matrix_activation_kinds": {},
+      "matrix_stages": {
+        "gaussian-weights-v1": 513,
+        "normalized-weights-v1": 513
+      },
+      "noise_strengths": {
+        "0.0": 513
+      },
+      "positive_vector_laws": {},
+      "ranges": {
+        "components": [
+          1,
+          21
+        ],
+        "depth": [
+          0,
+          21
+        ],
+        "edges": [
+          0,
+          231
+        ],
+        "nodes": [
+          7,
+          23
+        ]
+      },
+      "task_types": {
+        "binary": 20,
+        "multiclass": 21,
+        "regression": 21
+      },
+      "valid": 62,
+      "weight_constructions": {
+        "normalized-weights-v1": 513
+      }
+    },
+    "layered": {
+      "activation_modes": {
+        "dirichlet": 22,
+        "homogeneous": 25,
+        "independent": 17
+      },
+      "attempted": 64,
+      "exogenous_geometry": {
+        "independent": 299
+      },
+      "exogenous_laws": {
+        "gaussian": 299
+      },
+      "factor_inner_dimensions": {},
+      "failed": 0,
+      "failure_reasons": {},
+      "flag_counts": {
+        "disconnected_target": 37,
+        "inactive_relu": 3,
+        "saturated_activation": 3
+      },
+      "importance_vectors": {},
+      "kernel_component_counts": {},
+      "kernel_point_base_laws": {},
+      "kernel_point_laws": {},
+      "matrix_activation_kinds": {},
+      "matrix_stages": {
+        "gaussian-weights-v1": 299,
+        "normalized-weights-v1": 299
+      },
+      "noise_strengths": {
+        "0.0": 299
+      },
+      "positive_vector_laws": {},
+      "ranges": {
+        "components": [
+          1,
+          21
+        ],
+        "depth": [
+          0,
+          4
+        ],
+        "edges": [
+          0,
+          48
+        ],
+        "nodes": [
+          8,
+          24
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64,
+      "weight_constructions": {
+        "normalized-weights-v1": 299
+      }
+    },
+    "redirection": {
+      "activation_modes": {
+        "dirichlet": 30,
+        "homogeneous": 20,
+        "independent": 14
+      },
+      "attempted": 64,
+      "exogenous_geometry": {
+        "independent": 779
+      },
+      "exogenous_laws": {
+        "gaussian": 779
+      },
+      "factor_inner_dimensions": {},
+      "failed": 0,
+      "failure_reasons": {},
+      "flag_counts": {
+        "disconnected_target": 4,
+        "inactive_relu": 4,
+        "saturated_activation": 5
+      },
+      "importance_vectors": {},
+      "kernel_component_counts": {},
+      "kernel_point_base_laws": {},
+      "kernel_point_laws": {},
+      "matrix_activation_kinds": {},
+      "matrix_stages": {
+        "gaussian-weights-v1": 779,
+        "normalized-weights-v1": 779
+      },
+      "noise_strengths": {
+        "0.0": 779
+      },
+      "positive_vector_laws": {},
+      "ranges": {
+        "components": [
+          1,
+          3
+        ],
+        "depth": [
+          1,
+          5
+        ],
+        "edges": [
+          5,
+          22
+        ],
+        "nodes": [
+          7,
+          23
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64,
+      "weight_constructions": {
+        "normalized-weights-v1": 779
+      }
+    }
+  },
+  "filter": "none",
+  "head": "7eea0bd5ab6f553aa07f014ed5a353b4d0db69e9",
+  "profile": "causal-gaussian-matrices-v1",
+  "raw_artifacts": {
+    "forward.json": {
+      "bytes": 382,
+      "sha256": "f536a7df78cbab3e880800ed9d28118545142c49b209da9bf4016dc99efde0af"
+    },
+    "forward.jsonl": {
+      "bytes": 1499453,
+      "sha256": "1b1d80ab37934decc3c33af3ec23852191f1cfcc61ecad8e6594bd534ef4d33c"
+    },
+    "forward.zip": {
+      "bytes": 3161961,
+      "sha256": "76e39732993ab7b99521ae483bfb9f682d599e0d909de3bb3415c2236ae822c3"
+    },
+    "layered.json": {
+      "bytes": 390,
+      "sha256": "fb565bf65ace769886d1151e05f9fe9b9b1a96de43517c27037a18439080adbe"
+    },
+    "layered.jsonl": {
+      "bytes": 851302,
+      "sha256": "563ce3694a543c168351dcc8fa847162d15423e0efd4d4300758d1191c6a7a91"
+    },
+    "layered.zip": {
+      "bytes": 1968134,
+      "sha256": "57e5e0f71566da8e226d2155948f8492b28e0853bb2dfd7829285f9a81725580"
+    },
+    "redirection.json": {
+      "bytes": 390,
+      "sha256": "029cccb105241c2307dc745363db6f349221668b5d5f04474e4e79a37b89af34"
+    },
+    "redirection.jsonl": {
+      "bytes": 1150120,
+      "sha256": "f56585bd4867f984f3394e19382824e547d5b625c889cc6c8039755c3f2fb4a8"
+    },
+    "redirection.zip": {
+      "bytes": 2592773,
+      "sha256": "7dc2361c86c5a10632e3f97754cfbd3b560b3daf074f8901ad45eaeaf2191a81"
+    },
+    "summary.json": {
+      "bytes": 4389,
+      "sha256": "28fe4b16f915f801efea1a24ed38d2239f2ebdbc723b03cedf22cfe270ec04e7"
+    }
+  },
+  "raw_directory": "/tmp/r0-28-gaussian-matrix-census-7eea0bd",
+  "seed": 28,
+  "timing": "NOT_MEASURED",
+  "torch": "2.15.0+cpu"
+}

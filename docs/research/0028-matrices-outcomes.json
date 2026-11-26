@@ -1,0 +1,292 @@
+[
+  {
+    "key": "causal-matrices-v1-forward-regression-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-forward-regression-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-forward-regression-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-forward-regression-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-forward-binary-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-forward-binary-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-forward-binary-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-forward-binary-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-forward-multiclass-0",
+    "status": "PASS"
+  },
+  {
+    "error": "nonfinite square activation output; task was not retried",
+    "key": "causal-matrices-v1-forward-multiclass-1",
+    "stage": "generation",
+    "status": "FAILED"
+  },
+  {
+    "key": "causal-matrices-v1-forward-multiclass-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-forward-multiclass-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-layered-regression-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-layered-regression-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-layered-regression-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-layered-regression-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-layered-binary-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-layered-binary-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-layered-binary-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-layered-binary-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-layered-multiclass-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-layered-multiclass-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-layered-multiclass-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-layered-multiclass-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-redirection-regression-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-redirection-regression-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-redirection-regression-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-redirection-regression-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-redirection-binary-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-redirection-binary-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-redirection-binary-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-redirection-binary-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-redirection-multiclass-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-redirection-multiclass-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-redirection-multiclass-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-matrices-v1-redirection-multiclass-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-forward-regression-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-forward-regression-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-forward-regression-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-forward-regression-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-forward-binary-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-forward-binary-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-forward-binary-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-forward-binary-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-forward-multiclass-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-forward-multiclass-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-forward-multiclass-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-forward-multiclass-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-layered-regression-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-layered-regression-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-layered-regression-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-layered-regression-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-layered-binary-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-layered-binary-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-layered-binary-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-layered-binary-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-layered-multiclass-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-layered-multiclass-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-layered-multiclass-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-layered-multiclass-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-redirection-regression-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-redirection-regression-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-redirection-regression-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-redirection-regression-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-redirection-binary-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-redirection-binary-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-redirection-binary-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-redirection-binary-45",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-redirection-multiclass-0",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-redirection-multiclass-1",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-redirection-multiclass-28",
+    "status": "PASS"
+  },
+  {
+    "key": "causal-gaussian-matrices-v1-redirection-multiclass-45",
+    "status": "PASS"
+  }
+]

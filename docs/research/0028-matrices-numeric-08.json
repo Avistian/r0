@@ -1,0 +1,964 @@
+[
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 98",
+    "record": {
+      "epsilon": 0.0,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 99",
+    "record": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.4142135623730951,
+        -0.4142135623730951
+      ]
+    ],
+    "expected": [
+      [
+        0.41421356237309503,
+        -0.41421356237309503
+      ]
+    ],
+    "name": "normalization 100",
+    "record": {
+      "epsilon": 1e+308,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 101",
+    "record": {
+      "epsilon": 0.0,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 102",
+    "record": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.4142135623730951,
+        -0.4142135623730951
+      ]
+    ],
+    "expected": [
+      [
+        0.41421356237309503,
+        -0.41421356237309503
+      ]
+    ],
+    "name": "normalization 103",
+    "record": {
+      "epsilon": 1e+308,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 104",
+    "record": {
+      "epsilon": 0.0,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 1e+308,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 105",
+    "record": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 1e+308,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.4142135623730951,
+        -0.4142135623730951
+      ]
+    ],
+    "expected": [
+      [
+        0.41421356237309503,
+        -0.41421356237309503
+      ]
+    ],
+    "name": "normalization 106",
+    "record": {
+      "epsilon": 1e+308,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "jitter_scale": 1e+308,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 107",
+    "record": {
+      "epsilon": 0.0,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 108",
+    "record": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.4142135623730951,
+        -0.4142135623730951
+      ]
+    ],
+    "expected": [
+      [
+        0.41421356237309503,
+        -0.41421356237309503
+      ]
+    ],
+    "name": "normalization 109",
+    "record": {
+      "epsilon": 1e+308,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 110",
+    "record": {
+      "epsilon": 0.0,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 111",
+    "record": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.4142135623730951,
+        -0.4142135623730951
+      ]
+    ],
+    "expected": [
+      [
+        0.41421356237309503,
+        -0.41421356237309503
+      ]
+    ],
+    "name": "normalization 112",
+    "record": {
+      "epsilon": 1e+308,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "expected": [
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "name": "normalization 113",
+    "record": {
+      "epsilon": 0.0,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "jitter_scale": 1e+308,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "expected": [
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "name": "normalization 114",
+    "record": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "jitter_scale": 1e+308,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "expected": [
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "name": "normalization 115",
+    "record": {
+      "epsilon": 1e+308,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "jitter_scale": 1e+308,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 116",
+    "record": {
+      "epsilon": 0.0,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          1e+308,
+          -1e+308
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 117",
+    "record": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          1e+308,
+          -1e+308
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.4142135623730951,
+        -0.4142135623730951
+      ]
+    ],
+    "expected": [
+      [
+        0.41421356237309503,
+        -0.41421356237309503
+      ]
+    ],
+    "name": "normalization 118",
+    "record": {
+      "epsilon": 1e+308,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          1e+308,
+          -1e+308
+        ]
+      ],
+      "jitter_scale": 0.0,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 119",
+    "record": {
+      "epsilon": 0.0,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          1e+308,
+          -1e+308
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 120",
+    "record": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          1e+308,
+          -1e+308
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.41421373394586986,
+        -0.41421373394586986
+      ]
+    ],
+    "expected": [
+      [
+        0.4142137339458698,
+        -0.4142137339458698
+      ]
+    ],
+    "name": "normalization 121",
+    "record": {
+      "epsilon": 1e+308,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          1e+308,
+          -1e+308
+        ]
+      ],
+      "jitter_scale": 1e-06,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 122",
+    "record": {
+      "epsilon": 0.0,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          1e+308,
+          -1e+308
+        ]
+      ],
+      "jitter_scale": 1e+308,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  },
+  {
+    "actual": [
+      [
+        0.7071067811865475,
+        -0.7071067811865475
+      ]
+    ],
+    "expected": [
+      [
+        0.7071067811865476,
+        -0.7071067811865476
+      ]
+    ],
+    "name": "normalization 123",
+    "record": {
+      "epsilon": 1e-06,
+      "exact_terms_limit": 1000000,
+      "jitter": [
+        [
+          1e+308,
+          -1e+308
+        ]
+      ],
+      "jitter_scale": 1e+308,
+      "source": {
+        "draws": [
+          [
+            1e+308,
+            -1e+308
+          ]
+        ],
+        "version": "gaussian-weights-v1"
+      },
+      "version": "normalized-weights-v1"
+    },
+    "status": "PASS"
+  }
+]
