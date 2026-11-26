@@ -174,3 +174,28 @@ def test_normalization_rejects_unproven_target_second_moments_but_keeps_raw_draw
     bounded = generate_task(recipe_from_dict(data), seed=28, task_id=9)
     assert torch.isfinite(bounded.scores).all()
     assert json.loads(bounded.mechanism_json)["moment_contract"]["target_orders"] == ["all"]
+
+
+def test_zero_structural_noise_response_does_not_create_a_shared_random_cause() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(bias=(2.0, 3.0), noise_scale=(1.0, 1.0)),),
+            observed=((0, 0),),
+            target=((0, 1),),
+            version="causal-v2",
+            normalize=True,
+        )
+    )
+    data["nodes"][0].update(
+        exogenous={"factor": [[1, 2], [0, 0]]}, noise_response={"offset": 0, "strength": 0}
+    )
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=0)
+    assert torch.all(task.inputs == 2)
+    assert torch.all(task.scores == 3)
+    card = json.loads(task.mechanism_json)
+    assert "disconnected_target" in card["flags"]
+    assert "zero_target_dispersion" in card["flags"]
