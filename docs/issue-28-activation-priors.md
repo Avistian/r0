@@ -35,17 +35,26 @@ A configurable authored draw uses the same public sampler:
 
 ```python
 from r0.modules.priors import (
-    ActivationParameterPrior, CausalActivation, CausalActivationPrior,
-    CausalGraphPrior, LinearRecipe, sample_causal_recipe,
+    ActivationParameterPrior,
+    CausalActivation,
+    CausalActivationPrior,
+    CausalGraphPrior,
+    LinearRecipe,
+    sample_causal_recipe,
 )
 
 prior = CausalActivationPrior(
     choices=(CausalActivation("tanh"), CausalActivation("signed_power")),
-    weights=(1, 3), mode="dirichlet", concentration=2,
+    weights=(1, 3),
+    mode="dirichlet",
+    concentration=2,
     parameter_priors=((), (ActivationParameterPrior("exponent", 0.5, 2, "log_uniform"),)),
 )
 recipe = sample_causal_recipe(
-    CausalGraphPrior(nodes=8), seed=28, task_id=3, activations=prior,
+    CausalGraphPrior(nodes=8),
+    seed=28,
+    task_id=3,
+    activations=prior,
     task=LinearRecipe(rows=16, context_rows=8, features=2, signal_features=2, active_features=2),
 )
 ```
