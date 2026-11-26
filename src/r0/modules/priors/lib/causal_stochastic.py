@@ -1,5 +1,6 @@
 """Evaluate recorded stochastic equations, preserving separate exogenous and scale traces."""
 
+import math
 from typing import Any
 
 import torch
@@ -27,10 +28,24 @@ def stochastic_value(
     if not torch.isfinite(affine).all():
         raise ValueError("nonfinite pre-noise affine response; task was not retried")
     response = node.noise_response
+    base = torch.tensor(node.noise_scale, dtype=raw.dtype, device=raw.device)
     multiplier = torch.full_like(raw, response.offset)
     if response.strength:
-        multiplier = multiplier + response.strength * affine.abs().pow(response.power)
-    scale = multiplier * torch.tensor(node.noise_scale, dtype=raw.dtype, device=raw.device)
+        # A zero structural scale removes this path before evaluating its power.
+        magnitude = torch.where(base == 0, 0.0, affine.abs())
+        multiplier = multiplier + response.strength * magnitude.pow(response.power)
+    scale = multiplier * base
+    if response.strength and not torch.isfinite(scale).all():
+        # An intermediate power/product may overflow while the full positive term
+        # remains representable after scaling. Rescue only those entries in logs.
+        affected = ~torch.isfinite(scale) & (base > 0)
+        selected_base = base.expand_as(raw)[affected]
+        log_term = (
+            selected_base.log()
+            + math.log(response.strength)
+            + response.power * affine[affected].abs().log()
+        )
+        scale[affected] = selected_base * response.offset + log_term.exp()
     if not torch.isfinite(scale).all():
         raise ValueError("nonfinite signal-dependent noise scale; task was not retried")
     innovation = scale * raw
