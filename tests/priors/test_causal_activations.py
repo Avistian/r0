@@ -346,3 +346,28 @@ def test_channel_transform_does_not_couple_noise_added_after_it() -> None:
     torch.testing.assert_close(
         coupled.inputs[:, 0] + coupled.targets, torch.ones(16, dtype=torch.float64)
     )
+
+
+@pytest.mark.parametrize(
+    ("kind", "parameters", "argument", "expected"),
+    [
+        (
+            "reciprocal_abs_power",
+            (("epsilon", 1e308), ("exponent", 0.001)),
+            1e308,
+            0.49169859803820276,
+        ),
+        ("log_abs", (("epsilon", 1e308),), 1e308, 709.889355822726),
+        ("integer_power", (("exponent", 2**53 + 1),), -1, -1),
+        ("power", (("exponent", 2**53 + 1),), -1, -1),
+        ("integer_power", (("exponent", 2**63 + 1),), -1, -1),
+    ],
+)
+def test_valid_extreme_parameters_preserve_finite_results_and_exact_integer_parity(
+    kind: str, parameters: tuple[tuple[str, float], ...], argument: float, expected: float
+) -> None:
+    # Independent review at 28a478f: 80-digit Decimal references for the sums,
+    # exact integer arithmetic for the parity cases. No giant arrays are needed.
+    test_activation_parameters_change_the_frozen_function(
+        CausalActivation(kind, parameters), argument, expected
+    )
