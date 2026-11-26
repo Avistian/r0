@@ -153,3 +153,20 @@ def test_replay_rejects_inconsistent_activation_sampling_provenance(corruption: 
         wire["nodes"][0]["noise_position"] = "after_output"
     with pytest.raises(ValueError, match="sampling|probabilit|noise"):
         recipe_from_dict(wire)
+
+
+def test_unrepresentable_preference_weights_fail_without_removing_choices() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    graph = CausalGraphPrior(nodes=4)
+    prior = CausalActivationPrior(
+        choices=(CausalActivation("tanh"), CausalActivation("sin")), weights=(1e-308, 1e308)
+    )
+    with pytest.raises(ValueError, match="representable|underflow"):
+        sample_causal_recipe(graph, task=controls, seed=28, task_id=0, activations=prior)
+    valid = sample_causal_recipe(
+        graph, task=controls, seed=28, task_id=0, activations=replace(prior, weights=(1e308, 1e308))
+    )
+    assert isinstance(valid, SampledCausalRecipe)
+    assert valid.activation_probabilities == (0.5, 0.5)
