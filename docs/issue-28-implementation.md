@@ -115,8 +115,13 @@ independent calibration is optional; constant channels retain their raw value
 with identity normalization and a diagnostic flag. Shared nonzero-edge channel
 ancestry is labeled as potential dependence, not proof of predictive usefulness.
 
-Five public-behavior RED/GREEN cycles are retained under `docs/evidence/issue-28/`:
+Five passing public-behavior cases and historical failing logs are retained under
+`docs/evidence/issue-28/` (intermediate RED source snapshots are NOT_RETAINED):
 `causal-authored-*`, `causal-trace-*`, `causal-vector-*`, `causal-calibration-*`,
 and `causal-constant-*`. This is a foundation slice, not completed paper-family
 coverage. Sampled topology/function priors, nonlinear mechanisms, typed categorical
 states, interventions and the expanded workbench remain outstanding.
+
+Independent review rejected the first core checkpoint for direct outcome exposure;
+see [the review and reproduction record](issue-28-core-review.md). The first
+regression fix has a committed RED state; the original review is retained.

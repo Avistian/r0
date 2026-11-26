@@ -14,6 +14,11 @@ from r0.modules.priors.lib.task_output import complete_task
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
+def causal_rng(seed: int, task_id: int, *keys: object) -> np.random.Generator:
+    """One versioned stream identity for generation and original-row inspection."""
+    return np.random.default_rng(int(record_fingerprint(("causal-v1", seed, task_id, keys)), 16))
+
+
 @dataclass(frozen=True, slots=True)
 class CausalNode:
     parents: tuple[int, ...] = ()
@@ -78,6 +83,8 @@ class CausalRecipe:
         outputs = self.task.classes if self.task.task_type == "multiclass" else 1
         if len(self.observed) != self.task.features or len(self.target) != outputs:
             raise ValueError("causal readout widths must match feature and target controls")
+        if set(self.observed) & set(self.target):
+            raise ValueError("a declared target channel cannot be observed as a feature")
         if type(self.normalize) is not bool or (
             type(self.calibration_rows) is not int or not 32 <= self.calibration_rows <= 65536
         ):
@@ -126,9 +133,7 @@ def generate_causal(
         raise ValueError("CUDA is unavailable; select CPU explicitly")
 
     def rng(*keys: object) -> np.random.Generator:
-        return np.random.default_rng(
-            int(record_fingerprint((recipe.version, seed, task_id, keys)), 16)
-        )
+        return causal_rng(seed, task_id, *keys)
 
     values, _ = causal_values(recipe.nodes, recipe.task.rows, rng, device)
     inputs = torch.stack([values[i][:, j] for i, j in recipe.observed], dim=1)

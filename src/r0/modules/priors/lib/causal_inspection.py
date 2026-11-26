@@ -6,8 +6,7 @@ from typing import Any
 import numpy as np
 import torch
 
-from r0.modules.priors.lib.causal import CausalNode, causal_values
-from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.causal import CausalNode, causal_rng, causal_values
 
 
 def causal_steps(
@@ -27,9 +26,7 @@ def causal_steps(
     )
 
     def rng(*keys: object) -> np.random.Generator:
-        return np.random.default_rng(
-            int(record_fingerprint((card["version"], card["seed"], card["task_id"], keys)), 16)
-        )
+        return causal_rng(card["seed"], card["task_id"], *keys)
 
     values, innovations = causal_values(nodes, rows, rng, "cpu", indices)
     for i, (node, value, noise) in enumerate(zip(nodes, values, innovations, strict=True)):
