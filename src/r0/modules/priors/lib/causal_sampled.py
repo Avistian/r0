@@ -22,6 +22,7 @@ class SampledCausalRecipe(CausalRecipe):
         if self.version != "causal-v2" or self.construction not in (
             "gaussian-activation-prior-v1",
             "activation-exogenous-v1",
+            "activation-factorized-v1",
         ):
             raise ValueError("sampled activation recipes require their v2 construction")
         if type(self.activation_prior) is not CausalActivationPrior:

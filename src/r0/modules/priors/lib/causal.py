@@ -79,10 +79,16 @@ class CausalRecipe:
             "gaussian-activated-v1",
             "gaussian-activation-prior-v1",
             "activation-exogenous-v1",
+            "activation-factorized-v1",
         ) or (self.construction != "authored" and self.topology is None):
             raise ValueError("sampled construction requires its saved topology")
         if (
-            self.construction in ("gaussian-activation-prior-v1", "activation-exogenous-v1")
+            self.construction
+            in (
+                "gaussian-activation-prior-v1",
+                "activation-exogenous-v1",
+                "activation-factorized-v1",
+            )
             and type(self) is CausalRecipe
         ):
             raise ValueError("activation sampling construction requires its saved prior")

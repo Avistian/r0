@@ -317,6 +317,7 @@ def sample_recipe(
         "causal-activated-v1": ("forward", "layered", "redirection"),
         "causal-preferences-v1": ("forward", "layered", "redirection"),
         "causal-exogenous-v1": ("forward", "layered", "redirection"),
+        "causal-factorized-v1": ("forward", "layered", "redirection"),
     }
     if profile not in families or family not in families[profile]:
         raise ValueError("unsupported sampling profile or family")
@@ -325,6 +326,7 @@ def sample_recipe(
         "causal-activated-v1",
         "causal-preferences-v1",
         "causal-exogenous-v1",
+        "causal-factorized-v1",
     ):
         return sample_causal_profile(
             family,
