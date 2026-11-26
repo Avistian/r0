@@ -234,3 +234,44 @@ def test_power_and_stabilized_log_variants_have_distinct_equations(
 ) -> None:
     activation = CausalActivation(kind, parameters)
     test_activation_parameters_change_the_frozen_function(activation, argument, expected)
+
+
+@pytest.mark.parametrize(
+    ("kind", "values", "expected"),
+    [
+        ("softmax", (0.0, 1.0986122886681098), (0.25, 0.75)),
+        ("tied_max", (3.0, 1.0, 3.0, -2.0), (1.0, 0.0, 1.0, 0.0)),
+        ("argmax", (3.0, 1.0, 3.0, -2.0), (1.0, 0.0, 0.0, 0.0)),
+        ("rank", (3.0, 1.0, 3.0, -2.0), (2.0, 1.0, 3.0, 0.0)),
+        ("argsort", (3.0, 1.0, 3.0, -2.0), (3.0, 1.0, 0.0, 2.0)),
+    ],
+)
+@pytest.mark.parametrize("position", ["input", "output"])
+def test_channel_activations_preserve_tie_rules_and_cross_channel_ancestry(
+    kind: str, values: tuple[float, ...], expected: tuple[float, ...], position: str
+) -> None:
+    width = len(values)
+    activation = CausalActivation(kind)
+    node = ActivatedCausalNode(
+        parents=(0,),
+        weights=tuple(tuple(float(i == j) for j in range(width)) for i in range(width)),
+        bias=(0.0,) * width,
+        noise_scale=(0.0,) * width,
+        input_activation=activation if position == "input" else CausalActivation(),
+        output_activation=activation if position == "output" else CausalActivation(),
+    )
+    recipe = CausalRecipe(
+        task=LinearRecipe(
+            rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+        ),
+        nodes=(CausalNode(bias=values, noise_scale=(0.0,) * width), node),
+        observed=((0, 1),),
+        target=((1, 0),),
+        version="causal-v2",
+    )
+    task = generate_task(recipe, seed=28, task_id=12)
+    card = json.loads(task.mechanism_json)
+    assert card["active"] == [0]  # Input channel 1 can influence output channel 0.
+    trace = explain_generation(task, [0])
+    output = next(n for n in trace["nodes"] if n["id"] == "causal-1")
+    torch.testing.assert_close(torch.tensor(output["values"][0]), torch.tensor(expected))
