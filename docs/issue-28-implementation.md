@@ -167,7 +167,8 @@ T7/T12's train/eval commands have not landed. This is not hosted CI or ML accept
 Independent spec review: **PASS for the partial topology slice**, not full #28.
 Independent standards review found one P2 evidence-retention gap in the publication
 claim; the procedure and receipt above repair it. The original finding remains
-recorded in the topology checkpoint document. No package source changed after the
+recorded in the topology checkpoint document. Scoped standards recheck PASS at
+`30eb1b1` independently confirmed the retention repair. No package source changed after the
 reviewed revision. Broader graph families, nonlinear/tree/network mechanisms,
 typed categorical states, interventions, workbench UI and final environment/scale
 evidence remain required and incomplete.

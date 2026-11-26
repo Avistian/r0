@@ -144,6 +144,12 @@ body strings from local `issue-28-latest-before-link.json` and
 retained under `docs/evidence/issue-28/`. Earlier unretained Pyright/RED snapshots
 remain qualified in the separate core review record.
 
+Scoped standards recheck **PASS** at `30eb1b1`: the reviewer independently matched
+the receipt against the original snapshots, decoded publication bytes, pinned Git
+object, decision list and appended section. Live GitHub execution was inspected
+but NOT_RUN by that reviewer; the author's retained live recheck reports MATCH.
+This resolves the P2 retention finding, without broadening the acceptance scope.
+
 ### Spec
 
 Independent review found no concrete defect in this partial slice. Its
@@ -186,3 +192,9 @@ successful task archives. Original artifacts remain under
 `docs/evidence/issue-28/topology-census-b03dc24/`. Its census is separate from the
 independent reviewer calculations and from automated tests. `make check` passed
 497 tests with one skip at the reviewed revision; no browser/GPU/Colab claim follows.
+
+The skipped test is GPU numerical agreement because CUDA is unavailable. The
+retained independent executable was rerun at `30eb1b1`; all 13 check groups match
+the original reviewer results exactly. Package and test files are unchanged from
+`b03dc24`. Review totals: Standards, one P2 resolved and no remaining findings in
+this delta; Spec, zero concrete defects in the partial slice. Full #28 is incomplete.
