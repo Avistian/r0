@@ -3,8 +3,10 @@
 import json
 from dataclasses import asdict, replace
 
+import pytest
 import torch
 
+from r0.modules.episodes import TaskType
 from r0.modules.priors import (
     ActivatedCausalNode,
     CausalActivation,
@@ -14,6 +16,7 @@ from r0.modules.priors import (
     explain_generation,
     generate_task,
     recipe_from_dict,
+    sample_recipe,
 )
 
 
@@ -53,3 +56,50 @@ def test_nonlinear_noise_order_is_explicit_and_replayed_in_the_row_trace() -> No
     )
     assert replay.episode() == right.episode()
     assert "after_output" in nodes[1]["causal-1"]["parameters"]["noise_position"]
+
+
+@pytest.mark.parametrize(
+    ("kind", "classes", "noise"), [("regression", 0, 0.5), ("binary", 2, 0), ("multiclass", 3, 0)]
+)
+def test_activated_task_trace_reconstructs_target_adapter_draws(
+    kind: TaskType, classes: int, noise: float
+) -> None:
+    controls = LinearRecipe(
+        rows=32,
+        context_rows=16,
+        features=1,
+        signal_features=1,
+        active_features=1,
+        task_type=kind,
+        classes=classes,
+        noise_ratio=noise,
+    )
+    width = classes if kind == "multiclass" else 1
+    recipe = CausalRecipe(
+        task=controls,
+        nodes=(
+            CausalNode(),
+            ActivatedCausalNode(
+                parents=(0,),
+                weights=(tuple(float(i + 1) for i in range(width)),),
+                bias=(0.0,) * width,
+                noise_scale=(0.2,) * width,
+                input_activation=CausalActivation("relu"),
+            ),
+        ),
+        observed=((0, 0),),
+        target=tuple((1, i) for i in range(width)),
+        version="causal-v2",
+    )
+    task = generate_task(recipe, seed=28, task_id=9)
+    trace = explain_generation(task, [0, 2, 5, 8, 10, 14, 16, 17, 23, 31])
+    assert trace["target_max_error"] < 1e-12
+
+
+def test_affine_v1_retains_its_pre_extension_task_identity() -> None:
+    # Captured with the public API at 23f0302, before activated nodes were introduced.
+    controls = LinearRecipe(rows=16, context_rows=8)
+    recipe = sample_recipe("layered", profile="causal-affine-v1", task=controls, seed=28, task_id=7)
+    task = generate_task(recipe, seed=28, task_id=7)
+    assert task.source_task_id == "4a32001c1cc4b1245584567608a67dabb7d808894a4ca15224615380ad03adca"
+    assert task.episode_id == "58796f5875753553826e6d780f42085319616ac02061e3b3942e841a2e373817"
