@@ -3,7 +3,6 @@
 import math
 from dataclasses import dataclass
 from decimal import Decimal, localcontext
-from typing import Any
 
 import numpy as np
 
@@ -12,7 +11,6 @@ from r0.modules.priors.lib.weight_vectors import (
     PolynomialWeightVector,
     UniformWeightVector,
     WeightVector,
-    weight_vector_from_dict,
 )
 
 type Matrix = tuple[tuple[float, ...], ...]
@@ -265,25 +263,3 @@ class LaplaceKernelWeights:
                 for a, b in zip(left, right, strict=True)
             )
             return math.hypot(*differences)
-
-
-type WeightConstruction = FactorizedWeights | ImportanceWeights | LaplaceKernelWeights
-
-
-def weight_construction_from_dict(data: dict[str, Any]) -> WeightConstruction:
-    fields = dict(data)
-    if fields.get("version") == "laplace-kernel-weights-v1":
-        for name in ("left_points", "right_points", "signs"):
-            if name in fields:
-                fields[name] = tuple(tuple(row) for row in fields[name])
-        return LaplaceKernelWeights(**fields)
-    if fields.get("version") == "importance-weights-v1":
-        fields["gaussian"] = tuple(tuple(row) for row in fields["gaussian"])
-        fields["importance"] = tuple(weight_vector_from_dict(v) for v in fields["importance"])
-        return ImportanceWeights(**fields)
-    for name in ("left", "right"):
-        if name in fields:
-            fields[name] = tuple(tuple(row) for row in fields[name])
-    if "diagonal" in fields:
-        fields["diagonal"] = tuple(fields["diagonal"])
-    return FactorizedWeights(**fields)

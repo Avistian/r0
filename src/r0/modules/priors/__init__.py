@@ -59,6 +59,9 @@ from r0.modules.priors.lib.representatives import sample_proposal as sample_prop
 from r0.modules.priors.lib.signals import evaluate_signal as evaluate_signal
 from r0.modules.priors.lib.smooth import SmoothRecipe as SmoothRecipe
 from r0.modules.priors.lib.training_task import TrainingTask as TrainingTask
+from r0.modules.priors.lib.transformed_weights import GaussianWeights as GaussianWeights
+from r0.modules.priors.lib.transformed_weights import NormalizedWeights as NormalizedWeights
+from r0.modules.priors.lib.transformed_weights import TransformedWeights as TransformedWeights
 from r0.modules.priors.lib.weight_matrices import FactorizedWeights as FactorizedWeights
 from r0.modules.priors.lib.weight_matrices import ImportanceWeights as ImportanceWeights
 from r0.modules.priors.lib.weight_matrices import LaplaceKernelWeights as LaplaceKernelWeights
