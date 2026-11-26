@@ -149,7 +149,7 @@ as sampled by this particular scalar convenience profile.
 | Power and stabilized log variants | `ac821ed` | `b782d76` |
 | Channel ties and ancestry | `5cdff35` | `97833a0` |
 | Saturation retention | `f9e51bb` | `2cf58b3` |
-| Sampled explorer save/reopen | `75f9785` | subsequent nonlinear-profile implementation |
+| Sampled explorer save/reopen | `75f9785` | `1ed90b2` |
 
 `b8a5940` was an intermediate implementation commit still failing shared trace
 dispatch; it is not GREEN evidence. The fixed-catalog working-state check before

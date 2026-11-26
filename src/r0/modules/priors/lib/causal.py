@@ -300,7 +300,9 @@ def generate_causal(
                 projected = [{(i, channel)} for channel in range(len(node.bias))]
             elif node.output_activation.mixes_channels:
                 shared = set[tuple[int, int]]().union(*projected)
-                projected = [shared for _ in node.bias]
+                if node.noise_position == "after_output":
+                    shared = {ref for ref in shared if ref[0] != i}
+                projected = [shared | {(i, channel)} for channel in range(len(node.bias))]
         for channel, related in enumerate(projected):
             ancestry[i, channel] = related
     target_ancestors: set[tuple[int, int]] = set()
