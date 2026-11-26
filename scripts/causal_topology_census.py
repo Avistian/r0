@@ -80,6 +80,30 @@ def run(destination: Path, profile: str = "causal-affine-v1") -> None:
                     if "activation_prior" in r.get("recipe", {})
                 )
             ),
+            "exogenous_laws": dict(
+                Counter(
+                    node["exogenous"]["inputs"]["family"]
+                    for r in records
+                    for node in r.get("recipe", {}).get("nodes", [])
+                    if "exogenous" in node
+                )
+            ),
+            "exogenous_geometry": dict(
+                Counter(
+                    node["exogenous"]["geometry"]
+                    for r in records
+                    for node in r.get("recipe", {}).get("nodes", [])
+                    if "exogenous" in node
+                )
+            ),
+            "noise_strengths": dict(
+                Counter(
+                    str(node["noise_response"]["strength"])
+                    for r in records
+                    for node in r.get("recipe", {}).get("nodes", [])
+                    if "noise_response" in node
+                )
+            ),
             "flag_counts": dict(Counter(flag for r in valid for flag in r["flags"])),
             "ranges": {
                 name: [min(r[name] for r in valid), max(r[name] for r in valid)]
@@ -107,7 +131,12 @@ if __name__ == "__main__":
     parser.add_argument("destination", type=Path)
     parser.add_argument(
         "--profile",
-        choices=("causal-affine-v1", "causal-activated-v1", "causal-preferences-v1"),
+        choices=(
+            "causal-affine-v1",
+            "causal-activated-v1",
+            "causal-preferences-v1",
+            "causal-exogenous-v1",
+        ),
         default="causal-affine-v1",
     )
     args = parser.parse_args()
