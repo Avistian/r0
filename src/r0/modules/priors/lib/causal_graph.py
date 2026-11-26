@@ -49,6 +49,21 @@ class CausalGraph:
     seed: int
     task_id: int
 
+    def __post_init__(self) -> None:
+        if type(self.prior) is not CausalGraphPrior or (
+            type(self.parents) is not tuple or len(self.parents) != self.prior.nodes
+        ):
+            raise ValueError("graph topology must match its prior node count")
+        if any(type(v) is not int or not 0 <= v < 2**63 for v in (self.seed, self.task_id)):
+            raise ValueError("graph seed and task_id must be integers in [0, 2**63)")
+        for node, incoming in enumerate(self.parents):
+            if (
+                type(incoming) is not tuple
+                or any(type(p) is not int or not 0 <= p < node for p in incoming)
+                or tuple(sorted(set(incoming))) != incoming
+            ):
+                raise ValueError("graph parents must be unique sorted earlier node indices")
+
 
 def sample_causal_graph(
     prior: CausalGraphPrior,

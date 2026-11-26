@@ -36,8 +36,27 @@ class CausalLimits:
         outputs: int,
     ) -> dict[str, int]:
         """Bound declared geometry before tensors; this is not measured process RSS."""
-        widths = tuple(len(node.bias) for node in nodes)
-        count, widest, total = len(nodes), max(widths), sum(widths)
+        return self.admit_dimensions(
+            tuple(len(node.bias) for node in nodes),
+            tuple(node.parents for node in nodes),
+            rows=rows,
+            calibration_rows=calibration_rows,
+            features=features,
+            outputs=outputs,
+        )
+
+    def admit_dimensions(
+        self,
+        widths: tuple[int, ...],
+        parents: tuple[tuple[int, ...], ...],
+        *,
+        rows: int,
+        calibration_rows: int,
+        features: int,
+        outputs: int,
+    ) -> dict[str, int]:
+        """Admit validated DAG dimensions before allocating sampled parameter arrays."""
+        count, widest, total = len(widths), max(widths), sum(widths)
         if count > self.nodes:
             raise ValueError("causal node count limit exceeded")
         if widest > self.node_channels:
@@ -45,11 +64,12 @@ class CausalLimits:
         if total > self.total_channels:
             raise ValueError("causal total channel limit exceeded")
         parameters = sum(
-            2 * len(node.bias) + sum(len(row) for row in node.weights) for node in nodes
+            width * (2 + sum(widths[p] for p in incoming))
+            for width, incoming in zip(widths, parents, strict=True)
         )
         if parameters > self.parameters:
             raise ValueError("causal parameter limit exceeded")
-        fan_in = max(sum(widths[parent] for parent in node.parents) for node in nodes)
+        fan_in = max(sum(widths[parent] for parent in incoming) for incoming in parents)
         peak_rows = max(rows, calibration_rows)
         # Float64: simultaneous values/innovations, calibration, parent concatenation,
         # temporary evaluation buffers, observation/target arrays, and serialized

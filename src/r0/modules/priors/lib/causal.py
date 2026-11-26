@@ -8,6 +8,7 @@ import numpy as np
 import torch
 
 from r0.modules.priors.lib.calibration import stable_calibration
+from r0.modules.priors.lib.causal_graph import CausalGraph
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
@@ -59,6 +60,8 @@ class CausalRecipe:
     normalize: bool = False
     calibration_rows: int = 256
     limits: CausalLimits = CausalLimits()
+    topology: CausalGraph | None = None
+    construction: str = "authored"
     version: str = "causal-v1"
 
     def __post_init__(self) -> None:
@@ -72,6 +75,15 @@ class CausalRecipe:
             incoming = sum(len(self.nodes[p].bias) for p in node.parents)
             if len(node.weights) != incoming:
                 raise ValueError("causal weight input width must match all parent channels")
+        if self.topology is not None and (
+            type(self.topology) is not CausalGraph
+            or self.topology.parents != tuple(node.parents for node in self.nodes)
+        ):
+            raise ValueError("saved topology must match structural node parents")
+        if self.construction not in ("authored", "gaussian-affine-v1") or (
+            self.construction != "authored" and self.topology is None
+        ):
+            raise ValueError("sampled construction requires its saved topology")
         for refs in (self.observed, self.target):
             if type(refs) is not tuple or any(
                 type(ref) is not tuple
@@ -192,6 +204,8 @@ def generate_causal(
     card = {
         "version": recipe.version,
         "family": "causal",
+        "topology": asdict(recipe.topology) if recipe.topology is not None else None,
+        "construction": recipe.construction,
         "nodes": [asdict(node) for node in recipe.nodes],
         "observed": recipe.observed,
         "target": recipe.target,
