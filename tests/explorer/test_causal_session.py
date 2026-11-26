@@ -17,6 +17,7 @@ from r0.modules.explorer import ExplorerSession
         ("causal-preferences-v1", "gaussian-activation-prior-v1"),
         ("causal-exogenous-v1", "activation-exogenous-v1"),
         ("causal-factorized-v1", "activation-factorized-v1"),
+        ("causal-importance-v1", "activation-importance-v1"),
     ],
 )
 def test_sampled_causal_session_saves_reopens_and_replays_its_graph(
