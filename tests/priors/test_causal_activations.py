@@ -322,3 +322,27 @@ def test_activation_domain_and_overflow_failures_are_not_clipped(
 ) -> None:
     with pytest.raises(ValueError, match=message):
         test_activation_parameters_change_the_frozen_function(CausalActivation(kind), argument, 0)
+
+
+def test_channel_transform_does_not_couple_noise_added_after_it() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    node = ActivatedCausalNode(
+        bias=(0.0, 0.0),
+        noise_scale=(1.0, 1.0),
+        output_activation=CausalActivation("softmax"),
+        noise_position="after_output",
+    )
+    recipe = CausalRecipe(
+        task=controls, nodes=(node,), observed=((0, 0),), target=((0, 1),), version="causal-v2"
+    )
+    independent = generate_task(recipe, seed=28, task_id=14)
+    assert json.loads(independent.mechanism_json)["active"] == []
+    coupled = generate_task(
+        replace(recipe, nodes=(replace(node, noise_position="before_output"),)), seed=28, task_id=14
+    )
+    assert json.loads(coupled.mechanism_json)["active"] == [0]
+    torch.testing.assert_close(
+        coupled.inputs[:, 0] + coupled.targets, torch.ones(16, dtype=torch.float64)
+    )
