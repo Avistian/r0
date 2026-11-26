@@ -76,9 +76,7 @@ def causal_moment_orders(nodes: tuple[CausalNode, ...]) -> list[list[float]]:
                 else math.inf
             )
             for j, sources in enumerate(spec.channel_sources(len(node.bias))):
-                zero_affine = node.bias[j] == 0 and all(row[j] == 0 for row in node.weights)
-                zero_response = response.offset == 0 and (response.strength == 0 or zero_affine)
-                if node.noise_scale[j] and sources and not zero_response:
+                if node.has_noise_scale(j) and sources:
                     noise[j] = min(base, affine[j] / response.power) if response.strength else base
         if isinstance(node, ActivatedCausalNode) and node.noise_position == "after_output":
             output = _activation_orders(affine, node.output_activation)

@@ -257,7 +257,7 @@ def generate_causal(
         if isinstance(node, StochasticCausalNode):
             sources = [
                 {(i, source) for source in indices}
-                if node.noise_scale[j]
+                if node.has_noise_scale(j)
                 else set[tuple[int, int]]()
                 for j, indices in enumerate(node.exogenous.channel_sources(len(node.bias)))
             ]

@@ -82,6 +82,12 @@ class StochasticCausalNode(ActivatedCausalNode):
     def structural_parameter_count(self) -> int:
         return self.activation_parameter_count + self.exogenous.parameter_count + 3
 
+    def has_noise_scale(self, channel: int) -> bool:
+        response = self.noise_response
+        zero_affine = self.bias[channel] == 0 and all(row[channel] == 0 for row in self.weights)
+        zero_response = response.offset == 0 and (response.strength == 0 or zero_affine)
+        return self.noise_scale[channel] != 0 and not zero_response
+
     def __post_init__(self) -> None:
         ActivatedCausalNode.__post_init__(self)
         if type(self.exogenous) is not ExogenousDistribution:
