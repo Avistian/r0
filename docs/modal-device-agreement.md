@@ -52,3 +52,6 @@ remaining reservations. A successful CPU preflight is not proof of CUDA agreemen
 The [retained T4 results](modal-device-results.md) establish this bounded run at
 its identified source, including 93 passing comparisons and zero-regeneration
 resume. They do not qualify every sampled recipe or establish hosted Colab use.
+
+Before proposing more tasks, use the [retained-result estimate command](modal-generation-estimates.md)
+to review measured throughput and projected generation time without launching compute.
