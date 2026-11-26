@@ -103,3 +103,69 @@ def test_affine_v1_retains_its_pre_extension_task_identity() -> None:
     task = generate_task(recipe, seed=28, task_id=7)
     assert task.source_task_id == "4a32001c1cc4b1245584567608a67dabb7d808894a4ca15224615380ad03adca"
     assert task.episode_id == "58796f5875753553826e6d780f42085319616ac02061e3b3942e841a2e373817"
+
+
+@pytest.mark.parametrize(
+    ("kind", "argument", "expected"),
+    [
+        ("identity", -2, -2),
+        ("relu", -2, 0),
+        ("tanh", -2, -0.9640275800758169),
+        ("sigmoid", -2, 0.11920292202211755),
+        ("leaky_relu", -2, -0.02),
+        ("elu", -2, -0.8646647167633873),
+        ("selu", 2, 2.101401974710961),
+        ("silu", -2, -0.2384058440442351),
+        ("softplus", 0, 0.6931471805599453),
+        ("smooth_relu", 0, 0.6931471805599453),
+        ("relu6", 9, 6),
+        ("hardtanh", -2, -1),
+        ("sign", 0, 0),
+        ("sign_positive", 0, 1),
+        ("gaussian_bump", -2, 0.01831563888873418),
+        ("exp", 2, 7.38905609893065),
+        ("sqrt_abs", -4, 2),
+        ("interval_abs_le_1", -1, 1),
+        ("interval_0_1", -1, 0),
+        ("sin", 1.5707963267948966, 1),
+        ("square", -2, 4),
+        ("abs", -2, 2),
+        ("log", 1, 0),
+        ("log_abs", 0, -13.815510557964274),
+        ("log_sigmoid", 0, -0.6931471805599453),
+        ("round", 2.5, 2),
+        ("step", 0, 0),
+        ("heaviside", 0, 0),
+        ("heaviside_positive", 0, 1),
+        ("modulo", -1.25, 0.75),
+        ("gelu", 1, 0.8413447460685429),
+    ],
+)
+def test_fixed_activation_equations_survive_task_serialization(
+    kind: str, argument: float, expected: float
+) -> None:
+    # Independent scalar reference values, including exact boundary conventions.
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    recipe = CausalRecipe(
+        task=controls,
+        nodes=(
+            ActivatedCausalNode(
+                bias=(argument,), noise_scale=(0.0,), output_activation=CausalActivation(kind)
+            ),
+            CausalNode(),
+        ),
+        observed=((1, 0),),
+        target=((0, 0),),
+        version="causal-v2",
+    )
+    restored = recipe_from_dict(json.loads(json.dumps(asdict(recipe))))
+    task = generate_task(restored, seed=28, task_id=10)
+    torch.testing.assert_close(
+        task.targets, torch.full((16,), expected, dtype=torch.float64), rtol=1e-12, atol=1e-12
+    )
+    trace = explain_generation(task, [0])
+    node = next(n for n in trace["nodes"] if n["id"] == "causal-0")
+    assert node["parameters"]["output_activation"]["kind"] == kind
+    assert node["values"][0][0] == float(task.targets[0])
