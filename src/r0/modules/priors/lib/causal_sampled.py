@@ -64,20 +64,37 @@ def with_activation_prior(
 ) -> SampledCausalRecipe:
     if type(prior) is not CausalActivationPrior:
         raise ValueError("activation sampling requires CausalActivationPrior")
-    if prior.mode != "homogeneous":
-        raise ValueError("only homogeneous activation sampling is implemented")
     rng = np.random.default_rng(
         int(record_fingerprint((asdict(prior), seed, task_id, "activation-prior-v1")), 16)
     )
-    chosen = int(rng.choice(len(prior.choices), p=prior.base_probabilities()))
-    probabilities = tuple(float(i == chosen) for i in range(len(prior.choices)))
+    base = prior.base_probabilities()
+    probabilities = base
+    if prior.mode == "homogeneous":
+        chosen = int(rng.choice(len(prior.choices), p=base))
+        probabilities = tuple(float(i == chosen) for i in range(len(prior.choices)))
+    elif prior.mode == "dirichlet":
+        support = np.asarray(base) > 0
+        alpha = prior.concentration * np.asarray(base)[support]
+        if not np.isfinite(alpha).all() or np.any(alpha <= 0):
+            raise ValueError("unrepresentable Dirichlet parameters; draw was not retried")
+        gamma = rng.gamma(alpha)
+        if not np.isfinite(gamma).all() or not np.any(gamma > 0):
+            raise ValueError("nonfinite or underflowed Dirichlet draw; draw was not retried")
+        gamma = gamma / gamma.max()
+        values = np.zeros(len(base))
+        values[support] = gamma / gamma.sum()
+        probabilities = tuple(float(p) for p in values)
+
+    def choose() -> CausalActivation:
+        return prior.choices[int(rng.choice(len(prior.choices), p=probabilities))]
+
     nodes = tuple(
         ActivatedCausalNode(
             **asdict(node),
-            input_activation=prior.choices[chosen]
+            input_activation=choose()
             if node.parents and prior.placement in ("input", "both")
             else CausalActivation(),
-            output_activation=prior.choices[chosen]
+            output_activation=choose()
             if prior.placement in ("output", "both")
             else CausalActivation(),
             noise_position="after_output"
