@@ -1,0 +1,212 @@
+{
+  "source_head": "593c924f5e2ea8da31d4c34d9da430aef4b38489",
+  "reconstruction": "Concatenate listed parts in order as bytes; verify byte count and SHA256. Split fragments are not standalone JSON documents.",
+  "files": [
+    {
+      "name": "probes.jsonl",
+      "bytes": 389385,
+      "sha256": "010bac57507c7c3aaddca0ec5a5c00b9d7175060fbac29083ad9377720efa153",
+      "parts": [
+        {
+          "path": "0028-numerical-preferences-probes-01.txt",
+          "bytes": 17910,
+          "sha256": "d2b4ad13569161ccc8bd8b981ff53a6b0aaeb4180477fbaba995f6806b9af608"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-02.txt",
+          "bytes": 17530,
+          "sha256": "d20e76ab4397422b25398b816411e033e7a702715ffc8ffc717300d57debf8b4"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-03.txt",
+          "bytes": 17572,
+          "sha256": "ced7374c5a9d9b54f12ab9e569bbb2f8f9e2a541e930627d3b04d33664854224"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-04.txt",
+          "bytes": 17563,
+          "sha256": "856eeb938931ca70dd36b91bbc82f731b036a85ae25e8def17cd2ecbe816b0e9"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-05.txt",
+          "bytes": 17615,
+          "sha256": "dd0c5e63d7e8dd62f24baface6773c269900a6c0865315d6a958d0dabd907a5d"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-06.txt",
+          "bytes": 17739,
+          "sha256": "fb6f5b177e3746db1ad4d9143b31ddfd0a1714b0424a50504b004ac0fd72532c"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-07.txt",
+          "bytes": 17694,
+          "sha256": "d93326e7fd7fd6847f32e6ce7d1a3bdb971749f39384dd31b7a07350bc4db56e"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-08.txt",
+          "bytes": 17773,
+          "sha256": "4144d5f463dba6c258eb9a8622106b443b8605125bfb4de4777aa5302ce3196f"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-09.txt",
+          "bytes": 17716,
+          "sha256": "cb5b3ef83ea6d6fd7390dede77f572c1dd0ec81e035b13bf5c09ee4995ac075e"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-10.txt",
+          "bytes": 17905,
+          "sha256": "fd2ea1e30c72de5d4c2a2bacdd29a9716ce13c144a96d67b71f8cd63d012f5ac"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-11.txt",
+          "bytes": 17698,
+          "sha256": "636b78a494f2a4e643158ce8d4fa3aa012c6b73b6406fe015838e577567c8e3d"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-12.txt",
+          "bytes": 17579,
+          "sha256": "e26edba0f25e240dca971fa5913234f08f16730c6f5941dfb165ba6308e037e8"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-13.txt",
+          "bytes": 17531,
+          "sha256": "458c2cabacbffad0e72e12d18f2de8ca6a57b478781c2ab77197bb2c9f7bab9c"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-14.txt",
+          "bytes": 17639,
+          "sha256": "889ab5469ee1af5962b468ece133585c02b7410f396b264d4e81440077f93a0c"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-15.txt",
+          "bytes": 17911,
+          "sha256": "5a49f89e0aaa67efba79f26ce0c801a8a634a35cc1b61389641e786661558794"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-16.txt",
+          "bytes": 17582,
+          "sha256": "638d22171bf73bd4ef34378c5dfeae59395d84e48ea02b720e159af5fe6ddf26"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-17.txt",
+          "bytes": 17660,
+          "sha256": "9f22be1f6ceee92b4614d9fd5c6136892a6b73f8c9f8e4f1d178223d1472e5ae"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-18.txt",
+          "bytes": 17825,
+          "sha256": "21d8df35dcef7140800816acca6939bd58c33df1328fa4fb0a92b8d7562f1b85"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-19.txt",
+          "bytes": 17679,
+          "sha256": "ca11d1b1885aff119e359a662b315a3b5cb37c98809478010e422d45447a5bbb"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-20.txt",
+          "bytes": 17822,
+          "sha256": "131777c7abebfdf545b218004951731a187beee21507308b3c977e4ccddd9ea9"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-21.txt",
+          "bytes": 17461,
+          "sha256": "93770794e04de08140ad63b4b99c87d81ad3b3468ad488821b48476525692e36"
+        },
+        {
+          "path": "0028-numerical-preferences-probes-22.txt",
+          "bytes": 17981,
+          "sha256": "23faf0b53077404eda53ecbbdb44a08144aaca647d019515d141b692a78bbf9f"
+        }
+      ]
+    },
+    {
+      "name": "beta-draw.json",
+      "bytes": 229245,
+      "sha256": "45f3b241ae8ecf4d30544476c692e6cef8e3515d93c5f720730b8c8be2656dc2",
+      "parts": [
+        {
+          "path": "0028-numerical-preferences-beta-01.txt",
+          "bytes": 17989,
+          "sha256": "b6c055c2114d1f3166b8280b1724b632f92c5b45e4043ddb6ed8178151325d95"
+        },
+        {
+          "path": "0028-numerical-preferences-beta-02.txt",
+          "bytes": 17987,
+          "sha256": "fcb30cbd02c701726087096ae610b4615dc58f3c722106ad590c8e04279dbd18"
+        },
+        {
+          "path": "0028-numerical-preferences-beta-03.txt",
+          "bytes": 17996,
+          "sha256": "ab94649a0f8733992262711ea1acc3742a7dde067569eb279c706a7d297683e5"
+        },
+        {
+          "path": "0028-numerical-preferences-beta-04.txt",
+          "bytes": 17995,
+          "sha256": "085df1186851006c5716df6892d9dec71a3826ce3b1b9b6e6c414251e13cf494"
+        },
+        {
+          "path": "0028-numerical-preferences-beta-05.txt",
+          "bytes": 17994,
+          "sha256": "671ea3c87c936a7c3a9cd5b8067ee8d21c4c692eea672b7cecc3dc1a342bb4e2"
+        },
+        {
+          "path": "0028-numerical-preferences-beta-06.txt",
+          "bytes": 17982,
+          "sha256": "bd91b4c1a18cb982c7c6d59eab67ce067fe8e2b34f15417c836546a9df52ac0c"
+        },
+        {
+          "path": "0028-numerical-preferences-beta-07.txt",
+          "bytes": 17976,
+          "sha256": "82babb7320afe5c2030badb074b8e33ca6d24bf5350b2f1a61e52767f64b92a3"
+        },
+        {
+          "path": "0028-numerical-preferences-beta-08.txt",
+          "bytes": 17994,
+          "sha256": "498f7745f1149f3bc3a90b3f0d6f0dd62cf9b1df56a53c97393583a8f7cc6b46"
+        },
+        {
+          "path": "0028-numerical-preferences-beta-09.txt",
+          "bytes": 17974,
+          "sha256": "b81751fe7cd1dd49f2b1730e6c81a1bf86dfef940704ccb5f0b356682363391a"
+        },
+        {
+          "path": "0028-numerical-preferences-beta-10.txt",
+          "bytes": 17995,
+          "sha256": "2e07da46ff7d72bd5ed32ffe5eb86a6f4020390ea0d1e261baf189b0c3b9e7fe"
+        },
+        {
+          "path": "0028-numerical-preferences-beta-11.txt",
+          "bytes": 17981,
+          "sha256": "5f1d064c89f18b0a0b0c5fa59cd90787592b423d340414c28f68fede2de6dda1"
+        },
+        {
+          "path": "0028-numerical-preferences-beta-12.txt",
+          "bytes": 17985,
+          "sha256": "64e328ae5e16bc1c984d8f0b1e93dd4a9c74e215402345c228776dd6f6f18d7d"
+        },
+        {
+          "path": "0028-numerical-preferences-beta-13.txt",
+          "bytes": 13397,
+          "sha256": "ce0d14e6ff20d2b3ac108f2aad79eebb0b8e82264d74ed62bd1b34be22dbd074"
+        }
+      ]
+    },
+    {
+      "name": "source-manifest.json",
+      "bytes": 25931,
+      "sha256": "c62e2ee084dcd5f3f8619646dfbac4c7e244117684d6168b5acc523637387573",
+      "parts": [
+        {
+          "path": "0028-numerical-preferences-source-01.txt",
+          "bytes": 17980,
+          "sha256": "864d0a2dc6ba3dac79712799c463cb574ecdd2d50012fd27ceb419faf082f665"
+        },
+        {
+          "path": "0028-numerical-preferences-source-02.txt",
+          "bytes": 7951,
+          "sha256": "056517c336c0bfd611f5c7606c37ae4af63f21f16660a2e3922b8a6956ed37be"
+        }
+      ]
+    }
+  ]
+}

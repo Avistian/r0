@@ -102,8 +102,55 @@ profile is wired to it at this checkpoint.
 
 Targeted RED/GREEN checks cover global consistency, Beta/local scope, extreme
 ranges and integer laws, explicit quantile reuse and admission before RNG use.
-Full repository checks and independent review are pending for this checkpoint.
+Full repository checks and independent review are recorded below.
 The eight earlier causal generator profiles and all their streams are unchanged;
 this checkpoint only adds new public sampler functionality. Categorical shared
 versus refreshed vectors, full source activation weighting, generator preference
 bindings/admission and new profile integration remain required next work.
+
+## Verified numerical checkpoint
+
+At `593c924`, `make check` passes **628 tests, one skipped** and all static gates.
+[Full output](research/0028-numerical-preferences-check-593c924.txt) and
+[targeted development RED/GREEN logs](research/0028-numerical-preferences-development.json)
+are retained separately. The latter include working-tree test additions and are
+not represented as immutable-revision full checks. The skipped check is CUDA in
+this CPU-only environment. CLI help confirms train/eval commands remain absent,
+so smoke/eval-smoke are NOT_AVAILABLE.
+
+Independent [spec review](research/0028-numerical-preferences-spec-review.md)
+passes **708 bounded public-contract checks**: 420 Fraction linear cases, 168
+independent Decimal ratio/power log cases, 45 floor cases, scope/reuse, replay,
+rejection atomicity, resource accounting, corruption and Beta moments. There were
+no scoped defects. This does not prove all floating-point cases or upstream RNG
+identity. The separate [standards review](research/0028-numerical-preferences-standards.md)
+finds no hard violations and one nonblocking duplication heuristic for accounting
+across retained objects, allocation planning and raw-record decoding.
+
+Only the public exports and new numerical implementation/test files differ from
+`12ad190`; earlier mechanism and profile implementations are byte-identical. No
+new profile census, browser, Colab, GPU or scientific acceptance is asserted for
+this API-only checkpoint. The original full goal remains active.
+
+The [portable verifier](../scripts/verify_numerical_preferences.py) retains all
+708 individual probe outcomes and the full 4096-unit Beta draw. Its
+[receipt](research/0028-numerical-preferences-receipt.json) identifies the interpreter,
+NumPy version, actual imports, source tree and program hash. The
+[artifact manifest](research/0028-numerical-preferences-artifacts.json) lists ordered
+parts and reconstruction hashes for the raw probes, Beta record and complete
+source manifest; concatenation restores each original file exactly. Numerical
+oracle cases observe public validation of independently calculated values; the
+quantile/Beta cases separately retain actual sampler outputs.
+
+The program requires a Git checkout at `593c924`, verifies all tracked source
+files before and after execution, and refuses an existing output directory.
+For a fresh checkout at that revision, with the repository environment available:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python /path/to/verify_numerical_preferences.py \
+  --repo /path/to/pinned-checkout /path/to/new-evidence-directory
+```
+
+The [rerun report](research/0028-numerical-preferences-portable.md) records the exact
+executed command. The final portable run preserves the original 708 checks and
+category counts; it is not 708 additional distinct scientific cases.
