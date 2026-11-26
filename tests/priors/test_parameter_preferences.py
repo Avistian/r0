@@ -90,3 +90,26 @@ def test_numerical_realizations_preserve_extreme_ranges_boundaries_and_integer_l
     sampler.numerical(parameter("sampled", 0.001, 10.0, scale="log", boundary_mass=True))
     record = sampler.freeze()
     assert priors.parameter_preferences_from_dict(json.loads(json.dumps(asdict(record)))) == record
+
+
+def test_global_quantile_policy_remaps_bounds_but_rejects_changed_batch_shape() -> None:
+    rng = np.random.default_rng(31)
+    sampler = priors.ParameterSampler(rng, default_mode="global", global_policy="quantile")
+    first = sampler.numerical(priors.NumericalParameter("gain", 0.0, 1.0))
+    remapped = sampler.numerical(priors.NumericalParameter("gain", 10.0, 20.0))
+    explicit = sampler.numerical(priors.NumericalParameter("gain", 10.0, 20.0, mode="global"))
+    assert first.units == remapped.units == explicit.units
+    assert first.preference == remapped.preference == explicit.preference
+    assert 10 <= remapped.values[0] <= 20
+    assert first.values != remapped.values
+    before = json.dumps(rng.bit_generator.state, sort_keys=True)
+    with pytest.raises(ValueError, match="global.*contract"):
+        sampler.numerical(priors.NumericalParameter("gain", 10.0, 20.0, shape=(2,)))
+    assert json.dumps(rng.bit_generator.state, sort_keys=True) == before
+    record = sampler.freeze()
+    assert len(record.draws) == 3
+    assert priors.parameter_preferences_from_dict(json.loads(json.dumps(asdict(record)))) == record
+    corrupted = json.loads(json.dumps(asdict(record)))
+    corrupted["global_policy"] = "strict"
+    with pytest.raises(ValueError, match="global.*contract"):
+        priors.parameter_preferences_from_dict(corrupted)

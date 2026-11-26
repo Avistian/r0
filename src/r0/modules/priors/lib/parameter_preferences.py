@@ -140,6 +140,7 @@ class ParameterPreferences:
     draws: tuple[NumericalDraw, ...] = ()
     default_mode: str = "meta"
     version: str = "parameter-preferences-v1"
+    global_policy: str = "strict"
 
     def __post_init__(self) -> None:
         if self.version != "parameter-preferences-v1" or self.default_mode not in (
@@ -148,6 +149,8 @@ class ParameterPreferences:
             "global",
         ):
             raise ValueError("unsupported parameter preferences version or default mode")
+        if self.global_policy not in ("strict", "quantile"):
+            raise ValueError("unsupported global numerical reuse policy")
         if type(self.preferences) is not tuple or any(
             type(p) is not NumericalPreference for p in self.preferences
         ):
@@ -171,7 +174,7 @@ class ParameterPreferences:
                 raise ValueError("numerical realization references a different preference scope")
             _validate_units(draw.request, draw.units, uniform=mode != "meta")
             if mode == "global" and (
-                replace(draw.request, mode=mode) != replace(preference.request, mode=mode)
+                not _global_compatible(draw.request, preference.request, self.global_policy)
                 or draw.units != preference.units
             ):
                 raise ValueError("global numerical realization violates the cached contract")
@@ -180,12 +183,25 @@ class ParameterPreferences:
             raise ValueError("numerical preferences must each have a retained realization")
 
 
+def _global_compatible(
+    request: NumericalParameter, previous: NumericalParameter, policy: str
+) -> bool:
+    if policy == "quantile":
+        return request.name == previous.name and request.shape == previous.shape
+    return replace(request, mode="global") == replace(previous, mode="global")
+
+
 class ParameterSampler:
     """One explicitly seeded sampling scope; freeze it for replay and inspection."""
 
-    def __init__(self, rng: np.random.Generator, *, default_mode: str = "meta") -> None:
+    def __init__(
+        self, rng: np.random.Generator, *, default_mode: str = "meta", global_policy: str = "strict"
+    ) -> None:
         if type(rng) is not np.random.Generator or default_mode not in ("meta", "local", "global"):
             raise ValueError("parameter sampler requires an injected Generator and supported mode")
+        if global_policy not in ("strict", "quantile"):
+            raise ValueError("unsupported global numerical reuse policy")
+        self._global_policy = global_policy
         self._rng = rng
         self._default_mode = default_mode
         self._preferences: list[NumericalPreference] = []
@@ -217,8 +233,8 @@ class ParameterSampler:
                 preference = NumericalPreference(request, mode=mode)
         else:
             preference = self._preferences[index]
-            if mode == "global" and (
-                replace(request, mode=mode) != replace(preference.request, mode=mode)
+            if mode == "global" and not _global_compatible(
+                request, preference.request, self._global_policy
             ):
                 raise ValueError("global numerical contract changed for a cached name")
         if mode == "global":
@@ -245,7 +261,10 @@ class ParameterSampler:
 
     def freeze(self) -> ParameterPreferences:
         return ParameterPreferences(
-            tuple(self._preferences), tuple(self._draws), self._default_mode
+            tuple(self._preferences),
+            tuple(self._draws),
+            self._default_mode,
+            global_policy=self._global_policy,
         )
 
 
