@@ -1,0 +1,20 @@
+............F.F                                                          [100%]
+=================================== FAILURES ===================================
+_ test_finite_structural_scales_survive_extreme_intermediate_values[1e-200-1e+200-1-1e-200] _
+tests/priors/test_causal_exogenous.py:288: in test_finite_structural_scales_survive_extreme_intermediate_values
+    assert float(task.scores[row, 0]) == math.tanh(bias + expected_scale * raw)
+E   assert 5.8094516312489865e-201 == 5.809451631248894e-201
+E    +  where 5.8094516312489865e-201 = float(tensor(5.8095e-201, dtype=torch.float64))
+E    +  and   5.809451631248894e-201 = <built-in function tanh>((1e-200 + (1e-200 * -0.41905483687511064)))
+E    +    where <built-in function tanh> = math.tanh
+_ test_finite_structural_scales_survive_extreme_intermediate_values[1e-100-1e+300-1e-200-1e-100] _
+tests/priors/test_causal_exogenous.py:288: in test_finite_structural_scales_survive_extreme_intermediate_values
+    assert float(task.scores[row, 0]) == math.tanh(bias + expected_scale * raw)
+E   assert 5.809451631249177e-101 == 5.809451631248893e-101
+E    +  where 5.809451631249177e-101 = float(tensor(5.8095e-101, dtype=torch.float64))
+E    +  and   5.809451631248893e-101 = <built-in function tanh>((1e-100 + (1e-100 * -0.41905483687511064)))
+E    +    where <built-in function tanh> = math.tanh
+=========================== short test summary info ============================
+FAILED tests/priors/test_causal_exogenous.py::test_finite_structural_scales_survive_extreme_intermediate_values[1e-200-1e+200-1-1e-200]
+FAILED tests/priors/test_causal_exogenous.py::test_finite_structural_scales_survive_extreme_intermediate_values[1e-100-1e+300-1e-200-1e-100]
+2 failed, 13 passed in 1.27s

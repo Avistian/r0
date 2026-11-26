@@ -1,0 +1,28 @@
+[
+  {
+    "error": "ValueError: nonfinite square activation output; task was not retried",
+    "family": "forward",
+    "head": "f75c9cdf298ab4e79a4bab805373984dfa50e7a9",
+    "profile": "causal-exogenous-v1",
+    "raw_recipe": "Original complete record in /tmp/r0-28-exogenous-census-f75c9cd/forward.jsonl",
+    "recipe_sha256": "97dc47577fc968452f65ac74f83cafb7257a0afc568f67d6492aff762c14da5f",
+    "reproduce": "Run scripts/causal_topology_census.py DESTINATION --profile causal-exogenous-v1 at recorded head; inspect forward task_id=50. Wrapper/environment documented in docs/issue-28-exogenous-laws.md.",
+    "seed": 28,
+    "status": "FAILED",
+    "task_controls": {
+      "active_features": 4,
+      "class_offsets": [],
+      "classes": 3,
+      "context_rows": 8,
+      "features": 4,
+      "noise_ratio": 0.0,
+      "rows": 16,
+      "separation": 1.0,
+      "signal_features": 4,
+      "split": 0,
+      "task_type": "multiclass",
+      "version": "linear-v1"
+    },
+    "task_id": 50
+  }
+]

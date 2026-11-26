@@ -1,0 +1,138 @@
+{
+  "status": "PASS",
+  "command": [
+    "/home/avist/Projects/r0/.venv/bin/python3",
+    "/tmp/r0-28-exogenous-oracle-v4/verify_causal_exogenous.py",
+    "--repo",
+    "/tmp/r0-28",
+    "--expected-head",
+    "a47b14e2d22298e54f41926ad9dc83ac3410a842",
+    "--base",
+    "19dd757bcbc978bd56d1c6ed76e1e71a7fd824c5",
+    "--output",
+    "/tmp/r0-28-exogenous-spec-a47b14e-final.json"
+  ],
+  "repo": "/tmp/r0-28",
+  "expected_head": "a47b14e2d22298e54f41926ad9dc83ac3410a842",
+  "base": "19dd757bcbc978bd56d1c6ed76e1e71a7fd824c5",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "scripts": {
+    "/tmp/r0-28-exogenous-oracle-v4/verify_causal_exogenous.py": "33f34cb295d7bebd73198ce6a5f0d48b56fd346f26b032e201707210eb27d9d5",
+    "/tmp/r0-28-exogenous-oracle-v4/verify_causal_exogenous_probes.py": "8de7c06104a0e99328eb8d0deab03a5d2a167bd0ffba055e4b52e9fdb0710be8",
+    "/tmp/r0-28-exogenous-oracle-v4/verify_causal_exogenous_repair.py": "f00e00d1807db950e28e04a1d55649f30a5a898f1492e7e6186f5e3303ff5cac"
+  },
+  "actual_head": "a47b14e2d22298e54f41926ad9dc83ac3410a842",
+  "initial_status": "M docs/issue-28-exogenous-laws.md\n?? .venv\n?? docs/issue-28-exogenous-verification.md\n?? docs/research/0028-exogenous-census.json\n?? docs/research/0028-exogenous-check-684a3ec-interrupted.txt\n?? docs/research/0028-exogenous-check-a7d24ad-interrupted.txt\n?? docs/research/0028-exogenous-check-f75c9cd.txt\n?? docs/research/0028-exogenous-failed-example.json\n?? docs/research/0028-exogenous-focused-a47b14e.txt\n?? docs/research/0028-exogenous-focused-b86ff16.txt\n?? docs/research/0028-exogenous-legacy-base.json\n?? docs/research/0028-exogenous-original-review.json\n?? docs/research/0028-exogenous-overflow-red.txt\n?? docs/research/0028-exogenous-standards.md\n?? docs/research/0028-exogenous-underflow-probes.json\n?? docs/research/0028-exogenous-underflow-red.txt\n?? docs/research/0028-exogenous-underflow-review.json\n?? docs/research/0028-exogenous-underflow-tolerance-attempt-01.txt\n?? docs/research/0028-exogenous-underflow-tolerance-attempt-02.txt",
+  "baseline_execution": {
+    "command": [
+      "/home/avist/Projects/r0/.venv/bin/python3",
+      "-I",
+      "-c",
+      "import runpy,sys;sys.path.insert(0,sys.argv.pop(1));p=sys.argv.pop(1);sys.argv[0]=p;runpy.run_path(p,run_name=\"__main__\")",
+      "/tmp/r0-exogenous-oracle-9t62jqcl/base/src",
+      "/tmp/r0-28-exogenous-oracle-v4/verify_causal_exogenous_probes.py",
+      "/tmp/r0-exogenous-oracle-9t62jqcl/baseline.json",
+      "--legacy-only"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "report": {
+      "status": "PASS",
+      "checks": [],
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "public_import_path": "/tmp/r0-exogenous-oracle-9t62jqcl/base/src/r0/modules/priors/__init__.py",
+      "script_sha256": "8de7c06104a0e99328eb8d0deab03a5d2a167bd0ffba055e4b52e9fdb0710be8",
+      "legacy_signatures": {
+        "causal-affine-v1/forward/5": "2b423aac8bd158578bb894ff88574a3d018e605ecfcc4913f585ccd3c07ed467",
+        "causal-affine-v1/forward/19": "57d719ca6dc52ddeae9ce92d62ee649472a63a9625ac71dd883486432983b646",
+        "causal-affine-v1/layered/5": "aefa268fa31da5959cdb6380f4081fb7f06f07b9498249f506382e46f3ecd223",
+        "causal-affine-v1/layered/19": "a4dd137cb36089c647a8980a9afe617f59bc1e41f06d2b60074445ab3e00b3a2",
+        "causal-affine-v1/redirection/5": "5245683bf3785175eb0851900bba18d564cb5840a0198ad44a586068126be787",
+        "causal-affine-v1/redirection/19": "8f14fe94e81a3d0a641700c4ae6f0abb3b7b69135abb974bfd1966d12aa4fbea",
+        "causal-activated-v1/forward/5": "fbf26c8722a2b93593ffe31784ad9f695ec909e56def03692b133562a8809cdf",
+        "causal-activated-v1/forward/19": "2e216311ba1ec9160d204d7e94c84484c720cfb430df2486569e945f64af151a",
+        "causal-activated-v1/layered/5": "68426b6a55972a5b30b3d03a495220815048de7779b73a227277b29a4a344415",
+        "causal-activated-v1/layered/19": "e0f24a418aae8d6065c67b2ed86ac66d85396d99ff458199dafac7a765f91cc7",
+        "causal-activated-v1/redirection/5": "6947619f0a8b725796d26c7817f83fc7d9d40fcb3b0aa72e69b08d6437e42d3d",
+        "causal-activated-v1/redirection/19": "92509a6d70c96daa988c0c118685efa84f7e16ad501afe9087a332dcc21e2f84",
+        "causal-preferences-v1/forward/5": "6a8d66e31e6c9e57e0c9bc67f1ceef9f104082448cdc300b326c586b3eb5856e",
+        "causal-preferences-v1/forward/19": "5ad6580aa532b182aac48860c73f5607026fc35c060120bcf17122b88a5b7a1f",
+        "causal-preferences-v1/layered/5": "2f89bdbcaa5aaddb6ecc028ce3543eda62b8c4a49845742a7e165e50d97843f6",
+        "causal-preferences-v1/layered/19": "cf4048dbe89675ab875cbe14c54fa5f53abf64f8b76c53182a7388a7304507d1",
+        "causal-preferences-v1/redirection/5": "1a5cd89f24b59e5febbd688f22f291bf9b593ab9715ca5d04d3de1bc96365312",
+        "causal-preferences-v1/redirection/19": "b026f9d05b2e0e2e3f3daf0179765541c1cb7765d9bd3d17d345472e09590dc8"
+      }
+    }
+  },
+  "candidate_execution": {
+    "command": [
+      "/home/avist/Projects/r0/.venv/bin/python3",
+      "-I",
+      "-c",
+      "import runpy,sys;sys.path.insert(0,sys.argv.pop(1));p=sys.argv.pop(1);sys.argv[0]=p;runpy.run_path(p,run_name=\"__main__\")",
+      "/tmp/r0-exogenous-oracle-9t62jqcl/candidate/src",
+      "/tmp/r0-28-exogenous-oracle-v4/verify_causal_exogenous_probes.py",
+      "/tmp/r0-exogenous-oracle-9t62jqcl/candidate.json",
+      "--legacy-baseline",
+      "/tmp/r0-exogenous-oracle-9t62jqcl/baseline.json"
+    ],
+    "returncode": 0,
+    "stdout": "{\n  \"status\": \"PASS\",\n  \"checks\": 135,\n  \"failure\": null,\n  \"output\": \"/tmp/r0-exogenous-oracle-9t62jqcl/candidate.json\"\n}\n",
+    "stderr": "",
+    "report": {
+      "status": "PASS",
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "public_import_path": "/tmp/r0-exogenous-oracle-9t62jqcl/candidate/src/r0/modules/priors/__init__.py",
+      "script_sha256": "8de7c06104a0e99328eb8d0deab03a5d2a167bd0ffba055e4b52e9fdb0710be8",
+      "legacy_signatures": {
+        "causal-affine-v1/forward/5": "2b423aac8bd158578bb894ff88574a3d018e605ecfcc4913f585ccd3c07ed467",
+        "causal-affine-v1/forward/19": "57d719ca6dc52ddeae9ce92d62ee649472a63a9625ac71dd883486432983b646",
+        "causal-affine-v1/layered/5": "aefa268fa31da5959cdb6380f4081fb7f06f07b9498249f506382e46f3ecd223",
+        "causal-affine-v1/layered/19": "a4dd137cb36089c647a8980a9afe617f59bc1e41f06d2b60074445ab3e00b3a2",
+        "causal-affine-v1/redirection/5": "5245683bf3785175eb0851900bba18d564cb5840a0198ad44a586068126be787",
+        "causal-affine-v1/redirection/19": "8f14fe94e81a3d0a641700c4ae6f0abb3b7b69135abb974bfd1966d12aa4fbea",
+        "causal-activated-v1/forward/5": "fbf26c8722a2b93593ffe31784ad9f695ec909e56def03692b133562a8809cdf",
+        "causal-activated-v1/forward/19": "2e216311ba1ec9160d204d7e94c84484c720cfb430df2486569e945f64af151a",
+        "causal-activated-v1/layered/5": "68426b6a55972a5b30b3d03a495220815048de7779b73a227277b29a4a344415",
+        "causal-activated-v1/layered/19": "e0f24a418aae8d6065c67b2ed86ac66d85396d99ff458199dafac7a765f91cc7",
+        "causal-activated-v1/redirection/5": "6947619f0a8b725796d26c7817f83fc7d9d40fcb3b0aa72e69b08d6437e42d3d",
+        "causal-activated-v1/redirection/19": "92509a6d70c96daa988c0c118685efa84f7e16ad501afe9087a332dcc21e2f84",
+        "causal-preferences-v1/forward/5": "6a8d66e31e6c9e57e0c9bc67f1ceef9f104082448cdc300b326c586b3eb5856e",
+        "causal-preferences-v1/forward/19": "5ad6580aa532b182aac48860c73f5607026fc35c060120bcf17122b88a5b7a1f",
+        "causal-preferences-v1/layered/5": "2f89bdbcaa5aaddb6ecc028ce3543eda62b8c4a49845742a7e165e50d97843f6",
+        "causal-preferences-v1/layered/19": "cf4048dbe89675ab875cbe14c54fa5f53abf64f8b76c53182a7388a7304507d1",
+        "causal-preferences-v1/redirection/5": "1a5cd89f24b59e5febbd688f22f291bf9b593ab9715ca5d04d3de1bc96365312",
+        "causal-preferences-v1/redirection/19": "b026f9d05b2e0e2e3f3daf0179765541c1cb7765d9bd3d17d345472e09590dc8"
+      },
+      "author_hint_probe": {
+        "attribution": "author code-reading hint relayed by parent",
+        "expected": "finite deterministic target 1e200; exact zero structural innovation"
+      },
+      "checks_parts": [
+        {
+          "file": "0028-exogenous-recheck-probes-01.json",
+          "checks": 75,
+          "sha256": "c4ed4bd121389640063ef97062197efa2071ca55ab6260bb71ed58043bafa170"
+        },
+        {
+          "file": "0028-exogenous-recheck-probes-02.json",
+          "checks": 51,
+          "sha256": "f60dd6281a31e4614528e2aa84153907f72624492cc14dd4f3b74bfa955a31bb"
+        },
+        {
+          "file": "0028-exogenous-recheck-probes-03.json",
+          "checks": 9,
+          "sha256": "5c8ba412a0e3b37c1fa99c781d8da553eca071ee734323bde493638ffb580755"
+        }
+      ]
+    }
+  },
+  "final_actual_head": "a47b14e2d22298e54f41926ad9dc83ac3410a842",
+  "final_status": "M docs/issue-28-exogenous-laws.md\n?? .venv\n?? docs/issue-28-exogenous-verification.md\n?? docs/research/0028-exogenous-census.json\n?? docs/research/0028-exogenous-check-684a3ec-interrupted.txt\n?? docs/research/0028-exogenous-check-a7d24ad-interrupted.txt\n?? docs/research/0028-exogenous-check-f75c9cd.txt\n?? docs/research/0028-exogenous-failed-example.json\n?? docs/research/0028-exogenous-focused-a47b14e.txt\n?? docs/research/0028-exogenous-focused-b86ff16.txt\n?? docs/research/0028-exogenous-legacy-base.json\n?? docs/research/0028-exogenous-original-review.json\n?? docs/research/0028-exogenous-overflow-red.txt\n?? docs/research/0028-exogenous-standards.md\n?? docs/research/0028-exogenous-underflow-probes.json\n?? docs/research/0028-exogenous-underflow-red.txt\n?? docs/research/0028-exogenous-underflow-review.json\n?? docs/research/0028-exogenous-underflow-tolerance-attempt-01.txt\n?? docs/research/0028-exogenous-underflow-tolerance-attempt-02.txt",
+  "unsplit_original": {
+    "path": "/tmp/r0-28-exogenous-spec-a47b14e-final.json",
+    "sha256": "cf7c450cfd58cfd0d029f2af81457fd960902ca44ed114302f317da5652eee65",
+    "note": "Reconstruct checks by concatenating arrays in checks_parts order; all other result fields unchanged."
+  }
+}

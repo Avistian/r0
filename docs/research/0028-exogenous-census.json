@@ -1,0 +1,226 @@
+{
+  "artifacts": {
+    "forward.json": {
+      "bytes": 386,
+      "sha256": "6dd50cbbe2a02d9ffb821daf7e5fe3d851dac03c8b5bc54bdfc6a73b4a43ce77"
+    },
+    "forward.jsonl": {
+      "bytes": 1010250,
+      "sha256": "a57a9456d37e5f224de3efb2c68b38bd0536d1abe03068ef48e907d538e30e0e"
+    },
+    "forward.zip": {
+      "bytes": 2253985,
+      "sha256": "fc5f5914184ce0f238b07d4bb68c551e6c24b434185550d3e8ea3b76f0e049c2"
+    },
+    "layered.json": {
+      "bytes": 390,
+      "sha256": "cce476247fafe36cb1d618d44323a02d168c123c02c1bbc3b3050fb3127fadc7"
+    },
+    "layered.jsonl": {
+      "bytes": 940014,
+      "sha256": "2182fd7371e0b01849125bac340f8702c0349a84d67ab3211cc4d1f62aa878dc"
+    },
+    "layered.zip": {
+      "bytes": 2142926,
+      "sha256": "9bb2745a69ad26b4ef267e96e8099264528e1642d28220c78581eab84685d79d"
+    },
+    "redirection.json": {
+      "bytes": 390,
+      "sha256": "8b847d3b3feeec568cdc72dac93dde551006ffa3b0cb938af3ad87659864067d"
+    },
+    "redirection.jsonl": {
+      "bytes": 935553,
+      "sha256": "426419a961ed090a77c47335c4f31760593da3454d37fb906f620e884ae48630"
+    },
+    "redirection.zip": {
+      "bytes": 2162976,
+      "sha256": "013a242fea1c8084d504d146894e5123f3276a9c49e5d128374c5694e9a04abf"
+    }
+  },
+  "device": "cpu",
+  "families": {
+    "forward": {
+      "activation_modes": {
+        "dirichlet": 18,
+        "homogeneous": 28,
+        "independent": 18
+      },
+      "attempted": 64,
+      "exogenous_geometry": {
+        "ball": 95,
+        "independent": 820
+      },
+      "exogenous_laws": {
+        "gaussian": 315,
+        "mixture": 190,
+        "student_t": 207,
+        "uniform": 203
+      },
+      "failed": 1,
+      "failure_reasons": {
+        "ValueError: nonfinite square activation output; task was not retried": 1
+      },
+      "flag_counts": {
+        "disconnected_target": 27,
+        "inactive_relu": 5,
+        "saturated_activation": 5,
+        "zero_target_dispersion": 1
+      },
+      "noise_strengths": {
+        "0": 520,
+        "0.0": 97,
+        "0.1": 114,
+        "0.5": 104,
+        "1.0": 80
+      },
+      "ranges": {
+        "components": [
+          1,
+          21
+        ],
+        "depth": [
+          0,
+          19
+        ],
+        "edges": [
+          0,
+          190
+        ],
+        "nodes": [
+          7,
+          23
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 20,
+        "regression": 22
+      },
+      "valid": 63
+    },
+    "layered": {
+      "activation_modes": {
+        "dirichlet": 21,
+        "homogeneous": 25,
+        "independent": 18
+      },
+      "attempted": 64,
+      "exogenous_geometry": {
+        "ball": 150,
+        "independent": 823
+      },
+      "exogenous_laws": {
+        "gaussian": 354,
+        "mixture": 200,
+        "student_t": 219,
+        "uniform": 200
+      },
+      "failed": 0,
+      "failure_reasons": {},
+      "flag_counts": {
+        "disconnected_target": 33,
+        "inactive_relu": 4,
+        "saturated_activation": 8,
+        "zero_target_dispersion": 2
+      },
+      "noise_strengths": {
+        "0": 712,
+        "0.0": 73,
+        "0.1": 65,
+        "0.5": 56,
+        "1.0": 67
+      },
+      "ranges": {
+        "components": [
+          1,
+          24
+        ],
+        "depth": [
+          0,
+          4
+        ],
+        "edges": [
+          0,
+          80
+        ],
+        "nodes": [
+          7,
+          24
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64
+    },
+    "redirection": {
+      "activation_modes": {
+        "dirichlet": 27,
+        "homogeneous": 18,
+        "independent": 19
+      },
+      "attempted": 64,
+      "exogenous_geometry": {
+        "ball": 23,
+        "independent": 888
+      },
+      "exogenous_laws": {
+        "gaussian": 264,
+        "mixture": 209,
+        "student_t": 219,
+        "uniform": 219
+      },
+      "failed": 0,
+      "failure_reasons": {},
+      "flag_counts": {
+        "disconnected_target": 2,
+        "inactive_relu": 10,
+        "saturated_activation": 10,
+        "zero_target_dispersion": 3
+      },
+      "noise_strengths": {
+        "0": 120,
+        "0.0": 212,
+        "0.1": 198,
+        "0.5": 174,
+        "1.0": 207
+      },
+      "ranges": {
+        "components": [
+          1,
+          3
+        ],
+        "depth": [
+          1,
+          6
+        ],
+        "edges": [
+          4,
+          21
+        ],
+        "nodes": [
+          7,
+          22
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64
+    }
+  },
+  "filter": "none",
+  "head": "f75c9cdf298ab4e79a4bab805373984dfa50e7a9",
+  "law_counts_scope": "all sampled nodes, including failed tasks; ball direction counted as gaussian",
+  "procedure": "scripts/causal_topology_census.py",
+  "profile": "causal-exogenous-v1",
+  "raw_artifact_directory": "/tmp/r0-28-exogenous-census-f75c9cd",
+  "seed": 28,
+  "strength_counts_scope": "recorded scalar spelling; 0 and 0.0 both mean zero strength",
+  "timing": "NOT_MEASURED",
+  "torch": "2.15.0+cpu"
+}

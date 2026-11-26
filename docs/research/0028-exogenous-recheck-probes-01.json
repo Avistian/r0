@@ -1,0 +1,580 @@
+[
+  {
+    "name": "law prefix/replay/selected-original-row",
+    "status": "PASS",
+    "family": "gaussian",
+    "bound": null
+  },
+  {
+    "name": "law prefix/replay/selected-original-row",
+    "status": "PASS",
+    "family": "gaussian",
+    "bound": 1.25
+  },
+  {
+    "name": "law prefix/replay/selected-original-row",
+    "status": "PASS",
+    "family": "uniform",
+    "bound": null
+  },
+  {
+    "name": "law prefix/replay/selected-original-row",
+    "status": "PASS",
+    "family": "uniform",
+    "bound": 1.25
+  },
+  {
+    "name": "law prefix/replay/selected-original-row",
+    "status": "PASS",
+    "family": "student_t",
+    "bound": null
+  },
+  {
+    "name": "law prefix/replay/selected-original-row",
+    "status": "PASS",
+    "family": "student_t",
+    "bound": 1.25
+  },
+  {
+    "name": "law prefix/replay/selected-original-row",
+    "status": "PASS",
+    "family": "mixture",
+    "bound": null
+  },
+  {
+    "name": "law prefix/replay/selected-original-row",
+    "status": "PASS",
+    "family": "mixture",
+    "bound": 1.25
+  },
+  {
+    "name": "ball uniform-volume law, dependence, prefix",
+    "status": "PASS",
+    "dimension": 2,
+    "mean_radius_power_d": 0.49381724915704583,
+    "mean_radius_squared": 0.49381724915704583
+  },
+  {
+    "name": "ball uniform-volume law, dependence, prefix",
+    "status": "PASS",
+    "dimension": 4,
+    "mean_radius_power_d": 0.49381724915704583,
+    "mean_radius_squared": 0.66201575285576
+  },
+  {
+    "name": "factor right multiplication and analytic covariance",
+    "status": "PASS",
+    "family": "gaussian",
+    "expected": [
+      [
+        0.5683999999999999,
+        0.8819999999999999
+      ],
+      [
+        0.8819999999999999,
+        2.0824999999999996
+      ]
+    ],
+    "empirical": [
+      [
+        0.5699439907229314,
+        0.8729797134955919
+      ],
+      [
+        0.8729797134955919,
+        2.048864875826614
+      ]
+    ]
+  },
+  {
+    "name": "factor right multiplication and analytic covariance",
+    "status": "PASS",
+    "family": "uniform",
+    "expected": [
+      [
+        0.5683999999999999,
+        0.8819999999999999
+      ],
+      [
+        0.8819999999999999,
+        2.0824999999999996
+      ]
+    ],
+    "empirical": [
+      [
+        0.5617161552468098,
+        0.873610507691664
+      ],
+      [
+        0.873610507691664,
+        2.06968143541929
+      ]
+    ]
+  },
+  {
+    "name": "factor right multiplication and analytic covariance",
+    "status": "PASS",
+    "family": "mixture",
+    "expected": [
+      [
+        2.4100159999999997,
+        3.73968
+      ],
+      [
+        3.73968,
+        8.829799999999999
+      ]
+    ],
+    "empirical": [
+      [
+        2.4171445468989976,
+        3.7374833627059796
+      ],
+      [
+        3.7374833627059796,
+        8.763064369450797
+      ]
+    ]
+  },
+  {
+    "name": "independent nonlinear heteroscedastic equation and matched draws",
+    "status": "PASS",
+    "position": "before_output"
+  },
+  {
+    "name": "independent nonlinear heteroscedastic equation and matched draws",
+    "status": "PASS",
+    "position": "after_output"
+  },
+  {
+    "name": "infinite second-moment boundary identity",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "finite target second moments are not certified; use normalize=False"
+  },
+  {
+    "name": "finite second moment identity",
+    "status": "PASS",
+    "df": 2.25
+  },
+  {
+    "name": "infinite second-moment boundary square",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "finite target second moments are not certified; use normalize=False"
+  },
+  {
+    "name": "finite second moment square",
+    "status": "PASS",
+    "df": 4.25
+  },
+  {
+    "name": "infinite second-moment boundary sqrt_abs",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "finite target second moments are not certified; use normalize=False"
+  },
+  {
+    "name": "finite second moment sqrt_abs",
+    "status": "PASS",
+    "df": 1.25
+  },
+  {
+    "name": "infinite second-moment boundary signed_power",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "finite target second moments are not certified; use normalize=False"
+  },
+  {
+    "name": "finite second moment signed_power",
+    "status": "PASS",
+    "df": 6.25
+  },
+  {
+    "name": "bounded or slow-growth descendant certified",
+    "status": "PASS",
+    "kind": "tanh"
+  },
+  {
+    "name": "bounded or slow-growth descendant certified",
+    "status": "PASS",
+    "kind": "sin"
+  },
+  {
+    "name": "bounded or slow-growth descendant certified",
+    "status": "PASS",
+    "kind": "log_abs"
+  },
+  {
+    "name": "bounded or slow-growth descendant certified",
+    "status": "PASS",
+    "kind": "reciprocal_abs_power"
+  },
+  {
+    "name": "unknown integrability exp",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "finite target second moments are not certified; use normalize=False"
+  },
+  {
+    "name": "unknown integrability log",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "finite target second moments are not certified; use normalize=False"
+  },
+  {
+    "name": "heteroscedastic infinite second moment",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "finite target second moments are not certified; use normalize=False"
+  },
+  {
+    "name": "heteroscedastic finite second moment",
+    "status": "PASS",
+    "order": 2.25
+  },
+  {
+    "name": "heteroscedastic infinite second moment",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "finite target second moments are not certified; use normalize=False"
+  },
+  {
+    "name": "heteroscedastic finite second moment",
+    "status": "PASS",
+    "order": 2.5
+  },
+  {
+    "name": "constant exp target identity normalization",
+    "status": "PASS",
+    "factor": [
+      [
+        1.0,
+        2.0
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "response": {
+      "offset": 0.0,
+      "strength": 0.0,
+      "power": 2.0
+    }
+  },
+  {
+    "name": "constant exp target identity normalization",
+    "status": "PASS",
+    "factor": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "response": {
+      "offset": 1.0,
+      "strength": 0.0,
+      "power": 1.0
+    }
+  },
+  {
+    "name": "invalid exogenous descriptor",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "exogenous factor must be a finite square tuple matrix"
+  },
+  {
+    "name": "invalid exogenous descriptor",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "exogenous factor must be a finite square tuple matrix"
+  },
+  {
+    "name": "invalid exogenous descriptor",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "exogenous factor must be a finite square tuple matrix"
+  },
+  {
+    "name": "invalid exogenous descriptor",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "exogenous factor must be a finite square tuple matrix"
+  },
+  {
+    "name": "invalid exogenous descriptor",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "unsupported exogenous geometry"
+  },
+  {
+    "name": "invalid exogenous descriptor",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "ball geometry requires its standard Gaussian direction law"
+  },
+  {
+    "name": "invalid exogenous descriptor",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "exogenous laws require inputs-v1 and exogenous-v1 descriptors"
+  },
+  {
+    "name": "invalid noise response",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "noise response requires nonnegative offset/strength and positive power"
+  },
+  {
+    "name": "invalid noise response",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "noise response requires nonnegative offset/strength and positive power"
+  },
+  {
+    "name": "invalid noise response",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "noise response requires nonnegative offset/strength and positive power"
+  },
+  {
+    "name": "invalid noise response",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "noise-response parameters must be finite numbers"
+  },
+  {
+    "name": "invalid noise response",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "noise-response parameters must be finite numbers"
+  },
+  {
+    "name": "factor width mismatch",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "exogenous factor must match the node width"
+  },
+  {
+    "name": "working-memory admission boundary",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "estimated causal working memory exceeds declared limit"
+  },
+  {
+    "name": "independent resource count",
+    "status": "PASS",
+    "parameters": 15,
+    "working_bytes": 6784
+  },
+  {
+    "name": "sampled frozen profile serialized/replayed",
+    "status": "PASS",
+    "family": "forward",
+    "nodes": 12
+  },
+  {
+    "name": "sampled frozen profile serialized/replayed",
+    "status": "PASS",
+    "family": "layered",
+    "nodes": 10
+  },
+  {
+    "name": "sampled frozen profile serialized/replayed",
+    "status": "PASS",
+    "family": "redirection",
+    "nodes": 10
+  },
+  {
+    "name": "legacy exact canonical recipes/cards/tensors across all three profiles",
+    "status": "PASS",
+    "cases": 18
+  },
+  {
+    "name": "zero structural scale removes irrelevant overflowing response",
+    "status": "PASS"
+  },
+  {
+    "name": "repair decimal equation, mixed vectors, replay and prefix",
+    "status": "PASS",
+    "case": "mixed zero/rescued/ordinary",
+    "expected_scales": [
+      0.0,
+      1e+200,
+      2.5
+    ]
+  },
+  {
+    "name": "repair decimal equation, mixed vectors, replay and prefix",
+    "status": "PASS",
+    "case": "coefficient intermediate overflow",
+    "expected_scales": [
+      1e+200,
+      0.0,
+      1e+200
+    ]
+  },
+  {
+    "name": "repair decimal equation, mixed vectors, replay and prefix",
+    "status": "PASS",
+    "case": "nonzero offset and fractional power",
+    "expected_scales": [
+      1.25e+224,
+      3.0,
+      1.25e+224
+    ]
+  },
+  {
+    "name": "repair decimal equation, mixed vectors, replay and prefix",
+    "status": "PASS",
+    "case": "zero strength skips response",
+    "expected_scales": [
+      0.0,
+      4.0,
+      1.0
+    ]
+  },
+  {
+    "name": "genuine final scale overflow remains explicit",
+    "status": "PASS",
+    "error": "ValueError",
+    "message": "nonfinite signal-dependent noise scale; task was not retried"
+  },
+  {
+    "name": "representable tiny scale survives intermediate underflow",
+    "status": "PASS",
+    "expected": 1e-200,
+    "actual": 9.999999999999778e-201
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-0",
+    "exact_decimal": "9.999999999999999284010495963310403066212842473018760240894866288444300007737999354144090095618184874E-801",
+    "expected": 0.0,
+    "actual": 0.0,
+    "rounds_to_zero": true
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-1",
+    "exact_decimal": "9.999999999999999463007871972482797493650539129406908467465747397507152067727436590642555995607639013E-601",
+    "expected": 0.0,
+    "actual": 0.0,
+    "rounds_to_zero": true
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-2",
+    "exact_decimal": "9.999999999999999160339094097586430341470683736809620474747747917671244324230681313752390784030220783E-401",
+    "expected": 0.0,
+    "actual": 0.0,
+    "rounds_to_zero": true
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-3",
+    "exact_decimal": "9.999999999999999988055474524526971786052283923659675168733830435221160340142069416244590394419240915E-301",
+    "expected": 1e-300,
+    "actual": 9.9999999999991e-301,
+    "rounds_to_zero": false
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-4",
+    "exact_decimal": "9.999999999999999463007871972482797493650539129406908467465747397507152067727436590642555995607639013E-601",
+    "expected": 0.0,
+    "actual": 0.0,
+    "rounds_to_zero": true
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-5",
+    "exact_decimal": "9.999999999999999642005247981655195125094297602699792935595044538574639077759346737415987068917513160E-401",
+    "expected": 0.0,
+    "actual": 0.0,
+    "rounds_to_zero": true
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-6",
+    "exact_decimal": "9.999999999999999339336470106758822555222738259151776670651006638591610225267645964808868509631294743E-201",
+    "expected": 1e-200,
+    "actual": 9.999999999999778e-201,
+    "rounds_to_zero": false
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-7",
+    "exact_decimal": "1.000000000000000016705285053369937881571035606922866636058981503049603931697695888080372128636899895E-100",
+    "expected": 1e-100,
+    "actual": 9.999999999999321e-101,
+    "rounds_to_zero": false
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-8",
+    "exact_decimal": "9.999999999999999160339094097586430341470683736809620474747747917671244324230681313752390784030220783E-401",
+    "expected": 0.0,
+    "actual": 0.0,
+    "rounds_to_zero": true
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-9",
+    "exact_decimal": "9.999999999999999339336470106758822555222738259151776670651006638591610225267645964808868509631294743E-201",
+    "expected": 1e-200,
+    "actual": 9.999999999999778e-201,
+    "rounds_to_zero": false
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-10",
+    "exact_decimal": "0.9999999999999999036667692231862459146190088943940082395173012609316839528522391357366137107039166109",
+    "expected": 0.9999999999999999,
+    "actual": 1.0,
+    "rounds_to_zero": false
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-11",
+    "exact_decimal": "9999999999999999864384072658802990354287177668526598497117443704216851562895288381682011564272517118",
+    "expected": 1e+100,
+    "actual": 9.999999999999542e+99,
+    "rounds_to_zero": false
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-12",
+    "exact_decimal": "9.999999999999999988055474524526971786052283923659675168733830435221160340142069416244590394419240917E-301",
+    "expected": 1e-300,
+    "actual": 9.9999999999991e-301,
+    "rounds_to_zero": false
+  },
+  {
+    "name": "decimal grid finite scale",
+    "status": "PASS",
+    "case": "grid-13",
+    "exact_decimal": "1.000000000000000016705285053369937881571035606922866636058981503049603931697695888080372128636899895E-100",
+    "expected": 1e-100,
+    "actual": 9.999999999999321e-101,
+    "rounds_to_zero": false
+  }
+]

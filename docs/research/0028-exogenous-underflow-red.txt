@@ -1,0 +1,25 @@
+...FFF                                                                   [100%]
+=================================== FAILURES ===================================
+_ test_finite_structural_scales_survive_extreme_intermediate_values[1e-200-1e+200-1-1e-200] _
+tests/priors/test_causal_exogenous.py:286: in test_finite_structural_scales_survive_extreme_intermediate_values
+    assert math.isclose(scale, expected_scale, rel_tol=2e-13)
+E   assert False
+E    +  where False = <built-in function isclose>(0.0, 1e-200, rel_tol=2e-13)
+E    +    where <built-in function isclose> = math.isclose
+_ test_finite_structural_scales_survive_extreme_intermediate_values[1e-200-1e+300-1e+300-1e+200] _
+tests/priors/test_causal_exogenous.py:286: in test_finite_structural_scales_survive_extreme_intermediate_values
+    assert math.isclose(scale, expected_scale, rel_tol=2e-13)
+E   assert False
+E    +  where False = <built-in function isclose>(0.0, 1e+200, rel_tol=2e-13)
+E    +    where <built-in function isclose> = math.isclose
+_ test_finite_structural_scales_survive_extreme_intermediate_values[1e-100-1e+300-1e-200-1e-100] _
+tests/priors/test_causal_exogenous.py:286: in test_finite_structural_scales_survive_extreme_intermediate_values
+    assert math.isclose(scale, expected_scale, rel_tol=2e-13)
+E   assert False
+E    +  where False = <built-in function isclose>(0.0, 1e-100, rel_tol=2e-13)
+E    +    where <built-in function isclose> = math.isclose
+=========================== short test summary info ============================
+FAILED tests/priors/test_causal_exogenous.py::test_finite_structural_scales_survive_extreme_intermediate_values[1e-200-1e+200-1-1e-200]
+FAILED tests/priors/test_causal_exogenous.py::test_finite_structural_scales_survive_extreme_intermediate_values[1e-200-1e+300-1e+300-1e+200]
+FAILED tests/priors/test_causal_exogenous.py::test_finite_structural_scales_survive_extreme_intermediate_values[1e-100-1e+300-1e-200-1e-100]
+3 failed, 3 passed, 9 deselected in 0.86s

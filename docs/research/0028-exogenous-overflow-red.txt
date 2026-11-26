@@ -1,0 +1,49 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_finite_structural_scales_survive_irrelevant_intermediate_overflow[1e+200-0-1-0] _
+tests/priors/test_causal_exogenous.py:275: in test_finite_structural_scales_survive_irrelevant_intermediate_overflow
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/r0/modules/priors/lib/generate.py:157: in generate_task
+    return generate_causal(recipe, seed=seed, task_id=task_id, device=device)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/r0/modules/priors/lib/causal.py:217: in generate_causal
+    values, _ = causal_values(
+src/r0/modules/priors/lib/causal.py:152: in causal_values
+    value, innovation, scale = stochastic_value(
+src/r0/modules/priors/lib/causal_stochastic.py:35: in stochastic_value
+    raise ValueError("nonfinite signal-dependent noise scale; task was not retried")
+E   ValueError: nonfinite signal-dependent noise scale; task was not retried
+_ test_finite_structural_scales_survive_irrelevant_intermediate_overflow[1e+200-1e-200-1-1e+200] _
+tests/priors/test_causal_exogenous.py:275: in test_finite_structural_scales_survive_irrelevant_intermediate_overflow
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/r0/modules/priors/lib/generate.py:157: in generate_task
+    return generate_causal(recipe, seed=seed, task_id=task_id, device=device)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/r0/modules/priors/lib/causal.py:217: in generate_causal
+    values, _ = causal_values(
+src/r0/modules/priors/lib/causal.py:152: in causal_values
+    value, innovation, scale = stochastic_value(
+src/r0/modules/priors/lib/causal_stochastic.py:35: in stochastic_value
+    raise ValueError("nonfinite signal-dependent noise scale; task was not retried")
+E   ValueError: nonfinite signal-dependent noise scale; task was not retried
+_ test_finite_structural_scales_survive_irrelevant_intermediate_overflow[1e+100-1e-200-1e+200-1e+200] _
+tests/priors/test_causal_exogenous.py:275: in test_finite_structural_scales_survive_irrelevant_intermediate_overflow
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/r0/modules/priors/lib/generate.py:157: in generate_task
+    return generate_causal(recipe, seed=seed, task_id=task_id, device=device)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/r0/modules/priors/lib/causal.py:217: in generate_causal
+    values, _ = causal_values(
+src/r0/modules/priors/lib/causal.py:152: in causal_values
+    value, innovation, scale = stochastic_value(
+src/r0/modules/priors/lib/causal_stochastic.py:35: in stochastic_value
+    raise ValueError("nonfinite signal-dependent noise scale; task was not retried")
+E   ValueError: nonfinite signal-dependent noise scale; task was not retried
+=========================== short test summary info ============================
+FAILED tests/priors/test_causal_exogenous.py::test_finite_structural_scales_survive_irrelevant_intermediate_overflow[1e+200-0-1-0]
+FAILED tests/priors/test_causal_exogenous.py::test_finite_structural_scales_survive_irrelevant_intermediate_overflow[1e+200-1e-200-1-1e+200]
+FAILED tests/priors/test_causal_exogenous.py::test_finite_structural_scales_survive_irrelevant_intermediate_overflow[1e+100-1e-200-1e+200-1e+200]
+3 failed, 9 deselected in 0.91s

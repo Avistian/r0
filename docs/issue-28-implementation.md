@@ -220,3 +220,34 @@ checkpoint record. An author census at `c92a551` retained **192/192 valid** task
 across three modes, with flagged cases intact and no filtering. Full source
 coverage, wider mechanisms/noise/weights, typed variables, interventions, full
 workbench delivery and final environment/resource acceptance remain required.
+
+
+## Exogenous and structural-noise checkpoint
+
+Authored stochastic causal nodes now retain Gaussian, standardized uniform,
+Student-t and symmetric Gaussian-mixture laws, optional conditional truncation,
+uniform-volume ball geometry and frozen correlation factors. Explicit responses
+scale structural noise by the pre-noise affine signal, separately from observation
+noise. Raw exogenous draws, actual scales and innovations have distinct row traces.
+Finite-moment certification gates optional fixed normalization while raw heavy-tail
+tasks remain available. The `causal-exogenous-v1` exploration profile reaches
+sampled scalar/vector tasks and saved explorer backend workflows. See [laws and
+source boundaries](issue-28-exogenous-laws.md).
+
+Independent review retained an avoidable intermediate-overflow REJECT at
+`f75c9cd`, then a symmetric underflow REJECT at `684a3ec`. Committed RED cases and
+repairs preserve both findings. At `a47b14e`, **135 independent checks pass**,
+including 73 high-precision boundary cases and 18 exact legacy snapshots across
+all three older profiles. Standards review finds no hard violations; one
+nonblocking duplicated-registry heuristic remains. [Verification, retained
+failures and executable procedures](issue-28-exogenous-verification.md).
+
+Complete `make check` at `a47b14e` passes **597 tests, 1 skipped**, with all static
+gates passing. An author census at `f75c9cd` retains **191 valid / 192 attempted**
+tasks; the one square-overflow failure and every sampled recipe remain recorded,
+with no retries or filtering. All four laws, both geometries and sampled response
+strengths occur. This remains a small CPU convenience-profile census. Broader
+paper-specific root/noise laws, weights, mechanisms/networks/trees, typed states,
+interventions, workbench delivery and final environment/resource qualification
+remain required. Smoke/eval-smoke are NOT_AVAILABLE; browser, Colab and GPU
+acceptance remain PENDING. The full #28 goal is active.

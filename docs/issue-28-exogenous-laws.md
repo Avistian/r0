@@ -50,7 +50,7 @@ standard Gaussian base the covariance is `F.T @ F`.
 Original-row inspection exposes `exogenous-i`, `noise-scale-i`, `innovation-i`
 and the causal node. The exogenous value is the transformed distribution draw
 before structural scaling. The row-wise scale and resulting innovation are
-separate tensors. Changing the noise response with the same seed/task identity
+separate tensors. Changing the noise response with the same seed and task index
 preserves the exogenous draw, while the edited recipe gets a different task
 identity. This is a prerequisite for matched comparisons, not a complete
 intervention interface. Row-count changes preserve the same stream prefixes;
@@ -177,13 +177,13 @@ substituted for P2's normal/uniform mixture or I2's multivariate mixture.
 | Stochastic-buffer admission | `6e2bd38` | `b86ff16` |
 
 Focused source at `b86ff16` passes 21 tests. The retained output is
-`docs/evidence/issue-28/exogenous-focused.log`; command:
+[complete focused output](research/0028-exogenous-focused-b86ff16.txt); command:
 
 ```sh
 UV_CACHE_DIR=/tmp/r0-28-uv-cache \
 UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
 python3 scripts/run_check.py pytest tests/priors/test_causal_exogenous.py \
-  tests/explorer/test_causal_session.py
+  tests/explorer/test_causal_session.py --tb=short
 ```
 
 Initial commit attempts hit assertion-formatting, Pyright set/norm annotations
@@ -192,7 +192,52 @@ They are not passing revision evidence. The first uniform-root RED test was
 observed before implementation; its initial commit failed lint. The corrected
 test-only commit retains the missing-decoder failure, followed by its GREEN.
 
-Full checks, independent review and a bounded census are recorded below after
-execution. Actual browser, Colab, GPU, complete source-family coverage and measured
+Full checks, independent review and a bounded census are recorded below. Actual browser, Colab, GPU, complete source-family coverage and measured
 production envelopes remain PENDING. Backend workflow checks do not substitute
 for those requirements. The full implementation goal stays active.
+
+
+## Author census
+
+At frozen `f75c9cd`, the retained procedure attempted 64 tasks per topology family,
+192 total, using seed 28 and task IDs 0 through 63. Each task has 16 rows, eight
+context rows and four observed features; regression, binary and three-class
+adapters cycle with task ID. Actual recipes are recorded before generation.
+
+| Family | Attempted | Valid | Failed |
+|---|---:|---:|---:|
+| forward | 64 | 63 | 1 |
+| layered | 64 | 64 | 0 |
+| redirection | 64 | 64 | 0 |
+
+All four input laws, both geometries and all sampled response strengths occur.
+The [summary and artifact hashes](research/0028-exogenous-census.json) count laws,
+geometry and response strengths across every sampled node, including the failed
+task. Ball directions count as Gaussian law entries. The stored `0` and `0.0`
+strength keys both denote zero. Valid task flags overlap: disconnected 62,
+inactive ReLU 19, saturation 23 and zero target dispersion 6. No valid flagged
+task was removed. These counts are not measured functional utility or coverage
+of the full paper inventory.
+
+The [failed example](research/0028-exogenous-failed-example.json), forward task 50,
+raises `nonfinite square activation output`; its full frozen recipe remains in
+the original JSONL and is reproducible from the recorded profile/seed/task ID.
+No failure was retried or substituted. Raw records and successful saved groups
+remain in `/tmp/r0-28-exogenous-census-f75c9cd/`; the published summary retains
+hashes for those local artifacts. They are not embedded in the repository.
+
+Reproduce at the recorded revision using a new destination:
+
+```sh
+UV_CACHE_DIR=/tmp/r0-28-uv-cache \
+UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
+python3 scripts/run_check.py python scripts/causal_topology_census.py \
+  /tmp/r0-28-exogenous-census-reproduction --profile causal-exogenous-v1
+```
+
+Timing and peak process memory remain NOT_MEASURED. The census is author evidence,
+separate from independent review. It does not establish browser, Colab, GPU or
+supported-maximum behavior.
+
+Independent review, retained failures and repaired check results are recorded in
+[the verification record](issue-28-exogenous-verification.md).

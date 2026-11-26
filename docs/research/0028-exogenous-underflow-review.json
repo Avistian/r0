@@ -1,0 +1,93 @@
+{
+  "status": "REJECT",
+  "command": [
+    "/home/avist/Projects/r0/.venv/bin/python3",
+    "/tmp/r0-28-exogenous-oracle-v2/verify_causal_exogenous.py",
+    "--repo",
+    "/tmp/r0-28",
+    "--expected-head",
+    "684a3ecf053986ccf961cae37dde4c3fdb7e8189",
+    "--base",
+    "19dd757bcbc978bd56d1c6ed76e1e71a7fd824c5",
+    "--output",
+    "/tmp/r0-28-exogenous-spec-684a3ec-portable.json"
+  ],
+  "repo": "/tmp/r0-28",
+  "expected_head": "684a3ecf053986ccf961cae37dde4c3fdb7e8189",
+  "base": "19dd757bcbc978bd56d1c6ed76e1e71a7fd824c5",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "scripts": {
+    "/tmp/r0-28-exogenous-oracle-v2/verify_causal_exogenous.py": "33f34cb295d7bebd73198ce6a5f0d48b56fd346f26b032e201707210eb27d9d5",
+    "/tmp/r0-28-exogenous-oracle-v2/verify_causal_exogenous_probes.py": "81fe547bd61883c48cd77fde0a309d056820baa626aefd20a4adc7cf055464f3",
+    "/tmp/r0-28-exogenous-oracle-v2/verify_causal_exogenous_repair.py": "49fbff78849fc5bdb7bd3c28ac8c86c85078300e99faa1972194c73de96ad562"
+  },
+  "actual_head": "684a3ecf053986ccf961cae37dde4c3fdb7e8189",
+  "initial_status": "M docs/issue-28-exogenous-laws.md\n?? .venv\n?? docs/research/0028-exogenous-census.json\n?? docs/research/0028-exogenous-check-a7d24ad-interrupted.txt\n?? docs/research/0028-exogenous-check-f75c9cd.txt\n?? docs/research/0028-exogenous-failed-example.json\n?? docs/research/0028-exogenous-focused-b86ff16.txt\n?? docs/research/0028-exogenous-legacy-base.json\n?? docs/research/0028-exogenous-original-review.json\n?? docs/research/0028-exogenous-overflow-red.txt",
+  "baseline_execution": {
+    "command": [
+      "/home/avist/Projects/r0/.venv/bin/python3",
+      "-I",
+      "-c",
+      "import runpy,sys;sys.path.insert(0,sys.argv.pop(1));p=sys.argv.pop(1);sys.argv[0]=p;runpy.run_path(p,run_name=\"__main__\")",
+      "/tmp/r0-exogenous-oracle-ntpheg8k/base/src",
+      "/tmp/r0-28-exogenous-oracle-v2/verify_causal_exogenous_probes.py",
+      "/tmp/r0-exogenous-oracle-ntpheg8k/baseline.json",
+      "--legacy-only"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "report": {
+      "status": "PASS",
+      "checks": [],
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "public_import_path": "/tmp/r0-exogenous-oracle-ntpheg8k/base/src/r0/modules/priors/__init__.py",
+      "script_sha256": "81fe547bd61883c48cd77fde0a309d056820baa626aefd20a4adc7cf055464f3",
+      "legacy_signatures": {
+        "causal-affine-v1/forward/5": "2b423aac8bd158578bb894ff88574a3d018e605ecfcc4913f585ccd3c07ed467",
+        "causal-affine-v1/forward/19": "57d719ca6dc52ddeae9ce92d62ee649472a63a9625ac71dd883486432983b646",
+        "causal-affine-v1/layered/5": "aefa268fa31da5959cdb6380f4081fb7f06f07b9498249f506382e46f3ecd223",
+        "causal-affine-v1/layered/19": "a4dd137cb36089c647a8980a9afe617f59bc1e41f06d2b60074445ab3e00b3a2",
+        "causal-affine-v1/redirection/5": "5245683bf3785175eb0851900bba18d564cb5840a0198ad44a586068126be787",
+        "causal-affine-v1/redirection/19": "8f14fe94e81a3d0a641700c4ae6f0abb3b7b69135abb974bfd1966d12aa4fbea",
+        "causal-activated-v1/forward/5": "fbf26c8722a2b93593ffe31784ad9f695ec909e56def03692b133562a8809cdf",
+        "causal-activated-v1/forward/19": "2e216311ba1ec9160d204d7e94c84484c720cfb430df2486569e945f64af151a",
+        "causal-activated-v1/layered/5": "68426b6a55972a5b30b3d03a495220815048de7779b73a227277b29a4a344415",
+        "causal-activated-v1/layered/19": "e0f24a418aae8d6065c67b2ed86ac66d85396d99ff458199dafac7a765f91cc7",
+        "causal-activated-v1/redirection/5": "6947619f0a8b725796d26c7817f83fc7d9d40fcb3b0aa72e69b08d6437e42d3d",
+        "causal-activated-v1/redirection/19": "92509a6d70c96daa988c0c118685efa84f7e16ad501afe9087a332dcc21e2f84",
+        "causal-preferences-v1/forward/5": "6a8d66e31e6c9e57e0c9bc67f1ceef9f104082448cdc300b326c586b3eb5856e",
+        "causal-preferences-v1/forward/19": "5ad6580aa532b182aac48860c73f5607026fc35c060120bcf17122b88a5b7a1f",
+        "causal-preferences-v1/layered/5": "2f89bdbcaa5aaddb6ecc028ce3543eda62b8c4a49845742a7e165e50d97843f6",
+        "causal-preferences-v1/layered/19": "cf4048dbe89675ab875cbe14c54fa5f53abf64f8b76c53182a7388a7304507d1",
+        "causal-preferences-v1/redirection/5": "1a5cd89f24b59e5febbd688f22f291bf9b593ab9715ca5d04d3de1bc96365312",
+        "causal-preferences-v1/redirection/19": "b026f9d05b2e0e2e3f3daf0179765541c1cb7765d9bd3d17d345472e09590dc8"
+      }
+    }
+  },
+  "candidate_execution": {
+    "command": [
+      "/home/avist/Projects/r0/.venv/bin/python3",
+      "-I",
+      "-c",
+      "import runpy,sys;sys.path.insert(0,sys.argv.pop(1));p=sys.argv.pop(1);sys.argv[0]=p;runpy.run_path(p,run_name=\"__main__\")",
+      "/tmp/r0-exogenous-oracle-ntpheg8k/candidate/src",
+      "/tmp/r0-28-exogenous-oracle-v2/verify_causal_exogenous_probes.py",
+      "/tmp/r0-exogenous-oracle-ntpheg8k/candidate.json",
+      "--legacy-baseline",
+      "/tmp/r0-exogenous-oracle-ntpheg8k/baseline.json"
+    ],
+    "returncode": 1,
+    "stdout": "{\n  \"status\": \"REJECT\",\n  \"checks\": 60,\n  \"failure\": {\n    \"type\": \"AssertionError\",\n    \"message\": \"('representable scale lost to intermediate underflow', 0.0, 1e-200)\",\n    \"traceback\": \"Traceback (most recent call last):\\n  File \\\"/tmp/r0-28-exogenous-oracle-v2/verify_causal_exogenous_probes.py\\\", line 393, in main\\n    repair[\\\"repair_boundaries\\\"](root, gen, trace, controls, vals, must_reject, record)\\n  File \\\"/tmp/r0-28-exogenous-oracle-v2/verify_causal_exogenous_repair.py\\\", line 119, in repair_boundaries\\n    assert math.isclose(actual, expected, rel_tol=3e-13, abs_tol=0.0), (\\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\nAssertionError: ('representable scale lost to intermediate underflow', 0.0, 1e-200)\\n\"\n  },\n  \"output\": \"/tmp/r0-exogenous-oracle-ntpheg8k/candidate.json\"\n}\n",
+    "stderr": "",
+    "report_file": "0028-exogenous-underflow-probes.json",
+    "report_sha256": "536b01dadbc9e744d82fccee7dcba0d27339685c0db14a1d005cdbf663a8530f"
+  },
+  "final_actual_head": "684a3ecf053986ccf961cae37dde4c3fdb7e8189",
+  "final_status": "M docs/issue-28-exogenous-laws.md\n?? .venv\n?? docs/research/0028-exogenous-census.json\n?? docs/research/0028-exogenous-check-a7d24ad-interrupted.txt\n?? docs/research/0028-exogenous-check-f75c9cd.txt\n?? docs/research/0028-exogenous-failed-example.json\n?? docs/research/0028-exogenous-focused-b86ff16.txt\n?? docs/research/0028-exogenous-legacy-base.json\n?? docs/research/0028-exogenous-original-review.json\n?? docs/research/0028-exogenous-overflow-red.txt",
+  "unsplit_original": {
+    "path": "/tmp/r0-28-exogenous-spec-684a3ec-portable.json",
+    "sha256": "f6b0c6fbb9fa7825eeb1eee6e349d20bb2fd711b84e731625e1a35dc7de9ca47",
+    "note": "Report separated without changing its values to satisfy the text-file size limit."
+  }
+}
