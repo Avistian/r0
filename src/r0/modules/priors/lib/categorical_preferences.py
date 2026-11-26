@@ -1,10 +1,18 @@
 """Frozen categorical sampling laws and retained inverse-CDF realizations."""
 
+import math
 from dataclasses import dataclass
-from typing import Any
+from fractions import Fraction
+from typing import Any, cast
 
 from r0.modules.priors.lib.activation_sampling import finite_number
+from r0.modules.priors.lib.parameter_preferences import (
+    NumericalParameter,
+    ParameterPreferences,
+    parameter_preferences_from_dict,
+)
 from r0.modules.priors.lib.preference_limits import PreferenceLimits
+from r0.modules.priors.lib.weight_vectors import PolynomialWeightVector, weight_vector_from_dict
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,28 +45,79 @@ class CategoricalPreference:
     request: CategoricalParameter
     mode: str
     unit: float | None = None
+    weights: PolynomialWeightVector | None = None
+    hyperparameters: ParameterPreferences | None = None
 
     def __post_init__(self) -> None:
-        if type(self.request) is not CategoricalParameter or self.mode not in ("global", "local"):
+        if type(self.request) is not CategoricalParameter or self.mode not in (
+            "global",
+            "local",
+            "meta",
+        ):
             raise ValueError("categorical preference requires a frozen request and supported mode")
         if self.mode == "global":
             if self.unit is None:
                 raise ValueError("global categorical preference requires a cached unit")
             _unit(self.unit)
         elif self.unit is not None:
-            raise ValueError("local categorical preference cannot cache a unit")
+            raise ValueError("local/meta categorical preference cannot cache a unit")
+        if self.mode == "meta":
+            if type(self.weights) is not PolynomialWeightVector or (
+                len(self.weights.draws) != len(self.request.choices)
+            ):
+                raise ValueError(
+                    "meta categorical preference requires a matching polynomial vector"
+                )
+            if type(self.hyperparameters) is not ParameterPreferences:
+                raise ValueError("categorical polynomial hyperparameters must be retained")
+            hyper = self.hyperparameters
+            expected = categorical_weight_requests(len(self.request.choices))
+            if (
+                hyper.default_mode != "meta"
+                or len(hyper.preferences) != 2
+                or tuple(d.request for d in hyper.draws) != expected
+                or tuple(p.mode for p in hyper.preferences) != ("meta", "meta")
+                or self.weights.decay != hyper.draws[0].values[0]
+                or self.weights.log_noise_scale != hyper.draws[1].values[0]
+            ):
+                raise ValueError("categorical polynomial hyperparameters disagree with the vector")
+            _ = self.probabilities  # Validate the representable probability view before a choice.
+        elif self.weights is not None or self.hyperparameters is not None:
+            raise ValueError("categorical weights and hyperparameters apply only to meta mode")
 
     @property
     def parameter_count(self) -> int:
-        return int(self.unit is not None)
+        return (
+            int(self.unit is not None)
+            + (self.weights.parameter_count if self.weights is not None else 0)
+            + (self.hyperparameters.parameter_count if self.hyperparameters is not None else 0)
+        )
 
     @property
     def probabilities(self) -> tuple[float, ...]:
-        return (1.0 / len(self.request.choices),) * len(self.request.choices)
+        if self.weights is None:
+            return (1.0 / len(self.request.choices),) * len(self.request.choices)
+        weights = self.weights.values()
+        total = math.fsum(weights)
+        probabilities = tuple(w / total for w in weights)
+        if any(w > 0 and p == 0 for w, p in zip(weights, probabilities, strict=True)):
+            raise ValueError("categorical probabilities underflow; draw was not retried")
+        return probabilities
 
     def choose(self, unit: float) -> int:
         _unit(unit)
-        return min(len(self.request.choices) - 1, int(unit * len(self.request.choices)))
+        if self.weights is None:
+            return min(len(self.request.choices) - 1, int(unit * len(self.request.choices)))
+        # Compare exact rational masses of the recorded binary64 weights: no
+        # cumulative rounding can erase a small bin or select a zero-weight bin.
+        masses = tuple(Fraction(w) for w in self.weights.values())
+        threshold = Fraction(unit) * sum(masses)
+        cumulative = Fraction(0)
+        for index, mass in enumerate(masses):
+            cumulative += mass
+            if threshold < cumulative:
+                return index
+        raise ValueError("categorical inverse CDF has no positive support")
 
 
 @dataclass(frozen=True, slots=True)
@@ -92,16 +151,20 @@ class CategoricalDraw:
 class CategoricalPreferences:
     preferences: tuple[CategoricalPreference, ...] = ()
     draws: tuple[CategoricalDraw, ...] = ()
-    default_mode: str = "global"
+    default_mode: str = "meta"
     limits: PreferenceLimits = PreferenceLimits()
     version: str = "categorical-preferences-v1"
+    policy: str = "shared"
 
     def __post_init__(self) -> None:
         if self.version != "categorical-preferences-v1" or self.default_mode not in (
             "global",
             "local",
+            "meta",
         ):
             raise ValueError("unsupported categorical record version or mode")
+        if self.policy not in ("shared", "refresh"):
+            raise ValueError("unsupported categorical preference reuse policy")
         if type(self.preferences) is not tuple or any(
             type(p) is not CategoricalPreference for p in self.preferences
         ):
@@ -113,9 +176,19 @@ class CategoricalPreferences:
         self.limits.admit(
             draws=len(self.draws), values=len(self.draws), parameters=self.parameter_count
         )
-        keys = [(p.request.name, p.mode) for p in self.preferences]
+        keys = [
+            (p.request.name, p.mode)
+            for p in self.preferences
+            if self.policy == "shared" or p.mode != "meta"
+        ]
         if len(set(keys)) != len(keys):
             raise ValueError("categorical preference scopes must be unique")
+        contracts: dict[tuple[str, str], tuple[str, ...]] = {}
+        for preference in self.preferences:
+            key = (preference.request.name, preference.mode)
+            if key in contracts and contracts[key] != preference.request.choices:
+                raise ValueError("categorical choice contract changed within a named scope")
+            contracts[key] = preference.request.choices
         used: set[int] = set()
         for draw in self.draws:
             if draw.preference >= len(self.preferences):
@@ -132,6 +205,8 @@ class CategoricalPreferences:
                 mode == "global" and draw.unit != preference.unit
             ):
                 raise ValueError("categorical realization violates its probability law or cache")
+            if self.policy == "refresh" and mode == "meta" and draw.preference in used:
+                raise ValueError("refreshed categorical scope cannot reuse a probability vector")
             if draw.preference not in used and (
                 draw.preference != len(used) or draw.request != preference.request
             ):
@@ -159,7 +234,7 @@ def categorical_preferences_from_dict(data: dict[str, Any]) -> CategoricalPrefer
     limits.admit(
         draws=len(raw_draws),
         values=len(raw_draws),
-        parameters=3 * len(raw_draws) + sum(p.get("unit") is not None for p in raw_preferences),
+        parameters=raw_parameter_count(raw_preferences) + raw_parameter_count(raw_draws),
     )
     if len(raw_preferences) > len(raw_draws):
         raise ValueError("categorical preferences must each have a retained realization")
@@ -167,6 +242,10 @@ def categorical_preferences_from_dict(data: dict[str, Any]) -> CategoricalPrefer
     for raw in raw_preferences:
         values = dict(raw)
         values["request"] = request(values["request"])
+        if values.get("weights") is not None:
+            values["weights"] = weight_vector_from_dict(values["weights"])
+        if values.get("hyperparameters") is not None:
+            values["hyperparameters"] = parameter_preferences_from_dict(values["hyperparameters"])
         preferences.append(CategoricalPreference(**values))
     draws: list[CategoricalDraw] = []
     for raw in raw_draws:
@@ -175,3 +254,32 @@ def categorical_preferences_from_dict(data: dict[str, Any]) -> CategoricalPrefer
         draws.append(CategoricalDraw(**values))
     fields.update(preferences=tuple(preferences), draws=tuple(draws), limits=limits)
     return CategoricalPreferences(**fields)
+
+
+def categorical_weight_requests(width: int) -> tuple[NumericalParameter, NumericalParameter]:
+    return (
+        NumericalParameter(
+            "simple_random_weights_decay_rate",
+            0.1 / math.log1p(width),
+            6.0,
+            shape=(1,),
+            scale="log",
+            boundary_mass=True,
+        ),
+        NumericalParameter(
+            "simple_random_weights_std_scale", 0.0001, 10.0, shape=(1,), scale="log"
+        ),
+    )
+
+
+def raw_parameter_count(value: Any) -> int:
+    """Count raw retained numeric leaves before allocating decoded vectors."""
+    if isinstance(value, dict):
+        return sum(
+            raw_parameter_count(v)
+            for k, v in cast(dict[str, Any], value).items()
+            if k not in ("limits", "exact_scores_limit")
+        )
+    if isinstance(value, (list, tuple)):
+        return sum(raw_parameter_count(v) for v in cast(list[Any] | tuple[Any, ...], value))
+    return int(type(value) in (int, float))
