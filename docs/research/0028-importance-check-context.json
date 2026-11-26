@@ -1,0 +1,12 @@
+{
+  "source_at_check_start": "fc0265b7706112a0b674a2c85078f177fb265b83",
+  "head_after_documentation_commit_during_check": "e6d8faa4b2b8c2de54a7ab62c6235357730293c0",
+  "src_and_tests_identical": true,
+  "check_exit_code": 0,
+  "result": "613 passed, 1 skipped; all static gates passed",
+  "command": "UV_CACHE_DIR=/tmp/r0-28-uv-cache UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv make check",
+  "log_sha256": "7f600802982c1387c0f7ade6cc7d270d4438af8f053dbfa5b739dc1acaece7f5",
+  "smoke": "NOT_AVAILABLE; T7 train command absent",
+  "eval_smoke": "NOT_AVAILABLE; T12 eval command absent",
+  "cuda": "NOT_AVAILABLE; CPU-only environment"
+}

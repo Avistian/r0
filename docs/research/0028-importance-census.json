@@ -1,0 +1,246 @@
+{
+  "capture_semantics": "Recipe is captured in memory before generation. JSONL is written after each family finishes, not durably before each attempt. Output directory must be new. No retries or filtering.",
+  "command": "UV_CACHE_DIR=/tmp/r0-28-uv-cache UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv python3 scripts/run_check.py python scripts/causal_topology_census.py /tmp/r0-28-importance-census-e6d8faa --profile causal-importance-v1",
+  "device": "cpu",
+  "failures": [
+    {
+      "error": "ValueError: nonfinite integer_power activation output; task was not retried",
+      "family": "forward",
+      "header": "0028-importance-failure-header.json",
+      "ordered_node_parts": [
+        "0028-importance-failure-nodes-01.json",
+        "0028-importance-failure-nodes-02.json",
+        "0028-importance-failure-nodes-03.json",
+        "0028-importance-failure-nodes-04.json",
+        "0028-importance-failure-nodes-05.json",
+        "0028-importance-failure-nodes-06.json",
+        "0028-importance-failure-nodes-07.json"
+      ],
+      "reconstruction": "Load header, set recipe.nodes to concatenation of ordered node arrays. json.dumps(record, sort_keys=True, allow_nan=False) UTF-8 SHA256 equals record_sha256 (no trailing newline).",
+      "record_sha256": "22e1616f6fdc20b61a3f9a80051cff52228302071070e763c6e931142b0ba060",
+      "seed": 28,
+      "task_id": 47
+    }
+  ],
+  "families": {
+    "forward": {
+      "activation_modes": {
+        "dirichlet": 25,
+        "homogeneous": 22,
+        "independent": 17
+      },
+      "attempted": 64,
+      "exogenous_geometry": {
+        "independent": 465
+      },
+      "exogenous_laws": {
+        "gaussian": 465
+      },
+      "factor_inner_dimensions": {},
+      "failed": 1,
+      "failure_reasons": {
+        "ValueError: nonfinite integer_power activation output; task was not retried": 1
+      },
+      "flag_counts": {
+        "disconnected_target": 32,
+        "inactive_relu": 8,
+        "saturated_activation": 8
+      },
+      "importance_vectors": {
+        "polynomial-weight-vector-v1": 2174,
+        "uniform-weight-vector-v1": 2312
+      },
+      "noise_strengths": {
+        "0.0": 465
+      },
+      "ranges": {
+        "components": [
+          1,
+          23
+        ],
+        "depth": [
+          0,
+          21
+        ],
+        "edges": [
+          0,
+          231
+        ],
+        "nodes": [
+          7,
+          23
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 20,
+        "regression": 22
+      },
+      "valid": 63,
+      "weight_constructions": {
+        "importance-weights-v1": 465
+      }
+    },
+    "layered": {
+      "activation_modes": {
+        "dirichlet": 20,
+        "homogeneous": 21,
+        "independent": 23
+      },
+      "attempted": 64,
+      "exogenous_geometry": {
+        "independent": 272
+      },
+      "exogenous_laws": {
+        "gaussian": 272
+      },
+      "factor_inner_dimensions": {},
+      "failed": 0,
+      "failure_reasons": {},
+      "flag_counts": {
+        "disconnected_target": 40,
+        "inactive_relu": 5,
+        "saturated_activation": 9
+      },
+      "importance_vectors": {
+        "polynomial-weight-vector-v1": 616,
+        "uniform-weight-vector-v1": 552
+      },
+      "noise_strengths": {
+        "0.0": 272
+      },
+      "ranges": {
+        "components": [
+          1,
+          21
+        ],
+        "depth": [
+          0,
+          4
+        ],
+        "edges": [
+          0,
+          76
+        ],
+        "nodes": [
+          7,
+          24
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64,
+      "weight_constructions": {
+        "importance-weights-v1": 272
+      }
+    },
+    "redirection": {
+      "activation_modes": {
+        "dirichlet": 21,
+        "homogeneous": 18,
+        "independent": 25
+      },
+      "attempted": 64,
+      "exogenous_geometry": {
+        "independent": 825
+      },
+      "exogenous_laws": {
+        "gaussian": 825
+      },
+      "factor_inner_dimensions": {},
+      "failed": 0,
+      "failure_reasons": {},
+      "flag_counts": {
+        "disconnected_target": 3,
+        "inactive_relu": 6,
+        "saturated_activation": 14
+      },
+      "importance_vectors": {
+        "polynomial-weight-vector-v1": 936,
+        "uniform-weight-vector-v1": 1035
+      },
+      "noise_strengths": {
+        "0.0": 825
+      },
+      "ranges": {
+        "components": [
+          1,
+          3
+        ],
+        "depth": [
+          1,
+          5
+        ],
+        "edges": [
+          4,
+          21
+        ],
+        "nodes": [
+          7,
+          22
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64,
+      "weight_constructions": {
+        "importance-weights-v1": 825
+      }
+    }
+  },
+  "filter": "none",
+  "head": "e6d8faa4b2b8c2de54a7ab62c6235357730293c0",
+  "profile": "causal-importance-v1",
+  "raw_artifacts": {
+    "forward.json": {
+      "bytes": 386,
+      "sha256": "4c1fed2861477c13a82aec36a734c2c451e7ed159c030a777a49cc388b451ee3"
+    },
+    "forward.jsonl": {
+      "bytes": 1896124,
+      "sha256": "67a2011eac2985d4c7c0fb126eacce11f841eb1807b40b8f6f90954084ca452d"
+    },
+    "forward.zip": {
+      "bytes": 3927371,
+      "sha256": "80bca441cc615d2b34aa6687443708fbe1530b3d396e2c6cab5d5ba75ce70412"
+    },
+    "layered.json": {
+      "bytes": 390,
+      "sha256": "bf191dd3c531b741dc2599ee46e452c33662d4c2ca4c75b4c654c49275617e72"
+    },
+    "layered.jsonl": {
+      "bytes": 912654,
+      "sha256": "8e8f4185d4e1357b72b73fc9385f1b4cc3f63c52133155c85203c0d62da5dc67"
+    },
+    "layered.zip": {
+      "bytes": 2084393,
+      "sha256": "d17cbc23aba33eb287f137fb4f8c22154480f98f472751865919eda3e7b0834d"
+    },
+    "redirection.json": {
+      "bytes": 390,
+      "sha256": "19f2b1d0abd3f8f5e741b9f55ac753a1cf571cb823857cec5c188fbfec2c2431"
+    },
+    "redirection.jsonl": {
+      "bytes": 1346125,
+      "sha256": "a46cee9d2e4c89d2b2e9816652e8b192d9ab813cd389acb0d3a80c331f524c81"
+    },
+    "redirection.zip": {
+      "bytes": 2983862,
+      "sha256": "6a3bb0f77f760088c84d51b237c7965250842208e9a383609a2a670c0e3df842"
+    },
+    "summary.json": {
+      "bytes": 3723,
+      "sha256": "4eaad36b45abb533ceb8d43de2e42fbb61fe40df0cc2eaee6ae8af1378359ce7"
+    }
+  },
+  "raw_directory": "/tmp/r0-28-importance-census-e6d8faa",
+  "seed": 28,
+  "timing": "NOT_MEASURED",
+  "torch": "2.15.0+cpu"
+}

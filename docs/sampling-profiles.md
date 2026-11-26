@@ -176,3 +176,13 @@ resource qualification matrix. Raw records remain in the ignored local directory
 The runtime/source version is recorded independently of later documentation edits.
 CI runs the same walkthrough and retains its output as a temporary Actions artifact
 for 14 days. Generated evidence stays out of Git.
+
+
+### Recorded importance-weighted causal profile
+
+`causal-importance-v1` supports `forward`, `layered` and `redirection` with the
+existing activation preferences, widths 1/2/4 and independently sampled uniform or
+polynomial/log-Gaussian row importance. Records retain Gaussian draws, vector
+parameters/permutations and epsilon-normalized projections. See the
+[exact law, source adaptations, admission and unfiltered census](issue-28-importance-weights.md).
+Source shared numerical preferences remain separate pending work.

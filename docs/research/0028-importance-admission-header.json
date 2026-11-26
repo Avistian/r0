@@ -1,0 +1,37 @@
+{
+  "expected": {
+    "estimated_working_bytes": 506880,
+    "largest_node_channels": 4,
+    "nodes": 23,
+    "parameters": 3560,
+    "total_channels": 44
+  },
+  "gaussian_allocation_events": [
+    50,
+    51,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    78,
+    96,
+    115,
+    135,
+    136,
+    137,
+    160,
+    185,
+    186,
+    187,
+    220,
+    221,
+    222,
+    223
+  ],
+  "matching_admissions": [
+    49,
+    224
+  ]
+}

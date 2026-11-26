@@ -85,7 +85,94 @@ Implementation head `fc0265b7706112a0b674a2c85078f177fb265b83`:
 - Factorized family provenance: RED `f36065f`, GREEN `ff0a09f`.
 - Polynomial laws, permutations and huge common offset: RED `879faea`, GREEN `534b3cb`.
 - Saved explorer workflow on three graph families: RED `671a7e5`, GREEN `fc0265b`.
-- Repository check, independent review, census and publication: PENDING.
+- Repository check and independent scoped review: PASS; evidence below.
+- Publication adds documentation and verification programs; package/test source stays unchanged.
 
 These are CPU software and retained-example checks. Scientific efficacy, speed,
 CUDA behavior and complete browser/Colab acceptance are NOT_MEASURED/NOT_RUN.
+
+
+## Retained verification and reproduction
+
+`make check` passes **613 tests, 1 skipped** with all static gates passing.
+It began at `fc0265b`; only the documentation commit `e6d8faa` landed while it ran.
+Package and test bytes are identical at those revisions. The
+[complete log](research/0028-importance-check-e6d8faa.txt) and
+[revision/context receipt](research/0028-importance-check-context.json) retain that
+qualification. The existing GPU agreement test is skipped because CUDA is absent;
+T7/T12 train/eval CLI commands remain unavailable, so smoke/eval-smoke are NOT_AVAILABLE.
+
+The [independent spec review](research/0028-importance-spec-review.md) accepts only
+this increment: **2,134 numerical checks**, 384 sampled recipes, four actual saved
+backend sessions, and all **315 legacy outcomes**. The numerical oracle evaluates
+Decimal exponential/square-root arithmetic independently of the implementation's
+float64 materialization, including huge common offsets, product overflow,
+subnormal inputs, active-support recovery, zero rows, invalid records and
+construction disagreement. Legacy outputs match exactly: 313 successes and two
+retained failures across the five older profiles. The sampler's finite-sample
+moments and endpoint frequencies are diagnostics, not proof of a distribution.
+
+Resource instrumentation matches the retained Gaussian arrays to allocation events
+and observes full retained-array admission before all 22 matched allocations in
+one declared forward example. Vector allocation ordering is source-reviewed.
+Four backend cases cover forward/layered/redirection at seed 28 and an additional
+explicit layered seed 0. The seed-28 layered graph has no nonroot projection and
+remains valid. An initial oracle incorrectly required a nonempty projection trace;
+that [harness error](research/0028-importance-harness-error.md) is retained separately.
+A second passing run verifies final import formatting; neither was a product rejection.
+
+[Standards review](research/0028-importance-standards.md) found no hard violations.
+The existing repeated-profile-registry heuristic remains nonblocking.
+
+The [receipt](research/0028-importance-receipt.json) records exact revisions,
+immutable archive hashes, interpreter, commands, program hashes and outcomes.
+[Numeric details](research/0028-importance-numeric.json),
+[sampling diagnostics](research/0028-importance-sampled-laws.json), and the
+[ordered artifact manifest](research/0028-importance-artifacts.json) preserve the
+reported checks, resource events and legacy outcomes. Split arrays reconstruct the
+original values exactly. Full raw records remain at
+`/tmp/importance-spec-e6d8faa/portable-run-02/`.
+
+The four published programs are byte-identical to that final independent run:
+[runner](../scripts/verify_causal_importance.py),
+[numeric oracle](../scripts/causal_importance_numeric.py),
+[sampling/workflow checks](../scripts/causal_importance_cases.py), and
+[legacy recorder](../scripts/causal_importance_legacy.py).
+From a checkout containing both pinned commits, using the selected environment:
+
+```sh
+UV_CACHE_DIR=/tmp/r0-28-uv-cache \
+UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
+python3 scripts/run_check.py python scripts/verify_causal_importance.py \
+  /tmp/r0-28-importance-independent-reproduction --repo .
+```
+
+The runner defaults to candidate `e6d8faa` and base `977461c`, archives both, and
+requires a new output directory. Override `--candidate` and `--base` deliberately
+when checking other revisions. This is retained CPU/backend evidence, not hosted
+CI, browser, Colab, GPU, supported-size measurements or scientific acceptance.
+
+## Unfiltered author census
+
+The fixed seed-28 census attempted 64 recipes for each of three graph families,
+cycling regression/binary/multiclass controls: **191 valid / 192 attempted**.
+Forward task 47 (multiclass) failed with nonfinite integer-power activation output;
+it was not retried, replaced or removed. The
+[summary and raw-artifact hashes](research/0028-importance-census.json) include its
+full recipe as a header plus ordered node parts, with a verified reconstruction
+hash. Raw JSONL and saved groups remain at `/tmp/r0-28-importance-census-e6d8faa/`.
+Recipes are captured in memory before generation; JSONL is written only after a
+family finishes, not durably before each attempt.
+
+Across all 192 retained recipes there are 1,562 importance projections with 3,726 polynomial
+and 3,899 uniform row vectors. Counts include the failed recipe. Among valid tasks,
+75 have disconnected-target flags, 19 inactive-ReLU flags and 31 saturation flags;
+these overlap and are not filtering criteria. Timing and peak memory are NOT_MEASURED.
+Reproduce in a new output directory:
+
+```sh
+UV_CACHE_DIR=/tmp/r0-28-uv-cache \
+UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
+python3 scripts/run_check.py python scripts/causal_topology_census.py \
+  /tmp/r0-28-importance-census-reproduction --profile causal-importance-v1
+```

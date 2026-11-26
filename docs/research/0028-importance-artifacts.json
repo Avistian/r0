@@ -1,0 +1,32 @@
+{
+  "artifacts": {
+    "cases/sampling-admission.json": {
+      "array_key": "events",
+      "canonical_sha256": "4880debc110194d5117fd307327ef70c0aa6458ce8ec3d6a6289209431ba49f1",
+      "header": "0028-importance-admission-header.json",
+      "ordered_parts": [
+        "0028-importance-admission-01.json",
+        "0028-importance-admission-02.json"
+      ],
+      "raw_sha256": "888a962d5eff851668687a5c41c355a474758684641b1ffe8d2e77837bc52140"
+    },
+    "legacy-candidate/legacy.json": {
+      "array_key": null,
+      "canonical_sha256": "c1beaddf2b6a32062e08759a1db0be80ee844d9a8365a068970b51711e22f2b8",
+      "ordered_parts": [
+        "0028-importance-legacy-01.json",
+        "0028-importance-legacy-02.json",
+        "0028-importance-legacy-03.json",
+        "0028-importance-legacy-04.json"
+      ],
+      "raw_sha256": "69719dc28d47f8046a7f064166a3a013dbf06eb4d2e807dbce9f6a6db23e0d16"
+    }
+  },
+  "numeric_jsonl": {
+    "bytes": 924862,
+    "path": "numeric/numeric.jsonl",
+    "sha256": "76bd1ac88d46cdcbec5010e68ef048666c6b848c703c3bcdf172ddf49d0e6e52"
+  },
+  "raw_directory": "/tmp/importance-spec-e6d8faa/portable-run-02",
+  "reconstruction": "Array parts concatenate in listed order. JSON object header keeps other fields; assign concatenation to array_key. Canonical hash uses json.dumps(value,sort_keys=True,separators=(\",\",\":\"),allow_nan=False)."
+}

@@ -279,3 +279,28 @@ positive-weight hyperpriors, importance/kernel/transformed matrices, masks,
 normalization/jitter stages, shared weight preferences, wider mechanisms and
 networks, typed variables, interventions, workbench UI and final environment/
 resource qualification remain required. The full goal is not complete.
+
+
+## Importance-weighted projection checkpoint
+
+At `e6d8faa`, authored uniform and polynomial/log-Gaussian importance vectors feed
+recorded row-normalized Gaussian projections. `causal-importance-v1` exposes this
+through all three topology families and shared save/reopen/replay. Stable centered
+arithmetic preserves decay under huge common perturbations and valid epsilon-zero
+directions after weight underflow. Family provenance rejects factorized/importance
+substitutions. [Definitions, source distinctions and evidence](issue-28-importance-weights.md).
+
+Repository checks pass **613 tests, 1 skipped**; source/test bytes match `fc0265b`
+where that check began. Independent scoped review passes 2,134 numerical checks,
+384 sampled recipes, four saved backend sessions and 315 exact old-profile outcomes
+(including two failures). Resource instrumentation precedes all 22 matched Gaussian
+allocations in its declared example. The author census retains **191 valid / 192
+attempted**, including the failed integer-power recipe. A disconnected-graph oracle
+mistake is retained as a harness error, not a product rejection. Standards found no
+hard violations; repeated profile registries remain a nonblocking heuristic.
+
+This supplies positive-vector/weighted-Gaussian options within W01/W03, not all
+weight priors. Shared source numerical preferences, kernel/transformed matrices,
+wrappers, masks, networks/trees, typed states, interventions and the full workbench
+remain required. CPU backend evidence does not establish browser/Colab/GPU or
+scientific acceptance. The full goal stays active.

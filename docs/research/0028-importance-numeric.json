@@ -1,0 +1,407 @@
+{
+  "status": "PASS",
+  "checks": 2134,
+  "python": "/home/avist/Projects/r0/.venv/bin/python",
+  "public_import": "/tmp/importance-spec-e6d8faa/portable-run-02/candidate/src/r0/modules/priors/lib/weight_matrices.py",
+  "module_sha256": "f83d6d75c550bf4bf787bd09d63ecedd475af61080ee9dd2174778355f95a9b5",
+  "events": [
+    {
+      "name": "matrix-83-4-1e-06",
+      "status": "PASS",
+      "actual": [
+        2.557e-320,
+        -1.7109286e-317,
+        8.7358e-319
+      ],
+      "expected": [
+        2.557e-320,
+        -1.7109286e-317,
+        8.7358e-319
+      ],
+      "inputs": {
+        "vector": {
+          "draws": [
+            0.8938920076560172,
+            -0.5192524747270792,
+            1.2770434577358871
+          ],
+          "decay": 5.291261019030576,
+          "log_noise_scale": 0.00021231714593430233,
+          "permutation": [
+            2,
+            0,
+            1
+          ],
+          "version": "polynomial-weight-vector-v1",
+          "exact_scores_limit": 1000000
+        },
+        "g": [
+          5e-324,
+          -1e-323,
+          2e-323
+        ],
+        "epsilon": 1e-06
+      }
+    },
+    {
+      "name": "matrix-83-4-1e+308",
+      "status": "PASS",
+      "actual": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "expected": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "inputs": {
+        "vector": {
+          "draws": [
+            0.8938920076560172,
+            -0.5192524747270792,
+            1.2770434577358871
+          ],
+          "decay": 5.291261019030576,
+          "log_noise_scale": 0.00021231714593430233,
+          "permutation": [
+            2,
+            0,
+            1
+          ],
+          "version": "polynomial-weight-vector-v1",
+          "exact_scores_limit": 1000000
+        },
+        "g": [
+          5e-324,
+          -1e-323,
+          2e-323
+        ],
+        "epsilon": 1e+308
+      }
+    },
+    {
+      "name": "matrix-83-5-0.0",
+      "status": "PASS",
+      "actual": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "expected": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "inputs": {
+        "vector": {
+          "draws": [
+            0.8938920076560172,
+            -0.5192524747270792,
+            1.2770434577358871
+          ],
+          "decay": 5.291261019030576,
+          "log_noise_scale": 0.00021231714593430233,
+          "permutation": [
+            2,
+            0,
+            1
+          ],
+          "version": "polynomial-weight-vector-v1",
+          "exact_scores_limit": 1000000
+        },
+        "g": [
+          1e-300,
+          1e-200,
+          -1e+300
+        ],
+        "epsilon": 0.0
+      }
+    },
+    {
+      "name": "matrix-83-5-5e-324",
+      "status": "PASS",
+      "actual": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "expected": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "inputs": {
+        "vector": {
+          "draws": [
+            0.8938920076560172,
+            -0.5192524747270792,
+            1.2770434577358871
+          ],
+          "decay": 5.291261019030576,
+          "log_noise_scale": 0.00021231714593430233,
+          "permutation": [
+            2,
+            0,
+            1
+          ],
+          "version": "polynomial-weight-vector-v1",
+          "exact_scores_limit": 1000000
+        },
+        "g": [
+          1e-300,
+          1e-200,
+          -1e+300
+        ],
+        "epsilon": 5e-324
+      }
+    },
+    {
+      "name": "matrix-83-5-1e-06",
+      "status": "PASS",
+      "actual": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "expected": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "inputs": {
+        "vector": {
+          "draws": [
+            0.8938920076560172,
+            -0.5192524747270792,
+            1.2770434577358871
+          ],
+          "decay": 5.291261019030576,
+          "log_noise_scale": 0.00021231714593430233,
+          "permutation": [
+            2,
+            0,
+            1
+          ],
+          "version": "polynomial-weight-vector-v1",
+          "exact_scores_limit": 1000000
+        },
+        "g": [
+          1e-300,
+          1e-200,
+          -1e+300
+        ],
+        "epsilon": 1e-06
+      }
+    },
+    {
+      "name": "matrix-83-5-1e+308",
+      "status": "PASS",
+      "actual": [
+        0.0,
+        0.0,
+        -4.420370009370122e-10
+      ],
+      "expected": [
+        0.0,
+        0.0,
+        -4.420370009370122e-10
+      ],
+      "inputs": {
+        "vector": {
+          "draws": [
+            0.8938920076560172,
+            -0.5192524747270792,
+            1.2770434577358871
+          ],
+          "decay": 5.291261019030576,
+          "log_noise_scale": 0.00021231714593430233,
+          "permutation": [
+            2,
+            0,
+            1
+          ],
+          "version": "polynomial-weight-vector-v1",
+          "exact_scores_limit": 1000000
+        },
+        "g": [
+          1e-300,
+          1e-200,
+          -1e+300
+        ],
+        "epsilon": 1e+308
+      }
+    },
+    {
+      "name": "uniform draw nan",
+      "status": "PASS",
+      "rejection": "uniform weight vectors require a nonempty finite tuple in [0,1)"
+    },
+    {
+      "name": "polynomial draw nan",
+      "status": "PASS",
+      "rejection": "polynomial weight vectors require nonempty finite draws"
+    },
+    {
+      "name": "epsilon nan",
+      "status": "PASS",
+      "rejection": "row normalization epsilon must be finite and nonnegative"
+    },
+    {
+      "name": "gaussian nan",
+      "status": "PASS",
+      "rejection": "weight factors must be nonempty finite rectangular tuple matrices"
+    },
+    {
+      "name": "uniform draw inf",
+      "status": "PASS",
+      "rejection": "uniform weight vectors require a nonempty finite tuple in [0,1)"
+    },
+    {
+      "name": "polynomial draw inf",
+      "status": "PASS",
+      "rejection": "polynomial weight vectors require nonempty finite draws"
+    },
+    {
+      "name": "epsilon inf",
+      "status": "PASS",
+      "rejection": "row normalization epsilon must be finite and nonnegative"
+    },
+    {
+      "name": "gaussian inf",
+      "status": "PASS",
+      "rejection": "weight factors must be nonempty finite rectangular tuple matrices"
+    },
+    {
+      "name": "uniform draw -inf",
+      "status": "PASS",
+      "rejection": "uniform weight vectors require a nonempty finite tuple in [0,1)"
+    },
+    {
+      "name": "polynomial draw -inf",
+      "status": "PASS",
+      "rejection": "polynomial weight vectors require nonempty finite draws"
+    },
+    {
+      "name": "epsilon -inf",
+      "status": "PASS",
+      "rejection": "row normalization epsilon must be finite and nonnegative"
+    },
+    {
+      "name": "gaussian -inf",
+      "status": "PASS",
+      "rejection": "weight factors must be nonempty finite rectangular tuple matrices"
+    },
+    {
+      "name": "uniform draw True",
+      "status": "PASS",
+      "rejection": "uniform weight vectors require a nonempty finite tuple in [0,1)"
+    },
+    {
+      "name": "polynomial draw True",
+      "status": "PASS",
+      "rejection": "polynomial weight vectors require nonempty finite draws"
+    },
+    {
+      "name": "epsilon True",
+      "status": "PASS",
+      "rejection": "row normalization epsilon must be finite and nonnegative"
+    },
+    {
+      "name": "gaussian True",
+      "status": "PASS",
+      "rejection": "weight factors must be nonempty finite rectangular tuple matrices"
+    },
+    {
+      "name": "uniform draw x",
+      "status": "PASS",
+      "rejection": "uniform weight vectors require a nonempty finite tuple in [0,1)"
+    },
+    {
+      "name": "polynomial draw x",
+      "status": "PASS",
+      "rejection": "polynomial weight vectors require nonempty finite draws"
+    },
+    {
+      "name": "epsilon x",
+      "status": "PASS",
+      "rejection": "row normalization epsilon must be finite and nonnegative"
+    },
+    {
+      "name": "gaussian x",
+      "status": "PASS",
+      "rejection": "weight factors must be nonempty finite rectangular tuple matrices"
+    },
+    {
+      "name": "uniform malformed ()",
+      "status": "PASS",
+      "rejection": "uniform weight vectors require a nonempty finite tuple in [0,1)"
+    },
+    {
+      "name": "uniform malformed (1.0,)",
+      "status": "PASS",
+      "rejection": "uniform weight vectors require a nonempty finite tuple in [0,1)"
+    },
+    {
+      "name": "uniform malformed (-0.1,)",
+      "status": "PASS",
+      "rejection": "uniform weight vectors require a nonempty finite tuple in [0,1)"
+    },
+    {
+      "name": "uniform malformed [0.5]",
+      "status": "PASS",
+      "rejection": "uniform weight vectors require a nonempty finite tuple in [0,1)"
+    },
+    {
+      "name": "polynomial malformed {'decay': -1}",
+      "status": "PASS",
+      "rejection": "polynomial decay and log-noise scale must be finite nonnegative"
+    },
+    {
+      "name": "polynomial malformed {'log_noise_scale': -1}",
+      "status": "PASS",
+      "rejection": "polynomial decay and log-noise scale must be finite nonnegative"
+    },
+    {
+      "name": "polynomial malformed {'permutation': (0, 0)}",
+      "status": "PASS",
+      "rejection": "weight permutation must contain each draw index exactly once"
+    },
+    {
+      "name": "polynomial malformed {'permutation': (True,)}",
+      "status": "PASS",
+      "rejection": "weight permutation must contain each draw index exactly once"
+    },
+    {
+      "name": "polynomial malformed {'exact_scores_limit': 0}",
+      "status": "PASS",
+      "rejection": "exact weight scores require a positive limit below 2**63"
+    },
+    {
+      "name": "exact resource limit",
+      "status": "PASS",
+      "rejection": "polynomial exact score limit exceeded"
+    },
+    {
+      "name": "recipe resource admission precedes materialization",
+      "status": "PASS",
+      "rejection": "causal parameter limit exceeded"
+    },
+    {
+      "name": "disagreeing saved projection",
+      "status": "PASS",
+      "rejection": "recorded weights disagree with their frozen construction"
+    },
+    {
+      "name": "family provenance causal-importance-v1",
+      "status": "PASS",
+      "rejection": "activation-factorized-v1 sampling requires every projection construction"
+    },
+    {
+      "name": "family provenance causal-factorized-v1",
+      "status": "PASS",
+      "rejection": "activation-importance-v1 sampling requires every projection construction"
+    }
+  ]
+}

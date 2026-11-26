@@ -1,0 +1,13 @@
+Spec verdict: PASS for the frozen importance-weight increment at e6d8faa4b2b8c2de54a7ab62c6235357730293c0 against base 977461c276c722592cac7bdd271d9250b93db972. No implementation defect or scope creep found.
+
+Requirements checked: docs/issue-28-importance-weights.md:9-35 (uniform/polynomial laws, permutation, huge offsets, subnormal/zero/extreme projection arithmetic); :40-46 (admission before materialization, disagreement rejection, construction provenance and replay); :59-71 (sampling laws and admission); :78-79 (five legacy streams including failures). Broad docs/specs/0028-causal-network-generators.md decisions 13, 18 and 19 remain partially delivered; no whole-issue acceptance is implied.
+
+Independent public-contract evidence: 2,134 numeric checks passed using an independent Decimal oracle; 22,996 sampling/workflow checks passed across 384 recipes and four actual saved/reopened/replayed explorer sessions. A public CausalLimits/NumPy RNG proxy verified full retained-array admission before all 22 retained Gaussian allocations in the instrumented forward recipe; vector allocation ordering was source-reviewed. Sampled-law statistics are finite-sample diagnostics, supplemented by exact formula/source inspection, not proof of a distribution. All 315 legacy cases matched byte-for-byte, including two failures; the copied legacy oracle extends the original four-profile snapshot with factorized.
+
+One HARNESS_ERROR is retained: the original workflow oracle incorrectly required a projection in the valid disconnected layered seed-28 draw. Corrected checks retain that draw and separately declare layered seed 0; no product REJECT was erased.
+
+Reproduce from any checkout containing both revisions:
+/home/avist/Projects/r0/.venv/bin/python /tmp/importance-spec-e6d8faa/verify_causal_importance.py NEW_OUTPUT_DIRECTORY --repo REPOSITORY
+Use another compatible interpreter/path after publication. The four standalone scripts live beside the runner, each below 10KB, and pass repository-config Ruff check/format from cwd=/tmp/r0-28. Final raw evidence is portable-run-02/; receipt.json records immutable archive hashes, exact commands/revisions, executable, program hashes and result counts. Numeric/import receipts record actual imported source paths/hashes. Script hashes were rechecked unchanged after execution. The first PASS in portable-run/ is retained; -02 verifies the final cwd-sensitive import-sorted package.
+
+Scientific efficacy, GPU, browser and Colab acceptance remain NOT_MEASURED/NOT_RUN. Repository source was not edited; final HEAD/status remain e6d8faa and only the preexisting untracked .venv.
