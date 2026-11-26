@@ -20,7 +20,11 @@ class CausalGraphPrior:
     version: str = "causal-graph-v1"
 
     def __post_init__(self) -> None:
-        if self.version != "causal-graph-v1" or self.family not in ("forward", "layered"):
+        if self.version != "causal-graph-v1" or self.family not in (
+            "forward",
+            "layered",
+            "redirection",
+        ):
             raise ValueError("unsupported causal graph version or family")
         if (
             type(self.nodes) is not int
@@ -32,6 +36,14 @@ class CausalGraphPrior:
             math.isfinite(self.edge_probability) and 0 <= self.edge_probability <= 1
         ):
             raise ValueError("edge probability must be finite and in [0, 1]")
+        if type(self.redirection_probability) not in (int, float) or not (
+            math.isfinite(self.redirection_probability) and 0 <= self.redirection_probability <= 1
+        ):
+            raise ValueError("redirection probability must be finite and in [0, 1]")
+        if self.family != "redirection" and self.redirection_probability != 0.5:
+            raise ValueError("nondefault redirection probability requires redirection family")
+        if self.family == "redirection" and self.edge_probability != 0.25:
+            raise ValueError("edge probability does not apply to redirection trees")
         if type(self.layer_widths) is not tuple or any(
             type(width) is not int or width < 1 for width in self.layer_widths
         ):
@@ -99,10 +111,18 @@ def sample_causal_graph(
                 candidates = (
                     range(layer_starts[layer - 1], layer_starts[layer]) if layer > 0 else range(0)
                 )
-            incoming = tuple(
-                candidates[int(i)]
-                for i in np.flatnonzero(rng.random(len(candidates)) < prior.edge_probability)
-            )
+            if prior.family == "redirection":
+                incoming = ()
+                if node > start:
+                    selected = int(rng.integers(start, node))
+                    redirect = rng.random() < prior.redirection_probability
+                    predecessor = parents[selected]
+                    incoming = (predecessor[0] if redirect and predecessor else selected,)
+            else:
+                incoming = tuple(
+                    candidates[int(i)]
+                    for i in np.flatnonzero(rng.random(len(candidates)) < prior.edge_probability)
+                )
             edge_count += len(incoming)
             if 2 * prior.nodes + edge_count > limits.parameters:
                 raise ValueError("causal graph minimum parameter limit exceeded")
