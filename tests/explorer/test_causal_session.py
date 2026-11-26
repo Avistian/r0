@@ -18,6 +18,8 @@ from r0.modules.explorer import ExplorerSession
         ("causal-exogenous-v1", "activation-exogenous-v1"),
         ("causal-factorized-v1", "activation-factorized-v1"),
         ("causal-importance-v1", "activation-importance-v1"),
+        ("causal-matrices-v1", "activation-matrices-v1"),
+        ("causal-gaussian-matrices-v1", "activation-gaussian-matrices-v1"),
     ],
 )
 def test_sampled_causal_session_saves_reopens_and_replays_its_graph(
