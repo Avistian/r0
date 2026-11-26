@@ -7,7 +7,7 @@ from typing import Any
 import numpy as np
 
 from r0.modules.priors.lib.activation_sampling import CausalActivationPrior, finite_number
-from r0.modules.priors.lib.causal import ActivatedCausalNode, CausalRecipe
+from r0.modules.priors.lib.causal import ActivatedCausalNode, CausalRecipe, MatrixCausalNode
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.representatives import record_fingerprint
 
@@ -51,6 +51,12 @@ class SampledCausalRecipe(CausalRecipe):
         ):
             raise ValueError("homogeneous activation preferences must be one-hot")
         for node in self.nodes:
+            if (
+                self.construction == "activation-factorized-v1"
+                and node.parents
+                and not isinstance(node, MatrixCausalNode)
+            ):
+                raise ValueError("factorized sampling requires every projection construction")
             if not isinstance(node, ActivatedCausalNode):
                 raise ValueError("activation-sampled nodes must record their activation stages")
             after = self.activation_prior.noise_after_probability
