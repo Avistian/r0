@@ -117,20 +117,24 @@ def explain_generation(
         "inputs",
         "Observed inputs",
         list(dict.fromkeys(f"causal-{i}" for i, _ in card["observed"]))
-        if card["version"] == "causal-v1"
+        if card["version"] in ("causal-v1", "causal-v2")
         else [],
         "select declared causal node channels"
-        if card["version"] == "causal-v1"
+        if card["version"] in ("causal-v1", "causal-v2")
         else "independent per-column input streams",
         inputs,
         {
             "distribution": card.get("inputs", card.get("input")),
             "active_columns": card["active"],
             "row_indices": list(indices),
-            **({"observed_channels": card["observed"]} if card["version"] == "causal-v1" else {}),
+            **(
+                {"observed_channels": card["observed"]}
+                if card["version"] in ("causal-v1", "causal-v2")
+                else {}
+            ),
         },
     )
-    if card["version"] == "causal-v1":
+    if card["version"] in ("causal-v1", "causal-v2"):
         signal = causal_steps(card, len(task.inputs), indices, add)
     elif card["version"] == "exact-gp-v1":
         signal = gp_steps(card, record["recipe"], indices, add)
