@@ -17,3 +17,13 @@ def test_forward_graph_keeps_disconnected_components_and_extreme_probabilities()
     draw = sample_causal_graph(sparse, seed=28, task_id=1)
     assert draw == sample_causal_graph(sparse, seed=28, task_id=1)
     assert draw.parents != sample_causal_graph(sparse, seed=28, task_id=2).parents
+
+
+def test_layered_graph_respects_layer_boundaries_in_each_component() -> None:
+    prior = CausalGraphPrior(
+        family="layered", nodes=10, components=2, layer_widths=(2, 1, 2), edge_probability=1
+    )
+    graph = sample_causal_graph(prior, seed=28, task_id=3)
+    assert graph.parents == ((), (), (0, 1), (2,), (2,), (), (), (5, 6), (7,), (7,))
+    empty = sample_causal_graph(replace(prior, edge_probability=0), seed=28, task_id=3)
+    assert empty.parents == ((),) * 10

@@ -15,6 +15,7 @@ class CausalGraphPrior:
     nodes: int = 16
     components: int = 1
     edge_probability: float = 0.25
+    layer_widths: tuple[int, ...] = ()
     version: str = "causal-graph-v1"
 
     def __post_init__(self) -> None:
