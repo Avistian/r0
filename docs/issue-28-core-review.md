@@ -86,3 +86,21 @@ channels, 1,000,000 numeric parameters and 256 MiB estimated working storage. Th
 are initial configurable admission settings, not qualified throughput maxima or
 permanent architecture ceilings. The estimate is not measured process RSS or an
 OS memory limit. Actual device/shape resource qualification remains outstanding.
+
+
+### Scoped independent recheck
+
+At `b507f0c3686838e851a31edfa0975bc7bad0d836`, the independent spec reviewer returned
+**PASS for the repair delta**. It independently checked direct-role rejection,
+valid descendant and same-node/different-channel profiles, every resource-limit
+boundary, invalid limits, calibration workload admission, arithmetic, historical
+RNG identity, selected-row traces, resource records and JSON replay. Its retained
+script exited 0 without large allocations, source edits or author-test reruns.
+This is not acceptance of the remaining #28 scope.
+
+The standards recheck confirmed the historical RED qualification and shared RNG
+repair. Its remaining historical-Pyright evidence concern was addressed by marking
+those exploratory source states/reproduction context NOT_RETAINED in the ledger;
+they are not used as exact-revision acceptance evidence. The original reports and
+scripts remain local evidence. Current public tests and commit hooks provide the
+reproduction path for the identified implementation revisions.

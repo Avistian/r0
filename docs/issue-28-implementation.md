@@ -101,10 +101,12 @@ unknown unpublished algorithms remain explicit.
 
 The inspected environment reports PyTorch `2.15.0+cpu`, 12 CPU threads, no CUDA
 runtime and no available CUDA device. GPU execution evidence is NOT_RUN here.
-Sandboxed Pyright failed to resolve NumPy/Torch despite passing runtime imports;
-an explicit-interpreter unsandboxed run resolved dependencies and exposed only the
-new tests' `Tensor.tolist` typing, which was corrected. Retained logs live under
-`docs/evidence/issue-28/`.
+Historical sandboxed Pyright logs contain dependency-resolution failures. The
+exact source states and complete reproduction context for those exploratory runs
+are NOT_RETAINED, so they are not exact-revision verification evidence. Subsequent
+commit hooks ran typechecking at the identified commits. Local exploratory logs
+remain under `docs/evidence/issue-28/`; a current typecheck is reproducible with the
+repository wrapper and the explicitly selected interpreter/environment.
 
 ## First causal core slice
 
@@ -133,3 +135,11 @@ geometry, parameters and estimated working storage before generation. These are
 admission estimates, not measured resource-qualification claims. See the review
 record for defaults and reproducible commands; broad inventory execution remains
 outstanding.
+
+
+Scoped independent spec recheck **PASS** at `b507f0c`: direct target exposure,
+all five resource limits, invalid-limit rejection, calibration admission,
+structural arithmetic, RNG identity, selected-row traces and JSON replay passed.
+This is a delta confirmation, not overall #28 acceptance. The original REJECT is
+retained. The expanded focused integration command passed **33 tests** at the same
+source revision; full-suite, browser, GPU and Colab acceptance remain pending.
