@@ -93,7 +93,11 @@ class StochasticCausalNode(ActivatedCausalNode):
 
     @property
     def working_extra_channels(self) -> int:
-        return 8 * len(self.bias)
+        return self.working_channels_for_width(len(self.bias))
+
+    @staticmethod
+    def working_channels_for_width(width: int) -> int:
+        return 8 * width
 
     @property
     def working_row_floor(self) -> int:

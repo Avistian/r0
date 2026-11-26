@@ -5,7 +5,12 @@ from dataclasses import replace
 
 import numpy as np
 
-from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode, CausalNode, MatrixCausalNode
+from r0.modules.priors.lib.causal_nodes import (
+    ActivatedCausalNode,
+    CausalNode,
+    MatrixCausalNode,
+    StochasticCausalNode,
+)
 from r0.modules.priors.lib.causal_sampled import SampledCausalRecipe
 from r0.modules.priors.lib.weight_matrices import FactorizedWeights
 
@@ -18,9 +23,14 @@ def sample_factorized_profile(
         int(rng.integers(1, min(len(node.weights), len(node.bias)) + 1)) if node.parents else 0
         for node in recipe.nodes
     )
+    default_noise_parameters = StochasticCausalNode().structural_parameter_count
     extra = sum(
         node.structural_parameter_count
-        + (7 + rank * (len(node.weights) + len(node.bias) + 1) if rank else 0)
+        + (
+            default_noise_parameters + rank * (len(node.weights) + len(node.bias) + 1)
+            if rank
+            else 0
+        )
         for node, rank in zip(recipe.nodes, ranks, strict=True)
     )
     # Admit all retained factor scalars before allocating any factor arrays.
@@ -33,7 +43,12 @@ def sample_factorized_profile(
         outputs=len(recipe.target),
         extra_parameters=extra,
         extra_working_channels=max(
-            (8 * width for width, rank in zip(widths, ranks, strict=True) if rank), default=0
+            (
+                StochasticCausalNode.working_channels_for_width(width)
+                for width, rank in zip(widths, ranks, strict=True)
+                if rank
+            ),
+            default=0,
         ),
     )
     nodes: list[CausalNode] = []
