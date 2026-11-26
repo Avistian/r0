@@ -157,6 +157,8 @@ class CausalRecipe:
             "gaussian-activation-prior-v1",
         ) or (self.construction != "authored" and self.topology is None):
             raise ValueError("sampled construction requires its saved topology")
+        if self.construction == "gaussian-activation-prior-v1" and type(self) is CausalRecipe:
+            raise ValueError("activation sampling construction requires its saved prior")
         for refs in (self.observed, self.target):
             if type(refs) is not tuple or any(
                 type(ref) is not tuple

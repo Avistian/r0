@@ -31,6 +31,11 @@ class SampledCausalRecipe(CausalRecipe):
             or not math.isclose(math.fsum(probabilities), 1, rel_tol=0, abs_tol=1e-12)
         ):
             raise ValueError("activation probabilities must form a simplex matching the choices")
+        base = self.activation_prior.base_probabilities()
+        if any(w == 0 and p != 0 for w, p in zip(base, probabilities, strict=True)):
+            raise ValueError("sampling probabilities cannot enable a zero-weight choice")
+        if self.activation_prior.mode == "independent" and probabilities != base:
+            raise ValueError("independent sampling probabilities must match the prior weights")
         selected = [i for i, p in enumerate(probabilities) if p > 0]
         homogeneous: set[CausalActivation] = set()
         if self.activation_prior.mode == "homogeneous" and len(selected) != 1:
@@ -38,6 +43,11 @@ class SampledCausalRecipe(CausalRecipe):
         for node in self.nodes:
             if not isinstance(node, ActivatedCausalNode):
                 raise ValueError("activation-sampled nodes must record their activation stages")
+            after = self.activation_prior.noise_after_probability
+            if (after == 0 and node.noise_position != "before_output") or (
+                after == 1 and node.noise_position != "after_output"
+            ):
+                raise ValueError("node noise order disagrees with its sampling law")
             for stage, active in (
                 (
                     node.input_activation,
