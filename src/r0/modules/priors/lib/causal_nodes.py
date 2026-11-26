@@ -10,6 +10,7 @@ from r0.modules.priors.lib.inputs import InputDistribution
 from r0.modules.priors.lib.weight_matrices import (
     FactorizedWeights,
     ImportanceWeights,
+    LaplaceKernelWeights,
     WeightConstruction,
     weight_construction_from_dict,
 )
@@ -136,7 +137,11 @@ class MatrixCausalNode(StochasticCausalNode):
 
     def __post_init__(self) -> None:
         StochasticCausalNode.__post_init__(self)
-        if type(self.weight_construction) not in (FactorizedWeights, ImportanceWeights):
+        if type(self.weight_construction) not in (
+            FactorizedWeights,
+            ImportanceWeights,
+            LaplaceKernelWeights,
+        ):
             raise ValueError("matrix nodes require a frozen weight construction")
         if not self.parents or self.weight_construction.shape != (
             len(self.weights),

@@ -202,11 +202,81 @@ def _importance_row(
     return tuple(float(v) for v in np.sign(gaussian) * np.exp(logs - log_denominator))
 
 
-type WeightConstruction = FactorizedWeights | ImportanceWeights
+@dataclass(frozen=True, slots=True)
+class LaplaceKernelWeights:
+    left_points: Matrix = ((0.0,),)
+    right_points: Matrix = ((0.0,),)
+    signs: Matrix = ((1.0,),)
+    distance_scale: float = 1.0
+    version: str = "laplace-kernel-weights-v1"
+    exact_distance_terms_limit: int = 1_000_000
+
+    def __post_init__(self) -> None:
+        rows, dimension = matrix_shape(self.left_points)
+        columns, right_dimension = matrix_shape(self.right_points)
+        if (
+            self.version != "laplace-kernel-weights-v1"
+            or dimension != right_dimension
+            or matrix_shape(self.signs) != (rows, columns)
+            or any(v not in (-1, 0, 1) for row in self.signs for v in row)
+        ):
+            raise ValueError("kernel point dimensions and entry signs must match the projection")
+        if not finite_number(self.distance_scale) or self.distance_scale < 0:
+            raise ValueError("kernel distance scale must be finite nonnegative")
+        if (
+            type(self.exact_distance_terms_limit) is not int
+            or not 1 <= self.exact_distance_terms_limit < 2**63
+        ):
+            raise ValueError("exact kernel distance terms require a positive limit below 2**63")
+
+    @property
+    def shape(self) -> tuple[int, int]:
+        return len(self.left_points), len(self.right_points)
+
+    @property
+    def parameter_count(self) -> int:
+        return sum(len(row) for row in (*self.left_points, *self.right_points, *self.signs)) + 1
+
+    def materialize(self) -> Matrix:
+        return tuple(
+            tuple(
+                float(sign) * math.exp(-self._scaled_distance(left, right)) if sign else 0.0
+                for right, sign in zip(self.right_points, signs, strict=True)
+            )
+            for left, signs in zip(self.left_points, self.signs, strict=True)
+        )
+
+    def _scaled_distance(self, left: tuple[float, ...], right: tuple[float, ...]) -> float:
+        if self.distance_scale == 0:
+            return 0.0
+        distance = math.dist(left, right)
+        if math.isfinite(distance):
+            return self.distance_scale * distance
+        # Opposite large finite coordinates can overflow their difference even
+        # when scaling makes the distance small. Scale exact differences first.
+        if self.shape[0] * self.shape[1] * len(left) > self.exact_distance_terms_limit:
+            raise ValueError("kernel exact distance term limit exceeded")
+        with localcontext() as context:
+            context.prec = 2 * (309 + 1074) + 2
+            context.Emin, context.Emax = -999999, 999999
+            scale = Decimal.from_float(float(self.distance_scale))
+            differences = (
+                float((Decimal.from_float(float(a)) - Decimal.from_float(float(b))) * scale)
+                for a, b in zip(left, right, strict=True)
+            )
+            return math.hypot(*differences)
+
+
+type WeightConstruction = FactorizedWeights | ImportanceWeights | LaplaceKernelWeights
 
 
 def weight_construction_from_dict(data: dict[str, Any]) -> WeightConstruction:
     fields = dict(data)
+    if fields.get("version") == "laplace-kernel-weights-v1":
+        for name in ("left_points", "right_points", "signs"):
+            if name in fields:
+                fields[name] = tuple(tuple(row) for row in fields[name])
+        return LaplaceKernelWeights(**fields)
     if fields.get("version") == "importance-weights-v1":
         fields["gaussian"] = tuple(tuple(row) for row in fields["gaussian"])
         fields["importance"] = tuple(weight_vector_from_dict(v) for v in fields["importance"])

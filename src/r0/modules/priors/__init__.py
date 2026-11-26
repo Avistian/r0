@@ -61,6 +61,7 @@ from r0.modules.priors.lib.smooth import SmoothRecipe as SmoothRecipe
 from r0.modules.priors.lib.training_task import TrainingTask as TrainingTask
 from r0.modules.priors.lib.weight_matrices import FactorizedWeights as FactorizedWeights
 from r0.modules.priors.lib.weight_matrices import ImportanceWeights as ImportanceWeights
+from r0.modules.priors.lib.weight_matrices import LaplaceKernelWeights as LaplaceKernelWeights
 from r0.modules.priors.lib.weight_vectors import PolynomialWeightVector as PolynomialWeightVector
 from r0.modules.priors.lib.weight_vectors import UniformWeightVector as UniformWeightVector
 
