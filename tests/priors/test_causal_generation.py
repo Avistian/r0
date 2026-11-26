@@ -2,6 +2,7 @@
 
 from dataclasses import asdict
 
+import pytest
 import torch
 
 from r0.modules.priors import (
@@ -173,3 +174,28 @@ def test_constant_disconnected_target_is_retained_and_flagged() -> None:
     assert card["calibration"]["constant_channels"] == [0]
     assert card["calibration"]["center"] == [0.0]
     assert card["calibration"]["scale"] == [1.0]
+
+
+def test_direct_outcome_exposure_is_rejected_but_descendant_prediction_is_valid() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    with pytest.raises(ValueError, match="target channel cannot be observed"):
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(),),
+            observed=((0, 0),),
+            target=((0, 0),),
+        )
+    effect_to_cause = CausalRecipe(
+        task=controls,
+        nodes=(
+            CausalNode(),
+            CausalNode(parents=(0,), weights=((2.0,),), noise_scale=(0.1,)),
+        ),
+        observed=((1, 0),),
+        target=((0, 0),),
+    )
+    task = generate_task(effect_to_cause, seed=28, task_id=5)
+    assert torch.isfinite(task.inputs).all()
+    assert not torch.equal(task.inputs[:, 0], task.targets)
