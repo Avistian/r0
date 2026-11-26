@@ -3,6 +3,8 @@
 import json
 from dataclasses import asdict, replace
 
+import pytest
+
 from r0.modules.priors import (
     ActivatedCausalNode,
     ActivationParameterPrior,
@@ -125,3 +127,29 @@ def test_activation_parameter_distributions_freeze_values_and_homogeneous_parame
         assert isinstance(node, ActivatedCausalNode)
         if node.parents:
             assert node.input_activation == node.output_activation
+
+
+@pytest.mark.parametrize(
+    "corruption", ["probabilities", "zero_weight", "missing_prior", "noise_order"]
+)
+def test_replay_rejects_inconsistent_activation_sampling_provenance(corruption: str) -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    prior = CausalActivationPrior(
+        choices=(CausalActivation("tanh"), CausalActivation("sin")), noise_after_probability=0
+    )
+    recipe = sample_causal_recipe(
+        CausalGraphPrior(nodes=4), task=controls, seed=4, task_id=2, activations=prior
+    )
+    wire = json.loads(json.dumps(asdict(recipe)))
+    if corruption == "probabilities":
+        wire["activation_probabilities"] = [0.9, 0.1]
+    elif corruption == "zero_weight":
+        wire["activation_prior"]["weights"] = [1, 0]
+    elif corruption == "missing_prior":
+        del wire["activation_prior"], wire["activation_probabilities"]
+    else:
+        wire["nodes"][0]["noise_position"] = "after_output"
+    with pytest.raises(ValueError, match="sampling|probabilit|noise"):
+        recipe_from_dict(wire)
