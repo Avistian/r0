@@ -7,29 +7,29 @@ acceptance remain required. This document does not close #28 or all paper option
 
 ## Frozen laws, geometry and replay
 
-`StochasticCausalNode ` extends `ActivatedCausalNode ` with an
-`ExogenousDistribution ` and a `NoiseResponse `. It uses causal-v 2 recipes and the
+`StochasticCausalNode` extends `ActivatedCausalNode` with an
+`ExogenousDistribution` and a `NoiseResponse`. It uses causal-v2 recipes and the
 same public decoding, generation and row-inspection interfaces. Nodes and their
-shared decoder now live in `causal_nodes.py `; existing public imports remain.
+shared decoder now live in `causal_nodes.py`; existing public imports remain.
 Old nodes retain their fields, evaluation order and RNG keys. New-node evaluation
 has an explicit separate equation, avoiding changes to legacy floating arithmetic.
 
-`ExogenousDistribution.inputs ` reuses #27's `InputDistribution `:
+`ExogenousDistribution.inputs` reuses #27's `InputDistribution`:
 
 | Family | Standardized draw before location/scale |
 |---|---|
 | gaussian | standard Gaussian |
 | uniform | uniform on `[-sqrt(3), sqrt(3)]` |
-| student_t | Student-t with declared positive `df `, without variance rescaling |
-| mixture | standard Gaussian plus independent equiprobable `+mixture_gap ` or `-mixture_gap ` |
+| student_t | Student-t with declared positive `df`, without variance rescaling |
+| mixture | standard Gaussian plus independent equiprobable `+mixture_gap` or `-mixture_gap` |
 
-`inputs.location + inputs.scale * draw ` is applied channel-wise. The node's bias
+`inputs.location + inputs.scale * draw` is applied channel-wise. The node's bias
 and noise scale remain separate structural parameters. For example, location 0.5
 and scale `1/sqrt(12)` express Uniform[0,1] before node scaling/activation. The
 symmetric mixture chooses its sign independently per channel; it is not a shared
 multivariate prototype mixture or native categorical node.
 
-An optional positive `bound ` is the existing conditional truncation law on the
+An optional positive `bound` is the existing conditional truncation law on the
 standardized draw, before location/scale. Values outside the bound are rejected
 within the declared 128-batch budget, using batches of at least 256 values. This
 is explicit distributional truncation, not clipping an arbitrary generated task.
@@ -39,15 +39,15 @@ rows. Per-channel streams are independent before explicit vector geometry.
 
 Geometry is either independent or ball. Ball geometry requires default standard
 Gaussian inputs: normalize a Gaussian direction and multiply by an independent
-radius `U**(1/d)` in dimension `d `. This is uniform volume, not uniform radius or
-surface sampling. A frozen optional square `factor ` is then applied as `draw @ F `.
+radius `U**(1/d)` in dimension `d`. This is uniform volume, not uniform radius or
+surface sampling. A frozen optional square `factor` is then applied as `draw @ F`.
 Factors may be singular or zero. They must match the node width, and their stored
 entries count toward admission. Gaussian and uniform bases therefore support
 correlated roots; ball factors produce ellipsoidal images. Transform overflow
 fails explicitly. Factors are not asserted to be covariance matrices: for a
-standard Gaussian base the covariance is `F.T @ F `.
+standard Gaussian base the covariance is `F.T @ F`.
 
-Original-row inspection exposes `exogenous-i `, `noise-scale-i `, `innovation-i `
+Original-row inspection exposes `exogenous-i`, `noise-scale-i`, `innovation-i`
 and the causal node. The exogenous value is the transformed distribution draw
 before structural scaling. The row-wise scale and resulting innovation are
 separate tensors. Changing the noise response with the same seed/task identity
@@ -65,7 +65,7 @@ when their covariance is zero.
 
 ## Structural-noise equation
 
-For concatenated parent channels `x `, let `a = f(x) @ W + bias `; roots use only bias.
+For concatenated parent channels `x`, let `a = f(x) @ W + bias`; roots use only bias.
 The recorded response is
 
 ```text
@@ -83,7 +83,7 @@ power calculation, avoiding an irrelevant overflowing intermediate. Nonfinite
 scale/value failures are explicit. Existing Gaussian observation/target-adapter
 noise is separate and is not replaced by this structural mechanism.
 
-An after-output response can carry parent dependence even when `g ` is constant.
+An after-output response can carry parent dependence even when `g` is constant.
 The retained worked check uses `W=2`, bias 1, base scale 0.5, offset 1, strength 0.25
 and power 2: each row's scale is `0.5*(1+0.25*abs(2*x+1)**2)`. Its trace verifies the
 scale and innovation using the independently written scalar equation.
@@ -94,12 +94,12 @@ Unnormalized heavy-tailed draws remain available regardless of population
 variance. Recipes containing stochastic nodes must certify finite target second
 moments before opting into fixed independent normalization. A moment descriptor
 records bounds: positive absolute moments strictly below each numeric bound are
-certified finite; `all ` means all positive polynomial moments; zero means unknown.
+certified finite; `all` means all positive polynomial moments; zero means unknown.
 This is a sufficient certificate, not an exact integrability solver or a sample
 estimate. Failing certification rejects the requested normalization, rather than
-silently changing the distribution. `normalize=False ` remains available.
+silently changing the distribution. `normalize=False` remains available.
 
-Untruncated Student-t starts with bound `df `; bounded and other current base laws
+Untruncated Student-t starts with bound `df`; bounded and other current base laws
 start with all moments. Finite linear sums take the minimum parent bound.
 Positive powers divide it by their growth exponent. Signal-dependent noise uses
 the minimum of the exogenous bound and affine bound divided by response power,
@@ -126,7 +126,7 @@ conditional truncation raises the admitted row floor to 256. These are conservat
 array/storage estimates, not measured peak RSS or supported-maximum claims.
 Legacy estimates remain unchanged. Actual resource qualification remains pending.
 
-`profile="causal-exogenous-v 1"` is a versioned r 0 exploration profile, not a source
+`profile="causal-exogenous-v1"` is a versioned r0 exploration profile, not a source
 reproduction. It retains the three current graph families and Gaussian projections,
 and independently chooses node widths from 1,2,4. It reuses the 26-choice activation
 preference profile. Each root chooses ball geometry with probability 0.2; other
@@ -141,48 +141,48 @@ are standard Gaussian divided by `sqrt(width)`. Otherwise the factor is identity
 Roots retain constant noise response. Other nodes choose strength uniformly from
 0,0.1,0.5,1 and power from 0.5,1,2, with offset 1. All choices are frozen before task
 generation, including failed attempts. There is no success-conditioned resampling.
-The new construction name is `activation-exogenous-v 1`; older profiles are unchanged.
+The new construction name is `activation-exogenous-v1`; older profiles are unchanged.
 
 ## Source-to-implementation scope
 
-The [pinned I 2 point source](https://github.com/soda-inria/tabicl/blob/9530bd 65a 7b 806f 6ad 4f 9f 4335af 745577e 9d 3cc/src/tabicl/prior/graph_lib/_points.py)
+The [pinned I2 point source](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_points.py)
 distinguishes hypercube, uniform-volume ball and Gaussian points, Gaussian/uniform
 covariance bases and further random-function transforms. Current authored laws
 cover the base definitions and explicit frozen factors relevant to
-`I 2.root.01`–`.04`,`.06`–`.07`. The source's complete matrix sampler and random-function
+`I2.root.01`–`.04`,`.06`–`.07`. The source's complete matrix sampler and random-function
 transformed-root pipeline (`.05`) remain pending. Reading source did not copy it.
 
-Gaussian and uniform family definitions also address parts of `P 1.root.01`,
-`P 1.code.02`–`.04` and `P 2.root.01`–`.02`; this is not an assertion of identical
+Gaussian and uniform family definitions also address parts of `P1.root.01`,
+`P1.code.02`–`.04` and `P2.root.01`–`.02`; this is not an assertion of identical
 published parameter/hyperprior or calibration laws. Heavy-tailed, multimodal and
-bounded inputs cover parts of `R 0.extension.17`–`.19`; the explicit response is an
-r 0 implementation of `.20`. Zipf/clipped-Zipf, native multinomial roots, shared
+bounded inputs cover parts of `R0.extension.17`–`.19`; the explicit response is an
+r0 implementation of `.20`. Zipf/clipped-Zipf, native multinomial roots, shared
 multivariate Gaussian/prototype mixtures, source-specific mean/scale hyperpriors,
 the underspecified multivariate catalog and further structural noise/weight laws
 remain required. In particular, the symmetric two-Gaussian mixture is not silently
-substituted for P 2's normal/uniform mixture or I 2's multivariate mixture.
+substituted for P2's normal/uniform mixture or I2's multivariate mixture.
 
 ## Development and verification
 
 | Behavior | RED | GREEN |
 |---|---|---|
-| Declared exogenous law and trace | `20f 3883` | `7c 931c 8` |
-| Frozen factor and cross-channel dependence | `c 3b 39b 9` | `59af 2d 2` |
-| Uniform-volume ball and prefixes | `a 4d 5f 40` | `cd 4fa 65` |
-| Signal-dependent noise and matched draws | `1a 3d 820` | `0d 2ada 7` |
-| Heavy-tail normalization contract | `00dd 3cf ` | `9c 8ea 92` |
-| Zero-response dependence | `0a 580c 4` | `8bf 83e 3` |
-| Sampled save/reopen/replay | `ef 46df 5` | `a 05838f ` |
-| Constant transformed targets | `eeda 953` | `7c 524cf ` |
-| Stochastic-buffer admission | `6e 2bd 38` | `b 86ff 16` |
+| Declared exogenous law and trace | `20f3883` | `7c931c8` |
+| Frozen factor and cross-channel dependence | `c3b39b9` | `59af2d2` |
+| Uniform-volume ball and prefixes | `a4d5f40` | `cd4fa65` |
+| Signal-dependent noise and matched draws | `1a3d820` | `0d2ada7` |
+| Heavy-tail normalization contract | `00dd3cf` | `9c8ea92` |
+| Zero-response dependence | `0a580c4` | `8bf83e3` |
+| Sampled save/reopen/replay | `ef46df5` | `a05838f` |
+| Constant transformed targets | `eeda953` | `7c524cf` |
+| Stochastic-buffer admission | `6e2bd38` | `b86ff16` |
 
-Focused source at `b 86ff 16` passes 21 tests. The retained output is
-`docs/evidence/issue-28/exogenous-focused.log `; command:
+Focused source at `b86ff16` passes 21 tests. The retained output is
+`docs/evidence/issue-28/exogenous-focused.log`; command:
 
 ```sh
-UV_CACHE_DIR=/tmp/r 0-28-uv-cache \
-UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r 0/.venv \
-python 3 scripts/run_check.py pytest tests/priors/test_causal_exogenous.py \
+UV_CACHE_DIR=/tmp/r0-28-uv-cache \
+UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
+python3 scripts/run_check.py pytest tests/priors/test_causal_exogenous.py \
   tests/explorer/test_causal_session.py
 ```
 
