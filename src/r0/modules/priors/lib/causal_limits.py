@@ -43,6 +43,7 @@ class CausalLimits:
             calibration_rows=calibration_rows,
             features=features,
             outputs=outputs,
+            extra_parameters=sum(node.activation_parameter_count for node in nodes),
         )
 
     def admit_dimensions(
@@ -54,6 +55,7 @@ class CausalLimits:
         calibration_rows: int,
         features: int,
         outputs: int,
+        extra_parameters: int = 0,
     ) -> dict[str, int]:
         """Admit validated DAG dimensions before allocating sampled parameter arrays."""
         count, widest, total = len(widths), max(widths), sum(widths)
@@ -63,7 +65,7 @@ class CausalLimits:
             raise ValueError("causal node channel limit exceeded")
         if total > self.total_channels:
             raise ValueError("causal total channel limit exceeded")
-        parameters = sum(
+        parameters = extra_parameters + sum(
             width * (2 + sum(widths[p] for p in incoming))
             for width, incoming in zip(widths, parents, strict=True)
         )

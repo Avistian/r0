@@ -30,6 +30,10 @@ class CausalNode:
     bias: tuple[float, ...] = (0.0,)
     noise_scale: tuple[float, ...] = (1.0,)
 
+    @property
+    def activation_parameter_count(self) -> int:
+        return 0
+
     def __post_init__(self) -> None:
         if (
             type(self.parents) is not tuple
@@ -58,6 +62,10 @@ class ActivatedCausalNode(CausalNode):
     input_activation: CausalActivation = CausalActivation()
     output_activation: CausalActivation = CausalActivation()
     noise_position: str = "before_output"
+
+    @property
+    def activation_parameter_count(self) -> int:
+        return len(self.input_activation.parameters) + len(self.output_activation.parameters)
 
     def __post_init__(self) -> None:
         CausalNode.__post_init__(self)
@@ -93,7 +101,11 @@ def causal_node_from_dict(data: dict[str, Any]) -> CausalNode:
     )
     for key in ("input_activation", "output_activation"):
         if key in fields:
-            fields[key] = CausalActivation(**fields[key])
+            activation = dict(fields[key])
+            activation["parameters"] = tuple(
+                tuple(pair) for pair in activation.get("parameters", ())
+            )
+            fields[key] = CausalActivation(**activation)
     return ActivatedCausalNode(**fields) if activated else CausalNode(**fields)
 
 
