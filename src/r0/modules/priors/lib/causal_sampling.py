@@ -45,23 +45,12 @@ _EXPLORATION_ACTIVATIONS = (
 
 
 def sample_causal_profile(
-    family: str,
-    *,
-    task: LinearRecipe,
-    seed: int,
-    task_id: int,
-    activated: bool = False,
-    preferences: bool = False,
+    family: str, *, task: LinearRecipe, seed: int, task_id: int, profile: str = "causal-affine-v1"
 ) -> CausalRecipe:
     """An r0 exploration profile, not a complete published neural/causal prior."""
+    if profile not in ("causal-affine-v1", "causal-activated-v1", "causal-preferences-v1"):
+        raise ValueError("unsupported causal sampling profile")
     outputs = task.classes if task.task_type == "multiclass" else 1
-    profile = (
-        "causal-preferences-v1"
-        if preferences
-        else "causal-activated-v1"
-        if activated
-        else "causal-affine-v1"
-    )
     rng = np.random.default_rng(int(record_fingerprint((profile, family, seed, task_id)), 16))
     nodes = task.features + outputs + int(rng.integers(2, 17))
     components = int(rng.integers(1, 4))
@@ -86,9 +75,9 @@ def sample_causal_profile(
         else 0.5,
     )
     recipe = sample_causal_recipe(prior, task=task, seed=seed, task_id=task_id)
-    if preferences:
+    if profile == "causal-preferences-v1":
         return with_activation_prior(recipe, _preference_profile(rng), seed=seed, task_id=task_id)
-    if not activated:
+    if profile == "causal-affine-v1":
         return recipe
     activated_nodes: list[CausalNode] = []
     for node in recipe.nodes:

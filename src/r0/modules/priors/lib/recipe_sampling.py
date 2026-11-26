@@ -325,8 +325,7 @@ def sample_recipe(
             task=task,
             seed=seed,
             task_id=task_id,
-            activated=profile == "causal-activated-v1",
-            preferences=profile == "causal-preferences-v1",
+            profile=profile,
         )
     rng = np.random.default_rng(
         int(record_fingerprint((profile, family, asdict(task), seed, task_id)), 16)

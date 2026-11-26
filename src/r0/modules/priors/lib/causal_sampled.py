@@ -42,7 +42,9 @@ class SampledCausalRecipe(CausalRecipe):
             raise ValueError("independent sampling probabilities must match the prior weights")
         selected = [i for i, p in enumerate(probabilities) if p > 0]
         homogeneous: set[CausalActivation] = set()
-        if self.activation_prior.mode == "homogeneous" and len(selected) != 1:
+        if self.activation_prior.mode == "homogeneous" and (
+            len(selected) != 1 or probabilities[selected[0]] != 1.0
+        ):
             raise ValueError("homogeneous activation preferences must be one-hot")
         for node in self.nodes:
             if not isinstance(node, ActivatedCausalNode):
