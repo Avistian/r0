@@ -12,7 +12,7 @@ from dataclasses import asdict, replace
 from pathlib import Path
 
 from r0.modules.generation import load_request
-from r0.modules.priors import LinearRecipe, sample_recipe
+from r0.modules.priors import CompositeRecipe, LinearRecipe, sample_recipe
 
 
 def positive_limit(name: str) -> float:
@@ -20,6 +20,30 @@ def positive_limit(name: str) -> float:
     if not math.isfinite(value) or value <= 0:
         raise ValueError(f"{name} must be finite and positive")
     return value
+
+
+def agreement_recipe(recipe, task_type, classes):
+    """Keep the mechanism settings while making parent and child outputs compatible."""
+    controls = recipe if isinstance(recipe, LinearRecipe) else recipe.task
+    task = replace(
+        controls,
+        rows=64,
+        context_rows=48,
+        task_type=task_type,
+        classes=classes,
+        separation=1.0,
+        class_offsets=(),
+        noise_ratio=0.0,
+    )
+    if isinstance(recipe, LinearRecipe):
+        return task
+    if isinstance(recipe, CompositeRecipe):
+        components = tuple(
+            replace(component, recipe=agreement_recipe(component.recipe, task_type, classes))
+            for component in recipe.components
+        )
+        return replace(recipe, task=task, components=components)
+    return replace(recipe, task=task)
 
 
 def main() -> None:
@@ -76,19 +100,9 @@ def main() -> None:
     if source != os.environ["GITHUB_SHA"] or not re.fullmatch(r"[a-f0-9]{40}", source):
         raise ValueError("checkout differs from dispatched immutable source")
     subprocess.run(["git", "diff", "--exit-code", "HEAD", "--", "src", "scripts"], check=True)
-    controls = request.recipe if isinstance(request.recipe, LinearRecipe) else request.recipe.task
     agreement_recipes = []
     for task_type, classes in (("regression", 0), ("binary", 2), ("multiclass", 3)):
-        diagnostic = replace(
-            controls,
-            rows=64,
-            context_rows=48,
-            task_type=task_type,
-            classes=classes,
-            separation=1.0,
-            class_offsets=(),
-            noise_ratio=0.0,
-        )
+        diagnostic = agreement_recipe(request.recipe, task_type, classes)
         if request.sampling is not None:
             agreement = sample_recipe(
                 request.sampling.family,
@@ -98,11 +112,7 @@ def main() -> None:
                 task_id=request.start,
             )
         else:
-            agreement = (
-                diagnostic
-                if isinstance(request.recipe, LinearRecipe)
-                else replace(request.recipe, task=diagnostic)
-            )
+            agreement = diagnostic
         agreement_recipes.append(asdict(agreement))
     plan = {
         "source": source,

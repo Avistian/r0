@@ -88,6 +88,19 @@ qualified for bulk generation.
 
 ## Run locally
 
+Guarded Modal admission builds separate 64-row regression, binary and three-class
+CPU/GPU agreement recipes before submission. For a composition, the diagnostic
+conversion updates every child's output type and class count along with its parent.
+It resets noise, separation and offsets to neutral values, and uses 64 rows with
+48 context rows for each child. Component axes, strengths, expression and mechanism
+settings remain unchanged. The original generation request is preserved exactly.
+
+This fixes an admission failure where changing only the parent made otherwise
+valid composed requests incompatible with their children. The public CLI regression
+is `tests/generation/test_launch_caps.py::test_composed_request_has_executable_agreement_recipes`;
+it checks the unchanged original request and generates all three resulting
+diagnostics on CPU. That local check does not establish actual CPU/GPU agreement.
+
 ```sh
 python3 scripts/run_check.py python scripts/generate.py \
   --config configs/generation/composite-cpu.toml --out /tmp/r0-composite-run
