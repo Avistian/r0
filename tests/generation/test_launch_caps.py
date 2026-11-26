@@ -120,7 +120,8 @@ def test_classification_keeps_its_controls_and_has_valid_agreement_recipes(
     assert plan["request"]["recipe"]["task_type"] != "regression"
     from r0.modules.priors import LinearRecipe
 
-    for entry in plan["agreement_recipes"]:
+    for case in plan["agreement_cases"]:
+        entry = case["recipe"]
         entry["class_offsets"] = tuple(entry["class_offsets"])
         LinearRecipe(**entry)
 
@@ -142,7 +143,8 @@ def test_admission_diagnostics_preserve_the_requested_family(
     assert isinstance(requested, (FourierRecipe, PolynomialRecipe))
     assert requested.task.rows == 128
     assert requested.task.noise_ratio == 0.5
-    for entry in plan["agreement_recipes"]:
+    for case in plan["agreement_cases"]:
+        entry = case["recipe"]
         recipe = recipe_from_dict(entry)
         assert type(recipe) is type(requested)
         if isinstance(recipe, FourierRecipe) and isinstance(requested, FourierRecipe):
@@ -173,7 +175,8 @@ def test_sampled_request_admission_keeps_family_and_profile(
     request = request_from_dict(plan["request"])
     assert request.sampling == RecipeSampling("polynomial", "broad-v1")
     task_types: set[str] = set()
-    for entry in plan["agreement_recipes"]:
+    for case in plan["agreement_cases"]:
+        entry = case["recipe"]
         recipe = recipe_from_dict(entry)
         assert isinstance(recipe, PolynomialRecipe)
         assert recipe.task.rows == 64
@@ -201,7 +204,8 @@ def test_composed_request_has_executable_agreement_recipes(
     original = recipe_from_dict(requested["recipe"])
     assert isinstance(original, CompositeRecipe)
     task_types: set[str] = set()
-    for entry in plan["agreement_recipes"]:
+    for case in plan["agreement_cases"]:
+        entry = case["recipe"]
         recipe = recipe_from_dict(entry)
         assert isinstance(recipe, CompositeRecipe)
         assert recipe.expression == original.expression
@@ -209,3 +213,34 @@ def test_composed_request_has_executable_agreement_recipes(
         assert generated.inputs.shape[0] == 64
         task_types.add(generated.task_type)
     assert task_types == {"regression", "binary", "multiclass"}
+
+
+def test_gpu_plan_budgets_the_full_device_matrix(launch: tuple[Path, dict[str, str]]) -> None:
+    root, env = launch
+    config = root / "configs/generation/request.toml"
+    config.write_text((ROOT / "configs/generation/smoke-gpu.toml").read_text())
+    result = invoke(root, {**env, "MAX_GPU": "T4"})
+    assert result.returncode == 0, result.stderr
+    plan = json.loads((root / "reservation.json").read_text())
+    assert plan["agreement_seconds"] == 180
+    assert len(plan["agreement_cases"]) == 93
+    assert len({case["name"] for case in plan["agreement_cases"]}) == 93
+    assert {case["name"] for case in plan["agreement_cases"][:3]} == {
+        "requested-regression",
+        "requested-binary",
+        "requested-multiclass",
+    }
+    assert plan["estimated_function_usd"] == pytest.approx(840 * 0.00018598)
+
+
+def test_gpu_agreement_cannot_exceed_workflow_deadline(
+    launch: tuple[Path, dict[str, str]],
+) -> None:
+    root, env = launch
+    (root / "configs/generation/request.toml").write_text(
+        (ROOT / "configs/generation/smoke-gpu.toml").read_text()
+    )
+    result = invoke(root, {**env, "MAX_GPU": "T4", "GENERATION_JOB_TIMEOUT_MINUTES": "10"})
+    assert result.returncode != 0
+    assert "exceed the workflow deadline" in result.stderr
+    assert not (root / "reservation.json").exists()
