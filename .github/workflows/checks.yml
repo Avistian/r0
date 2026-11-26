@@ -75,3 +75,21 @@ jobs:
           path: ${{ runner.temp }}/sampled-run-evidence/
           if-no-files-found: ignore
           retention-days: 14
+      - name: Qualification reporting and limit checks
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          python3 scripts/run_check.py python scripts/qualification_failure_walkthrough.py --out "${{ runner.temp }}/qualification-reporting"
+          python3 scripts/run_check.py python scripts/qualify_generators.py --families polynomial gp composition --sizes small --task-types regression --repetitions 1 --out "${{ runner.temp }}/qualification-preflight"
+      - name: Retain qualification preflight
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qualification-preflight-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/qualification-reporting/
+            ${{ runner.temp }}/qualification-preflight/
+          if-no-files-found: ignore
+          retention-days: 14
