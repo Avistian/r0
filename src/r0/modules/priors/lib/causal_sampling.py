@@ -11,6 +11,7 @@ from r0.modules.priors.lib.activation_sampling import (
 )
 from r0.modules.priors.lib.causal import ActivatedCausalNode, CausalNode, CausalRecipe
 from r0.modules.priors.lib.causal_activations import CausalActivation
+from r0.modules.priors.lib.causal_exogenous_sampling import sample_exogenous_profile
 from r0.modules.priors.lib.causal_graph import CausalGraphPrior, sample_causal_graph
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.causal_sampled import with_activation_prior
@@ -48,7 +49,12 @@ def sample_causal_profile(
     family: str, *, task: LinearRecipe, seed: int, task_id: int, profile: str = "causal-affine-v1"
 ) -> CausalRecipe:
     """An r0 exploration profile, not a complete published neural/causal prior."""
-    if profile not in ("causal-affine-v1", "causal-activated-v1", "causal-preferences-v1"):
+    if profile not in (
+        "causal-affine-v1",
+        "causal-activated-v1",
+        "causal-preferences-v1",
+        "causal-exogenous-v1",
+    ):
         raise ValueError("unsupported causal sampling profile")
     outputs = task.classes if task.task_type == "multiclass" else 1
     rng = np.random.default_rng(int(record_fingerprint((profile, family, seed, task_id)), 16))
@@ -74,9 +80,21 @@ def sample_causal_profile(
         if family == "redirection"
         else 0.5,
     )
-    recipe = sample_causal_recipe(prior, task=task, seed=seed, task_id=task_id)
-    if profile == "causal-preferences-v1":
-        return with_activation_prior(recipe, _preference_profile(rng), seed=seed, task_id=task_id)
+    widths = (
+        tuple(int(rng.choice((1, 2, 4))) for _ in range(nodes))
+        if profile == "causal-exogenous-v1"
+        else ()
+    )
+    recipe = sample_causal_recipe(prior, task=task, seed=seed, task_id=task_id, widths=widths)
+    if profile in ("causal-preferences-v1", "causal-exogenous-v1"):
+        activated = with_activation_prior(
+            recipe, _preference_profile(rng), seed=seed, task_id=task_id
+        )
+        return (
+            sample_exogenous_profile(activated, rng)
+            if profile == "causal-exogenous-v1"
+            else activated
+        )
     if profile == "causal-affine-v1":
         return recipe
     activated_nodes: list[CausalNode] = []
