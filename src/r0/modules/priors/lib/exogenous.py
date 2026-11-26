@@ -15,11 +15,16 @@ class ExogenousDistribution:
     inputs: InputDistribution = InputDistribution()
     version: str = "exogenous-v1"
     factor: tuple[tuple[float, ...], ...] = ()
+    geometry: str = "independent"
 
     def __post_init__(self) -> None:
         if self.version != "exogenous-v1" or type(self.inputs) is not InputDistribution:
             raise ValueError("exogenous laws require inputs-v1 and exogenous-v1 descriptors")
 
+        if self.geometry not in ("independent", "ball"):
+            raise ValueError("unsupported exogenous geometry")
+        if self.geometry == "ball" and self.inputs != InputDistribution():
+            raise ValueError("ball geometry requires its standard Gaussian direction law")
         if type(self.factor) is not tuple or any(
             type(row) is not tuple
             or len(row) != len(self.factor)
@@ -33,10 +38,11 @@ class ExogenousDistribution:
             raise ValueError("exogenous factor must match the node width")
 
     def channel_sources(self, width: int) -> tuple[set[int], ...]:
-        return tuple(
+        sources = tuple(
             {i for i, row in enumerate(self.factor) if row[j] != 0} if self.factor else {j}
             for j in range(width)
         )
+        return tuple(set(range(width)) if s and self.geometry == "ball" else s for s in sources)
 
     @property
     def parameter_count(self) -> int:
@@ -58,6 +64,12 @@ def sample_exogenous(
         )
 
     values = sample_inputs(spec.inputs, rows, width, stream, "exogenous")
+    if spec.geometry == "ball":
+        lengths = np.sqrt(np.square(values).sum(axis=1, keepdims=True))
+        if np.any(lengths == 0) or not np.isfinite(lengths).all():
+            raise ValueError("invalid ball direction; task was not retried")
+        radii = rng("innovation", node, "radius").random((rows, 1)) ** (1 / width)
+        values = values / lengths * radii
     if spec.factor:
         with np.errstate(over="ignore", invalid="ignore"):
             values = values @ np.asarray(spec.factor, dtype=np.float64)
