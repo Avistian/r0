@@ -15,6 +15,14 @@ def finite_number(value: float) -> bool:
 
 
 @dataclass(frozen=True, slots=True)
+class ActivationParameterPrior:
+    name: str
+    low: float
+    high: float
+    distribution: str = "uniform"
+
+
+@dataclass(frozen=True, slots=True)
 class CausalActivationPrior:
     choices: tuple[CausalActivation, ...] = (CausalActivation(),)
     weights: tuple[float, ...] = ()
@@ -23,6 +31,7 @@ class CausalActivationPrior:
     placement: str = "output"
     noise_after_probability: float = 0.5
     version: str = "activation-prior-v1"
+    parameter_priors: tuple[tuple[ActivationParameterPrior, ...], ...] = ()
 
     def __post_init__(self) -> None:
         if self.version != "activation-prior-v1" or self.mode not in (

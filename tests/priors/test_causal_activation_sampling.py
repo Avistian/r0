@@ -5,6 +5,7 @@ from dataclasses import asdict, replace
 
 from r0.modules.priors import (
     ActivatedCausalNode,
+    ActivationParameterPrior,
     CausalActivation,
     CausalActivationPrior,
     CausalGraphPrior,
@@ -85,3 +86,42 @@ def test_independent_and_shared_choices_preserve_their_distinct_probability_laws
     # Two independent fair choices agree with probability1/2; shared Uniform p gives2/3.
     assert abs(agreements["independent"] / 512 - 0.5) < 0.07
     assert abs(agreements["dirichlet"] / 512 - 2 / 3) < 0.07
+
+
+def test_activation_parameter_distributions_freeze_values_and_homogeneous_parameters() -> None:
+    prior = CausalActivationPrior(
+        choices=(CausalActivation("signed_power"),),
+        parameter_priors=(
+            (
+                ActivationParameterPrior("exponent", 0.1, 10, "log_uniform"),
+                ActivationParameterPrior("output_shift", -2, 2),
+            ),
+        ),
+        placement="both",
+    )
+    graph = CausalGraphPrior(nodes=16, edge_probability=1)
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    recipe = sample_causal_recipe(graph, task=controls, seed=28, task_id=8, activations=prior)
+    assert isinstance(recipe, SampledCausalRecipe)
+    outputs = [
+        node.output_activation for node in recipe.nodes if isinstance(node, ActivatedCausalNode)
+    ]
+    assert len(set(outputs)) > 1
+    for activation in outputs:
+        params = dict(activation.parameters)
+        assert 0.1 <= params["exponent"] <= 10
+        assert -2 <= params["output_shift"] <= 2
+    assert recipe_from_dict(json.loads(json.dumps(asdict(recipe)))) == recipe
+    homogeneous = sample_causal_recipe(
+        graph, task=controls, seed=28, task_id=8, activations=replace(prior, mode="homogeneous")
+    )
+    assert (
+        len({n.output_activation for n in homogeneous.nodes if isinstance(n, ActivatedCausalNode)})
+        == 1
+    )
+    for node in homogeneous.nodes:
+        assert isinstance(node, ActivatedCausalNode)
+        if node.parents:
+            assert node.input_activation == node.output_activation

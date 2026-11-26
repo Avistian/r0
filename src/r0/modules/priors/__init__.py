@@ -5,6 +5,9 @@ from dataclasses import dataclass
 import numpy as np
 
 from r0.modules.episodes import Feature, Row, Target, TaskType
+from r0.modules.priors.lib.activation_sampling import (
+    ActivationParameterPrior as ActivationParameterPrior,
+)
 from r0.modules.priors.lib.activation_sampling import CausalActivationPrior as CausalActivationPrior
 from r0.modules.priors.lib.authored import authored_episode as authored_episode
 from r0.modules.priors.lib.causal import ActivatedCausalNode as ActivatedCausalNode
