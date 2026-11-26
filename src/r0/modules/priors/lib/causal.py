@@ -221,21 +221,34 @@ def generate_causal(
             elif node.input_activation.mixes_channels:
                 shared = set[tuple[int, int]]().union(*incoming_ancestry)
                 incoming_ancestry = [shared for _ in parent_channels]
+        sources: list[set[tuple[int, int]]] = [{(i, j)} for j in range(len(node.bias))]
+        if isinstance(node, StochasticCausalNode):
+            sources = [
+                {(i, source) for source in indices}
+                if node.noise_scale[j]
+                else set[tuple[int, int]]()
+                for j, indices in enumerate(node.exogenous.channel_sources(len(node.bias)))
+            ]
         projected: list[set[tuple[int, int]]] = []
         for channel in range(len(node.bias)):
-            related = {(i, channel)}
+            related = set(sources[channel])
             for incoming, parents in enumerate(incoming_ancestry):
                 if node.weights[incoming][channel] != 0:
                     related.update(parents)
             projected.append(related)
         if isinstance(node, ActivatedCausalNode):
             if not node.output_activation.uses_input(len(node.bias)):
-                projected = [{(i, channel)} for channel in range(len(node.bias))]
+                projected = (
+                    [set() for _ in node.bias]
+                    if isinstance(node, StochasticCausalNode)
+                    and node.noise_position == "before_output"
+                    else [set(source) for source in sources]
+                )
             elif node.output_activation.mixes_channels:
                 shared = set[tuple[int, int]]().union(*projected)
                 if node.noise_position == "after_output":
                     shared = {ref for ref in shared if ref[0] != i}
-                projected = [shared | {(i, channel)} for channel in range(len(node.bias))]
+                projected = [shared | source for source in sources]
         for channel, related in enumerate(projected):
             ancestry[i, channel] = related
     target_ancestors: set[tuple[int, int]] = set()

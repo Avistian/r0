@@ -85,6 +85,7 @@ class StochasticCausalNode(ActivatedCausalNode):
         ActivatedCausalNode.__post_init__(self)
         if type(self.exogenous) is not ExogenousDistribution:
             raise ValueError("stochastic nodes require ExogenousDistribution")
+        self.exogenous.validate_width(len(self.bias))
 
 
 def causal_node_from_dict(data: dict[str, Any]) -> CausalNode:
@@ -113,6 +114,7 @@ def causal_node_from_dict(data: dict[str, Any]) -> CausalNode:
     if "exogenous" in fields:
         spec = dict(fields["exogenous"])
         spec["inputs"] = InputDistribution(**spec.get("inputs", {}))
+        spec["factor"] = tuple(tuple(row) for row in spec.get("factor", ()))
         fields["exogenous"] = ExogenousDistribution(**spec)
         return StochasticCausalNode(**fields)
     return ActivatedCausalNode(**fields) if activated else CausalNode(**fields)
