@@ -169,3 +169,50 @@ def test_fixed_activation_equations_survive_task_serialization(
     node = next(n for n in trace["nodes"] if n["id"] == "causal-0")
     assert node["parameters"]["output_activation"]["kind"] == kind
     assert node["values"][0][0] == float(task.targets[0])
+
+
+@pytest.mark.parametrize(
+    ("activation", "argument", "expected"),
+    [
+        (
+            CausalActivation(
+                "identity",
+                (
+                    ("input_scale", -2),
+                    ("input_shift", 1),
+                    ("output_scale", 3),
+                    ("output_shift", -4),
+                ),
+            ),
+            2,
+            -13,
+        ),
+        (CausalActivation("leaky_relu", (("negative_slope", 0.2),)), -2, -0.4),
+        (CausalActivation("elu", (("alpha", 2),)), -2, -1.7293294335267746),
+        (CausalActivation("softplus", (("beta", 2),)), 0, 0.34657359027997265),
+        (CausalActivation("modulo", (("period", 2),)), -1.25, 0.75),
+        (CausalActivation("log_abs", (("epsilon", 1),)), 0, 0),
+    ],
+)
+def test_activation_parameters_change_the_frozen_function(
+    activation: CausalActivation, argument: float, expected: float
+) -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    recipe = CausalRecipe(
+        task=controls,
+        nodes=(
+            ActivatedCausalNode(bias=(argument,), noise_scale=(0.0,), output_activation=activation),
+            CausalNode(),
+        ),
+        observed=((1, 0),),
+        target=((0, 0),),
+        version="causal-v2",
+    )
+    task = generate_task(
+        recipe_from_dict(json.loads(json.dumps(asdict(recipe)))), seed=28, task_id=11
+    )
+    torch.testing.assert_close(
+        task.targets, torch.full((16,), expected, dtype=torch.float64), rtol=1e-12, atol=1e-12
+    )
