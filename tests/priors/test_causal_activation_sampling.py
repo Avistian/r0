@@ -170,3 +170,20 @@ def test_unrepresentable_preference_weights_fail_without_removing_choices() -> N
     )
     assert isinstance(valid, SampledCausalRecipe)
     assert valid.activation_probabilities == (0.5, 0.5)
+
+
+def test_homogeneous_sampling_record_requires_exact_one_hot_probability() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    recipe = sample_causal_recipe(
+        CausalGraphPrior(nodes=4),
+        task=controls,
+        seed=1,
+        task_id=2,
+        activations=CausalActivationPrior(mode="homogeneous"),
+    )
+    wire = json.loads(json.dumps(asdict(recipe)))
+    wire["activation_probabilities"] = [1 - 5e-13]
+    with pytest.raises(ValueError, match="homogeneous.*one-hot"):
+        recipe_from_dict(wire)
