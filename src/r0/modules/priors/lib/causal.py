@@ -81,6 +81,8 @@ class CausalRecipe:
             "activation-exogenous-v1",
             "activation-factorized-v1",
             "activation-importance-v1",
+            "activation-matrices-v1",
+            "activation-gaussian-matrices-v1",
         ) or (self.construction != "authored" and self.topology is None):
             raise ValueError("sampled construction requires its saved topology")
         if (
@@ -90,6 +92,8 @@ class CausalRecipe:
                 "activation-exogenous-v1",
                 "activation-factorized-v1",
                 "activation-importance-v1",
+                "activation-matrices-v1",
+                "activation-gaussian-matrices-v1",
             )
             and type(self) is CausalRecipe
         ):

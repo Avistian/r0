@@ -1,6 +1,5 @@
 """Admitted importance-weighted projections with independent local parameter draws."""
 
-import math
 from dataclasses import replace
 
 import numpy as np
@@ -13,7 +12,8 @@ from r0.modules.priors.lib.causal_nodes import (
 )
 from r0.modules.priors.lib.causal_sampled import SampledCausalRecipe
 from r0.modules.priors.lib.weight_matrices import ImportanceWeights
-from r0.modules.priors.lib.weight_vectors import PolynomialWeightVector, UniformWeightVector
+from r0.modules.priors.lib.weight_vector_sampling import sample_polynomial_weights
+from r0.modules.priors.lib.weight_vectors import UniformWeightVector
 
 
 def sample_importance_profile(
@@ -61,7 +61,7 @@ def sample_importance_profile(
             tuple(float(v) for v in row) for row in rng.normal(size=(incoming, outgoing))
         )
         vectors = tuple(
-            _polynomial(outgoing, rng)
+            sample_polynomial_weights(outgoing, rng)
             if poly
             else UniformWeightVector(tuple(float(v) for v in rng.random(outgoing)))
             for _ in range(incoming)
@@ -80,16 +80,3 @@ def sample_importance_profile(
             )
         )
     return replace(recipe, nodes=tuple(nodes), construction="activation-importance-v1")
-
-
-def _polynomial(width: int, rng: np.random.Generator) -> PolynomialWeightVector:
-    low = 0.1 / math.log(1 + width)
-    u = min(1.0, max(0.0, 1.2 * float(rng.random()) - 0.1))
-    decay = low if u == 0 else 6.0 if u == 1 else math.exp(math.log(low) + u * math.log(6 / low))
-    scale = math.exp(math.log(1e-4) + float(rng.random()) * math.log(10 / 1e-4))
-    return PolynomialWeightVector(
-        draws=tuple(float(v) for v in rng.normal(size=width)),
-        decay=decay,
-        log_noise_scale=scale,
-        permutation=tuple(int(i) for i in rng.permutation(width)),
-    )

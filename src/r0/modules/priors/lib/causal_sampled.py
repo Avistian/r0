@@ -10,6 +10,7 @@ from r0.modules.priors.lib.activation_sampling import CausalActivationPrior, fin
 from r0.modules.priors.lib.causal import ActivatedCausalNode, CausalRecipe, MatrixCausalNode
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.transformed_weights import GaussianWeights, NormalizedWeights
 from r0.modules.priors.lib.weight_matrices import FactorizedWeights, ImportanceWeights
 
 
@@ -25,6 +26,8 @@ class SampledCausalRecipe(CausalRecipe):
             "activation-exogenous-v1",
             "activation-factorized-v1",
             "activation-importance-v1",
+            "activation-matrices-v1",
+            "activation-gaussian-matrices-v1",
         ):
             raise ValueError("sampled activation recipes require their v2 construction")
         if type(self.activation_prior) is not CausalActivationPrior:
@@ -56,6 +59,8 @@ class SampledCausalRecipe(CausalRecipe):
             expected = {
                 "activation-factorized-v1": FactorizedWeights,
                 "activation-importance-v1": ImportanceWeights,
+                "activation-matrices-v1": NormalizedWeights,
+                "activation-gaussian-matrices-v1": NormalizedWeights,
             }.get(self.construction)
             if (
                 expected is not None
@@ -68,6 +73,13 @@ class SampledCausalRecipe(CausalRecipe):
                 raise ValueError(
                     f"{self.construction} sampling requires every projection construction"
                 )
+            if self.construction == "activation-gaussian-matrices-v1" and node.parents:
+                assert isinstance(node, MatrixCausalNode)
+                assert isinstance(node.weight_construction, NormalizedWeights)
+                if type(node.weight_construction.source) is not GaussianWeights:
+                    raise ValueError(
+                        "Gaussian-only matrix sampling requires Gaussian source construction"
+                    )
             if not isinstance(node, ActivatedCausalNode):
                 raise ValueError("activation-sampled nodes must record their activation stages")
             after = self.activation_prior.noise_after_probability
