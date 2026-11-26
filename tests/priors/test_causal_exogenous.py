@@ -76,3 +76,32 @@ def test_correlated_exogenous_channels_keep_their_factor_and_shared_ancestry() -
         ).episode()
         == task.episode()
     )
+
+
+def test_uniform_volume_ball_roots_obey_radial_law_and_keep_row_prefixes() -> None:
+    controls = LinearRecipe(
+        rows=2000, context_rows=32, features=2, signal_features=2, active_features=2
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(bias=(0.0,) * 3, noise_scale=(1.0,) * 3),),
+            observed=((0, 0), (0, 1)),
+            target=((0, 2),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][0]["exogenous"] = {"geometry": "ball"}
+    recipe = recipe_from_dict(data)
+    task = generate_task(recipe, seed=28, task_id=5)
+    values = torch.cat((task.inputs, task.scores), dim=1)
+    radii = values.square().sum(dim=1).sqrt()
+    assert torch.all(radii <= 1 + 1e-14)
+    # For uniform volume in dimension3, R**3 ~ Uniform(0,1), E[R**2]=3/5.
+    assert abs(float((radii**3).mean()) - 0.5) < 0.04
+    assert abs(float((radii**2).mean()) - 0.6) < 0.04
+    assert torch.all(values.mean(dim=0).abs() < 0.04)
+    data["task"]["rows"] = 2100
+    longer = generate_task(recipe_from_dict(data), seed=28, task_id=5)
+    torch.testing.assert_close(task.inputs, longer.inputs[:2000], rtol=0, atol=0)
+    assert explain_generation(task, [0, 1999])["target_max_error"] < 1e-14
