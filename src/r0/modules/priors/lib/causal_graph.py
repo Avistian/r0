@@ -19,7 +19,7 @@ class CausalGraphPrior:
     version: str = "causal-graph-v1"
 
     def __post_init__(self) -> None:
-        if self.version != "causal-graph-v1" or self.family != "forward":
+        if self.version != "causal-graph-v1" or self.family not in ("forward", "layered"):
             raise ValueError("unsupported causal graph version or family")
         if (
             type(self.nodes) is not int
@@ -31,6 +31,15 @@ class CausalGraphPrior:
             math.isfinite(self.edge_probability) and 0 <= self.edge_probability <= 1
         ):
             raise ValueError("edge probability must be finite and in [0, 1]")
+        if type(self.layer_widths) is not tuple or any(
+            type(width) is not int or width < 1 for width in self.layer_widths
+        ):
+            raise ValueError("layer widths must be a tuple of positive integers")
+        if self.family == "layered":
+            if sum(self.layer_widths) * self.components != self.nodes:
+                raise ValueError("layer widths repeated per component must match node count")
+        elif self.layer_widths:
+            raise ValueError("layer widths apply only to layered graphs")
 
 
 @dataclass(frozen=True, slots=True)
@@ -64,10 +73,19 @@ def sample_causal_graph(
     for component in range(prior.components):
         start = prior.nodes * component // prior.components
         stop = prior.nodes * (component + 1) // prior.components
+        layer_starts = [start]
+        for width in prior.layer_widths:
+            layer_starts.append(layer_starts[-1] + width)
         for node in range(start, stop):
+            candidates = range(start, node)
+            if prior.family == "layered":
+                layer = next(i for i, end in enumerate(layer_starts[1:]) if node < end)
+                candidates = (
+                    range(layer_starts[layer - 1], layer_starts[layer]) if layer > 0 else range(0)
+                )
             incoming = tuple(
-                start + int(i)
-                for i in np.flatnonzero(rng.random(node - start) < prior.edge_probability)
+                candidates[int(i)]
+                for i in np.flatnonzero(rng.random(len(candidates)) < prior.edge_probability)
             )
             edge_count += len(incoming)
             if 2 * prior.nodes + edge_count > limits.parameters:
