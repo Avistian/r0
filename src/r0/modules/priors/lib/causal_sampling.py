@@ -5,6 +5,7 @@ from dataclasses import asdict, replace
 
 import numpy as np
 
+from r0.modules.priors.lib.activation_sampling import CausalActivationPrior
 from r0.modules.priors.lib.causal import ActivatedCausalNode, CausalNode, CausalRecipe
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.causal_graph import CausalGraphPrior, sample_causal_graph
@@ -100,8 +101,11 @@ def sample_causal_recipe(
     task_id: int,
     widths: tuple[int, ...] = (),
     limits: CausalLimits | None = None,
+    activations: CausalActivationPrior | None = None,
 ) -> CausalRecipe:
     """Return a frozen editable recipe; sampling never reads generated task rows."""
+    if activations is not None:
+        raise ValueError("activation hyperprior sampling is not implemented")
     limits = CausalLimits() if limits is None else limits
     topology = sample_causal_graph(graph, seed=seed, task_id=task_id, limits=limits)
     if type(widths) is not tuple or any(type(w) is not int or w < 1 for w in widths):
