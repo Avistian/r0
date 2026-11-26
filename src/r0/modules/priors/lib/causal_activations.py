@@ -12,8 +12,6 @@ _FIXED: dict[str, Callable[[torch.Tensor], torch.Tensor]] = {
     "relu": torch.relu,
     "tanh": torch.tanh,
     "sigmoid": torch.sigmoid,
-    "leaky_relu": F.leaky_relu,
-    "elu": F.elu,
     "selu": F.selu,
     "silu": F.silu,
     "softplus": lambda x: torch.logaddexp(torch.zeros_like(x), x),
@@ -31,13 +29,11 @@ _FIXED: dict[str, Callable[[torch.Tensor], torch.Tensor]] = {
     "square": torch.square,
     "abs": torch.abs,
     "log": torch.log,
-    "log_abs": lambda x: torch.log(x.abs() + 1e-6),
     "log_sigmoid": F.logsigmoid,
     "round": torch.round,
     "step": lambda x: (x > 0).to(x.dtype),
     "heaviside": lambda x: (x > 0).to(x.dtype),
     "heaviside_positive": lambda x: (x >= 0).to(x.dtype),
-    "modulo": lambda x: torch.remainder(x, 1.0),
     "gelu": F.gelu,
     "softmax": lambda x: torch.softmax(x, dim=-1),
     "tied_max": lambda x: (x == x.max(dim=-1, keepdim=True).values).to(x.dtype),
@@ -61,6 +57,18 @@ _PARAMETERS = {
     "reciprocal_abs_power": {"exponent", "epsilon"},
     "log_clip_abs": {"epsilon"},
 }
+
+
+def _finite_parameter(value: float) -> bool:
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
+
+
+def _log_absolute_sum(value: torch.Tensor, epsilon: float) -> torch.Tensor:
+    """Keep log(abs(x)+epsilon) finite even when its intermediate sum overflows."""
+    return torch.logaddexp(value.abs().log(), torch.full_like(value, math.log(epsilon)))
 
 
 @dataclass(frozen=True, slots=True)
@@ -89,7 +97,7 @@ class CausalActivation:
             or len(pair) != 2
             or type(pair[0]) is not str
             or type(pair[1]) not in (float, int)
-            or not math.isfinite(pair[1])
+            or not _finite_parameter(pair[1])
             for pair in self.parameters
         ):
             raise ValueError("activation parameters must be named finite numeric pairs")
@@ -130,15 +138,21 @@ def activate(value: torch.Tensor, activation: CausalActivation) -> torch.Tensor:
             )
         if exponent < 0 and torch.any(value == 0):
             raise ValueError("negative power requires nonzero inputs")
-        result = value.pow(exponent)
+        if float(exponent).is_integer():
+            # Torch's floating kernel can round an integer exponent past 2**53.
+            # Its magnitude may use float64; parity must use the retained integer.
+            result = value.abs().pow(float(exponent))
+            if int(exponent) % 2:
+                result = torch.where(torch.signbit(value), -result, result)
+        else:
+            result = value.pow(exponent)
     elif activation.kind == "relu_power":
         result = torch.relu(value).pow(parameters.get("exponent", 2.0))
     elif activation.kind == "signed_power":
         result = value.sign() * value.abs().pow(parameters.get("exponent", 2.0))
     elif activation.kind == "reciprocal_abs_power":
-        result = (value.abs() + parameters.get("epsilon", 1e-3)).pow(
-            -parameters.get("exponent", 2.0)
-        )
+        log_sum = _log_absolute_sum(value, parameters.get("epsilon", 1e-3))
+        result = torch.exp(-float(parameters.get("exponent", 2.0)) * log_sum)
     elif activation.kind == "log_clip_abs":
         result = value.abs().clamp_min(parameters.get("epsilon", 1e-6)).log()
     elif activation.kind == "leaky_relu":
@@ -149,7 +163,7 @@ def activate(value: torch.Tensor, activation: CausalActivation) -> torch.Tensor:
         beta = parameters["beta"]
         result = torch.clamp_min(value, 0) + torch.log1p(torch.exp(-(beta * value).abs())) / beta
     elif activation.kind == "log_abs":
-        result = torch.log(value.abs() + parameters.get("epsilon", 1e-6))
+        result = _log_absolute_sum(value, parameters.get("epsilon", 1e-6))
     elif activation.kind == "modulo":
         result = torch.remainder(value, parameters.get("period", 1.0))
     else:
