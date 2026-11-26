@@ -64,6 +64,9 @@ from r0.modules.priors.lib.transformed_weights import GaussianWeights as Gaussia
 from r0.modules.priors.lib.transformed_weights import NormalizedWeights as NormalizedWeights
 from r0.modules.priors.lib.transformed_weights import TransformedWeights as TransformedWeights
 from r0.modules.priors.lib.weight_matrices import FactorizedWeights as FactorizedWeights
+from r0.modules.priors.lib.weight_matrices import (
+    ImportanceFactorizedWeights as ImportanceFactorizedWeights,
+)
 from r0.modules.priors.lib.weight_matrices import ImportanceWeights as ImportanceWeights
 from r0.modules.priors.lib.weight_matrices import LaplaceKernelWeights as LaplaceKernelWeights
 from r0.modules.priors.lib.weight_vectors import PolynomialWeightVector as PolynomialWeightVector

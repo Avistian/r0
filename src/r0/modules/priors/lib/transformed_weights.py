@@ -12,6 +12,7 @@ from r0.modules.priors.lib.activation_sampling import finite_number
 from r0.modules.priors.lib.causal_activations import CausalActivation, activate
 from r0.modules.priors.lib.weight_matrices import (
     FactorizedWeights,
+    ImportanceFactorizedWeights,
     ImportanceWeights,
     LaplaceKernelWeights,
     Matrix,
@@ -41,8 +42,20 @@ class GaussianWeights:
         return self.draws
 
 
-type SimpleWeights = GaussianWeights | FactorizedWeights | ImportanceWeights | LaplaceKernelWeights
-SIMPLE_WEIGHT_TYPES = (GaussianWeights, FactorizedWeights, ImportanceWeights, LaplaceKernelWeights)
+type SimpleWeights = (
+    GaussianWeights
+    | FactorizedWeights
+    | ImportanceFactorizedWeights
+    | ImportanceWeights
+    | LaplaceKernelWeights
+)
+SIMPLE_WEIGHT_TYPES = (
+    GaussianWeights,
+    FactorizedWeights,
+    ImportanceFactorizedWeights,
+    ImportanceWeights,
+    LaplaceKernelWeights,
+)
 
 
 @dataclass(frozen=True, slots=True)

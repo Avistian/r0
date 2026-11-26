@@ -114,6 +114,44 @@ class FactorizedWeights:
 
 
 @dataclass(frozen=True, slots=True)
+class ImportanceFactorizedWeights:
+    left: Matrix = ((1.0,),)
+    right: Matrix = ((1.0,),)
+    diagonal: WeightVector = UniformWeightVector()
+    version: str = "importance-factorized-weights-v1"
+    exact_terms_limit: int = 1_000_000
+
+    def __post_init__(self) -> None:
+        _, rank = matrix_shape(self.left)
+        rows, _ = matrix_shape(self.right)
+        if (
+            self.version != "importance-factorized-weights-v1"
+            or rows != rank
+            or type(self.diagonal) not in (UniformWeightVector, PolynomialWeightVector)
+            or len(self.diagonal.draws) != rank
+        ):
+            raise ValueError("positive factor vector must match the inner dimension")
+        if type(self.exact_terms_limit) is not int or not 1 <= self.exact_terms_limit < 2**63:
+            raise ValueError("exact factor arithmetic requires a positive term limit below 2**63")
+
+    @property
+    def shape(self) -> tuple[int, int]:
+        return len(self.left), len(self.right[0])
+
+    @property
+    def parameter_count(self) -> int:
+        return sum(len(row) for row in (*self.left, *self.right)) + self.diagonal.parameter_count
+
+    def materialize(self) -> Matrix:
+        return FactorizedWeights(
+            left=self.left,
+            right=self.right,
+            diagonal=self.diagonal.values(),
+            exact_terms_limit=self.exact_terms_limit,
+        ).materialize()
+
+
+@dataclass(frozen=True, slots=True)
 class ImportanceWeights:
     gaussian: Matrix = ((1.0,),)
     importance: tuple[WeightVector, ...] = (UniformWeightVector(),)

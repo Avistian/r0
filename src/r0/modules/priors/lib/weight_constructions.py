@@ -13,6 +13,7 @@ from r0.modules.priors.lib.transformed_weights import (
 )
 from r0.modules.priors.lib.weight_matrices import (
     FactorizedWeights,
+    ImportanceFactorizedWeights,
     ImportanceWeights,
     LaplaceKernelWeights,
 )
@@ -63,6 +64,10 @@ def weight_construction_from_dict(data: dict[str, Any], *, _depth: int = 0) -> W
     for name in ("left", "right"):
         if name in fields:
             fields[name] = tuple(tuple(row) for row in fields[name])
+    if version == "importance-factorized-weights-v1":
+        if "diagonal" in fields:
+            fields["diagonal"] = weight_vector_from_dict(fields["diagonal"])
+        return ImportanceFactorizedWeights(**fields)
     if "diagonal" in fields:
         fields["diagonal"] = tuple(fields["diagonal"])
     return FactorizedWeights(**fields)
