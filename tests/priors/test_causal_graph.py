@@ -40,6 +40,33 @@ def test_layered_graph_respects_layer_boundaries_in_each_component() -> None:
     assert empty.parents == ((),) * 10
 
 
+def test_growing_redirection_tree_preserves_its_actual_attachment_law() -> None:
+    prior = CausalGraphPrior(
+        family="redirection", nodes=12, components=2, redirection_probability=1
+    )
+    redirected = sample_causal_graph(prior, seed=28, task_id=5)
+    # Full predecessor redirection makes a star by induction in each component.
+    assert redirected.parents == (
+        (),
+        (0,),
+        (0,),
+        (0,),
+        (0,),
+        (0,),
+        (),
+        (6,),
+        (6,),
+        (6,),
+        (6,),
+        (6,),
+    )
+    recursive = sample_causal_graph(replace(prior, redirection_probability=0), seed=28, task_id=5)
+    assert recursive.parents != redirected.parents
+    assert sum(len(row) for row in recursive.parents) == 10
+    for child, parents in enumerate(recursive.parents):
+        assert all(parent < child and parent // 6 == child // 6 for parent in parents)
+
+
 def test_sampled_vector_graph_is_a_replayable_task_with_saved_topology_provenance() -> None:
     controls = LinearRecipe(
         rows=16, context_rows=8, features=2, signal_features=2, active_features=2
