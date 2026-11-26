@@ -73,3 +73,32 @@ def test_sampled_factorized_record_cannot_silently_discard_its_construction() ->
     child.pop("weight_construction")
     with pytest.raises(ValueError, match="factorized.*construction"):
         recipe_from_dict(data)
+
+
+@pytest.mark.parametrize(
+    ("left", "diagonal", "right", "expected"),
+    [
+        (((2.0**1023,),), (4.0,), ((2.0**-1023,),), 4.0),
+        (((2.0**-1022,),), (2.0**-60,), ((2.0**1023,),), 2.0**-59),
+        (((2.0**1023, 2.0**1023),), (4.0, 4.0), ((1.0,), (-1.0,)), 0.0),
+    ],
+)
+def test_representable_factor_products_survive_extreme_intermediates(
+    left: tuple[tuple[float, ...], ...],
+    diagonal: tuple[float, ...],
+    right: tuple[tuple[float, ...], ...],
+    expected: float,
+) -> None:
+    recipe = CausalRecipe(
+        task=LinearRecipe(
+            rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+        ),
+        nodes=(CausalNode(), CausalNode(parents=(0,), weights=((expected,),), noise_scale=(0.0,))),
+        observed=((0, 0),),
+        target=((1, 0),),
+        version="causal-v2",
+    )
+    data = asdict(recipe)
+    data["nodes"][1]["weight_construction"] = {"left": left, "diagonal": diagonal, "right": right}
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=11)
+    torch.testing.assert_close(task.scores[:, 0], expected * task.inputs[:, 0], rtol=0, atol=0)
