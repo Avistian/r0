@@ -1,6 +1,5 @@
 """Explicit acyclic structural equations behind the shared task interface."""
 
-import math
 from collections.abc import Callable, Sequence
 from dataclasses import asdict, dataclass
 from typing import Any
@@ -10,12 +9,16 @@ import torch
 
 from r0.modules.priors.lib.calibration import stable_calibration
 from r0.modules.priors.lib.causal_activations import (
-    CausalActivation,
     activate,
     activation_diagnostic,
 )
 from r0.modules.priors.lib.causal_graph import CausalGraph
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode as ActivatedCausalNode
+from r0.modules.priors.lib.causal_nodes import CausalNode as CausalNode
+from r0.modules.priors.lib.causal_nodes import StochasticCausalNode as StochasticCausalNode
+from r0.modules.priors.lib.causal_nodes import causal_node_from_dict as causal_node_from_dict
+from r0.modules.priors.lib.exogenous import sample_exogenous
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.task_output import complete_task
@@ -25,92 +28,6 @@ from r0.modules.priors.lib.training_task import TrainingTask
 def causal_rng(seed: int, task_id: int, *keys: object) -> np.random.Generator:
     """One versioned stream identity for generation and original-row inspection."""
     return np.random.default_rng(int(record_fingerprint(("causal-v1", seed, task_id, keys)), 16))
-
-
-@dataclass(frozen=True, slots=True)
-class CausalNode:
-    parents: tuple[int, ...] = ()
-    weights: tuple[tuple[float, ...], ...] = ()
-    bias: tuple[float, ...] = (0.0,)
-    noise_scale: tuple[float, ...] = (1.0,)
-
-    @property
-    def activation_parameter_count(self) -> int:
-        return 0
-
-    def __post_init__(self) -> None:
-        if (
-            type(self.parents) is not tuple
-            or any(type(p) is not int or p < 0 for p in self.parents)
-            or len(set(self.parents)) != len(self.parents)
-        ):
-            raise ValueError("causal parents must be unique nonnegative node indices")
-        if (
-            type(self.bias) is not tuple
-            or not self.bias
-            or type(self.noise_scale) is not tuple
-            or len(self.noise_scale) != len(self.bias)
-            or type(self.weights) is not tuple
-            or any(type(row) is not tuple or len(row) != len(self.bias) for row in self.weights)
-        ):
-            raise ValueError("causal bias, noise and weight output widths must agree")
-        values = (*self.bias, *self.noise_scale, *(v for row in self.weights for v in row))
-        if any(type(v) not in (float, int) or not math.isfinite(v) for v in values):
-            raise ValueError("causal parameters must be finite numbers")
-        if any(v < 0 for v in self.noise_scale):
-            raise ValueError("structural noise scales must be nonnegative")
-
-
-@dataclass(frozen=True, slots=True)
-class ActivatedCausalNode(CausalNode):
-    input_activation: CausalActivation = CausalActivation()
-    output_activation: CausalActivation = CausalActivation()
-    noise_position: str = "before_output"
-
-    @property
-    def activation_parameter_count(self) -> int:
-        return len(self.input_activation.parameters) + len(self.output_activation.parameters)
-
-    def __post_init__(self) -> None:
-        CausalNode.__post_init__(self)
-        if any(
-            type(a) is not CausalActivation
-            for a in (
-                self.input_activation,
-                self.output_activation,
-            )
-        ):
-            raise ValueError("node activations must use CausalActivation")
-        if self.noise_position not in ("before_output", "after_output"):
-            raise ValueError("noise position must be before_output or after_output")
-        if not self.parents and self.input_activation != CausalActivation():
-            raise ValueError("root nodes have no parent channels to activate")
-
-
-def causal_node_from_dict(data: dict[str, Any]) -> CausalNode:
-    """One decoder shared by recipe loading and original-row inspection."""
-    fields = dict(data)
-    for key in ("parents", "bias", "noise_scale"):
-        if key in fields:
-            fields[key] = tuple(fields[key])
-    if "weights" in fields:
-        fields["weights"] = tuple(tuple(row) for row in fields["weights"])
-    activated = any(
-        key in fields
-        for key in (
-            "input_activation",
-            "output_activation",
-            "noise_position",
-        )
-    )
-    for key in ("input_activation", "output_activation"):
-        if key in fields:
-            activation = dict(fields[key])
-            activation["parameters"] = tuple(
-                tuple(pair) for pair in activation.get("parameters", ())
-            )
-            fields[key] = CausalActivation(**activation)
-    return ActivatedCausalNode(**fields) if activated else CausalNode(**fields)
 
 
 @dataclass(frozen=True, slots=True)
@@ -136,7 +53,7 @@ class CausalRecipe:
         if type(self.nodes) is not tuple or not self.nodes:
             raise ValueError("causal recipe requires a nonempty node tuple")
         for i, node in enumerate(self.nodes):
-            if type(node) not in (CausalNode, ActivatedCausalNode) or any(
+            if type(node) not in (CausalNode, ActivatedCausalNode, StochasticCausalNode) or any(
                 p >= i for p in node.parents
             ):
                 raise ValueError("causal nodes must be in acyclic parent-before-child order")
@@ -197,16 +114,23 @@ def causal_values(
     indices: Sequence[int] | None = None,
     *,
     diagnostics: list[dict[str, Any]] | None = None,
+    exogenous_values: list[torch.Tensor] | None = None,
 ) -> tuple[list[torch.Tensor], list[torch.Tensor]]:
     """Replay selected original rows without retaining all intermediate task values."""
     values: list[torch.Tensor] = []
     innovations: list[torch.Tensor] = []
     for i, node in enumerate(nodes):
-        noise = np.column_stack(
-            [rng("innovation", i, j).normal(size=rows) for j in range(len(node.bias))]
+        noise = (
+            sample_exogenous(node.exogenous, rows, len(node.bias), rng, i)
+            if isinstance(node, StochasticCausalNode)
+            else np.column_stack(
+                [rng("innovation", i, j).normal(size=rows) for j in range(len(node.bias))]
+            )
         )
         if indices is not None:
             noise = noise[list(indices)]
+        if exogenous_values is not None:
+            exogenous_values.append(torch.tensor(noise, dtype=torch.float64, device=device))
         innovation = torch.tensor(noise, dtype=torch.float64, device=device) * torch.tensor(
             node.noise_scale, dtype=torch.float64, device=device
         )
@@ -358,6 +282,8 @@ def generate_causal(
             outputs=len(recipe.target),
         ),
     }
+    if any(isinstance(node, StochasticCausalNode) for node in recipe.nodes):
+        card["innovation"] = "recorded exogenous laws; independently keyed streams per node/channel"
     if recipe.version == "causal-v2":
         card["activation_diagnostics"] = diagnostics
     if recipe.sampling_record is not None:

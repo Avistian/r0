@@ -13,6 +13,7 @@ from r0.modules.priors.lib.authored import authored_episode as authored_episode
 from r0.modules.priors.lib.causal import ActivatedCausalNode as ActivatedCausalNode
 from r0.modules.priors.lib.causal import CausalNode as CausalNode
 from r0.modules.priors.lib.causal import CausalRecipe as CausalRecipe
+from r0.modules.priors.lib.causal import StochasticCausalNode as StochasticCausalNode
 from r0.modules.priors.lib.causal_activations import CausalActivation as CausalActivation
 from r0.modules.priors.lib.causal_graph import CausalGraph as CausalGraph
 from r0.modules.priors.lib.causal_graph import CausalGraphPrior as CausalGraphPrior
@@ -24,6 +25,7 @@ from r0.modules.priors.lib.compositions import Combination as Combination
 from r0.modules.priors.lib.compositions import CompositeRecipe as CompositeRecipe
 from r0.modules.priors.lib.compositions import FunctionComponent as FunctionComponent
 from r0.modules.priors.lib.exact_gp import GaussianProcessRecipe as GaussianProcessRecipe
+from r0.modules.priors.lib.exogenous import ExogenousDistribution as ExogenousDistribution
 from r0.modules.priors.lib.fourier import FourierRecipe as FourierRecipe
 from r0.modules.priors.lib.fourier import generate_fourier as generate_fourier
 from r0.modules.priors.lib.generate import Recipe as Recipe

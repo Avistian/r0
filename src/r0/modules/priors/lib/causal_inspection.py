@@ -9,6 +9,7 @@ import torch
 
 from r0.modules.priors.lib.causal import (
     ActivatedCausalNode,
+    StochasticCausalNode,
     causal_node_from_dict,
     causal_rng,
     causal_values,
@@ -26,13 +27,28 @@ def causal_steps(
     def rng(*keys: object) -> np.random.Generator:
         return causal_rng(card["seed"], card["task_id"], *keys)
 
-    values, innovations = causal_values(nodes, rows, rng, "cpu", indices)
+    exogenous: list[torch.Tensor] = []
+    values, innovations = causal_values(
+        nodes, rows, rng, "cpu", indices, exogenous_values=exogenous
+    )
     for i, (node, value, noise) in enumerate(zip(nodes, values, innovations, strict=True)):
+        stochastic = isinstance(node, StochasticCausalNode)
+        if stochastic:
+            add(
+                f"exogenous-{i}",
+                f"Node {i} exogenous draw",
+                [],
+                "recorded exogenous distribution before structural-noise scaling",
+                exogenous[i],
+                {"distribution": asdict(node.exogenous), "row_indices": list(indices)},
+            )
         add(
             f"innovation-{i}",
             f"Node {i} structural innovation",
-            [],
-            "noise_scale * recorded independently keyed standard Gaussian draw",
+            [f"exogenous-{i}"] if stochastic else [],
+            "noise_scale * recorded exogenous draw"
+            if stochastic
+            else "noise_scale * recorded independently keyed standard Gaussian draw",
             noise,
             {"noise_scale": node.noise_scale, "row_indices": list(indices)},
         )

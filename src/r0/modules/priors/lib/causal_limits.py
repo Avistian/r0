@@ -43,7 +43,7 @@ class CausalLimits:
             calibration_rows=calibration_rows,
             features=features,
             outputs=outputs,
-            extra_parameters=sum(node.activation_parameter_count for node in nodes),
+            extra_parameters=sum(node.structural_parameter_count for node in nodes),
         )
 
     def admit_dimensions(
