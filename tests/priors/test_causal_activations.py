@@ -216,3 +216,21 @@ def test_activation_parameters_change_the_frozen_function(
     torch.testing.assert_close(
         task.targets, torch.full((16,), expected, dtype=torch.float64), rtol=1e-12, atol=1e-12
     )
+
+
+@pytest.mark.parametrize(
+    ("kind", "parameters", "argument", "expected"),
+    [
+        ("power", (("exponent", 2.5),), 4, 32),
+        ("integer_power", (("exponent", 3),), -2, -8),
+        ("relu_power", (("exponent", 0.5),), -4, 0),
+        ("signed_power", (("exponent", 0.5),), -4, -2),
+        ("reciprocal_abs_power", (("exponent", 2), ("epsilon", 1)), -2, 1 / 9),
+        ("log_clip_abs", (("epsilon", 1),), 0.5, 0),
+    ],
+)
+def test_power_and_stabilized_log_variants_have_distinct_equations(
+    kind: str, parameters: tuple[tuple[str, float], ...], argument: float, expected: float
+) -> None:
+    activation = CausalActivation(kind, parameters)
+    test_activation_parameters_change_the_frozen_function(activation, argument, expected)
