@@ -1,0 +1,100 @@
+{
+  "head": "b03dc24ea29372b33f3ae47980101d3da6cec3d1",
+  "checks": {
+    "forward": {
+      "draws": 4000,
+      "eligible_edges": 15,
+      "empirical_p": 0.34913333333333335,
+      "count_variance": 3.4098309999999996,
+      "binomial_variance": 3.4125,
+      "edge_covariance": 0.0021056250000000003
+    },
+    "layered": {
+      "draws": 4000,
+      "eligible_edges": 18,
+      "empirical_p": 0.352125,
+      "count_variance": 4.0633369375,
+      "binomial_variance": 4.095,
+      "edge_covariance": -0.0025404999999999976
+    },
+    "redirection_0": {
+      "draws": 6000,
+      "node2_root": 0.5056666666666667,
+      "expected": 0.5,
+      "node3_root": 0.3278333333333333,
+      "expected3": 0.3333333333333333
+    },
+    "redirection_0.5": {
+      "draws": 6000,
+      "node2_root": 0.7543333333333333,
+      "expected": 0.75,
+      "node3_root": 0.6168333333333333,
+      "expected3": 0.625
+    },
+    "redirection_1": {
+      "draws": 6000,
+      "node2_root": 1.0,
+      "expected": 1.0,
+      "node3_root": 1.0,
+      "expected3": 1.0
+    },
+    "vector_json_row_independence": {
+      "widths": [
+        2,
+        3,
+        1,
+        4
+      ],
+      "observed": [
+        [
+          3,
+          1
+        ],
+        [
+          3,
+          0
+        ]
+      ],
+      "target": [
+        [
+          0,
+          0
+        ]
+      ],
+      "replay": "bitwise equal",
+      "rows32_vs64_prefix": "bitwise equal",
+      "topology_and_mechanisms": "identical"
+    },
+    "parameter_boundary": {
+      "count": 55,
+      "exact_limit": "accepted",
+      "one_less": "causal parameter limit exceeded"
+    },
+    "channel_limits": "causal node channel limit exceeded",
+    "storage_limits": "estimated causal working memory exceeds declared limit",
+    "tampered_equation_topology": "saved topology must match structural node parents",
+    "readout_and_weights": {
+      "draws": 2000,
+      "target_channel_counts": {
+        "(0, 0)": 229,
+        "(0, 1)": 197,
+        "(1, 0)": 187,
+        "(1, 1)": 209,
+        "(1, 2)": 195,
+        "(2, 0)": 205,
+        "(3, 0)": 178,
+        "(3, 1)": 199,
+        "(3, 2)": 200,
+        "(3, 3)": 201
+      },
+      "standardized_weight_mean": -0.006697676209458324,
+      "standardized_weight_variance": 1.0007239393051572,
+      "bias_variance": 0.06371271477851347
+    },
+    "profile_row_independence": "300 paired draws passed",
+    "classification": {
+      "binary": "50 draws passed",
+      "multiclass": "50 draws passed"
+    }
+  }
+}

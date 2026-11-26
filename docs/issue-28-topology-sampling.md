@@ -127,3 +127,62 @@ option-level acceptance**. P1's neural mechanisms and dropout variants are still
 missing; P2's exact distribution and hyperpriors are still missing. Every other
 documented option remains required. No paper-wide coverage count is inferred from
 these three families.
+
+## Independent review and census at `b03dc24`
+
+### Standards
+
+One P2 documentation finding: the handoff completion claim lacked a retained
+comparison procedure. No actionable code smell was reported. The finding is
+retained here; the subsequent `scripts/verify_issue28_spec_link.py` and
+`docs/research/0028-spec-link-receipt.json` supply exact inputs, GitHub readback
+commands and assertions. Run `python3 scripts/verify_issue28_spec_link.py` from
+the checkout. This requires read-only tracker access, and intentionally fails if
+the live issue has since changed. The receipt was extracted without changing the
+body strings from local `issue-28-latest-before-link.json` and
+`issue-28-after-link.json`; the hash came from decoded `published-spec.json`, all
+retained under `docs/evidence/issue-28/`. Earlier unretained Pyright/RED snapshots
+remain qualified in the separate core review record.
+
+### Spec
+
+Independent review found no concrete defect in this partial slice. Its
+[results](research/0028-topology-verification.json) record 8,000 Bernoulli topology
+draws, 18,000 redirection draws, 2,000 vector recipes, 300 paired convenience-profile
+draws and 100 classification draws. These support the stated laws and selected
+boundaries, not complete-distribution proof or resource-envelope acceptance.
+The reviewer prepared the retained executable, preserving the original checks:
+
+```sh
+UV_CACHE_DIR=/tmp/r0-28-uv-cache \
+UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
+python3 scripts/run_check.py python scripts/verify_causal_topology.py
+```
+
+The report identifies both actual checkout HEAD and original reviewed revision.
+The original reviewer script/results remain in `/tmp/topology-spec-review.py` and
+`/tmp/topology-spec-review-output.json`; the tracked executable prints the complete
+report to stdout without overwriting the original evidence.
+
+### Author census
+
+[The small CPU census](research/0028-topology-census.json) covers 64 tasks per family
+at seed 28: 22 regression, 21 binary and 21 multiclass for each family, all with
+16 rows and four observed features. All 192 generated successfully; 29 forward,
+43 layered and 3 redirection tasks carried a disconnected-target flag. None were
+filtered. Observed maximum depths were 18, 4 and 6 respectively. These are one
+bounded profile census, not proof of family completeness or predictive utility.
+Timing was deliberately NOT_MEASURED while other checks were running.
+
+```sh
+UV_CACHE_DIR=/tmp/r0-28-uv-cache \
+UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
+python3 scripts/run_check.py python scripts/causal_topology_census.py \
+  /tmp/new-causal-topology-census
+```
+
+The destination must not exist. The script preserves every recipe/status and all
+successful task archives. Original artifacts remain under
+`docs/evidence/issue-28/topology-census-b03dc24/`. Its census is separate from the
+independent reviewer calculations and from automated tests. `make check` passed
+497 tests with one skip at the reviewed revision; no browser/GPU/Colab claim follows.

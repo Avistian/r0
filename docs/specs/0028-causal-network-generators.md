@@ -205,6 +205,9 @@ Approved specification link pins this scope to commit
 `66e91e243581c21dcde3975246d5f383678e9cec`. Published contents and all 19 decisions
 were verified, and a fresh issue read confirmed that the original body remains an
 unchanged prefix. This completes the specification handoff, not implementation.
+The [retained receipt](../research/0028-spec-link-receipt.json) and
+`python3 scripts/verify_issue28_spec_link.py` reproduce the published-byte,
+decision-list and issue-body comparisons using read-only GitHub requests.
 
 ## Supporting source evidence
 

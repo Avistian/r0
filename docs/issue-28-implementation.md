@@ -88,6 +88,11 @@ can proceed. Hosted measurements remain pending until executed under the existin
 authorized path. Draft [PR #125](https://github.com/Avistian/r0/pull/125) publishes
 the specification. Issue #28 links the verified scope at `66e91e2`; fresh readback
 and the saved before/after bodies confirm the original issue body is unchanged.
+Reproduce using `python3 scripts/verify_issue28_spec_link.py` (read-only `gh api`
+access). Its [receipt](research/0028-spec-link-receipt.json) retains the exact body
+snapshots and observed published-file hash. The procedure compares published bytes
+with the pinned Git object, verifies the 19 numbered decisions and final paper-option
+condition, checks the sole appended section, then reads back the current issue.
 
 ## Source gate result
 
@@ -144,3 +149,25 @@ structural arithmetic, RNG identity, selected-row traces and JSON replay passed.
 This is a delta confirmation, not overall #28 acceptance. The original REJECT is
 retained. The expanded focused integration command passed **33 tests** at the same
 source revision; full-suite, browser, GPU and Colab acceptance remain pending.
+
+## Sampled topology checkpoint
+
+At `b03dc24`, forward Bernoulli DAGs, sparse layered DAGs and an explicitly
+reconstructed predecessor-redirection tree sampler are available. Scalar/vector
+recipes retain actual topology, mechanisms and disjoint readouts. The
+`causal-affine-v1` profile routes these through the existing bounded save/reopen
+and explorer-session paths. See [laws and evidence](issue-28-topology-sampling.md).
+
+`make check` passed at that source revision: **497 passed, 1 skipped**, with all
+earlier preflight/static gates passing. Local log:
+`docs/evidence/issue-28/topology-make-check.log`. `make smoke` and `make eval-smoke`
+remain NOT_AVAILABLE: the current CLI only defines replay/oracle/diagnose-priors;
+T7/T12's train/eval commands have not landed. This is not hosted CI or ML acceptance.
+
+Independent spec review: **PASS for the partial topology slice**, not full #28.
+Independent standards review found one P2 evidence-retention gap in the publication
+claim; the procedure and receipt above repair it. The original finding remains
+recorded in the topology checkpoint document. No package source changed after the
+reviewed revision. Broader graph families, nonlinear/tree/network mechanisms,
+typed categorical states, interventions, workbench UI and final environment/scale
+evidence remain required and incomplete.

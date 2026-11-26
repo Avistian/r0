@@ -1,0 +1,92 @@
+"""Retain a small CPU-only topology census; not a performance benchmark."""
+
+import json
+import sys
+from collections import Counter
+from dataclasses import asdict
+from pathlib import Path
+
+import torch
+
+from r0.modules.generation import save_group
+from r0.modules.priors import CausalRecipe, LinearRecipe, generate_task, sample_recipe
+
+
+def run(destination: Path) -> None:
+    destination.mkdir(parents=True, exist_ok=False)
+    summary = {}
+    for family in ("forward", "layered", "redirection"):
+        records, tasks = [], []
+        for task_id in range(64):
+            kind = ("regression", "binary", "multiclass")[task_id % 3]
+            controls = LinearRecipe(
+                rows=16,
+                context_rows=8,
+                features=4,
+                signal_features=4,
+                active_features=4,
+                task_type=kind,
+                classes={"regression": 0, "binary": 2, "multiclass": 3}[kind],
+            )
+            record = {"family": family, "seed": 28, "task_id": task_id}
+            try:
+                recipe = sample_recipe(
+                    family, task=controls, seed=28, task_id=task_id, profile="causal-affine-v1"
+                )
+                assert isinstance(recipe, CausalRecipe)
+                record["recipe"] = asdict(recipe)
+                task = generate_task(recipe, seed=28, task_id=task_id)
+                tasks.append((task_id, task))
+                depth, connected = [], list(range(len(recipe.nodes)))
+                for child, node in enumerate(recipe.nodes):
+                    depth.append(1 + max((depth[p] for p in node.parents), default=-1))
+                    for parent in node.parents:
+                        old, new = connected[child], connected[parent]
+                        connected = [new if c == old else c for c in connected]
+                card = json.loads(task.mechanism_json)
+                record.update(
+                    status="VALID",
+                    nodes=len(recipe.nodes),
+                    edges=sum(len(n.parents) for n in recipe.nodes),
+                    depth=max(depth),
+                    components=len(set(connected)),
+                    flags=card["flags"],
+                    score_std=task.scores.std(dim=0, unbiased=False).tolist(),
+                    source_task_id=task.source_task_id,
+                )
+            except Exception as exc:
+                record.update(status="FAILED", error=f"{type(exc).__name__}: {exc}")
+            records.append(record)
+        (destination / f"{family}.jsonl").write_text(
+            "".join(
+                json.dumps(record, sort_keys=True, allow_nan=False) + "\n" for record in records
+            )
+        )
+        if tasks:
+            save_group(destination / f"{family}.zip", tasks, max_bytes=32 * 1024**2)
+        valid = [r for r in records if r["status"] == "VALID"]
+        summary[family] = {
+            "attempted": len(records),
+            "valid": len(valid),
+            "failed": len(records) - len(valid),
+            "flag_counts": dict(Counter(flag for r in valid for flag in r["flags"])),
+            "ranges": {
+                name: [min(r[name] for r in valid), max(r[name] for r in valid)]
+                for name in ("nodes", "edges", "depth", "components")
+            },
+            "task_types": dict(Counter(r["recipe"]["task"]["task_type"] for r in valid)),
+        }
+    report = {
+        "seed": 28,
+        "device": "cpu",
+        "torch": torch.__version__,
+        "filter": "none",
+        "timing": "NOT_MEASURED",
+        "families": summary,
+    }
+    (destination / "summary.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+    print(json.dumps(report, indent=2, sort_keys=True))
+
+
+if __name__ == "__main__":
+    run(Path(sys.argv[1]))
