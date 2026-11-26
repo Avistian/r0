@@ -202,7 +202,8 @@ for those requirements. The full implementation goal stays active.
 At frozen `f75c9cd`, the retained procedure attempted 64 tasks per topology family,
 192 total, using seed 28 and task IDs 0 through 63. Each task has 16 rows, eight
 context rows and four observed features; regression, binary and three-class
-adapters cycle with task ID. Actual recipes are recorded before generation.
+adapters cycle with task ID. Each recipe is captured in memory before generation; JSONL and saved groups are
+written after each family finishes.
 
 | Family | Attempted | Valid | Failed |
 |---|---:|---:|---:|

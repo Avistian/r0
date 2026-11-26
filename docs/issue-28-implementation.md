@@ -251,3 +251,31 @@ paper-specific root/noise laws, weights, mechanisms/networks/trees, typed states
 interventions, workbench delivery and final environment/resource qualification
 remain required. Smoke/eval-smoke are NOT_AVAILABLE; browser, Colab and GPU
 acceptance remain PENDING. The full #28 goal is active.
+
+
+## Factorized projection checkpoint
+
+`FactorizedWeights` and `MatrixCausalNode` retain the left/right factors, inner
+coefficients and realized dense projection through decoding, row inspection and
+replay. Shape/provenance checks reject contradictory records; admission includes
+the factor storage before construction. `causal-factorized-v1` samples Gaussian
+factor products with explicit inner-dimension and scaling laws through all three
+existing topology families and the saved explorer backend. [Definitions, source
+boundaries and evidence](issue-28-factorized-weights.md) distinguish these factors
+from singular-value decompositions and retain all remaining weight-family scope.
+
+Independent review rejected avoidable intermediate overflow at `ec522ed`.
+RED `209b4e6` and repair `ef1bacc` preserve finite extreme products using bounded
+exact arithmetic when ordinary intermediates are unsafe. The resource-accounting
+heuristic is resolved at `ec39b46`. At that revision, **33 independent check groups
+pass**, including Fraction oracles, 72 successful sampled recipes, three saved
+backend workflows and exact matching of **252 legacy outcomes** (250 successes,
+two preserved failures). Complete `make check` passes **605 tests, 1 skipped**,
+with all static gates passing. The author census retains **192/192 valid** tasks
+and 1,739 factorized projections without filtering or retry.
+
+This delivers a factor-product construction and an r0 exploration law. Source
+positive-weight hyperpriors, importance/kernel/transformed matrices, masks,
+normalization/jitter stages, shared weight preferences, wider mechanisms and
+networks, typed variables, interventions, workbench UI and final environment/
+resource qualification remain required. The full goal is not complete.

@@ -1,0 +1,1073 @@
+[
+  {
+    "admission": {
+      "estimated_working_bytes": 119040,
+      "largest_node_channels": 4,
+      "nodes": 15,
+      "parameters": 610,
+      "total_channels": 38
+    },
+    "family": "forward",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 2,
+        "n": 8
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 2
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 6
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 7
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 7
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 6
+      },
+      {
+        "k": 3,
+        "m": 4,
+        "n": 5
+      },
+      {
+        "k": 2,
+        "m": 4,
+        "n": 2
+      },
+      {
+        "k": 3,
+        "m": 4,
+        "n": 13
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 3
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 18
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 15
+      }
+    ],
+    "seed": 20
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 214272,
+      "largest_node_channels": 4,
+      "nodes": 17,
+      "parameters": 1304,
+      "total_channels": 41
+    },
+    "family": "forward",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 2,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 7
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 3
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 6
+      },
+      {
+        "k": 3,
+        "m": 4,
+        "n": 13
+      },
+      {
+        "k": 3,
+        "m": 4,
+        "n": 14
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 14
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 16
+      },
+      {
+        "k": 4,
+        "m": 4,
+        "n": 16
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 19
+      },
+      {
+        "k": 4,
+        "m": 4,
+        "n": 28
+      },
+      {
+        "k": 2,
+        "m": 4,
+        "n": 23
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 34
+      }
+    ],
+    "seed": 21
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 69632,
+      "largest_node_channels": 4,
+      "nodes": 22,
+      "parameters": 204,
+      "total_channels": 46
+    },
+    "family": "forward",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 1,
+        "n": 2
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 3
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 1
+      },
+      {
+        "k": 2,
+        "m": 4,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 1
+      }
+    ],
+    "seed": 22
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 41216,
+      "largest_node_channels": 4,
+      "nodes": 13,
+      "parameters": 76,
+      "total_channels": 37
+    },
+    "family": "forward",
+    "generation": "PASS",
+    "nodes": [],
+    "seed": 23
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 58368,
+      "largest_node_channels": 4,
+      "nodes": 21,
+      "parameters": 154,
+      "total_channels": 42
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 2,
+        "n": 1
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 5
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      }
+    ],
+    "seed": 0
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 53504,
+      "largest_node_channels": 4,
+      "nodes": 20,
+      "parameters": 124,
+      "total_channels": 41
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 1,
+        "n": 2
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 4
+      }
+    ],
+    "seed": 1
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 90368,
+      "largest_node_channels": 4,
+      "nodes": 24,
+      "parameters": 294,
+      "total_channels": 59
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 9
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 7
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 2
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 4
+      }
+    ],
+    "seed": 2
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 56192,
+      "largest_node_channels": 4,
+      "nodes": 23,
+      "parameters": 109,
+      "total_channels": 51
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [],
+    "seed": 3
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 58880,
+      "largest_node_channels": 4,
+      "nodes": 18,
+      "parameters": 156,
+      "total_channels": 40
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 4,
+        "m": 4,
+        "n": 4
+      }
+    ],
+    "seed": 4
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 65792,
+      "largest_node_channels": 4,
+      "nodes": 15,
+      "parameters": 222,
+      "total_channels": 36
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 4,
+        "n": 10
+      },
+      {
+        "k": 4,
+        "m": 4,
+        "n": 7
+      }
+    ],
+    "seed": 5
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 80384,
+      "largest_node_channels": 4,
+      "nodes": 24,
+      "parameters": 242,
+      "total_channels": 53
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 2,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 2
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 2,
+        "m": 4,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 1
+      }
+    ],
+    "seed": 6
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 78080,
+      "largest_node_channels": 4,
+      "nodes": 18,
+      "parameters": 298,
+      "total_channels": 40
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 2,
+        "m": 2,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 3
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 5
+      },
+      {
+        "k": 4,
+        "m": 4,
+        "n": 8
+      }
+    ],
+    "seed": 7
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 113664,
+      "largest_node_channels": 4,
+      "nodes": 17,
+      "parameters": 594,
+      "total_channels": 36
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 2,
+        "n": 3
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 3
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 3
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 3
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 3
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 10
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 10
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 10
+      },
+      {
+        "k": 4,
+        "m": 4,
+        "n": 10
+      },
+      {
+        "k": 2,
+        "m": 4,
+        "n": 11
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      }
+    ],
+    "seed": 8
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 102144,
+      "largest_node_channels": 4,
+      "nodes": 22,
+      "parameters": 474,
+      "total_channels": 41
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 1,
+        "n": 8
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 2,
+        "m": 4,
+        "n": 11
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 5
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 9
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 7
+      },
+      {
+        "k": 3,
+        "m": 4,
+        "n": 9
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 5
+      }
+    ],
+    "seed": 9
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 67840,
+      "largest_node_channels": 4,
+      "nodes": 22,
+      "parameters": 156,
+      "total_channels": 54
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 2,
+        "n": 5
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      }
+    ],
+    "seed": 10
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 26624,
+      "largest_node_channels": 4,
+      "nodes": 12,
+      "parameters": 46,
+      "total_channels": 23
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [],
+    "seed": 11
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 111488,
+      "largest_node_channels": 4,
+      "nodes": 14,
+      "parameters": 527,
+      "total_channels": 46
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 3,
+        "m": 4,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 6
+      },
+      {
+        "k": 3,
+        "m": 4,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 6
+      },
+      {
+        "k": 2,
+        "m": 4,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 6
+      }
+    ],
+    "seed": 12
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 82048,
+      "largest_node_channels": 4,
+      "nodes": 22,
+      "parameters": 225,
+      "total_channels": 54
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 2,
+        "n": 26
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 2
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 2
+      }
+    ],
+    "seed": 13
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 56704,
+      "largest_node_channels": 4,
+      "nodes": 12,
+      "parameters": 207,
+      "total_channels": 26
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 2,
+        "n": 12
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 2
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 2
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 2
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 2
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 2
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 2
+      }
+    ],
+    "seed": 14
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 94976,
+      "largest_node_channels": 4,
+      "nodes": 25,
+      "parameters": 296,
+      "total_channels": 63
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 2,
+        "m": 4,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 6
+      }
+    ],
+    "seed": 15
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 87808,
+      "largest_node_channels": 4,
+      "nodes": 24,
+      "parameters": 318,
+      "total_channels": 50
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 2
+      }
+    ],
+    "seed": 16
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 81152,
+      "largest_node_channels": 4,
+      "nodes": 24,
+      "parameters": 180,
+      "total_channels": 65
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 3,
+        "m": 4,
+        "n": 4
+      }
+    ],
+    "seed": 17
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 44032,
+      "largest_node_channels": 4,
+      "nodes": 17,
+      "parameters": 80,
+      "total_channels": 40
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [],
+    "seed": 18
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 139136,
+      "largest_node_channels": 4,
+      "nodes": 26,
+      "parameters": 647,
+      "total_channels": 61
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 1,
+        "m": 4,
+        "n": 3
+      },
+      {
+        "k": 4,
+        "m": 4,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 4
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 2
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 5
+      },
+      {
+        "k": 4,
+        "m": 4,
+        "n": 8
+      },
+      {
+        "k": 4,
+        "m": 4,
+        "n": 9
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 1
+      },
+      {
+        "k": 1,
+        "m": 1,
+        "n": 6
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 3
+      },
+      {
+        "k": 2,
+        "m": 4,
+        "n": 3
+      },
+      {
+        "k": 2,
+        "m": 2,
+        "n": 2
+      },
+      {
+        "k": 1,
+        "m": 2,
+        "n": 2
+      },
+      {
+        "k": 1,
+        "m": 4,
+        "n": 2
+      }
+    ],
+    "seed": 19
+  },
+  {
+    "admission": {
+      "estimated_working_bytes": 84224,
+      "largest_node_channels": 4,
+      "nodes": 24,
+      "parameters": 186,
+      "total_channels": 68
+    },
+    "family": "layered",
+    "generation": "PASS",
+    "nodes": [
+      {
+        "k": 3,
+        "m": 4,
+        "n": 4
+      }
+    ],
+    "seed": 20
+  }
+]

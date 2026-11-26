@@ -1,0 +1,52 @@
+{
+  "actual_head_after": "ec522eddc704a37679906a5e1c1274fea3ae65ad",
+  "actual_head_before": "ec522eddc704a37679906a5e1c1274fea3ae65ad",
+  "archives": {
+    "baseline": {
+      "path": "/tmp/factorized-spec-ec522ed/baseline",
+      "revision": "5562ca0f2f5f9628c5386c02755dae9229b778e4",
+      "tar_sha256": "d1958423bc9fedbc590d07742327692aeea3c387e1d2055d951c204c843b646f"
+    },
+    "candidate": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate",
+      "revision": "ec522eddc704a37679906a5e1c1274fea3ae65ad",
+      "tar_sha256": "508ba422f7e6e52909e0a65b52339281d1ebeb41cb6485af33dce10ef3708041"
+    }
+  },
+  "argv": [
+    "/tmp/verify_causal_weights.py",
+    "--repo",
+    "/tmp/r0-28",
+    "--expected-head",
+    "ec522eddc704a37679906a5e1c1274fea3ae65ad",
+    "--base",
+    "5562ca0f2f5f9628c5386c02755dae9229b778e4",
+    "--output",
+    "/tmp/factorized-spec-ec522ed"
+  ],
+  "base": "5562ca0f2f5f9628c5386c02755dae9229b778e4",
+  "exit_code": 1,
+  "expected_head": "ec522eddc704a37679906a5e1c1274fea3ae65ad",
+  "repo": "/tmp/r0-28",
+  "script": "/tmp/verify_causal_weights.py",
+  "script_sha256": "0f4d4b3c49f818c07e680a9de7981200490d6f8ee5ac2daabfdc3484a33e3fb9",
+  "status_after": "?? .venv",
+  "status_before": "?? .venv",
+  "worker_command": [
+    "/home/avist/Projects/r0/.venv/bin/python3",
+    "/tmp/factorized-spec-ec522ed/candidate/scripts/run_check.py",
+    "python",
+    "-B",
+    "/tmp/verify_causal_weights.py",
+    "--worker",
+    "--repo",
+    "/tmp/factorized-spec-ec522ed/candidate",
+    "--expected-head",
+    "ec522eddc704a37679906a5e1c1274fea3ae65ad",
+    "--base",
+    "5562ca0f2f5f9628c5386c02755dae9229b778e4",
+    "--output",
+    "/tmp/factorized-spec-ec522ed"
+  ],
+  "wrapper_sha256": "ec891852ad130f3de90ec30c326b47ac763e9896cc9e6004a1218dce8b0e9192"
+}

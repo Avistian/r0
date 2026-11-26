@@ -1,0 +1,227 @@
+{
+  "artifacts": {
+    "forward.json": {
+      "bytes": 390,
+      "sha256": "6bd475cf8d68fab127719e087c60dfc938e3a009240021ce3d38eaca4d6d768a"
+    },
+    "forward.jsonl": {
+      "bytes": 1165734,
+      "sha256": "2691fc4253defdf6813292b98e67d5f9ba3768c03581dfe12cc4a9e195fde744"
+    },
+    "forward.zip": {
+      "bytes": 2621922,
+      "sha256": "30e76084cd860e052d95f7d5bad9f9673faf8ebc418cd468d239dbaf96529e33"
+    },
+    "layered.json": {
+      "bytes": 390,
+      "sha256": "e772668a9ba3a5539b1e04e7eca0ad02f59b54761ed7c4e117b0a99793632bbc"
+    },
+    "layered.jsonl": {
+      "bytes": 832910,
+      "sha256": "ab9700c0a0a3565fff968d8ef690a49d313ed454f0fbeb17083dc2687a3e38b2"
+    },
+    "layered.zip": {
+      "bytes": 1929663,
+      "sha256": "3e78bc2256e11b5a7b19a1fb7134c14d88aebb008d441657580f8fdc7166801e"
+    },
+    "redirection.json": {
+      "bytes": 390,
+      "sha256": "6094524d14ac77de49f09bcc83e17c39fc9d07acc6c15da39b0d5d50e195e9cd"
+    },
+    "redirection.jsonl": {
+      "bytes": 1097041,
+      "sha256": "cf635b4f2ab59d4e7c028da17a0a92fc994620b1704bad35ee954b0ccd1ca528"
+    },
+    "redirection.zip": {
+      "bytes": 2479397,
+      "sha256": "0d2a51ac34fdb66a539a9f8c91dacaa20b01767f5952fee9daad24a804546805"
+    }
+  },
+  "construction_counts_scope": "All explicitly recorded factorized nonroot projections; roots have no matrix construction.",
+  "device": "cpu",
+  "exogenous_counts_scope": "Explicit stochastic-node descriptors only; legacy Gaussian roots do not carry exogenous fields.",
+  "families": {
+    "forward": {
+      "activation_modes": {
+        "dirichlet": 17,
+        "homogeneous": 22,
+        "independent": 25
+      },
+      "attempted": 64,
+      "exogenous_geometry": {
+        "independent": 579
+      },
+      "exogenous_laws": {
+        "gaussian": 579
+      },
+      "factor_inner_dimensions": {
+        "1": 391,
+        "2": 131,
+        "3": 30,
+        "4": 27
+      },
+      "failed": 0,
+      "failure_reasons": {},
+      "flag_counts": {
+        "disconnected_target": 23,
+        "inactive_relu": 9,
+        "saturated_activation": 13,
+        "zero_target_dispersion": 1
+      },
+      "noise_strengths": {
+        "0.0": 579
+      },
+      "ranges": {
+        "components": [
+          1,
+          20
+        ],
+        "depth": [
+          0,
+          21
+        ],
+        "edges": [
+          0,
+          231
+        ],
+        "nodes": [
+          7,
+          23
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64,
+      "weight_constructions": {
+        "factorized-weights-v1": 579
+      }
+    },
+    "layered": {
+      "activation_modes": {
+        "dirichlet": 21,
+        "homogeneous": 22,
+        "independent": 21
+      },
+      "attempted": 64,
+      "exogenous_geometry": {
+        "independent": 328
+      },
+      "exogenous_laws": {
+        "gaussian": 328
+      },
+      "factor_inner_dimensions": {
+        "1": 221,
+        "2": 71,
+        "3": 17,
+        "4": 19
+      },
+      "failed": 0,
+      "failure_reasons": {},
+      "flag_counts": {
+        "disconnected_target": 36,
+        "inactive_relu": 9,
+        "saturated_activation": 7,
+        "zero_target_dispersion": 1
+      },
+      "noise_strengths": {
+        "0.0": 328
+      },
+      "ranges": {
+        "components": [
+          1,
+          24
+        ],
+        "depth": [
+          0,
+          4
+        ],
+        "edges": [
+          0,
+          66
+        ],
+        "nodes": [
+          7,
+          24
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64,
+      "weight_constructions": {
+        "factorized-weights-v1": 328
+      }
+    },
+    "redirection": {
+      "activation_modes": {
+        "dirichlet": 25,
+        "homogeneous": 21,
+        "independent": 18
+      },
+      "attempted": 64,
+      "exogenous_geometry": {
+        "independent": 832
+      },
+      "exogenous_laws": {
+        "gaussian": 832
+      },
+      "factor_inner_dimensions": {
+        "1": 599,
+        "2": 183,
+        "3": 23,
+        "4": 27
+      },
+      "failed": 0,
+      "failure_reasons": {},
+      "flag_counts": {
+        "disconnected_target": 2,
+        "inactive_relu": 9,
+        "saturated_activation": 5,
+        "zero_target_dispersion": 1
+      },
+      "noise_strengths": {
+        "0.0": 832
+      },
+      "ranges": {
+        "components": [
+          1,
+          3
+        ],
+        "depth": [
+          1,
+          6
+        ],
+        "edges": [
+          4,
+          20
+        ],
+        "nodes": [
+          7,
+          22
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64,
+      "weight_constructions": {
+        "factorized-weights-v1": 832
+      }
+    }
+  },
+  "filter": "none",
+  "head": "ec39b46ef7972a5729735850cb126e6d6f53fad9",
+  "procedure": "scripts/causal_topology_census.py",
+  "profile": "causal-factorized-v1",
+  "raw_artifact_directory": "/tmp/r0-28-factorized-census-ec39b46",
+  "seed": 28,
+  "timing": "NOT_MEASURED",
+  "torch": "2.15.0+cpu"
+}

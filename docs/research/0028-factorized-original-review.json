@@ -1,0 +1,283 @@
+{
+  "base": "5562ca0f2f5f9628c5386c02755dae9229b778e4",
+  "checks": [
+    {
+      "dense": [
+        [
+          17,
+          20
+        ],
+        [
+          44,
+          52
+        ]
+      ],
+      "name": "independent Decimal and literal authored projection",
+      "status": "PASS"
+    },
+    {
+      "admission": {
+        "estimated_working_bytes": 10880,
+        "largest_node_channels": 2,
+        "nodes": 2,
+        "parameters": 29,
+        "total_channels": 4
+      },
+      "name": "authored parameter count",
+      "status": "PASS"
+    },
+    {
+      "name": "selected original-row factor and dense trace",
+      "status": "PASS"
+    },
+    {
+      "name": "authored JSON replay episode identity",
+      "status": "PASS"
+    },
+    {
+      "error": "factor coefficients must be finite nonnegative values matching rank",
+      "name": "negative diagonal rejected",
+      "status": "PASS"
+    },
+    {
+      "error": "factorized weight dimensions or version disagree",
+      "name": "incompatible factor dimensions rejected",
+      "status": "PASS"
+    },
+    {
+      "error": "recorded weights disagree with their frozen construction",
+      "name": "tampered dense projection rejected",
+      "status": "PASS"
+    },
+    {
+      "error": "recorded weights disagree with their frozen construction",
+      "name": "tampered factors rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "zero coefficients and rank-deficient factors valid",
+      "status": "PASS"
+    },
+    {
+      "exact": "4",
+      "name": "extreme final projection is representable and dense control generates",
+      "stable_alternative": "left * (diagonal * right) == 4.0",
+      "status": "PASS"
+    }
+  ],
+  "expected_head": "ec522eddc704a37679906a5e1c1274fea3ae65ad",
+  "first_defect": {
+    "actual": "ValueError: nonfinite factorized projection; construction was not retried",
+    "expected": "admit exact finite dense projection [[4.0]]",
+    "input": "first_defect_input.json",
+    "name": "avoidable intermediate factor overflow rejects a valid finite projection",
+    "oracle": "Decimal.from_float at precision 2500; exact binary factors 2**1023, 4, 2**-1023",
+    "source": "src/r0/modules/priors/lib/weight_matrices.py:53-56",
+    "spec": "Decision 13: Preserve valid extreme draws; expose domain restrictions and numerical failures without silently clipping values."
+  },
+  "imports": {
+    "r0": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/__init__.py",
+      "sha256": "9dcdce8754e8d9dbad9dc6de273cee069cc7dde3ad81519777a3f03e3c0ccf38"
+    },
+    "r0.modules": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r0.modules.episodes": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/episodes/__init__.py",
+      "sha256": "ad6e3e00dc75ee93fcaf94e1da018f6b367837fb27a3a2b77c8663c356493e64"
+    },
+    "r0.modules.priors": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/__init__.py",
+      "sha256": "70bd7b9eeeb43fffebadcc29c6e906176391fa5a98073b79b3ceb8bcd2543718"
+    },
+    "r0.modules.priors.lib": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "r0.modules.priors.lib.activation_sampling": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/activation_sampling.py",
+      "sha256": "0e6e5856ea170160141eabcc8a4ce7fff9c778798ce0332144065eeefab806f4"
+    },
+    "r0.modules.priors.lib.authored": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/authored.py",
+      "sha256": "8b5c3762d3ddc180f8f16bf7ab57eb8c3426577b3d051ff4b06c5156d56fdb3a"
+    },
+    "r0.modules.priors.lib.calibration": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/calibration.py",
+      "sha256": "be458a389d3cad477b3e6dc44830fade5c19331cf510c02124b5bf04d43d08b9"
+    },
+    "r0.modules.priors.lib.causal": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/causal.py",
+      "sha256": "ddab7d4df12a06dbdb57e0793f1e0a6fa6f5959654b0f73760c7cbac42a19a26"
+    },
+    "r0.modules.priors.lib.causal_activations": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/causal_activations.py",
+      "sha256": "41827e1e52d551afda2a4d5f828c9de5fe3962463bd8ede7b96b3d5af93af691"
+    },
+    "r0.modules.priors.lib.causal_exogenous_sampling": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/causal_exogenous_sampling.py",
+      "sha256": "7cc6977b1eb10ca3ecfb608a6e86043c7306676ce7851f8da526ac8918dad544"
+    },
+    "r0.modules.priors.lib.causal_graph": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/causal_graph.py",
+      "sha256": "afa259981a68874b9dc3d4edd894574d826e64e368d6bffddd30068baa8703cc"
+    },
+    "r0.modules.priors.lib.causal_inspection": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/causal_inspection.py",
+      "sha256": "c153dadde7da41d543cb67d5bf672c4978d0dc15b0dcb70173642beeecb686ab"
+    },
+    "r0.modules.priors.lib.causal_limits": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/causal_limits.py",
+      "sha256": "e1520b501314ceacf595179addbd8c8f5790ad022f529c744319c0b0142c3b6d"
+    },
+    "r0.modules.priors.lib.causal_moments": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/causal_moments.py",
+      "sha256": "7426d5bb65e3f38b93a19cf0347681f9d4bb68f259d5b2667eddc6d7752f7d27"
+    },
+    "r0.modules.priors.lib.causal_nodes": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/causal_nodes.py",
+      "sha256": "3612fd1fcabb32d19d235fc9ee4eb35622f203cb8d520e22728821337643a990"
+    },
+    "r0.modules.priors.lib.causal_sampled": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/causal_sampled.py",
+      "sha256": "35094da9400de1673b5257ce745e6f91501b609713b59dca9bbb0c9960977f4b"
+    },
+    "r0.modules.priors.lib.causal_sampling": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/causal_sampling.py",
+      "sha256": "1e75e6a461e241c7885873aa3ed28d568a9c9f466668cb251580ddedde7dfe03"
+    },
+    "r0.modules.priors.lib.causal_stochastic": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/causal_stochastic.py",
+      "sha256": "37ef227f53a006e2ce5aadf099db0da0ea15231ee8ec1d4e6f4d934692336d45"
+    },
+    "r0.modules.priors.lib.causal_weight_sampling": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/causal_weight_sampling.py",
+      "sha256": "7659ebddf9d68bf1e722760daa5eae055b9bc1867acba5d0a21726f145073a7c"
+    },
+    "r0.modules.priors.lib.compositions": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/compositions.py",
+      "sha256": "38e2db77ab74c382d6f77921abb87071b5ce424c96c5717669c986e5cfe1c96c"
+    },
+    "r0.modules.priors.lib.exact_gp": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/exact_gp.py",
+      "sha256": "40fe8b9192f4bd475ec51fa13dcf04615f3c0b54a3f38513ee2f1880194ad28d"
+    },
+    "r0.modules.priors.lib.exogenous": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/exogenous.py",
+      "sha256": "01ef01aadd2a417c79492c34ff9bcfa9d10a6bdb2f8fca2d0f90594d6d9f15a5"
+    },
+    "r0.modules.priors.lib.fourier": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/fourier.py",
+      "sha256": "799e4e42ccd824fbe6d8851f3a43f892341abf7403f741d7d014f396b40cac1c"
+    },
+    "r0.modules.priors.lib.generate": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/generate.py",
+      "sha256": "39b90308591e9c6ef99637c9e38c34b34343477c0659669ec5f200dec5efd5dd"
+    },
+    "r0.modules.priors.lib.generation_graph": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/generation_graph.py",
+      "sha256": "40e758b5351042bd54d857723cec2b623bcde70bd497d0901da5ae5fcf1c8e23"
+    },
+    "r0.modules.priors.lib.gp_conditioning": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/gp_conditioning.py",
+      "sha256": "485f663560c2259cb04c3545047a3fe0522d99738571a2bc025f7e0ea6dca903"
+    },
+    "r0.modules.priors.lib.graph_functions": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/graph_functions.py",
+      "sha256": "16fa65616543ad793aab18277acfedfe59b83a9a73378c75e0e1ad7b832fabc0"
+    },
+    "r0.modules.priors.lib.grouped_linear": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/grouped_linear.py",
+      "sha256": "94160dfe79b4051dcdf7e124c73693f32fb96211944a60e33ff1da1666470636"
+    },
+    "r0.modules.priors.lib.inputs": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/inputs.py",
+      "sha256": "9c79c3c605b6d01bb3d8a32475882cbb1e2a44585ead8f1397e669dc2436e184"
+    },
+    "r0.modules.priors.lib.kernels": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/kernels.py",
+      "sha256": "1a3b40953c81bf0749d0dcd51908dc2fdb8283801b44015e4b7b3e8d897ca72e"
+    },
+    "r0.modules.priors.lib.linear": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/linear.py",
+      "sha256": "4eb84ae9bbb1608e4da024dfd188c73cf022a9ee3d732d7f5e518c1a6ee16a8e"
+    },
+    "r0.modules.priors.lib.pairs": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/pairs.py",
+      "sha256": "73fbc5472f76ec2619e29aa122b6160852bd99e5f8265e8d728908d2fa61c2b7"
+    },
+    "r0.modules.priors.lib.polynomial": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/polynomial.py",
+      "sha256": "88c4b4118afb3f698b328a23a98b74ecc5358a7c222c435e0b9ac2398ca0be40"
+    },
+    "r0.modules.priors.lib.profile": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/profile.py",
+      "sha256": "76e7242638a62907e16384c7c7ef8433c6abc42f2b9097698976d665fe85e469"
+    },
+    "r0.modules.priors.lib.quadratic": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/quadratic.py",
+      "sha256": "1f3d347064dd2109ce70ea0e1a00829e0d42174b8656037f94b2e90138f22aca"
+    },
+    "r0.modules.priors.lib.recipe_sampling": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/recipe_sampling.py",
+      "sha256": "2b55303593d991ed4dc54f20c232fc6110aab84e8cbdfafb4e484626c7c41650"
+    },
+    "r0.modules.priors.lib.representatives": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/representatives.py",
+      "sha256": "3bf12298117208a9ac937b880f5d61178aee75f9c7778530615eb600eb459faa"
+    },
+    "r0.modules.priors.lib.sampling": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/sampling.py",
+      "sha256": "249dad46866309f5705eaaa6d85254c3bca94cce96fe71b25e33cc255d4cfecf"
+    },
+    "r0.modules.priors.lib.signals": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/signals.py",
+      "sha256": "48324a6a3f81192f631e51f92e38e48951f0e4047c334d8e0c0645655ce01157"
+    },
+    "r0.modules.priors.lib.smooth": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/smooth.py",
+      "sha256": "8362af5f3c999d5b7388760746e1bb16ab780c179f2812941e4ebf2d77efdff3"
+    },
+    "r0.modules.priors.lib.smooth_neural": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/smooth_neural.py",
+      "sha256": "d959bfcccc7351e455ab75d23ed1e90bae36c818cb0cc6592598f28c7380dac2"
+    },
+    "r0.modules.priors.lib.structured": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/structured.py",
+      "sha256": "3e878782b7582cd8645624b28c120392dd48891cc96380345268e6bf2bf4120d"
+    },
+    "r0.modules.priors.lib.targets": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/targets.py",
+      "sha256": "8e58fdfbe13a221d42c7f402cd14ecf2d11f9861e639b4d6d070a641d4fe21cf"
+    },
+    "r0.modules.priors.lib.task_output": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/task_output.py",
+      "sha256": "d74c1c63ff22aeb34c579ab2b0e0174e7a082423bf370bbe6c430c2fc5fec269"
+    },
+    "r0.modules.priors.lib.training_task": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/training_task.py",
+      "sha256": "0c3ab0c67ada2c557d61cf3ee9820b19c4c790d2920be6bac2c428e6fed9f03d"
+    },
+    "r0.modules.priors.lib.weight_matrices": {
+      "path": "/tmp/factorized-spec-ec522ed/candidate/src/r0/modules/priors/lib/weight_matrices.py",
+      "sha256": "d0cebddd543f6c73c2fb0ad5ddb914a70231464905cb851aa4e569d486b61210"
+    }
+  },
+  "interpreter": "/home/avist/Projects/r0/.venv/bin/python3",
+  "not_run": [
+    "sampled Gaussian law/rank/scaling",
+    "sampled resource admission before arrays",
+    "saved explorer generation/reopen/prefix",
+    "four-profile baseline exact preservation",
+    "exogenous failure census",
+    "remaining invalid/tampering cases",
+    "underflow and cancellation extremes"
+  ],
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "script_sha256": "0f4d4b3c49f818c07e680a9de7981200490d6f8ee5ac2daabfdc3484a33e3fb9",
+  "source": "/tmp/factorized-spec-ec522ed/candidate",
+  "status": "REJECT",
+  "torch": "2.15.0+cpu"
+}

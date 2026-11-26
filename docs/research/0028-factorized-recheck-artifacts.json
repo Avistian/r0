@@ -1,0 +1,96 @@
+{
+  "artifacts": {
+    "legacy.json": {
+      "original_sha256": "fb318943a480d9c44f1f7aceec35ecafc143708fde8b8ff5389d381dc1c01776",
+      "parts": [
+        {
+          "file": "0028-factorized-legacy-01.json",
+          "records": 85,
+          "sha256": "d022fa7622b19dbfe2cf9ca960dfdfa50c0677d6cf063d5055b5505fefb805bb"
+        },
+        {
+          "file": "0028-factorized-legacy-02.json",
+          "records": 84,
+          "sha256": "b7523f789be4ba3d819c6ada6aa0789e1becbe04240f51e71f92091b46254a1c"
+        },
+        {
+          "file": "0028-factorized-legacy-03.json",
+          "records": 83,
+          "sha256": "5220b195f3330c483972065654b064eba0d354c5f3bcff0c66ec7706b35a8440"
+        }
+      ],
+      "records": 252
+    },
+    "rational_extremes.json": {
+      "original_sha256": "e0b993ca521f558620ae18a6015ee0938bc66f78d347bbd835a7b205ddd4328a",
+      "parts": [
+        {
+          "file": "0028-factorized-rational-01.json",
+          "records": 9,
+          "sha256": "254f2a10183bf88a8ac6317d8172ce52d906b6bb685a3703c9fb3222fead9d37"
+        },
+        {
+          "file": "0028-factorized-rational-02.json",
+          "records": 5,
+          "sha256": "151158357390d601a39b1ce86f0e06ee267e1d90a6ea186be6ab1a2252e7619f"
+        }
+      ],
+      "records": 14
+    },
+    "report.json": {
+      "note": "Replace checks_parts with checks reconstructed by concatenating part arrays in order.",
+      "original_sha256": "ae16fd25c9ee4051689a8447c9d1e052d410b9e78f14db01db9006bd2c029cba",
+      "published_metadata": "0028-factorized-recheck.json"
+    },
+    "rng_admission_events.json": {
+      "original_sha256": "4a182305a40df2b8d608c0e399d6812a600ba407712f9cc23dad0176b5899376",
+      "parts": [
+        {
+          "file": "0028-factorized-rng-events-01.json",
+          "records": 92,
+          "sha256": "bdcd66211df75e2db23e5be81bc584112a01a2c9863fc8c0d796c6e47181a13e"
+        },
+        {
+          "file": "0028-factorized-rng-events-02.json",
+          "records": 33,
+          "sha256": "abe70ad1703e624683d1845355bc2195c01412957ca43514b30ec92b1d10a05d"
+        }
+      ],
+      "records": 125
+    },
+    "sampled_summary.json": {
+      "original_sha256": "76b61f64d9513db7d7c9d8ed71ae8953fc86a269efe028666d8561b6f7b31759",
+      "parts": [
+        {
+          "file": "0028-factorized-sampled-01.json",
+          "records": 20,
+          "sha256": "5e1094eaf77ec767503381973a51fdcba8e0a42a526c0db7e565c8c284ab93e9"
+        },
+        {
+          "file": "0028-factorized-sampled-02.json",
+          "records": 25,
+          "sha256": "f3ea2a6f442fb1e44c05278c322023e7f690a592c680ed59e9bfbb8b8c29b413"
+        },
+        {
+          "file": "0028-factorized-sampled-03.json",
+          "records": 13,
+          "sha256": "3ee554498691acaae11b516dc32a388d4e2fcf8fa0ff679331ab5b4aa8799f31"
+        },
+        {
+          "file": "0028-factorized-sampled-04.json",
+          "records": 11,
+          "sha256": "4cce9d33d4fb9e9ed39046b9a35b372611220af4d3b239daf627efe119ea2f98"
+        },
+        {
+          "file": "0028-factorized-sampled-05.json",
+          "records": 3,
+          "sha256": "900a0c65a7705474f43542592b0043ec714d760b3fa1ebd9536b4a5b3dd9322d"
+        }
+      ],
+      "records": 72
+    }
+  },
+  "baseline_legacy_equal": true,
+  "original_directory": "/tmp/factorized-spec-ec39b46-a4",
+  "source_receipt": "0028-factorized-recheck-receipt.json"
+}

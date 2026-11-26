@@ -1,0 +1,504 @@
+[
+  {
+    "input": {
+      "calibration_rows": 256,
+      "construction": "authored",
+      "limits": {
+        "node_channels": 1024,
+        "nodes": 1024,
+        "parameters": 1000000,
+        "total_channels": 8192,
+        "working_bytes": 268435456
+      },
+      "nodes": [
+        {
+          "bias": [
+            0.0
+          ],
+          "noise_scale": [
+            1.0
+          ],
+          "parents": [],
+          "weights": []
+        },
+        {
+          "bias": [
+            0.0
+          ],
+          "noise_scale": [
+            0.0
+          ],
+          "parents": [
+            0
+          ],
+          "weight_construction": {
+            "diagonal": [
+              4.0
+            ],
+            "left": [
+              [
+                8.98846567431158e+307
+              ]
+            ],
+            "right": [
+              [
+                0.0
+              ]
+            ],
+            "version": "factorized-weights-v1"
+          },
+          "weights": [
+            [
+              0.0
+            ]
+          ]
+        }
+      ],
+      "normalize": false,
+      "observed": [
+        [
+          0,
+          0
+        ]
+      ],
+      "target": [
+        [
+          1,
+          0
+        ]
+      ],
+      "task": {
+        "active_features": 1,
+        "class_offsets": [],
+        "classes": 0,
+        "context_rows": 8,
+        "features": 1,
+        "noise_ratio": 0.0,
+        "rows": 16,
+        "separation": 1.0,
+        "signal_features": 1,
+        "split": 0,
+        "task_type": "regression",
+        "version": "linear-v1"
+      },
+      "topology": null,
+      "version": "causal-v2"
+    },
+    "name": "zero-right",
+    "oracle": [
+      [
+        0.0
+      ]
+    ]
+  },
+  {
+    "input": {
+      "calibration_rows": 256,
+      "construction": "authored",
+      "limits": {
+        "node_channels": 1024,
+        "nodes": 1024,
+        "parameters": 1000000,
+        "total_channels": 8192,
+        "working_bytes": 268435456
+      },
+      "nodes": [
+        {
+          "bias": [
+            0.0
+          ],
+          "noise_scale": [
+            1.0
+          ],
+          "parents": [],
+          "weights": []
+        },
+        {
+          "bias": [
+            0.0
+          ],
+          "noise_scale": [
+            0.0
+          ],
+          "parents": [
+            0
+          ],
+          "weight_construction": {
+            "diagonal": [
+              8.98846567431158e+307
+            ],
+            "left": [
+              [
+                0.0
+              ]
+            ],
+            "right": [
+              [
+                8.98846567431158e+307
+              ]
+            ],
+            "version": "factorized-weights-v1"
+          },
+          "weights": [
+            [
+              0.0
+            ]
+          ]
+        }
+      ],
+      "normalize": false,
+      "observed": [
+        [
+          0,
+          0
+        ]
+      ],
+      "target": [
+        [
+          1,
+          0
+        ]
+      ],
+      "task": {
+        "active_features": 1,
+        "class_offsets": [],
+        "classes": 0,
+        "context_rows": 8,
+        "features": 1,
+        "noise_ratio": 0.0,
+        "rows": 16,
+        "separation": 1.0,
+        "signal_features": 1,
+        "split": 0,
+        "task_type": "regression",
+        "version": "linear-v1"
+      },
+      "topology": null,
+      "version": "causal-v2"
+    },
+    "name": "zero-left",
+    "oracle": [
+      [
+        0.0
+      ]
+    ]
+  },
+  {
+    "input": {
+      "calibration_rows": 256,
+      "construction": "authored",
+      "limits": {
+        "node_channels": 1024,
+        "nodes": 1024,
+        "parameters": 1000000,
+        "total_channels": 8192,
+        "working_bytes": 268435456
+      },
+      "nodes": [
+        {
+          "bias": [
+            0.0
+          ],
+          "noise_scale": [
+            1.0
+          ],
+          "parents": [],
+          "weights": []
+        },
+        {
+          "bias": [
+            0.0
+          ],
+          "noise_scale": [
+            0.0
+          ],
+          "parents": [
+            0
+          ],
+          "weight_construction": {
+            "diagonal": [
+              1.0
+            ],
+            "left": [
+              [
+                -5e-324
+              ]
+            ],
+            "right": [
+              [
+                1.0
+              ]
+            ],
+            "version": "factorized-weights-v1"
+          },
+          "weights": [
+            [
+              -5e-324
+            ]
+          ]
+        }
+      ],
+      "normalize": false,
+      "observed": [
+        [
+          0,
+          0
+        ]
+      ],
+      "target": [
+        [
+          1,
+          0
+        ]
+      ],
+      "task": {
+        "active_features": 1,
+        "class_offsets": [],
+        "classes": 0,
+        "context_rows": 8,
+        "features": 1,
+        "noise_ratio": 0.0,
+        "rows": 16,
+        "separation": 1.0,
+        "signal_features": 1,
+        "split": 0,
+        "task_type": "regression",
+        "version": "linear-v1"
+      },
+      "topology": null,
+      "version": "causal-v2"
+    },
+    "name": "negative-subnormal",
+    "oracle": [
+      [
+        -5e-324
+      ]
+    ]
+  },
+  {
+    "input": {
+      "calibration_rows": 256,
+      "construction": "authored",
+      "limits": {
+        "node_channels": 1024,
+        "nodes": 1024,
+        "parameters": 1000000,
+        "total_channels": 8192,
+        "working_bytes": 268435456
+      },
+      "nodes": [
+        {
+          "bias": [
+            0.0
+          ],
+          "noise_scale": [
+            1.0
+          ],
+          "parents": [],
+          "weights": []
+        },
+        {
+          "bias": [
+            0.0
+          ],
+          "noise_scale": [
+            0.0
+          ],
+          "parents": [
+            0
+          ],
+          "weight_construction": {
+            "diagonal": [
+              4.0,
+              4.0
+            ],
+            "left": [
+              [
+                8.98846567431158e+307,
+                -8.98846567431158e+307
+              ]
+            ],
+            "right": [
+              [
+                1.0
+              ],
+              [
+                1.0
+              ]
+            ],
+            "version": "factorized-weights-v1"
+          },
+          "weights": [
+            [
+              0.0
+            ]
+          ]
+        }
+      ],
+      "normalize": false,
+      "observed": [
+        [
+          0,
+          0
+        ]
+      ],
+      "target": [
+        [
+          1,
+          0
+        ]
+      ],
+      "task": {
+        "active_features": 1,
+        "class_offsets": [],
+        "classes": 0,
+        "context_rows": 8,
+        "features": 1,
+        "noise_ratio": 0.0,
+        "rows": 16,
+        "separation": 1.0,
+        "signal_features": 1,
+        "split": 0,
+        "task_type": "regression",
+        "version": "linear-v1"
+      },
+      "topology": null,
+      "version": "causal-v2"
+    },
+    "name": "signed-cancellation",
+    "oracle": [
+      [
+        0.0
+      ]
+    ]
+  },
+  {
+    "input": {
+      "calibration_rows": 256,
+      "construction": "authored",
+      "limits": {
+        "node_channels": 1024,
+        "nodes": 1024,
+        "parameters": 1000000,
+        "total_channels": 8192,
+        "working_bytes": 268435456
+      },
+      "nodes": [
+        {
+          "bias": [
+            0.0,
+            0.0
+          ],
+          "noise_scale": [
+            1.0,
+            1.0
+          ],
+          "parents": [],
+          "weights": []
+        },
+        {
+          "bias": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "noise_scale": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "parents": [
+            0
+          ],
+          "weight_construction": {
+            "diagonal": [
+              4.0,
+              0.5
+            ],
+            "left": [
+              [
+                8.98846567431158e+307,
+                1.1125369292536007e-308
+              ],
+              [
+                -8.98846567431158e+307,
+                1.1125369292536007e-308
+              ]
+            ],
+            "right": [
+              [
+                1.1125369292536007e-308,
+                1.1125369292536007e-308,
+                0.0
+              ],
+              [
+                8.98846567431158e+307,
+                -8.98846567431158e+307,
+                8.98846567431158e+307
+              ]
+            ],
+            "version": "factorized-weights-v1"
+          },
+          "weights": [
+            [
+              4.5,
+              3.5,
+              0.5
+            ],
+            [
+              -3.5,
+              -4.5,
+              0.5
+            ]
+          ]
+        }
+      ],
+      "normalize": false,
+      "observed": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "target": [
+        [
+          1,
+          0
+        ]
+      ],
+      "task": {
+        "active_features": 2,
+        "class_offsets": [],
+        "classes": 0,
+        "context_rows": 8,
+        "features": 2,
+        "noise_ratio": 0.0,
+        "rows": 16,
+        "separation": 1.0,
+        "signal_features": 2,
+        "split": 0,
+        "task_type": "regression",
+        "version": "linear-v1"
+      },
+      "topology": null,
+      "version": "causal-v2"
+    },
+    "name": "rectangular-extreme",
+    "oracle": [
+      [
+        4.5,
+        3.5,
+        0.5
+      ],
+      [
+        -3.5,
+        -4.5,
+        0.5
+      ]
+    ]
+  }
+]

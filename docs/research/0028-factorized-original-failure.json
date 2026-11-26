@@ -1,0 +1,84 @@
+{
+  "calibration_rows": 256,
+  "construction": "authored",
+  "limits": {
+    "node_channels": 1024,
+    "nodes": 1024,
+    "parameters": 1000000,
+    "total_channels": 8192,
+    "working_bytes": 268435456
+  },
+  "nodes": [
+    {
+      "bias": [
+        0.0
+      ],
+      "noise_scale": [
+        1.0
+      ],
+      "parents": [],
+      "weights": []
+    },
+    {
+      "bias": [
+        0.0
+      ],
+      "noise_scale": [
+        0.0
+      ],
+      "parents": [
+        0
+      ],
+      "weight_construction": {
+        "diagonal": [
+          4.0
+        ],
+        "left": [
+          [
+            8.98846567431158e+307
+          ]
+        ],
+        "right": [
+          [
+            1.1125369292536007e-308
+          ]
+        ],
+        "version": "factorized-weights-v1"
+      },
+      "weights": [
+        [
+          4.0
+        ]
+      ]
+    }
+  ],
+  "normalize": false,
+  "observed": [
+    [
+      0,
+      0
+    ]
+  ],
+  "target": [
+    [
+      1,
+      0
+    ]
+  ],
+  "task": {
+    "active_features": 1,
+    "class_offsets": [],
+    "classes": 0,
+    "context_rows": 8,
+    "features": 1,
+    "noise_ratio": 0.0,
+    "rows": 16,
+    "separation": 1.0,
+    "signal_features": 1,
+    "split": 0,
+    "task_type": "regression",
+    "version": "linear-v1"
+  },
+  "topology": null,
+  "version": "causal-v2"
+}
