@@ -246,3 +246,36 @@ def test_stochastic_admission_includes_exogenous_and_scale_buffers() -> None:
     data["limits"]["working_bytes"] = 100_000
     task = generate_task(recipe_from_dict(data), seed=28, task_id=1)
     assert json.loads(task.mechanism_json)["resource_admission"]["parameters"] == 15
+
+
+@pytest.mark.parametrize(
+    ("bias", "base_scale", "strength", "expected_scale"),
+    [(1e200, 0, 1, 0), (1e200, 1e-200, 1, 1e200), (1e100, 1e-200, 1e200, 1e200)],
+)
+def test_finite_structural_scales_survive_irrelevant_intermediate_overflow(
+    bias: float, base_scale: float, strength: float, expected_scale: float
+) -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(), CausalNode(bias=(bias,), noise_scale=(base_scale,))),
+            observed=((0, 0),),
+            target=((1, 0),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][1].update(
+        exogenous={},
+        noise_response={"offset": 0, "strength": strength, "power": 2},
+        output_activation={"kind": "tanh"},
+    )
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=0)
+    trace = {n["id"]: n for n in explain_generation(task, list(range(16)))["nodes"]}
+    for row in range(16):
+        scale = trace["noise-scale-1"]["values"][row][0]
+        assert math.isclose(scale, expected_scale, rel_tol=2e-13)
+        raw = trace["exogenous-1"]["values"][row][0]
+        assert float(task.scores[row, 0]) == math.tanh(bias + expected_scale * raw)
