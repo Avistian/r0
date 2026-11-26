@@ -221,3 +221,28 @@ def test_constant_transformed_target_retains_identity_calibration() -> None:
     card = json.loads(task.mechanism_json)
     assert card["calibration"]["constant_channels"] == [0]
     assert card["moment_contract"]["target_orders"] == ["all"]
+
+
+def test_stochastic_admission_includes_exogenous_and_scale_buffers() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(bias=(0.0, 0.0), noise_scale=(1.0, 1.0)),),
+            observed=((0, 0),),
+            target=((0, 1),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][0]["exogenous"] = {"factor": [[1, 2], [0, 0]]}
+    # Four affine scalars plus eleven distribution/response scalars cost1,920 bytes
+    # in the declared parameter-storage estimate. Extra raw/scale evaluation buffers
+    # push the sixteen-row vector workload past this deliberately tiny6,000-byte cap.
+    data["limits"]["working_bytes"] = 6000
+    with pytest.raises(ValueError, match="working memory"):
+        recipe_from_dict(data)
+    data["limits"]["working_bytes"] = 100_000
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=1)
+    assert json.loads(task.mechanism_json)["resource_admission"]["parameters"] == 15
