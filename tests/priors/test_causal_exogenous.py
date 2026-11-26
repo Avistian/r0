@@ -4,6 +4,7 @@ import json
 import math
 from dataclasses import asdict
 
+import pytest
 import torch
 
 from r0.modules.priors import (
@@ -144,3 +145,32 @@ def test_signal_dependent_noise_preserves_exogenous_draws_and_affine_dependencie
     assert constant_nodes["exogenous-1"]["values"] == nodes["exogenous-1"]["values"]
     assert constant.source_task_id != task.source_task_id
     assert "disconnected_target" in json.loads(constant.mechanism_json)["flags"]
+
+
+@pytest.mark.parametrize(("activation", "df"), [("identity", 2.0), ("square", 4.0)])
+def test_normalization_rejects_unproven_target_second_moments_but_keeps_raw_draws(
+    activation: str, df: float
+) -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(), CausalNode(parents=(0,), weights=((1.0,),), noise_scale=(0.0,))),
+            observed=((0, 0),),
+            target=((1, 0),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][0]["exogenous"] = {"inputs": {"distribution": "student_t", "df": df}}
+    data["nodes"][1]["output_activation"] = {"kind": activation}
+    raw = generate_task(recipe_from_dict(data), seed=28, task_id=9)
+    assert torch.isfinite(raw.scores).all()
+    data["normalize"] = True
+    with pytest.raises(ValueError, match="second moment"):
+        recipe_from_dict(data)
+    data["nodes"][1]["output_activation"] = {"kind": "tanh"}
+    bounded = generate_task(recipe_from_dict(data), seed=28, task_id=9)
+    assert torch.isfinite(bounded.scores).all()
+    assert json.loads(bounded.mechanism_json)["moment_contract"]["target_orders"] == ["all"]
