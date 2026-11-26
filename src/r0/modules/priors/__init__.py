@@ -10,6 +10,20 @@ from r0.modules.priors.lib.activation_sampling import (
 )
 from r0.modules.priors.lib.activation_sampling import CausalActivationPrior as CausalActivationPrior
 from r0.modules.priors.lib.authored import authored_episode as authored_episode
+from r0.modules.priors.lib.categorical_preferences import CategoricalDraw as CategoricalDraw
+from r0.modules.priors.lib.categorical_preferences import (
+    CategoricalParameter as CategoricalParameter,
+)
+from r0.modules.priors.lib.categorical_preferences import (
+    CategoricalPreference as CategoricalPreference,
+)
+from r0.modules.priors.lib.categorical_preferences import (
+    CategoricalPreferences as CategoricalPreferences,
+)
+from r0.modules.priors.lib.categorical_preferences import (
+    categorical_preferences_from_dict as categorical_preferences_from_dict,
+)
+from r0.modules.priors.lib.categorical_sampling import CategoricalSampler as CategoricalSampler
 from r0.modules.priors.lib.causal import ActivatedCausalNode as ActivatedCausalNode
 from r0.modules.priors.lib.causal import CausalNode as CausalNode
 from r0.modules.priors.lib.causal import CausalRecipe as CausalRecipe
