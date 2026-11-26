@@ -105,3 +105,42 @@ def test_uniform_volume_ball_roots_obey_radial_law_and_keep_row_prefixes() -> No
     longer = generate_task(recipe_from_dict(data), seed=28, task_id=5)
     torch.testing.assert_close(task.inputs, longer.inputs[:2000], rtol=0, atol=0)
     assert explain_generation(task, [0, 1999])["target_max_error"] < 1e-14
+
+
+def test_signal_dependent_noise_preserves_exogenous_draws_and_affine_dependencies() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(
+                CausalNode(),
+                CausalNode(parents=(0,), weights=((2.0,),), bias=(1.0,), noise_scale=(0.5,)),
+            ),
+            observed=((0, 0),),
+            target=((1, 0),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][1].update(
+        exogenous={"inputs": {"distribution": "student_t", "df": 5}},
+        noise_response={"offset": 1.0, "strength": 0.25, "power": 2.0},
+        noise_position="after_output",
+        output_activation={"kind": "identity", "parameters": [["output_scale", 0]]},
+    )
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=4)
+    nodes = {n["id"]: n for n in explain_generation(task, list(range(16)))["nodes"]}
+    for row in range(16):
+        affine = 2 * float(task.inputs[row, 0]) + 1
+        scale = 0.5 * (1 + 0.25 * abs(affine) ** 2)
+        raw = nodes["exogenous-1"]["values"][row][0]
+        assert math.isclose(nodes["noise-scale-1"]["values"][row][0], scale, rel_tol=1e-14)
+        assert math.isclose(float(task.scores[row, 0]), scale * raw, rel_tol=1e-14)
+    assert "disconnected_target" not in json.loads(task.mechanism_json)["flags"]
+    data["nodes"][1]["noise_response"]["strength"] = 0
+    constant = generate_task(recipe_from_dict(data), seed=28, task_id=4)
+    constant_nodes = {n["id"]: n for n in explain_generation(constant, list(range(16)))["nodes"]}
+    assert constant_nodes["exogenous-1"]["values"] == nodes["exogenous-1"]["values"]
+    assert constant.source_task_id != task.source_task_id
+    assert "disconnected_target" in json.loads(constant.mechanism_json)["flags"]
