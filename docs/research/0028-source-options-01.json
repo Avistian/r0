@@ -1,0 +1,653 @@
+[
+  {
+    "id": "P1.graph.01",
+    "option": "Layered sparse neural DAG",
+    "source": "P1 C.1/C.2.2/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.graph.02",
+    "option": "Random observed feature nodes",
+    "source": "P1 C.1/C.2.2/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.graph.03",
+    "option": "Random internal target node",
+    "source": "P1 C.1/C.2.2/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.graph.04",
+    "option": "Final-layer target node",
+    "source": "P1 C.1/C.2.2/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.graph.05",
+    "option": "Hidden unobserved nodes",
+    "source": "P1 C.1/C.2.2/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.graph.06",
+    "option": "Contiguous block feature selection",
+    "source": "P1 C.1/C.2.2/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.graph.07",
+    "option": "Unrestricted feature selection",
+    "source": "P1 C.1/C.2.2/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.graph.08",
+    "option": "Preserved feature order",
+    "source": "P1 C.1/C.2.2/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.graph.09",
+    "option": "Permuted feature order",
+    "source": "P1 C.1/C.2.2/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.net.01",
+    "option": "Standalone random BNN",
+    "source": "P1 4.4/C.2.3/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.net.02",
+    "option": "Individual edge masks",
+    "source": "P1 4.4/C.2.3/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.net.03",
+    "option": "Block weight masks",
+    "source": "P1 4.4/C.2.3/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.net.04",
+    "option": "Input importance multipliers",
+    "source": "P1 4.4/C.2.3/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.net.05",
+    "option": "Shared node-noise statistics",
+    "source": "P1 4.4/C.2.3/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.net.06",
+    "option": "Per-node noise statistics",
+    "source": "P1 4.4/C.2.3/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.net.07",
+    "option": "Architecture TNLU hyperprior",
+    "source": "P1 4.4/C.2.3/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.net.08",
+    "option": "Weight-scale TNLU hyperprior",
+    "source": "P1 4.4/C.2.3/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.net.09",
+    "option": "Noise-scale TNLU hyperprior",
+    "source": "P1 4.4/C.2.3/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.net.10",
+    "option": "Beta dropout hyperprior",
+    "source": "P1 4.4/C.2.3/Table5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.root.01",
+    "option": "Gaussian roots",
+    "source": "P1 C.2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.root.02",
+    "option": "Zipfian roots",
+    "source": "P1 C.2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.root.03",
+    "option": "Multivariate-distribution roots",
+    "source": "P1 C.2.3",
+    "disposition": "REQUIRED_28",
+    "notes": "Paper name underspecified; do not equate with code multinomial."
+  },
+  {
+    "id": "P1.code.01",
+    "option": "Activation-linear-noise ordering",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Paper C.1 instead writes activation(weighted parents + noise). Preserve both."
+  },
+  {
+    "id": "P1.code.02",
+    "option": "Uniform[0,1] roots",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.code.03",
+    "option": "Pre-sampled root means and scales",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.code.04",
+    "option": "Standard-normal roots",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.code.05",
+    "option": "Multinomial root categories",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Code normalizes using generated batch; fixed calibration adaptation required."
+  },
+  {
+    "id": "P1.code.06",
+    "option": "Clipped Zipf roots",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Exponent 2+2U; clip at10 then batch-center. Clipping is an explicit reference law, not silent repair."
+  },
+  {
+    "id": "P1.code.07",
+    "option": "Individual-mask source scaling",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": "init_std/(1-p**e), e=1 or1/2; differs from usual sqrt(1-p)."
+  },
+  {
+    "id": "P1.code.08",
+    "option": "Block-mask source scaling",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Disjoint diagonal blocks; scale by keep_probability**e."
+  },
+  {
+    "id": "P1.code.09",
+    "option": "First layer exempt from individual dropout",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.code.10",
+    "option": "Framework-default affine biases",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.code.11",
+    "option": "Homogeneous activations",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.code.12",
+    "option": "Mixed layer activations",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.code.13",
+    "option": "Per-channel half-normal innovation scales",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P1.code.14",
+    "option": "Multi-node class readout",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Separate from single-score threshold adapter; downstream adapter needed."
+  },
+  {
+    "id": "P1.code.15",
+    "option": "Uniform arbitrary target source index range",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Source excludes final flattened position; paper general random node selection differs."
+  },
+  {
+    "id": "P1.code.16",
+    "option": "Nonfinite sentinel behavior",
+    "source": "P1C mlp.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Source zeroes features and sets y=-100; r0 rejects explicitly, never emits fake-valid sentinel."
+  },
+  {
+    "id": "P1.boundary.01",
+    "option": "Equal SCM/BNN table mixture",
+    "source": "P1 4.5/C.2/Table5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "P1.boundary.02",
+    "option": "Sampled class boundaries",
+    "source": "P1 4.5/C.2/Table5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "P1.boundary.03",
+    "option": "Class permutation",
+    "source": "P1 4.5/C.2/Table5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "P1.boundary.04",
+    "option": "Categorical-column binning",
+    "source": "P1 4.5/C.2/Table5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "P1.boundary.05",
+    "option": "Categorical-label shuffling",
+    "source": "P1 4.5/C.2/Table5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "P1.boundary.06",
+    "option": "Feature-index rotation",
+    "source": "P1 4.5/C.2/Table5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "P1.boundary.07",
+    "option": "Support-only preprocessing",
+    "source": "P1 4.5/C.2/Table5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "P1.boundary.08",
+    "option": "Inference-only power scaling",
+    "source": "P1 4.5/C.2/Table5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "P2.graph.01",
+    "option": "Growing-network redirection",
+    "source": "P2 Methods Graph structure sampling",
+    "disposition": "REQUIRED_28",
+    "notes": "Select old vertex, optionally redirect to its predecessor; orient cause before effect. Gamma probability needs explicit bounded reconstruction."
+  },
+  {
+    "id": "P2.graph.02",
+    "option": "Single connected graph",
+    "source": "P2 Methods Graph structure sampling",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.graph.03",
+    "option": "Union of disconnected graphs",
+    "source": "P2 Methods Graph structure sampling",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.graph.04",
+    "option": "Log-uniform graph-size hyperprior",
+    "source": "P2 Methods Graph structure sampling",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.graph.05",
+    "option": "Gamma redirection hyperprior",
+    "source": "P2 Methods Graph structure sampling",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.edge.01",
+    "option": "Vector-valued nodes",
+    "source": "P2 Methods Computational edge mappings",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.edge.02",
+    "option": "Xavier affine neural mapping",
+    "source": "P2 Methods Computational edge mappings",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.edge.03",
+    "option": "Nearest-prototype categories",
+    "source": "P2 Methods Computational edge mappings",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.edge.04",
+    "option": "Gamma-offset category cardinality",
+    "source": "P2 Methods Computational edge mappings",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.edge.05",
+    "option": "Independent category embeddings for downstream state",
+    "source": "P2 Methods Computational edge mappings",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.edge.06",
+    "option": "Direct sampled decision trees",
+    "source": "P2 Methods Computational edge mappings",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.edge.07",
+    "option": "Gaussian edge innovations",
+    "source": "P2 Methods Computational edge mappings",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.root.01",
+    "option": "Gaussian roots",
+    "source": "P2 Methods Initialization data sampling",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.root.02",
+    "option": "Symmetric-uniform roots",
+    "source": "P2 Methods Initialization data sampling",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.root.03",
+    "option": "Per-root normal/uniform mixtures",
+    "source": "P2 Methods Initialization data sampling",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.root.04",
+    "option": "Prototype convex mixtures",
+    "source": "P2 Methods Initialization data sampling",
+    "disposition": "REQUIRED_28",
+    "notes": "Multinomial(beta) and temperature convention underspecified; declare normalized-count reconstruction separately."
+  },
+  {
+    "id": "P2.readout.01",
+    "option": "Random feature-node readout",
+    "source": "P2 Synthetic data based on causal models",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.readout.02",
+    "option": "Continuous target-node readout",
+    "source": "P2 Synthetic data based on causal models",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.readout.03",
+    "option": "Categorical target-node readout",
+    "source": "P2 Synthetic data based on causal models",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P2.boundary.01",
+    "option": "Kumaraswamy observation warp",
+    "source": "P2 Methods Post-processing",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "P2.boundary.02",
+    "option": "Random-cardinality quantization",
+    "source": "P2 Methods Post-processing",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "P2.boundary.03",
+    "option": "MCAR masking",
+    "source": "P2 Methods Post-processing",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "I1.function.01",
+    "option": "Paper Fourier-GP activation",
+    "source": "I1 B.1/B.2",
+    "disposition": "REQUIRED_28",
+    "notes": "256 sine terms; frequency U[0,256], phase U[0,2pi], Gaussian coefficients, normalized frequency weights a**(-exp(u)), u~U[.7,3]."
+  },
+  {
+    "id": "I1.function.02",
+    "option": "Batch standardization before activation",
+    "source": "I1 B.1/B.2",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.function.03",
+    "option": "Lognormal random input rescaling",
+    "source": "I1 B.1/B.2",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.function.04",
+    "option": "Gaussian random input shift",
+    "source": "I1 B.1/B.2",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.function.05",
+    "option": "Shared activation type across layers",
+    "source": "I1 B.1/B.2",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.function.06",
+    "option": "Independent activation types by layer",
+    "source": "I1 B.1/B.2",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.function.07",
+    "option": "XGBoost multi-output fitted-noise layer",
+    "source": "I1 B.1/B.2",
+    "disposition": "REQUIRED_28",
+    "notes": "Fit inputs to Gaussian output vectors; clipped exponential depth/estimator hyperpriors."
+  },
+  {
+    "id": "I1.function.08",
+    "option": "Tenfold weight for Fourier activation",
+    "source": "I1 B.1/B.2",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.code.01",
+    "option": "Source Fourier-GP activation",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Exponent is -exp(U[log(.7),log(3)]), not paper exponent; named separate recipe."
+  },
+  {
+    "id": "I1.code.02",
+    "option": "Source random-frequency sine activation",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.code.03",
+    "option": "Source Heaviside activation",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.code.04",
+    "option": "Shared random shift/scale",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.code.05",
+    "option": "Per-channel random shift/scale",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.code.06",
+    "option": "Fitted DT random-split regressor",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.code.07",
+    "option": "Fitted ExtraTrees regressor",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.code.08",
+    "option": "Fitted random-forest regressor",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.code.09",
+    "option": "Fitted XGBoost histogram multi-output regressor",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.code.10",
+    "option": "Refit-on-forward reference mode",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Fit/predict current input batch every call; r0 freezes on independent calibration."
+  },
+  {
+    "id": "I1.code.11",
+    "option": "Variance-preserving individual-mask scaling",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.code.12",
+    "option": "Variance-preserving block-mask scaling",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I1.code.13",
+    "option": "Noncausal default recipe",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": "is_causal=False in pinned config; paper SCM and causal source branch retained."
+  },
+  {
+    "id": "I1.code.14",
+    "option": "NaN-to-zero source tree inputs",
+    "source": "I1A _activations.py; I1T _tree_scm.py; I1M _mlp_scm.py; I1C _prior_config.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Explicit source behavior; training-ready r0 rejects invalid inputs."
+  },
+  {
+    "id": "I1.boundary.01",
+    "option": "70/30 MLP/tree table mixture",
+    "source": "I1 4.1/4.2/D.1; I1C _prior_config.py",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "I1.boundary.02",
+    "option": "Three-stage row-count curriculum",
+    "source": "I1 4.1/4.2/D.1; I1C _prior_config.py",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "I1.boundary.03",
+    "option": "Value-threshold class adapter",
+    "source": "I1 4.1/4.2/D.1; I1C _prior_config.py",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  }
+]

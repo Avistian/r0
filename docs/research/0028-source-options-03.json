@@ -1,0 +1,667 @@
+[
+  {
+    "id": "OP.observation.07",
+    "option": "Polynomial feature augmentation",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.08",
+    "option": "Low-rank feature projection",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.09",
+    "option": "Noisy duplicate features",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.10",
+    "option": "Random linear features",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.11",
+    "option": "Student-t tails",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.12",
+    "option": "Pareto-like tails",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.13",
+    "option": "Beta bounded values",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.14",
+    "option": "Sigmoid bounded values",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.15",
+    "option": "Poisson counts",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.16",
+    "option": "Negative-binomial counts",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.17",
+    "option": "Uniform ordinal bins",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.18",
+    "option": "Quantile ordinal bins",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.19",
+    "option": "Kumaraswamy morphing",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.20",
+    "option": "Heteroscedastic observation noise",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.21",
+    "option": "Sparse gross outliers",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.22",
+    "option": "MCAR missingness",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.23",
+    "option": "MAR missingness",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.24",
+    "option": "MNAR missingness",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.25",
+    "option": "Mean imputation",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.26",
+    "option": "Median imputation",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.27",
+    "option": "Constant imputation",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.28",
+    "option": "Sampled-support imputation",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.29",
+    "option": "Gaussian-around-mean imputation",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.30",
+    "option": "Target normalization",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.31",
+    "option": "Target skew",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.32",
+    "option": "Target heavy-tail noise",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.33",
+    "option": "Target mixture perturbation",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.34",
+    "option": "Target bounded reparameterization",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.35",
+    "option": "Target censoring",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.36",
+    "option": "Support-quantile classes",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.37",
+    "option": "Rank classes",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.38",
+    "option": "Label permutation",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.39",
+    "option": "Label flips",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.40",
+    "option": "Balanced subgroups",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.41",
+    "option": "Imbalanced subgroups",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.42",
+    "option": "Subgroup intercepts",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.43",
+    "option": "Subgroup one-hot projections",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.44",
+    "option": "Subgroup-continuous interactions",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.45",
+    "option": "Volatility shock module",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.46",
+    "option": "Posthoc shared latent confounding",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.47",
+    "option": "Spurious support shortcuts",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.48",
+    "option": "Affine query covariate shift",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.49",
+    "option": "Low/mild/hard profiles",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.50",
+    "option": "Linear curriculum",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.51",
+    "option": "Cosine curriculum",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.52",
+    "option": "Step curriculum",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.53",
+    "option": "Task rejection/resampling",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.temporal.01",
+    "option": "Nonlinear VAR structural mechanism",
+    "source": "OP 2.1/2.3",
+    "disposition": "INTERFACE_39",
+    "notes": ""
+  },
+  {
+    "id": "OP.temporal.02",
+    "option": "Seasonal target drift",
+    "source": "OP 2.1/2.3",
+    "disposition": "INTERFACE_39",
+    "notes": ""
+  },
+  {
+    "id": "OP.temporal.03",
+    "option": "Abrupt regime drift",
+    "source": "OP 2.1/2.3",
+    "disposition": "INTERFACE_39",
+    "notes": ""
+  },
+  {
+    "id": "OP.temporal.04",
+    "option": "Sigmoid regime drift",
+    "source": "OP 2.1/2.3",
+    "disposition": "INTERFACE_39",
+    "notes": ""
+  },
+  {
+    "id": "TA.intervention.01",
+    "option": "Shared graph/order/readout environments",
+    "source": "TA A.1/A.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "TA.intervention.02",
+    "option": "Uniform non-label intervention selection",
+    "source": "TA A.1/A.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "TA.intervention.03",
+    "option": "Observed-node intervention",
+    "source": "TA A.1/A.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "TA.intervention.04",
+    "option": "Hidden-node intervention",
+    "source": "TA A.1/A.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "TA.intervention.05",
+    "option": "Hard constant intervention",
+    "source": "TA A.1/A.3",
+    "disposition": "REQUIRED_28",
+    "notes": "Remove incoming edges; retain outgoing effects and non-target equations."
+  },
+  {
+    "id": "TA.intervention.06",
+    "option": "Uniform base-range hard value",
+    "source": "TA A.1/A.3",
+    "disposition": "REQUIRED_28",
+    "notes": "One value per environment; independent fixed calibration is r0 adaptation."
+  },
+  {
+    "id": "TA.intervention.07",
+    "option": "Same-family soft parameter resampling",
+    "source": "TA A.1/A.3",
+    "disposition": "REQUIRED_28",
+    "notes": "Retain graph, parent sets, exogenous distribution and other mechanisms."
+  },
+  {
+    "id": "TA.intervention.08",
+    "option": "Fresh-noise population comparison",
+    "source": "TA A.1/A.3",
+    "disposition": "REQUIRED_28",
+    "notes": "Paper does not claim matched counterfactuals; matched mode separately accepted r0 extension."
+  },
+  {
+    "id": "TA.intervention.09",
+    "option": "Five-percent non-label node budget",
+    "source": "TA A.1/A.3",
+    "disposition": "REQUIRED_28",
+    "notes": "ceil(.05*(m-1)); no label intervention in paper recipe."
+  },
+  {
+    "id": "TA.boundary.01",
+    "option": "Label-frequency reweighting",
+    "source": "TA A.2/A.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "TA.boundary.02",
+    "option": "Covariate-distance reweighting",
+    "source": "TA A.2/A.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "TA.boundary.03",
+    "option": "Within-class conditional reweighting",
+    "source": "TA A.2/A.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "TA.boundary.04",
+    "option": "KL0.1 shift-strength calibration",
+    "source": "TA A.2/A.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "TA.boundary.05",
+    "option": "Environment support/query assembly",
+    "source": "TA A.2/A.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "ACT.tanh",
+    "option": "tanh",
+    "source": "P1 C.1; I1 B.1; L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.leaky_relu",
+    "option": "leaky_relu",
+    "source": "P1 C.1; I1 B.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.elu",
+    "option": "elu",
+    "source": "P1 C.1; I1 B.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.identity",
+    "option": "identity",
+    "source": "P1 C.1; P2 Methods; I1 B.1; L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.selu",
+    "option": "selu",
+    "source": "I1 B.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.silu",
+    "option": "silu",
+    "source": "I1 B.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.relu",
+    "option": "relu",
+    "source": "I1 B.1; PFN F",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.softplus",
+    "option": "softplus",
+    "source": "I1 B.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.relu6",
+    "option": "relu6",
+    "source": "I1 B.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.hardtanh",
+    "option": "hardtanh",
+    "source": "I1 B.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.sign",
+    "option": "sign",
+    "source": "I1 B.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.gaussian_bump",
+    "option": "gaussian_bump",
+    "source": "I1 B.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.exp",
+    "option": "exp",
+    "source": "I1 B.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.sqrt_abs",
+    "option": "sqrt_abs",
+    "source": "I1 B.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.interval_abs_le_1",
+    "option": "interval_abs_le_1",
+    "source": "I1 B.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.sin",
+    "option": "sin",
+    "source": "P2 Methods; I1 B.1; L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.square",
+    "option": "square",
+    "source": "P2 Methods; I1 B.1; L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.abs",
+    "option": "abs",
+    "source": "P2 Methods; I1 B.1; L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.log",
+    "option": "log",
+    "source": "P2 Methods; L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.sigmoid",
+    "option": "sigmoid",
+    "source": "P2 Methods; L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.rank",
+    "option": "rank",
+    "source": "P2 Methods",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.power",
+    "option": "power",
+    "source": "P2 Methods",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.smooth_relu",
+    "option": "smooth_relu",
+    "source": "P2 Methods",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.step",
+    "option": "step",
+    "source": "P2 Methods",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.modulo",
+    "option": "modulo",
+    "source": "P2 Methods; L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.heaviside",
+    "option": "heaviside",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "ACT.gelu",
+    "option": "gelu",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Scalar/vector semantics and mathematical domain must be explicit; fixed calibration if needed."
+  },
+  {
+    "id": "SPEC.P25.01",
+    "option": "[TabPFN-2.5, 2511.08667v1](https://arxiv.org/html/2511.08667v1), §3",
+    "source": "Accepted audit P25",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "Broadening reported; exact new mechanisms unresolved"
+  },
+  {
+    "id": "SPEC.P35.01",
+    "option": "[TabPFN-3.5, 2609.17895v1](https://arxiv.org/html/2609.17895v1), §3.3",
+    "source": "Accepted audit P35",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "Broad diversity/high-cardinality/grouped extensions; algorithms undisclosed"
+  },
+  {
+    "id": "SPEC.G01.01",
+    "option": "Layered sparse neural DAGs",
+    "source": "Accepted audit G01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1; REQUIRED"
+  }
+]

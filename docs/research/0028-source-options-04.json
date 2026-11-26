@@ -1,0 +1,639 @@
+[
+  {
+    "id": "SPEC.G01.02",
+    "option": "observed/hidden variable selections",
+    "source": "Accepted audit G01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1; REQUIRED"
+  },
+  {
+    "id": "SPEC.G01.03",
+    "option": "sparse connectivity",
+    "source": "Accepted audit G01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1; REQUIRED"
+  },
+  {
+    "id": "SPEC.G02.01",
+    "option": "Growing network with redirection",
+    "source": "Accepted audit G02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2; REQUIRED. Ordinary preferential attachment is not automatically the same algorithm"
+  },
+  {
+    "id": "SPEC.G02.02",
+    "option": "potentially disjoint components",
+    "source": "Accepted audit G02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2; REQUIRED. Ordinary preferential attachment is not automatically the same algorithm"
+  },
+  {
+    "id": "SPEC.G03.01",
+    "option": "Cauchy global/per-node connectivity propensities with forward DAG ordering",
+    "source": "Accepted audit G03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 pinned graph; REQUIRED. Cauchy here is topology, not observation noise"
+  },
+  {
+    "id": "SPEC.G04.01",
+    "option": "Chains",
+    "source": "Accepted audit G04",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "L1/L2, P1/P2; REQUIRED"
+  },
+  {
+    "id": "SPEC.G04.02",
+    "option": "common-cause/fork motifs",
+    "source": "Accepted audit G04",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "L1/L2, P1/P2; REQUIRED"
+  },
+  {
+    "id": "SPEC.G04.03",
+    "option": "colliders",
+    "source": "Accepted audit G04",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "L1/L2, P1/P2; REQUIRED"
+  },
+  {
+    "id": "SPEC.G04.04",
+    "option": "recursive/hierarchical motif assembly",
+    "source": "Accepted audit G04",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "L1/L2, P1/P2; REQUIRED"
+  },
+  {
+    "id": "SPEC.G05.01",
+    "option": "Acyclic edge redirection",
+    "source": "Accepted audit G05",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "L2; REQUIRED. Exact rewrite distributions are not disclosed"
+  },
+  {
+    "id": "SPEC.G05.02",
+    "option": "local-path replacement",
+    "source": "Accepted audit G05",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "L2; REQUIRED. Exact rewrite distributions are not disclosed"
+  },
+  {
+    "id": "SPEC.G05.03",
+    "option": "node structural transformations",
+    "source": "Accepted audit G05",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "L2; REQUIRED. Exact rewrite distributions are not disclosed"
+  },
+  {
+    "id": "SPEC.G06.01",
+    "option": "Disconnected nuisance components",
+    "source": "Accepted audit G06",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/K1; REQUIRED. Retain valid draws and diagnose"
+  },
+  {
+    "id": "SPEC.G06.02",
+    "option": "target disconnected from observed inputs",
+    "source": "Accepted audit G06",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/K1; REQUIRED. Retain valid draws and diagnose"
+  },
+  {
+    "id": "SPEC.G06.03",
+    "option": "hidden ancestors",
+    "source": "Accepted audit G06",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/K1; REQUIRED. Retain valid draws and diagnose"
+  },
+  {
+    "id": "SPEC.G07.01",
+    "option": "Chain-plus-skip topology",
+    "source": "Accepted audit G07",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "M2; REQUIRED"
+  },
+  {
+    "id": "SPEC.G07.02",
+    "option": "vector nodes",
+    "source": "Accepted audit G07",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "M2; REQUIRED"
+  },
+  {
+    "id": "SPEC.G07.03",
+    "option": "nonlinear path plus direct parent projections",
+    "source": "Accepted audit G07",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "M2; REQUIRED"
+  },
+  {
+    "id": "SPEC.G08.01",
+    "option": "Arbitrary forward Bernoulli DAGs",
+    "source": "Accepted audit G08",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "r0 extensions; REQUIRED, not falsely attributed to a peer"
+  },
+  {
+    "id": "SPEC.G08.02",
+    "option": "broad graph/network families accepted in interview",
+    "source": "Accepted audit G08",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "r0 extensions; REQUIRED, not falsely attributed to a peer"
+  },
+  {
+    "id": "SPEC.N01.01",
+    "option": "Standalone BNN/MLP distinct from neural SCM",
+    "source": "Accepted audit N01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1; REQUIRED"
+  },
+  {
+    "id": "SPEC.N01.02",
+    "option": "architecture, weight, bias, sparsity hyperpriors",
+    "source": "Accepted audit N01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1; REQUIRED"
+  },
+  {
+    "id": "SPEC.N02.01",
+    "option": "Dense",
+    "source": "Accepted audit N02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1 masks/M2 residual ideas plus accepted r0 extensions; REQUIRED"
+  },
+  {
+    "id": "SPEC.N02.02",
+    "option": "individual sparse",
+    "source": "Accepted audit N02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1 masks/M2 residual ideas plus accepted r0 extensions; REQUIRED"
+  },
+  {
+    "id": "SPEC.N02.03",
+    "option": "block sparse",
+    "source": "Accepted audit N02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1 masks/M2 residual ideas plus accepted r0 extensions; REQUIRED"
+  },
+  {
+    "id": "SPEC.N02.04",
+    "option": "skip",
+    "source": "Accepted audit N02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1 masks/M2 residual ideas plus accepted r0 extensions; REQUIRED"
+  },
+  {
+    "id": "SPEC.N02.05",
+    "option": "residual",
+    "source": "Accepted audit N02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1 masks/M2 residual ideas plus accepted r0 extensions; REQUIRED"
+  },
+  {
+    "id": "SPEC.N02.06",
+    "option": "irregular feedforward",
+    "source": "Accepted audit N02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1 masks/M2 residual ideas plus accepted r0 extensions; REQUIRED"
+  },
+  {
+    "id": "SPEC.N02.07",
+    "option": "gated subnetworks",
+    "source": "Accepted audit N02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1 masks/M2 residual ideas plus accepted r0 extensions; REQUIRED"
+  },
+  {
+    "id": "SPEC.N03.01",
+    "option": "Optional activations before/after neural mappings",
+    "source": "Accepted audit N03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 and accepted broad scope; REQUIRED"
+  },
+  {
+    "id": "SPEC.N03.02",
+    "option": "layer-specific choices",
+    "source": "Accepted audit N03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 and accepted broad scope; REQUIRED"
+  },
+  {
+    "id": "SPEC.N03.03",
+    "option": "scalar/vector outputs",
+    "source": "Accepted audit N03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 and accepted broad scope; REQUIRED"
+  },
+  {
+    "id": "SPEC.W01.01",
+    "option": "Gaussian weights",
+    "source": "Accepted audit W01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED"
+  },
+  {
+    "id": "SPEC.W01.02",
+    "option": "feature-importance weighting",
+    "source": "Accepted audit W01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED"
+  },
+  {
+    "id": "SPEC.W01.03",
+    "option": "random-factor matrices",
+    "source": "Accepted audit W01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED"
+  },
+  {
+    "id": "SPEC.W01.04",
+    "option": "signed kernel matrices",
+    "source": "Accepted audit W01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED"
+  },
+  {
+    "id": "SPEC.W01.05",
+    "option": "activation-transformed matrices",
+    "source": "Accepted audit W01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED"
+  },
+  {
+    "id": "SPEC.W02.01",
+    "option": "Weight scales",
+    "source": "Accepted audit W02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1/I2/M2; REQUIRED"
+  },
+  {
+    "id": "SPEC.W02.02",
+    "option": "fan-in conventions",
+    "source": "Accepted audit W02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1/I2/M2; REQUIRED"
+  },
+  {
+    "id": "SPEC.W02.03",
+    "option": "bias distributions",
+    "source": "Accepted audit W02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1/I2/M2; REQUIRED"
+  },
+  {
+    "id": "SPEC.W02.04",
+    "option": "per-edge projections",
+    "source": "Accepted audit W02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1/I2/M2; REQUIRED"
+  },
+  {
+    "id": "SPEC.W02.05",
+    "option": "masks and blocks",
+    "source": "Accepted audit W02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1/I2/M2; REQUIRED"
+  },
+  {
+    "id": "SPEC.W03.01",
+    "option": "Independent choices versus shared task preferences",
+    "source": "Accepted audit W03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/K1; REQUIRED. Preserve their distinct constructions"
+  },
+  {
+    "id": "SPEC.W03.02",
+    "option": "correlated numerical hyperparameters",
+    "source": "Accepted audit W03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/K1; REQUIRED. Preserve their distinct constructions"
+  },
+  {
+    "id": "SPEC.W03.03",
+    "option": "positive weight vectors",
+    "source": "Accepted audit W03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/K1; REQUIRED. Preserve their distinct constructions"
+  },
+  {
+    "id": "SPEC.A01.01",
+    "option": "tanh",
+    "source": "Accepted audit A01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A01.02",
+    "option": "leaky ReLU",
+    "source": "Accepted audit A01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A01.03",
+    "option": "ELU",
+    "source": "Accepted audit A01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A01.04",
+    "option": "identity",
+    "source": "Accepted audit A01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A01.05",
+    "option": "SELU",
+    "source": "Accepted audit A01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A01.06",
+    "option": "SiLU",
+    "source": "Accepted audit A01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A01.07",
+    "option": "ReLU",
+    "source": "Accepted audit A01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A01.08",
+    "option": "softplus",
+    "source": "Accepted audit A01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A01.09",
+    "option": "ReLU6",
+    "source": "Accepted audit A01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A01.10",
+    "option": "hardtanh",
+    "source": "Accepted audit A01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A02.01",
+    "option": "sign",
+    "source": "Accepted audit A02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A02.02",
+    "option": "Heaviside",
+    "source": "Accepted audit A02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A02.03",
+    "option": "Gaussian bump",
+    "source": "Accepted audit A02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A02.04",
+    "option": "exponential",
+    "source": "Accepted audit A02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A02.05",
+    "option": "bounded interval indicator",
+    "source": "Accepted audit A02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A02.06",
+    "option": "sine",
+    "source": "Accepted audit A02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A02.07",
+    "option": "square",
+    "source": "Accepted audit A02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A02.08",
+    "option": "absolute value",
+    "source": "Accepted audit A02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A03.01",
+    "option": "stabilized log-absolute",
+    "source": "Accepted audit A03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A03.02",
+    "option": "sigmoid",
+    "source": "Accepted audit A03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A03.03",
+    "option": "log-sigmoid",
+    "source": "Accepted audit A03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A03.04",
+    "option": "rounding",
+    "source": "Accepted audit A03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A03.05",
+    "option": "modulo",
+    "source": "Accepted audit A03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED"
+  },
+  {
+    "id": "SPEC.A04.01",
+    "option": "softmax across channels",
+    "source": "Accepted audit A04",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED. These are vector operations, not scalar activations"
+  },
+  {
+    "id": "SPEC.A04.02",
+    "option": "maximum indicator",
+    "source": "Accepted audit A04",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED. These are vector operations, not scalar activations"
+  },
+  {
+    "id": "SPEC.A04.03",
+    "option": "rank",
+    "source": "Accepted audit A04",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED. These are vector operations, not scalar activations"
+  },
+  {
+    "id": "SPEC.A04.04",
+    "option": "argsort",
+    "source": "Accepted audit A04",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED. These are vector operations, not scalar activations"
+  },
+  {
+    "id": "SPEC.A05.01",
+    "option": "positive powers of ReLU",
+    "source": "Accepted audit A05",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED. Domains and sampler placement explicit"
+  },
+  {
+    "id": "SPEC.A05.02",
+    "option": "signed absolute powers",
+    "source": "Accepted audit A05",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED. Domains and sampler placement explicit"
+  },
+  {
+    "id": "SPEC.A05.03",
+    "option": "reciprocal absolute powers",
+    "source": "Accepted audit A05",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED. Domains and sampler placement explicit"
+  },
+  {
+    "id": "SPEC.A05.04",
+    "option": "integer powers",
+    "source": "Accepted audit A05",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2 activation source; REQUIRED. Domains and sampler placement explicit"
+  },
+  {
+    "id": "SPEC.A06.01",
+    "option": "GP-derived activation/function option",
+    "source": "Accepted audit A06",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I1/I2; SHARED #27 with #28 composition/inspection"
+  },
+  {
+    "id": "SPEC.A06.02",
+    "option": "numerical domain safeguards",
+    "source": "Accepted audit A06",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I1/I2; SHARED #27 with #28 composition/inspection"
+  },
+  {
+    "id": "SPEC.A06.03",
+    "option": "activation shifts/scales",
+    "source": "Accepted audit A06",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I1/I2; SHARED #27 with #28 composition/inspection"
+  },
+  {
+    "id": "SPEC.C01.01",
+    "option": "Concatenate parents then transform",
+    "source": "Accepted audit C01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED"
+  },
+  {
+    "id": "SPEC.C01.02",
+    "option": "transform each parent separately",
+    "source": "Accepted audit C01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED"
+  },
+  {
+    "id": "SPEC.C02.01",
+    "option": "Sum",
+    "source": "Accepted audit C02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/L1/L2; REQUIRED"
+  },
+  {
+    "id": "SPEC.C02.02",
+    "option": "product",
+    "source": "Accepted audit C02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/L1/L2; REQUIRED"
+  },
+  {
+    "id": "SPEC.C02.03",
+    "option": "maximum",
+    "source": "Accepted audit C02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/L1/L2; REQUIRED"
+  },
+  {
+    "id": "SPEC.C02.04",
+    "option": "logsumexp",
+    "source": "Accepted audit C02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/L1/L2; REQUIRED"
+  },
+  {
+    "id": "SPEC.C02.05",
+    "option": "average",
+    "source": "Accepted audit C02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/L1/L2; REQUIRED"
+  },
+  {
+    "id": "SPEC.C02.06",
+    "option": "weighted aggregation",
+    "source": "Accepted audit C02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/L1/L2; REQUIRED"
+  },
+  {
+    "id": "SPEC.C02.07",
+    "option": "neural aggregation",
+    "source": "Accepted audit C02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/L1/L2; REQUIRED"
+  },
+  {
+    "id": "SPEC.C03.01",
+    "option": "Softmax-weighted aggregation",
+    "source": "Accepted audit C03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "M2; REQUIRED"
+  },
+  {
+    "id": "SPEC.C03.02",
+    "option": "nonlinear mechanism plus linearly projected parents",
+    "source": "Accepted audit C03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "M2; REQUIRED"
+  },
+  {
+    "id": "SPEC.F01.01",
+    "option": "Linear/sparse",
+    "source": "Accepted audit F01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/P3/L2/M2; SHARED #27/#28. Composition and trace support required"
+  }
+]

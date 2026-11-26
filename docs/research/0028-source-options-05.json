@@ -1,0 +1,499 @@
+[
+  {
+    "id": "SPEC.F01.02",
+    "option": "quadratic",
+    "source": "Accepted audit F01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/P3/L2/M2; SHARED #27/#28. Composition and trace support required"
+  },
+  {
+    "id": "SPEC.F01.03",
+    "option": "GP/kernel",
+    "source": "Accepted audit F01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/P3/L2/M2; SHARED #27/#28. Composition and trace support required"
+  },
+  {
+    "id": "SPEC.F01.04",
+    "option": "RFF",
+    "source": "Accepted audit F01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/P3/L2/M2; SHARED #27/#28. Composition and trace support required"
+  },
+  {
+    "id": "SPEC.F01.05",
+    "option": "periodic",
+    "source": "Accepted audit F01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/P3/L2/M2; SHARED #27/#28. Composition and trace support required"
+  },
+  {
+    "id": "SPEC.F01.06",
+    "option": "spatial",
+    "source": "Accepted audit F01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/P3/L2/M2; SHARED #27/#28. Composition and trace support required"
+  },
+  {
+    "id": "SPEC.F01.07",
+    "option": "piecewise",
+    "source": "Accepted audit F01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/P3/L2/M2; SHARED #27/#28. Composition and trace support required"
+  },
+  {
+    "id": "SPEC.F01.08",
+    "option": "multiplicative functions",
+    "source": "Accepted audit F01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/P3/L2/M2; SHARED #27/#28. Composition and trace support required"
+  },
+  {
+    "id": "SPEC.F02.01",
+    "option": "Nearest-prototype discretization",
+    "source": "Accepted audit F02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/K1; REQUIRED"
+  },
+  {
+    "id": "SPEC.F02.02",
+    "option": "clustering/EM-like plateau assignments",
+    "source": "Accepted audit F02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/K1; REQUIRED"
+  },
+  {
+    "id": "SPEC.F02.03",
+    "option": "distance/width/power variations",
+    "source": "Accepted audit F02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/K1; REQUIRED"
+  },
+  {
+    "id": "SPEC.F03.01",
+    "option": "Products over eligible child functions, including neural and cluster children",
+    "source": "Accepted audit F03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/K1; REQUIRED. Preserve source-specific restrictions and broader r0 recipes"
+  },
+  {
+    "id": "SPEC.T01.01",
+    "option": "Direct random split/threshold/leaf trees",
+    "source": "Accepted audit T01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/I2/M1; REQUIRED reusable SCM components; standalone portfolio #29"
+  },
+  {
+    "id": "SPEC.T01.02",
+    "option": "symmetric/oblivious tree components",
+    "source": "Accepted audit T01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/I2/M1; REQUIRED reusable SCM components; standalone portfolio #29"
+  },
+  {
+    "id": "SPEC.T02.01",
+    "option": "Trees/forests fitted on random data: DT, XGBoost, RF, ExtraTrees, GBDT",
+    "source": "Accepted audit T02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I1/F1/M1/M2; REQUIRED #28 structural components under the final all-paper-options requirement. Standalone portfolio #29. Distinct from direct random trees"
+  },
+  {
+    "id": "SPEC.R01.01",
+    "option": "Gaussian",
+    "source": "Accepted audit R01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/I2; REQUIRED where structural, with existing #27 inputs reused"
+  },
+  {
+    "id": "SPEC.R01.02",
+    "option": "uniform",
+    "source": "Accepted audit R01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/I2; REQUIRED where structural, with existing #27 inputs reused"
+  },
+  {
+    "id": "SPEC.R01.03",
+    "option": "mixed/prototype roots",
+    "source": "Accepted audit R01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/I2; REQUIRED where structural, with existing #27 inputs reused"
+  },
+  {
+    "id": "SPEC.R01.04",
+    "option": "bounded-ball/correlated roots",
+    "source": "Accepted audit R01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/I2; REQUIRED where structural, with existing #27 inputs reused"
+  },
+  {
+    "id": "SPEC.R01.05",
+    "option": "transformed roots",
+    "source": "Accepted audit R01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/I2; REQUIRED where structural, with existing #27 inputs reused"
+  },
+  {
+    "id": "SPEC.R02.01",
+    "option": "Internal innovations",
+    "source": "Accepted audit R02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1/P2/I2 and accepted extensions; REQUIRED"
+  },
+  {
+    "id": "SPEC.R02.02",
+    "option": "hidden channels",
+    "source": "Accepted audit R02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1/P2/I2 and accepted extensions; REQUIRED"
+  },
+  {
+    "id": "SPEC.R02.03",
+    "option": "broad accepted root/noise laws",
+    "source": "Accepted audit R02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1/P2/I2 and accepted extensions; REQUIRED"
+  },
+  {
+    "id": "SPEC.R02.04",
+    "option": "added target noise separately recorded",
+    "source": "Accepted audit R02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P1/P2/I2 and accepted extensions; REQUIRED"
+  },
+  {
+    "id": "SPEC.O01.01",
+    "option": "Scalar/vector nodes",
+    "source": "Accepted audit O01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/M2/A1; REQUIRED"
+  },
+  {
+    "id": "SPEC.O01.02",
+    "option": "partially observed channels",
+    "source": "Accepted audit O01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/M2/A1; REQUIRED"
+  },
+  {
+    "id": "SPEC.O01.03",
+    "option": "features/target sharing nodes",
+    "source": "Accepted audit O01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/M2/A1; REQUIRED"
+  },
+  {
+    "id": "SPEC.O01.04",
+    "option": "hidden channels",
+    "source": "Accepted audit O01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2/M2/A1; REQUIRED"
+  },
+  {
+    "id": "SPEC.O02.01",
+    "option": "Ancestor/descendant/common-cause/collider/disconnected observation profiles",
+    "source": "Accepted audit O02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "Accepted role profiles, supported by graph families; REQUIRED"
+  },
+  {
+    "id": "SPEC.D01.01",
+    "option": "Mixed continuous/discrete endogenous variables",
+    "source": "Accepted audit D01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/I2/A1 and accepted scope; REQUIRED typed schema throughout"
+  },
+  {
+    "id": "SPEC.D01.02",
+    "option": "native categorical targets",
+    "source": "Accepted audit D01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/I2/A1 and accepted scope; REQUIRED typed schema throughout"
+  },
+  {
+    "id": "SPEC.D01.03",
+    "option": "shared sigmoid/softmax adapters",
+    "source": "Accepted audit D01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "P2/I2/A1 and accepted scope; REQUIRED typed schema throughout"
+  },
+  {
+    "id": "SPEC.D02.01",
+    "option": "Neighbor/prototype-based categories",
+    "source": "Accepted audit D02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED endogenous mechanisms. Calibration uses accepted independent fixed sample"
+  },
+  {
+    "id": "SPEC.D02.02",
+    "option": "stochastic softmax categories",
+    "source": "Accepted audit D02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED endogenous mechanisms. Calibration uses accepted independent fixed sample"
+  },
+  {
+    "id": "SPEC.D02.03",
+    "option": "node readout versus state transformation",
+    "source": "Accepted audit D02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED endogenous mechanisms. Calibration uses accepted independent fixed sample"
+  },
+  {
+    "id": "SPEC.D03.01",
+    "option": "Categorical-state representations: unchanged latent vector",
+    "source": "Accepted audit D03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED distinction for effects on children"
+  },
+  {
+    "id": "SPEC.D03.02",
+    "option": "repeated index",
+    "source": "Accepted audit D03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED distinction for effects on children"
+  },
+  {
+    "id": "SPEC.D03.03",
+    "option": "selected center",
+    "source": "Accepted audit D03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED distinction for effects on children"
+  },
+  {
+    "id": "SPEC.D03.04",
+    "option": "transformed center",
+    "source": "Accepted audit D03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED distinction for effects on children"
+  },
+  {
+    "id": "SPEC.D03.05",
+    "option": "sampled category embedding",
+    "source": "Accepted audit D03",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "I2; REQUIRED distinction for effects on children"
+  },
+  {
+    "id": "SPEC.I01.01",
+    "option": "Hard interventions",
+    "source": "Accepted audit I01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "TAFFY plus accepted scope; REQUIRED within declared non-temporal SCM contract"
+  },
+  {
+    "id": "SPEC.I01.02",
+    "option": "soft interventions",
+    "source": "Accepted audit I01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "TAFFY plus accepted scope; REQUIRED within declared non-temporal SCM contract"
+  },
+  {
+    "id": "SPEC.I01.03",
+    "option": "matched-noise and fresh-population comparisons",
+    "source": "Accepted audit I01",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "TAFFY plus accepted scope; REQUIRED within declared non-temporal SCM contract"
+  },
+  {
+    "id": "SPEC.I02.01",
+    "option": "Graph edits",
+    "source": "Accepted audit I02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "Accepted workbench scope; REQUIRED replayable versions"
+  },
+  {
+    "id": "SPEC.I02.02",
+    "option": "mechanism edits",
+    "source": "Accepted audit I02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "Accepted workbench scope; REQUIRED replayable versions"
+  },
+  {
+    "id": "SPEC.I02.03",
+    "option": "channel edits",
+    "source": "Accepted audit I02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "Accepted workbench scope; REQUIRED replayable versions"
+  },
+  {
+    "id": "SPEC.I02.04",
+    "option": "preserved/new identity and fixed calibration semantics",
+    "source": "Accepted audit I02",
+    "disposition": "SPEC_REQUIREMENT_ANCHOR",
+    "notes": "Accepted workbench scope; REQUIRED replayable versions"
+  },
+  {
+    "id": "R0.extension.01",
+    "option": "Forward Bernoulli DAG",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.02",
+    "option": "Preferential attachment distinct from redirection",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.03",
+    "option": "Dense standalone network",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.04",
+    "option": "Skip-connected standalone network",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.05",
+    "option": "Residual standalone network",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.06",
+    "option": "Irregular feedforward network",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.07",
+    "option": "Gated-mixture standalone network",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.08",
+    "option": "Cause-to-effect readout",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.09",
+    "option": "Effect-to-cause readout",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.10",
+    "option": "Common-hidden-cause readout",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.11",
+    "option": "Mixed observed-subset readout",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.12",
+    "option": "Vector-node partial channel observation",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.13",
+    "option": "Dimension-changing edges",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.14",
+    "option": "Shared per-task family preferences",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.15",
+    "option": "Independent node family preferences",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.16",
+    "option": "Fixed independent calibration",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.17",
+    "option": "Heavy-tailed roots",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.18",
+    "option": "Multimodal roots",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.19",
+    "option": "Bounded roots",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.20",
+    "option": "Signal-dependent structural noise",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.21",
+    "option": "Matched-noise interventions",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.22",
+    "option": "Channel interventions",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.23",
+    "option": "Mechanism edits",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.24",
+    "option": "Acyclic graph edits",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "R0.extension.25",
+    "option": "Readout edits",
+    "source": "Accepted specification decisions4-19",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  }
+]

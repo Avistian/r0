@@ -1,0 +1,730 @@
+[
+  {
+    "id": "I1.boundary.04",
+    "option": "Rank class adapter",
+    "source": "I1 4.1/4.2/D.1; I1C _prior_config.py",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.01",
+    "option": "Fitted DT classifier",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.02",
+    "option": "Fitted DT regressor",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.03",
+    "option": "Fitted ExtraTrees classifier",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.04",
+    "option": "Fitted ExtraTrees regressor",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.05",
+    "option": "Fitted gradient-boosting classifier",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.06",
+    "option": "Fitted gradient-boosting regressor",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.07",
+    "option": "Fitted random-forest classifier",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.08",
+    "option": "Fitted random-forest regressor",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.09",
+    "option": "Direct recursive split intervals",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.10",
+    "option": "Minimum tree depth",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.11",
+    "option": "Maximum tree depth",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.12",
+    "option": "Random early-terminal probability",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.13",
+    "option": "Cyclic class leaves with random start",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": "A.2.2 prose."
+  },
+  {
+    "id": "M1.tree.14",
+    "option": "Cyclic class leaves starting zero",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": "Algorithm4 ignores sampled start; named pseudocode variant."
+  },
+  {
+    "id": "M1.tree.15",
+    "option": "Gaussian regression leaves",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.16",
+    "option": "Forest majority vote",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.17",
+    "option": "Forest regression mean",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.tree.18",
+    "option": "Frozen forest for all rows",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": "A.2.2 function-first semantics."
+  },
+  {
+    "id": "M1.tree.19",
+    "option": "Fresh forest per row",
+    "source": "M1 A.2.2/Algorithms2-5",
+    "disposition": "REQUIRED_28",
+    "notes": "Algorithm5 samples inside row loop; stochastic reference mode with retained exogenous draws."
+  },
+  {
+    "id": "M1.root.01",
+    "option": "Gaussian continuous fitting inputs",
+    "source": "M1 A.2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.root.02",
+    "option": "Geometric-cardinality multinomial fitting inputs",
+    "source": "M1 A.2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.root.03",
+    "option": "Multinomial fitting labels",
+    "source": "M1 A.2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.root.04",
+    "option": "Gaussian fitting targets",
+    "source": "M1 A.2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M1.boundary.01",
+    "option": "Diversity/distinctiveness table mixtures",
+    "source": "M1 3.2/A.2",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "M1.boundary.02",
+    "option": "Standalone fitted-tree portfolio",
+    "source": "M1 3.2/A.2",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "M1.boundary.03",
+    "option": "Standalone direct forest portfolio",
+    "source": "M1 3.2/A.2",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.01",
+    "option": "Single-parent local causal structure",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.02",
+    "option": "Multi-parent local causal structure",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.03",
+    "option": "Recursive assembly joining new child to existing parents",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.04",
+    "option": "Independently sampled root laws",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.05",
+    "option": "Edge-specific neural architecture",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.06",
+    "option": "Xavier initialization",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.07",
+    "option": "He initialization",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.08",
+    "option": "Direct classification-tree edge",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.09",
+    "option": "Direct regression-tree edge",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.10",
+    "option": "Simple-mean aggregation",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.11",
+    "option": "Weighted-mean aggregation",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.12",
+    "option": "MLP aggregation",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.graph.13",
+    "option": "Feature-distribution-scaled edge noise",
+    "source": "L1 4.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L1.temporal.01",
+    "option": "Sample-axis convolution",
+    "source": "L1 4.1",
+    "disposition": "INTERFACE_39",
+    "notes": ""
+  },
+  {
+    "id": "L1.boundary.01",
+    "option": "Graph-aware variable selection",
+    "source": "L1 4.2/4.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L1.boundary.02",
+    "option": "Solvability-aware variable selection",
+    "source": "L1 4.2/4.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L1.boundary.03",
+    "option": "Random selection baseline",
+    "source": "L1 4.2/4.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L1.boundary.04",
+    "option": "High/moderate/low-solvability categorical mixture",
+    "source": "L1 4.2/4.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L1.boundary.05",
+    "option": "Classification discretization",
+    "source": "L1 4.2/4.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L1.boundary.06",
+    "option": "Continuous-target order-preserving remapping",
+    "source": "L1 4.2/4.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L1.boundary.07",
+    "option": "Reject discrete targets for regression",
+    "source": "L1 4.2/4.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "F1.tree.01",
+    "option": "Gaussian-input Gaussian-target fitted DT regressor",
+    "source": "F1 4.1/Table1/5.5/A.9",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "F1.tree.02",
+    "option": "Fresh post-fit input evaluation",
+    "source": "F1 4.1/Table1/5.5/A.9",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "F1.tree.03",
+    "option": "Base-size complexity control",
+    "source": "F1 4.1/Table1/5.5/A.9",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "F1.tree.04",
+    "option": "Tree-depth complexity control",
+    "source": "F1 4.1/Table1/5.5/A.9",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "F1.tree.05",
+    "option": "Paper reference base1024/depth1-25",
+    "source": "F1 4.1/Table1/5.5/A.9",
+    "disposition": "REQUIRED_28",
+    "notes": "Separate low-complexity references base32 and depth1-9."
+  },
+  {
+    "id": "F1.code.01",
+    "option": "Sqrt-feature-subset split search",
+    "source": "F1C synthetic_generator_forest.py",
+    "disposition": "REQUIRED_28",
+    "notes": "DecisionTreeRegressor(max_features=sqrt)."
+  },
+  {
+    "id": "F1.code.02",
+    "option": "Exclusive integer upper bounds",
+    "source": "F1C synthetic_generator_forest.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Code randint excludes max classes/depth/features; paper bounds shown as min/max."
+  },
+  {
+    "id": "F1.code.03",
+    "option": "Base1000 default",
+    "source": "F1C synthetic_generator_forest.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Paper reference base1024; source signature differs."
+  },
+  {
+    "id": "F1.code.04",
+    "option": "Unused n_estimators argument",
+    "source": "F1C synthetic_generator_forest.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Source constructs one tree; do not claim ensemble support."
+  },
+  {
+    "id": "F1.boundary.01",
+    "option": "Output quantile uniformization",
+    "source": "F1 4.1; F1C synthetic_generator_forest.py",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "F1.boundary.02",
+    "option": "Random uniform class buckets",
+    "source": "F1 4.1; F1C synthetic_generator_forest.py",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "F1.boundary.03",
+    "option": "Categorical feature quantile/bucket mapping",
+    "source": "F1 4.1; F1C synthetic_generator_forest.py",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "F1.boundary.04",
+    "option": "Geometric feature cardinality",
+    "source": "F1 4.1; F1C synthetic_generator_forest.py",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "F1.boundary.05",
+    "option": "Standalone tree table generator",
+    "source": "F1 4.1; F1C synthetic_generator_forest.py",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "F1.boundary.06",
+    "option": "TabPFN/forest outer mixture",
+    "source": "F1 4.1; F1C synthetic_generator_forest.py",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "PFN.function.01",
+    "option": "Fixed RBF GP",
+    "source": "PFN 5/6/E/F/Table5",
+    "disposition": "SHARED_27_28",
+    "notes": "length.6, output1, diagonal1e-4; plot-only length.1 distinct."
+  },
+  {
+    "id": "PFN.function.02",
+    "option": "Matern5/2 GP hyperprior",
+    "source": "PFN 5/6/E/F/Table5",
+    "disposition": "SHARED_27_28",
+    "notes": "Gamma noise(.0001,1), output(2,.15), length(3,6), shape/rate convention."
+  },
+  {
+    "id": "PFN.function.03",
+    "option": "Gaussian-weight random BNN",
+    "source": "PFN 5/6/E/F/Table5",
+    "disposition": "SHARED_27_28",
+    "notes": ""
+  },
+  {
+    "id": "PFN.function.04",
+    "option": "Gaussian input BNN",
+    "source": "PFN 5/6/E/F/Table5",
+    "disposition": "SHARED_27_28",
+    "notes": ""
+  },
+  {
+    "id": "PFN.function.05",
+    "option": "Depth hyperprior",
+    "source": "PFN 5/6/E/F/Table5",
+    "disposition": "SHARED_27_28",
+    "notes": ""
+  },
+  {
+    "id": "PFN.function.06",
+    "option": "Width hyperprior",
+    "source": "PFN 5/6/E/F/Table5",
+    "disposition": "SHARED_27_28",
+    "notes": ""
+  },
+  {
+    "id": "PFN.function.07",
+    "option": "Beta sparsity hyperprior",
+    "source": "PFN 5/6/E/F/Table5",
+    "disposition": "SHARED_27_28",
+    "notes": ""
+  },
+  {
+    "id": "PFN.function.08",
+    "option": "Per-unit Gaussian noise",
+    "source": "PFN 5/6/E/F/Table5",
+    "disposition": "SHARED_27_28",
+    "notes": ""
+  },
+  {
+    "id": "PFN.function.09",
+    "option": "Tanh BNN",
+    "source": "PFN 5/6/E/F/Table5",
+    "disposition": "SHARED_27_28",
+    "notes": ""
+  },
+  {
+    "id": "PFN.function.10",
+    "option": "ReLU BNN",
+    "source": "PFN 5/6/E/F/Table5",
+    "disposition": "SHARED_27_28",
+    "notes": ""
+  },
+  {
+    "id": "PFN.boundary.01",
+    "option": "Median binary adapter",
+    "source": "PFN 6/7/F/G",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "PFN.boundary.02",
+    "option": "Pencil-stroke image prior",
+    "source": "PFN 6/7/F/G",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "PFN.boundary.03",
+    "option": "Real-data prior hyperparameter selection",
+    "source": "PFN 6/7/F/G",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.01",
+    "option": "Noisy MLP SCM",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.02",
+    "option": "Fitted XGBoost structural regressor",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.03",
+    "option": "Fitted DT structural regressor",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.04",
+    "option": "Fitted ExtraTrees structural regressor",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.05",
+    "option": "Fitted RF structural regressor",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.06",
+    "option": "Direct sampled structural tree",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.07",
+    "option": "Feature-axis convolution",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": "Paper says feature index; not L1 sample-axis operation."
+  },
+  {
+    "id": "OP.function.08",
+    "option": "RBF GP column draws",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.09",
+    "option": "Linear combination of GP columns",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.10",
+    "option": "Quadratic combination of GP columns",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.11",
+    "option": "MLP combination of GP columns",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.12",
+    "option": "Ordered hybrid mechanism DAG",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.13",
+    "option": "Mean aggregation",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.14",
+    "option": "Softmax-weighted aggregation",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.15",
+    "option": "MLP aggregation",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.16",
+    "option": "Product aggregation",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.function.17",
+    "option": "Maximum aggregation",
+    "source": "OP 2.1",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "OP.selection.01",
+    "option": "K-means variable selection",
+    "source": "OP 2.1",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.selection.02",
+    "option": "Farthest-point variable selection",
+    "source": "OP 2.1",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.selection.03",
+    "option": "KNN-entropy variable ranking",
+    "source": "OP 2.1",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.selection.04",
+    "option": "Leiden community variable selection",
+    "source": "OP 2.1",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.selection.05",
+    "option": "Louvain community variable selection",
+    "source": "OP 2.1",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.01",
+    "option": "Support-only standardization",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.02",
+    "option": "Support-derived clipping",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.03",
+    "option": "Power transformation",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.04",
+    "option": "Skew correction",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.05",
+    "option": "Log-type shift",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "OP.observation.06",
+    "option": "Rank Gaussianization",
+    "source": "OP 2.2/2.3/2.4",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  }
+]

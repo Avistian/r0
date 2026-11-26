@@ -83,6 +83,10 @@ gives `[0,0,1,1,1,0]`; the pinned source's `abs(x) <= 1` gives
 For a channel vector `[2,2,1]`, a first-index one-hot argmax gives `[1,0,0]`,
 while an is-maximum mask gives `[1,1,0]`. Ties distinguish these mechanisms.
 
+The indicator and tied-maximum variants are traced to the pinned source in the
+[initial source audit](0028-paper-coverage-audit.md#material-papersource-discrepancies)
+and [newer-source check](0028-newer-source-check.md#discrepancies-requiring-named-variants).
+
 ## Calibration independence
 
 For fixed independent calibration center `2` and scale `4`, raw values `[-2,2,6]`

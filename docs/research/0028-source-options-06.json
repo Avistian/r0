@@ -1,0 +1,709 @@
+[
+  {
+    "id": "I2.graph.01",
+    "option": "Forward order DAG",
+    "source": "I2 E; I2S _graph.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.graph.02",
+    "option": "Global Cauchy connectivity",
+    "source": "I2 E; I2S _graph.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.graph.03",
+    "option": "Per-node Cauchy connectivity",
+    "source": "I2 E; I2S _graph.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.graph.04",
+    "option": "Vector latent widths",
+    "source": "I2 E; I2S _graph.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.graph.05",
+    "option": "Partially observed channels",
+    "source": "I2 E; I2S _graph.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.graph.06",
+    "option": "Hidden-channel uncertainty",
+    "source": "I2 E; I2S _graph.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.01",
+    "option": "MLP",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.02",
+    "option": "Oblivious-tree ensemble",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.03",
+    "option": "Nearest-prototype discretization",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.04",
+    "option": "Linear",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.05",
+    "option": "Quadratic constant term",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.06",
+    "option": "Quadratic linear term",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.07",
+    "option": "Quadratic pair interactions",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.08",
+    "option": "GP product spectrum",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.09",
+    "option": "GP radial spectrum",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.10",
+    "option": "EM soft cluster assignment",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.11",
+    "option": "Two-child product",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.12",
+    "option": "Default all-eight selector",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.13",
+    "option": "TabPFNv2 three-family selector",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.14",
+    "option": "Explicit function-family selector",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.15",
+    "option": "Optional beginning activation",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.16",
+    "option": "Optional ending activation",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.17",
+    "option": "Bias-free linear maps",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.18",
+    "option": "Variance-weighted split dimensions",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.19",
+    "option": "Calibration-row tree thresholds",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.20",
+    "option": "Gaussian leaf vectors",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.21",
+    "option": "Tree ensemble mean",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.22",
+    "option": "Observed prototype centers",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.23",
+    "option": "Linear-projected prototype outputs",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.24",
+    "option": "Lp prototype distances",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.25",
+    "option": "Random GP input projection",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.26",
+    "option": "Quadratic20-input source limit",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.27",
+    "option": "EM distance exponent",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.28",
+    "option": "EM powered-distance exponent",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.29",
+    "option": "EM variable log-width spread",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.function.30",
+    "option": "Restricted product children",
+    "source": "I2 E; I2S _function.py",
+    "disposition": "REQUIRED_28",
+    "notes": "GP/tree/discretization/linear/quadratic only; common inputs; no recursive products."
+  },
+  {
+    "id": "I2.matrix.01",
+    "option": "Gaussian matrix",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.02",
+    "option": "Importance-weighted Gaussian matrix",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.03",
+    "option": "Gaussian-factor product matrix",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.04",
+    "option": "Signed Laplace-kernel matrix",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.05",
+    "option": "Activation-transformed matrix",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.06",
+    "option": "Default matrix-family selector",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.07",
+    "option": "Gaussian-only selector",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.08",
+    "option": "Gaussian-mixture kernel points source variant",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.09",
+    "option": "Random-covariance kernel points paper variant",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.10",
+    "option": "Independent matrix entry signs",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.11",
+    "option": "Nonrecursive activation-matrix children",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.12",
+    "option": "Activation-matrix Gaussian jitter",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.13",
+    "option": "Top-level matrix Gaussian jitter",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.14",
+    "option": "Row normalization",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.15",
+    "option": "Shuffled polynomial-decay positive weights",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.16",
+    "option": "Log-Gaussian positive-weight perturbations",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.17",
+    "option": "Uniform positive weights",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.matrix.18",
+    "option": "Gaussian-factor interpretation",
+    "source": "I2 E.10; I2S _matrix.py/_weights.py",
+    "disposition": "REQUIRED_28",
+    "notes": "Inner weights are not exact singular values; no orthogonality claim."
+  },
+  {
+    "id": "I2.root.01",
+    "option": "Uniform hypercube roots",
+    "source": "I2 E; I2S _points.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.root.02",
+    "option": "Uniform-volume ball roots",
+    "source": "I2 E; I2S _points.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.root.03",
+    "option": "Gaussian roots",
+    "source": "I2 E; I2S _points.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.root.04",
+    "option": "Random-covariance roots",
+    "source": "I2 E; I2S _points.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.root.05",
+    "option": "Random-function transformed roots",
+    "source": "I2 E; I2S _points.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.root.06",
+    "option": "Uniform-base covariance roots",
+    "source": "I2 E; I2S _points.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.root.07",
+    "option": "Gaussian-base covariance roots",
+    "source": "I2 E; I2S _points.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.root.08",
+    "option": "Gaussian-mixture center sampling",
+    "source": "I2 E; I2S _points.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.root.09",
+    "option": "Gaussian-mixture component weights",
+    "source": "I2 E; I2S _points.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.root.10",
+    "option": "Gaussian-mixture component matrices",
+    "source": "I2 E; I2S _points.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.root.11",
+    "option": "Gaussian-mixture component scales",
+    "source": "I2 E; I2S _points.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.01",
+    "option": "Reserved converter channels",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.02",
+    "option": "Per-channel importance",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.03",
+    "option": "Whole-node RMS normalization",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.04",
+    "option": "Whole-node importance",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.05",
+    "option": "Post-readout internal Gaussian noise",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.06",
+    "option": "Joint-parent concatenation",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.07",
+    "option": "Separate-parent transformation",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.08",
+    "option": "Sum aggregation",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.09",
+    "option": "Product aggregation",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.10",
+    "option": "Maximum aggregation",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.11",
+    "option": "Logsumexp aggregation",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.12",
+    "option": "Concatenation-only selector",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.node.13",
+    "option": "Aggregation-only selector",
+    "source": "I2 E; I2S _node_function.py/_multi_function.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.01",
+    "option": "neighbor_id",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.02",
+    "option": "neighbor_disc",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.03",
+    "option": "neighbor_func",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.04",
+    "option": "neighbor_int",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.05",
+    "option": "softmax_id",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.06",
+    "option": "softmax_disc",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.07",
+    "option": "softmax_int",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.08",
+    "option": "Single-converter selector",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.09",
+    "option": "Neighbor-only selector",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.10",
+    "option": "Softmax-only selector",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.11",
+    "option": "All-converter selector",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.12",
+    "option": "All-channel nearest-prototype input",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.13",
+    "option": "Subset-channel nearest-prototype input",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.14",
+    "option": "Unchanged downstream latent vector",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.15",
+    "option": "Selected category center",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.16",
+    "option": "Transformed category center",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.17",
+    "option": "Broadcast category index",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.18",
+    "option": "Standardized stochastic softmax logits",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.19",
+    "option": "Log-positive-weight class biases",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.category.20",
+    "option": "Nonfinite-logit source replacement",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": "r0 numerical failures explicit; no silent repair."
+  },
+  {
+    "id": "I2.converter.01",
+    "option": "Numerical identity converter",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.converter.02",
+    "option": "Historical hidden-state Kumaraswamy converter",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.converter.03",
+    "option": "Historical hidden-state activation converter",
+    "source": "I2 E; I2S _converter.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  }
+]

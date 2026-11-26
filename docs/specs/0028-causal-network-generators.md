@@ -147,7 +147,7 @@ The corpus includes the #23 audit's relevant papers and the additional papers in
 the inventory below; documented in-scope options discovered during implementation
 must be added rather than silently omitted. Before implementation, complete the
 source-option extraction and record the finite implementation inventory plus
-justified sibling-ticket boundaries; source gaps below are still pending research.
+justified sibling-ticket boundaries; source gaps must be recorded explicitly.
 Publication dates and versions, source locations and code commits where available
 must accompany the inventory.
 
@@ -210,5 +210,7 @@ copying the decisions or changing the rest of the issue body.
 
 The [initial paper-option audit](../research/0028-paper-coverage-audit.md) retains
 the source register, option groups and extraction gaps found during the interview.
-The implementation inventory will resolve those gaps before implementation begins.
+The [finite source-option inventory](../research/0028-source-option-inventory.md)
+records the completed bounded extraction gate, required variants, neighboring
+interfaces and remaining undisclosed details. It is not implementation evidence.
 This document remains the authoritative accepted scope; research notes support it.
