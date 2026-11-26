@@ -174,7 +174,7 @@ class CategoricalPreferences:
         if type(self.limits) is not PreferenceLimits:
             raise ValueError("categorical preferences require frozen limits")
         self.limits.admit(
-            draws=len(self.draws), values=len(self.draws), parameters=self.parameter_count
+            draws=self.draw_count, values=self.value_count, parameters=self.parameter_count
         )
         keys = [
             (p.request.name, p.mode)
@@ -216,6 +216,21 @@ class CategoricalPreferences:
             raise ValueError("categorical preferences must each have a retained realization")
 
     @property
+    def draw_count(self) -> int:
+        return len(self.draws) + sum(
+            len(p.hyperparameters.draws) for p in self.preferences if p.hyperparameters is not None
+        )
+
+    @property
+    def value_count(self) -> int:
+        return len(self.draws) + sum(
+            len(d.values)
+            for p in self.preferences
+            if p.hyperparameters is not None
+            for d in p.hyperparameters.draws
+        )
+
+    @property
     def parameter_count(self) -> int:
         return sum(p.parameter_count for p in self.preferences) + sum(
             d.parameter_count for d in self.draws
@@ -232,8 +247,17 @@ def categorical_preferences_from_dict(data: dict[str, Any]) -> CategoricalPrefer
     limits = PreferenceLimits(**fields.get("limits", {}))
     raw_preferences, raw_draws = fields.get("preferences", ()), fields.get("draws", ())
     limits.admit(
-        draws=len(raw_draws),
-        values=len(raw_draws),
+        draws=len(raw_draws)
+        + sum(
+            len(cast(dict[str, Any], p.get("hyperparameters") or {}).get("draws", ()))
+            for p in raw_preferences
+        ),
+        values=len(raw_draws)
+        + sum(
+            len(d["values"])
+            for p in raw_preferences
+            for d in cast(dict[str, Any], p.get("hyperparameters") or {}).get("draws", ())
+        ),
         parameters=raw_parameter_count(raw_preferences) + raw_parameter_count(raw_draws),
     )
     if len(raw_preferences) > len(raw_draws):

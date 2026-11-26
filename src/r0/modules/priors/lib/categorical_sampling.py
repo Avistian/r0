@@ -41,6 +41,8 @@ class CategoricalSampler:
         self._draws: list[CategoricalDraw] = []
         self._keys: dict[tuple[str, str], int] = {}
         self._parameters = 0
+        self._draw_count = 0
+        self._value_count = 0
 
     def categorical(self, request: CategoricalParameter) -> CategoricalDraw:
         if type(request) is not CategoricalParameter:
@@ -59,9 +61,10 @@ class CategoricalSampler:
         if reference is None and mode == "meta":
             # Two singleton Beta requests cost 22, the polynomial vector 2*n+2.
             additional += 24 + 2 * len(request.choices)
+        new_hyper = 2 if reference is None and mode == "meta" else 0
         self._limits.admit(
-            draws=len(self._draws) + 1,
-            values=len(self._draws) + 1,
+            draws=self._draw_count + 1 + new_hyper,
+            values=self._value_count + 1 + new_hyper,
             parameters=self._parameters + additional,
         )
         if reference is None:
@@ -96,6 +99,8 @@ class CategoricalSampler:
             self._preferences.append(preference)
         self._draws.append(draw)
         self._parameters += additional
+        self._draw_count += 1 + new_hyper
+        self._value_count += 1 + new_hyper
         return draw
 
     def freeze(self) -> CategoricalPreferences:

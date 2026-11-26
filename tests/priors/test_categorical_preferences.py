@@ -87,3 +87,38 @@ def test_meta_categorical_preferences_retain_shared_or_refreshed_polynomial_laws
     replay = priors.CategoricalSampler(np.random.default_rng(2802), policy="refresh")
     for draw in fresh_record.draws:
         assert replay.categorical(draw.request) == draw
+
+
+def test_categorical_admission_counts_nested_beta_draws_before_using_randomness() -> None:
+    request = priors.CategoricalParameter("matrix", ("gaussian", "kernel", "factorized"))
+    rng = np.random.default_rng(2803)
+    before = json.dumps(rng.bit_generator.state, sort_keys=True)
+    for limits, reason in (
+        (priors.PreferenceLimits(max_draws=2), "draw limit"),
+        (priors.PreferenceLimits(max_values=2), "value limit"),
+        (priors.PreferenceLimits(max_parameters=32), "parameter limit"),
+    ):
+        sampler = priors.CategoricalSampler(rng, limits=limits)
+        with pytest.raises(ValueError, match=reason):
+            sampler.categorical(request)
+        assert json.dumps(rng.bit_generator.state, sort_keys=True) == before
+        assert sampler.freeze().draws == ()
+    admitted = priors.CategoricalSampler(
+        rng, limits=priors.PreferenceLimits(max_draws=4, max_values=4, max_parameters=36)
+    )
+    admitted.categorical(request)
+    admitted.categorical(request)
+    record = admitted.freeze()
+    assert record.draw_count == 4
+    assert record.value_count == 4
+    assert record.parameter_count == 36
+    encoded = json.loads(json.dumps(asdict(record)))
+    assert priors.categorical_preferences_from_dict(encoded) == record
+    encoded["limits"]["max_draws"] = 3
+    with pytest.raises(ValueError, match="draw limit"):
+        priors.categorical_preferences_from_dict(encoded)
+    before = json.dumps(rng.bit_generator.state, sort_keys=True)
+    with pytest.raises(ValueError, match="draw limit"):
+        admitted.categorical(request)
+    assert json.dumps(rng.bit_generator.state, sort_keys=True) == before
+    assert admitted.freeze() == record
