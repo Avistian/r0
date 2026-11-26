@@ -1,6 +1,6 @@
 "use strict";
 const $ = id => document.getElementById(id);
-let examples = {}, current = null, busy = false;
+let examples = {}, profiles = {}, current = null, busy = false;
 const number = id => Number($(id).value);
 const pretty = value => JSON.stringify(value, null, 2);
 const format = value => {
@@ -42,6 +42,24 @@ async function act(message, work) {
 }
 
 function taskControls(recipe) { return recipe.task || recipe; }
+function chooseSettings() {
+  const profile = $("profile").value, family = $("family").value;
+  const families = profile === "fixed" ? examples : profiles[profile];
+  $("family").replaceChildren(...Object.keys(families).map(name => new Option(name, name)));
+  if (family in families) $("family").value = family;
+  $("profile-note").textContent = profile === "fixed"
+    ? "Keep these settings for each task. The seed and task identifier still select new observations and mechanism parameters."
+    : profile === "broad-v1"
+      ? "Sample different settings for each task identity. Broad ranges include expensive or numerically difficult cases; failures stay visible."
+      : "Adapted power, quadratic, Fourier and product settings. This does not reproduce the full TabICLv2 generator.";
+  $("recipe-note").textContent = profile === "fixed"
+    ? "Edit the complete recipe. Changes above update it; edits below are used as written."
+    : "Edit task controls here. Mechanism settings are sampled from the selected profile and shown with the generated dataset.";
+  chooseFamily();
+}
+function chooseFamily() {
+  fillControls($("profile").value === "fixed" ? examples[$("family").value] : examples.Linear);
+}
 function parseRecipe() {
   return JSON.parse($("recipe").value, (key, value) => {
     if (key === "split" && typeof value === "number" && !Number.isSafeInteger(value)) throw new Error("Write large split identifiers as quoted decimal strings to preserve every digit.");
@@ -81,7 +99,10 @@ function updateRecipe(changed) {
 }
 function limits() { return {device: $("device").value, max_seconds: number("seconds"), max_bytes: number("bytes") * 1024 ** 2}; }
 async function generate() {
-  const result = await request("generate", {recipe: parseRecipe(), seed: $("seed").value, task_id: $("task-id").value, ...limits()});
+  const profile = $("profile").value;
+  const record = {recipe: parseRecipe(), seed: $("seed").value, task_id: $("task-id").value};
+  const sampling = profile === "fixed" ? {} : {sampling: {profile, family: profiles[profile][$("family").value]}};
+  const result = await request("generate", {record, ...sampling, ...limits()});
   show(result);
 }
 function download(name, blob) {
@@ -193,7 +214,8 @@ function show(result) {
     const strong = document.createElement("strong"), caption = document.createElement("span"); strong.textContent = format(value); caption.textContent = label; box.append(strong, caption); $("metrics").append(box);
   }
   $("sampling").textContent = `Charts show ${view.shown_rows} of ${view.total_rows} rows: ${view.sampling}. The table previews the first ${Math.min(64, view.shown_rows)} sampled rows. Distribution summaries use all ${view.total_rows} rows.`;
-  $("identity").textContent = pretty({source_task_id: view.source_task_id, episode_id: view.episode_id, archive: result.archive, generation: result.run?.summary, elapsed_seconds: result.run?.elapsed_seconds, execution: view.recipe.execution});
+  $("identity").textContent = pretty({source_task_id: view.source_task_id, episode_id: view.episode_id, archive: result.archive, generation: result.run?.summary, elapsed_seconds: result.run?.elapsed_seconds, execution: view.recipe.execution, sampling: view.recipe.sampling});
+  $("selected-recipe").textContent = pretty(view.recipe.recipe);
   $("feature").replaceChildren(...view.features.map(feature => new Option(`${feature.name} · ${feature.role}`, feature.index)));
   $("channel").replaceChildren(...(view.classes.length ? view.classes : ["Signal"]).map((name, i) => new Option(name, i)));
   $("class-panel").hidden = !view.classification;
@@ -207,7 +229,16 @@ function show(result) {
   $("replay-record").value = result.recipe_json; $("seed").value = view.recipe.seed; $("task-id").value = view.recipe.task_id;
   $("curve-row").value = 0; $("curve-row").max = view.total_rows - 1;
   $("gp-approximate").checked = false;
-  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair();
+  const origin = view.recipe.sampling;
+  $("profile").value = origin ? origin.profile : "fixed";
+  chooseSettings();
+  if (origin) $("family").value = Object.keys(profiles[origin.profile]).find(name => profiles[origin.profile][name] === origin.family);
+  else {
+    const recipe = view.recipe.recipe;
+    const family = Object.keys(examples).find(name => examples[name].version === recipe.version && examples[name].family === recipe.family);
+    if (family) $("family").value = family;
+  }
+  fillControls(origin ? origin.task : view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair();
 }
 async function inspectRow(index) {
   await act("Loading row…", async () => {
@@ -216,7 +247,8 @@ async function inspectRow(index) {
 }
 $("generator").onsubmit = event => {event.preventDefault(); act("Generating and saving dataset…", generate);};
 $("next").onclick = () => act("Generating next task…", async () => {$("task-id").value = String(BigInt($("task-id").value) + 1n); await generate();});
-$("family").onchange = () => fillControls(examples[$("family").value]);
+$("family").onchange = chooseFamily;
+$("profile").onchange = chooseSettings;
 for (const id of ["rows", "context", "features", "active", "classes", "difficulty"]) $(id).onchange = () => act("Updating recipe…", async () => updateRecipe(id));
 $("recipe").onchange = () => act("Updating controls…", async () => fillControls(parseRecipe()));
 $("task-type").onchange = () => {
@@ -237,6 +269,6 @@ $("export").onclick = () => act("Exporting every row…", async () => {
   download(result.name, new Blob([Uint8Array.from(atob(result.data), c => c.charCodeAt(0))], {type: result.mime}));
 });
 request("examples").then(result => {
-  examples = result.examples; $("family").replaceChildren(...Object.keys(examples).map(name => new Option(name, name)));
-  $("output-dir").textContent = `Output folder: ${result.output_dir}`; fillControls(examples[$("family").value]);
+  examples = result.examples; profiles = result.profiles;
+  $("output-dir").textContent = `Output folder: ${result.output_dir}`; chooseSettings();
 }).catch(error => {$("status").className = "error"; $("status").textContent = error.message;});

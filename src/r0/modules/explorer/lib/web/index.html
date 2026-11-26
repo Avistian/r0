@@ -9,6 +9,8 @@
 <p class="eyebrow">CREATE A DATASET</p><h1>Explore the data<br>behind the model.</h1>
 <p class="muted">Choose a mechanism, generate a task, and inspect its signal, labels and inputs.</p>
 <form id="generator">
+<label>Mechanism settings<select id="profile"><option value="broad-v1">Sample broad settings</option><option value="tabiclv2-adapted-v1">Sample TabICLv2 adaptations</option><option value="fixed">Edit fixed settings</option></select></label>
+<p id="profile-note" class="muted"></p>
 <label>Mechanism<select id="family"></select></label>
 <div class="fields"><label>Seed<input id="seed" type="text" inputmode="numeric" min="0" value="27"></label><label>Task identifier<input id="task-id" type="text" inputmode="numeric" min="0" value="0"></label></div>
 <div class="fields"><label>Total rows<input id="rows" type="number" min="16" max="20000" value="64"></label><label>Context rows<input id="context" type="number" min="1" value="48"></label></div>
@@ -16,7 +18,7 @@
 <label>Prediction task<select id="task-type"><option value="regression">Regression</option><option value="binary">Binary classification</option><option value="multiclass">Multiclass classification</option></select></label>
 <div class="fields"><label>Classes<input id="classes" type="number" value="0" min="0" max="100"></label><label id="difficulty-label">Noise / signal<input id="difficulty" type="number" value="0" min="0" step="0.1"></label></div>
 <details><summary>Recipe and run limits</summary>
-<p class="muted">The JSON recipe is editable. Field changes above update it; edits below are used as written.</p>
+<p id="recipe-note" class="muted">The JSON recipe is editable. Field changes above update it; edits below are used as written.</p>
 <label>Full recipe<textarea id="recipe" rows="15" spellcheck="false"></textarea></label>
 <div class="fields"><label>Device<select id="device"><option value="cpu">CPU</option><option value="cuda">CUDA GPU</option></select></label><label>Time limit (s)<input id="seconds" type="number" value="60" min="1"></label></div>
 <label>Output limit (MiB)<input id="bytes" type="number" value="256" min="1"></label>
@@ -38,6 +40,7 @@
 <div class="title-row"><div><p class="eyebrow" id="family-title"></p><h2 id="task-title"></h2></div><div class="actions"><button id="recipe-download">Recipe JSON</button><button id="export">Download dataset</button></div></div>
 <div class="metrics" id="metrics"></div><p class="muted" id="sampling"></p>
 <details><summary>Identity, saved location and run measurements</summary><pre id="identity"></pre></details>
+<details><summary>Settings used for this dataset</summary><pre id="selected-recipe"></pre></details>
 <div class="chart-controls"><label>Feature<select id="feature"></select></label><label>Score / class<select id="channel"></select></label></div>
 <div class="chart-grid">
 <article><h3>Feature distribution</h3><p class="muted">All rows · active and irrelevant roles shown above</p><div id="feature-hist" class="plot"></div></article>
