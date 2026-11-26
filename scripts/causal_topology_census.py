@@ -13,6 +13,26 @@ from r0.modules.generation import save_group
 from r0.modules.priors import CausalRecipe, LinearRecipe, generate_task, sample_recipe
 
 
+def matrix_stages(records):
+    for record in records:
+        for node in record.get("recipe", {}).get("nodes", []):
+            stage = node.get("weight_construction")
+            while stage is not None:
+                yield stage
+                stage = stage.get("source", stage.get("child"))
+
+
+def positive_vectors(records):
+    for stage in matrix_stages(records):
+        yield from stage.get("importance", ())
+        if isinstance(stage.get("diagonal"), dict):
+            yield stage["diagonal"]
+        cloud = stage.get("point_construction")
+        if cloud:
+            yield cloud["component_weights"]
+            yield from cloud["factor_weights"]
+
+
 def run(destination: Path, profile: str = "causal-affine-v1") -> None:
     destination.mkdir(parents=True, exist_ok=False)
     summary = {}
@@ -114,12 +134,45 @@ def run(destination: Path, profile: str = "causal-affine-v1") -> None:
             ),
             "factor_inner_dimensions": dict(
                 Counter(
-                    str(len(node["weight_construction"]["diagonal"]))
-                    for r in records
-                    for node in r.get("recipe", {}).get("nodes", [])
-                    if "diagonal" in node.get("weight_construction", {})
+                    str(
+                        len(stage["diagonal"]["draws"])
+                        if isinstance(stage["diagonal"], dict)
+                        else len(stage["diagonal"])
+                    )
+                    for stage in matrix_stages(records)
+                    if "diagonal" in stage
                 )
             ),
+            "matrix_stages": dict(Counter(stage["version"] for stage in matrix_stages(records))),
+            "kernel_point_laws": dict(
+                Counter(
+                    stage["point_construction"]["law"]
+                    for stage in matrix_stages(records)
+                    if stage.get("point_construction")
+                )
+            ),
+            "kernel_point_base_laws": dict(
+                Counter(
+                    stage["point_construction"]["base_law"]
+                    for stage in matrix_stages(records)
+                    if stage.get("point_construction")
+                )
+            ),
+            "kernel_component_counts": dict(
+                Counter(
+                    str(len(stage["point_construction"]["centers"]))
+                    for stage in matrix_stages(records)
+                    if stage.get("point_construction")
+                )
+            ),
+            "matrix_activation_kinds": dict(
+                Counter(
+                    stage["activation"]["kind"]
+                    for stage in matrix_stages(records)
+                    if "activation" in stage
+                )
+            ),
+            "positive_vector_laws": dict(Counter(v["version"] for v in positive_vectors(records))),
             "importance_vectors": dict(
                 Counter(
                     vector["version"]
@@ -162,6 +215,8 @@ if __name__ == "__main__":
             "causal-exogenous-v1",
             "causal-factorized-v1",
             "causal-importance-v1",
+            "causal-matrices-v1",
+            "causal-gaussian-matrices-v1",
         ),
         default="causal-affine-v1",
     )
