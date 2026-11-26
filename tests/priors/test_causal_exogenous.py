@@ -199,3 +199,25 @@ def test_zero_structural_noise_response_does_not_create_a_shared_random_cause() 
     card = json.loads(task.mechanism_json)
     assert "disconnected_target" in card["flags"]
     assert "zero_target_dispersion" in card["flags"]
+
+
+def test_constant_transformed_target_retains_identity_calibration() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(), CausalNode(bias=(1.0,), noise_scale=(0.0,))),
+            observed=((0, 0),),
+            target=((1, 0),),
+            version="causal-v2",
+            normalize=True,
+        )
+    )
+    data["nodes"][1].update(exogenous={}, output_activation={"kind": "exp"})
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=1)
+    assert torch.all(task.scores == math.e)
+    card = json.loads(task.mechanism_json)
+    assert card["calibration"]["constant_channels"] == [0]
+    assert card["moment_contract"]["target_orders"] == ["all"]
