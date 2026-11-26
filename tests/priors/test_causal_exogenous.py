@@ -286,4 +286,7 @@ def test_finite_structural_scales_survive_extreme_intermediate_values(
         assert math.isclose(scale, expected_scale, rel_tol=2e-13)
         raw = trace["exogenous-1"]["values"][row][0]
         expected = math.tanh(bias + expected_scale * raw)
-        assert math.isclose(float(task.scores[row, 0]), expected, rel_tol=1e-12)
+        # tanh is 1-Lipschitz; propagate the declared scale tolerance through
+        # its innovation instead of demanding relative accuracy after cancellation.
+        tolerance = 2e-13 * min(1.0, expected_scale * abs(raw))
+        assert math.isclose(float(task.scores[row, 0]), expected, rel_tol=2e-13, abs_tol=tolerance)
