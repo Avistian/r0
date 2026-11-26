@@ -13,6 +13,7 @@ from r0.modules.priors.lib.causal import ActivatedCausalNode, CausalNode, Causal
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.causal_exogenous_sampling import sample_exogenous_profile
 from r0.modules.priors.lib.causal_graph import CausalGraphPrior, sample_causal_graph
+from r0.modules.priors.lib.causal_importance_sampling import sample_importance_profile
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.causal_sampled import with_activation_prior
 from r0.modules.priors.lib.causal_weight_sampling import sample_factorized_profile
@@ -56,6 +57,7 @@ def sample_causal_profile(
         "causal-preferences-v1",
         "causal-exogenous-v1",
         "causal-factorized-v1",
+        "causal-importance-v1",
     ):
         raise ValueError("unsupported causal sampling profile")
     outputs = task.classes if task.task_type == "multiclass" else 1
@@ -84,14 +86,21 @@ def sample_causal_profile(
     )
     widths = (
         tuple(int(rng.choice((1, 2, 4))) for _ in range(nodes))
-        if profile in ("causal-exogenous-v1", "causal-factorized-v1")
+        if profile in ("causal-exogenous-v1", "causal-factorized-v1", "causal-importance-v1")
         else ()
     )
     recipe = sample_causal_recipe(prior, task=task, seed=seed, task_id=task_id, widths=widths)
-    if profile in ("causal-preferences-v1", "causal-exogenous-v1", "causal-factorized-v1"):
+    if profile in (
+        "causal-preferences-v1",
+        "causal-exogenous-v1",
+        "causal-factorized-v1",
+        "causal-importance-v1",
+    ):
         activated = with_activation_prior(
             recipe, _preference_profile(rng), seed=seed, task_id=task_id
         )
+        if profile == "causal-importance-v1":
+            return sample_importance_profile(activated, rng)
         if profile == "causal-factorized-v1":
             return sample_factorized_profile(activated, rng)
         return (

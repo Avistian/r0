@@ -117,7 +117,15 @@ def run(destination: Path, profile: str = "causal-affine-v1") -> None:
                     str(len(node["weight_construction"]["diagonal"]))
                     for r in records
                     for node in r.get("recipe", {}).get("nodes", [])
-                    if "weight_construction" in node
+                    if "diagonal" in node.get("weight_construction", {})
+                )
+            ),
+            "importance_vectors": dict(
+                Counter(
+                    vector["version"]
+                    for r in records
+                    for node in r.get("recipe", {}).get("nodes", [])
+                    for vector in node.get("weight_construction", {}).get("importance", [])
                 )
             ),
             "flag_counts": dict(Counter(flag for r in valid for flag in r["flags"])),
@@ -153,6 +161,7 @@ if __name__ == "__main__":
             "causal-preferences-v1",
             "causal-exogenous-v1",
             "causal-factorized-v1",
+            "causal-importance-v1",
         ),
         default="causal-affine-v1",
     )

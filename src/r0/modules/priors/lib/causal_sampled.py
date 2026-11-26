@@ -10,7 +10,7 @@ from r0.modules.priors.lib.activation_sampling import CausalActivationPrior, fin
 from r0.modules.priors.lib.causal import ActivatedCausalNode, CausalRecipe, MatrixCausalNode
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.representatives import record_fingerprint
-from r0.modules.priors.lib.weight_matrices import FactorizedWeights
+from r0.modules.priors.lib.weight_matrices import FactorizedWeights, ImportanceWeights
 
 
 @dataclass(frozen=True, slots=True)
@@ -24,6 +24,7 @@ class SampledCausalRecipe(CausalRecipe):
             "gaussian-activation-prior-v1",
             "activation-exogenous-v1",
             "activation-factorized-v1",
+            "activation-importance-v1",
         ):
             raise ValueError("sampled activation recipes require their v2 construction")
         if type(self.activation_prior) is not CausalActivationPrior:
@@ -52,15 +53,21 @@ class SampledCausalRecipe(CausalRecipe):
         ):
             raise ValueError("homogeneous activation preferences must be one-hot")
         for node in self.nodes:
+            expected = {
+                "activation-factorized-v1": FactorizedWeights,
+                "activation-importance-v1": ImportanceWeights,
+            }.get(self.construction)
             if (
-                self.construction == "activation-factorized-v1"
+                expected is not None
                 and node.parents
                 and (
                     not isinstance(node, MatrixCausalNode)
-                    or type(node.weight_construction) is not FactorizedWeights
+                    or type(node.weight_construction) is not expected
                 )
             ):
-                raise ValueError("factorized sampling requires every projection construction")
+                raise ValueError(
+                    f"{self.construction} sampling requires every projection construction"
+                )
             if not isinstance(node, ActivatedCausalNode):
                 raise ValueError("activation-sampled nodes must record their activation stages")
             after = self.activation_prior.noise_after_probability
