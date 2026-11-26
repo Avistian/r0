@@ -14,6 +14,7 @@ from r0.modules.priors.lib.causal_activations import (
 )
 from r0.modules.priors.lib.causal_graph import CausalGraph
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.causal_moments import causal_moment_orders
 from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode as ActivatedCausalNode
 from r0.modules.priors.lib.causal_nodes import CausalNode as CausalNode
 from r0.modules.priors.lib.causal_nodes import StochasticCausalNode as StochasticCausalNode
@@ -105,6 +106,13 @@ class CausalRecipe:
             features=self.task.features,
             outputs=outputs,
         )
+
+        if self.normalize and any(isinstance(node, StochasticCausalNode) for node in self.nodes):
+            orders = causal_moment_orders(self.nodes)
+            if any(orders[i][j] <= 2 for i, j in self.target):
+                raise ValueError(
+                    "finite target second moments are not certified; use normalize=False"
+                )
 
 
 def causal_values(
@@ -330,6 +338,17 @@ def generate_causal(
     }
     if any(isinstance(node, StochasticCausalNode) for node in recipe.nodes):
         card["innovation"] = "recorded exogenous laws; independently keyed streams per node/channel"
+        orders = causal_moment_orders(recipe.nodes)
+        card["moment_contract"] = {
+            "target_orders": [
+                "all" if orders[i][j] == float("inf") else orders[i][j] for i, j in recipe.target
+            ],
+            "meaning": (
+                "positive absolute moments strictly below each bound are certified finite; "
+                "zero means unknown"
+            ),
+            "normalization_requires": "certified finite second moments",
+        }
     if recipe.version == "causal-v2":
         card["activation_diagnostics"] = diagnostics
     if recipe.sampling_record is not None:
