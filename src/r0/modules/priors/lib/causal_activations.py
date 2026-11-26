@@ -49,6 +49,12 @@ _PARAMETERS = {
     "smooth_relu": {"beta"},
     "log_abs": {"epsilon"},
     "modulo": {"period"},
+    "power": {"exponent"},
+    "integer_power": {"exponent"},
+    "relu_power": {"exponent"},
+    "signed_power": {"exponent"},
+    "reciprocal_abs_power": {"exponent", "epsilon"},
+    "log_clip_abs": {"epsilon"},
 }
 
 
@@ -58,7 +64,7 @@ class CausalActivation:
     parameters: tuple[tuple[str, float], ...] = ()
 
     def __post_init__(self) -> None:
-        if type(self.kind) is not str or self.kind not in _FIXED:
+        if type(self.kind) is not str or self.kind not in _FIXED.keys() | _PARAMETERS.keys():
             raise ValueError("unsupported causal activation")
         if type(self.parameters) is not tuple or any(
             type(pair) is not tuple
@@ -78,6 +84,13 @@ class CausalActivation:
             value <= 0 for name, value in self.parameters if name in ("beta", "epsilon", "period")
         ):
             raise ValueError("activation beta, epsilon and period must be positive")
+        exponent = dict(self.parameters).get("exponent", 2.0)
+        if self.kind == "integer_power" and not float(exponent).is_integer():
+            raise ValueError("integer_power requires an integer exponent")
+        if self.kind in ("relu_power", "signed_power", "reciprocal_abs_power") and exponent <= 0:
+            raise ValueError(
+                "ReLU, signed and reciprocal absolute powers require positive exponents"
+            )
 
 
 def activate(value: torch.Tensor, activation: CausalActivation) -> torch.Tensor:
@@ -91,7 +104,26 @@ def activate(value: torch.Tensor, activation: CausalActivation) -> torch.Tensor:
             raise ValueError("nonfinite rescaled activation input; task was not retried")
     if activation.kind == "log" and torch.any(value <= 0):
         raise ValueError("log activation requires strictly positive inputs; use log_abs explicitly")
-    if activation.kind == "leaky_relu":
+    if activation.kind in ("power", "integer_power"):
+        exponent = parameters.get("exponent", 2.0)
+        if not float(exponent).is_integer() and torch.any(value < 0):
+            raise ValueError(
+                "fractional power requires nonnegative inputs; use signed_power explicitly"
+            )
+        if exponent < 0 and torch.any(value == 0):
+            raise ValueError("negative power requires nonzero inputs")
+        result = value.pow(exponent)
+    elif activation.kind == "relu_power":
+        result = torch.relu(value).pow(parameters.get("exponent", 2.0))
+    elif activation.kind == "signed_power":
+        result = value.sign() * value.abs().pow(parameters.get("exponent", 2.0))
+    elif activation.kind == "reciprocal_abs_power":
+        result = (value.abs() + parameters.get("epsilon", 1e-3)).pow(
+            -parameters.get("exponent", 2.0)
+        )
+    elif activation.kind == "log_clip_abs":
+        result = value.abs().clamp_min(parameters.get("epsilon", 1e-6)).log()
+    elif activation.kind == "leaky_relu":
         result = F.leaky_relu(value, negative_slope=parameters.get("negative_slope", 0.01))
     elif activation.kind == "elu":
         result = F.elu(value, alpha=parameters.get("alpha", 1.0))
