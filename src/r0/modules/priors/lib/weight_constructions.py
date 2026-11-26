@@ -3,6 +3,7 @@
 from typing import Any
 
 from r0.modules.priors.lib.causal_activations import CausalActivation
+from r0.modules.priors.lib.kernel_points import point_cloud_from_dict
 from r0.modules.priors.lib.transformed_weights import (
     SIMPLE_WEIGHT_TYPES,
     GaussianWeights,
@@ -52,6 +53,8 @@ def weight_construction_from_dict(data: dict[str, Any], *, _depth: int = 0) -> W
         for name in ("left_points", "right_points", "signs"):
             if name in fields:
                 fields[name] = tuple(tuple(row) for row in fields[name])
+        if fields.get("point_construction") is not None:
+            fields["point_construction"] = point_cloud_from_dict(fields["point_construction"])
         return LaplaceKernelWeights(**fields)
     if fields.get("version") == "importance-weights-v1":
         fields["gaussian"] = tuple(tuple(row) for row in fields["gaussian"])

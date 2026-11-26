@@ -7,25 +7,13 @@ from decimal import Decimal, localcontext
 import numpy as np
 
 from r0.modules.priors.lib.activation_sampling import finite_number
+from r0.modules.priors.lib.kernel_points import KernelPointCloud
+from r0.modules.priors.lib.weight_geometry import Matrix, matrix_shape
 from r0.modules.priors.lib.weight_vectors import (
     PolynomialWeightVector,
     UniformWeightVector,
     WeightVector,
 )
-
-type Matrix = tuple[tuple[float, ...], ...]
-
-
-def matrix_shape(values: Matrix) -> tuple[int, int]:
-    if (
-        type(values) is not tuple
-        or not values
-        or any(type(row) is not tuple or not row for row in values)
-        or any(len(row) != len(values[0]) for row in values)
-        or any(not finite_number(value) for row in values for value in row)
-    ):
-        raise ValueError("weight factors must be nonempty finite rectangular tuple matrices")
-    return len(values), len(values[0])
 
 
 @dataclass(frozen=True, slots=True)
@@ -208,6 +196,7 @@ class LaplaceKernelWeights:
     distance_scale: float = 1.0
     version: str = "laplace-kernel-weights-v1"
     exact_distance_terms_limit: int = 1_000_000
+    point_construction: KernelPointCloud | None = None
 
     def __post_init__(self) -> None:
         rows, dimension = matrix_shape(self.left_points)
@@ -219,6 +208,11 @@ class LaplaceKernelWeights:
             or any(v not in (-1, 0, 1) for row in self.signs for v in row)
         ):
             raise ValueError("kernel point dimensions and entry signs must match the projection")
+        if self.point_construction is not None and (
+            type(self.point_construction) is not KernelPointCloud
+            or self.point_construction.shape != (rows + columns, dimension)
+        ):
+            raise ValueError("kernel point construction must match the retained geometry")
         if not finite_number(self.distance_scale) or self.distance_scale < 0:
             raise ValueError("kernel distance scale must be finite nonnegative")
         if (
@@ -233,9 +227,22 @@ class LaplaceKernelWeights:
 
     @property
     def parameter_count(self) -> int:
-        return sum(len(row) for row in (*self.left_points, *self.right_points, *self.signs)) + 1
+        return (
+            sum(len(row) for row in (*self.left_points, *self.right_points, *self.signs))
+            + 1
+            + (
+                self.point_construction.parameter_count
+                if self.point_construction is not None
+                else 0
+            )
+        )
 
     def materialize(self) -> Matrix:
+        if self.point_construction is not None and self.point_construction.materialize() != (
+            *self.left_points,
+            *self.right_points,
+        ):
+            raise ValueError("kernel point construction disagrees with retained points")
         return tuple(
             tuple(
                 float(sign) * math.exp(-self._scaled_distance(left, right)) if sign else 0.0
