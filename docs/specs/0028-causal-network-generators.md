@@ -200,11 +200,11 @@ The design is accepted. The user subsequently authorized implementation of all o
 #28 through an active persistent goal. Work proceeds on `feat/issue-28-generators`.
 The specification and glossary are preserved from the design interview; the initial
 byte-for-byte copy fingerprint is retained in local preflight evidence.
-Publication and the issue's Approved specification link are PENDING. Complete that
-step when publishing an authorized implementation PR: link a published revision of
-this document, verify it contains the accepted decisions, identify it as the
-authoritative accepted scope, and verify the issue body contains that link without
-copying the decisions or changing the rest of the issue body.
+Published in [draft PR #125](https://github.com/Avistian/r0/pull/125). The issue's
+Approved specification link pins this scope to commit
+`66e91e243581c21dcde3975246d5f383678e9cec`. Published contents and all 19 decisions
+were verified, and a fresh issue read confirmed that the original body remains an
+unchanged prefix. This completes the specification handoff, not implementation.
 
 ## Supporting source evidence
 

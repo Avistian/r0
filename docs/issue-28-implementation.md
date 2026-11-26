@@ -85,8 +85,9 @@ requirements and option records to have appropriate evidence.
 This implementation goal does not itself authorize a paid/full-scale launch,
 merge, deployment, or real-data download. Local code and synthetic verification
 can proceed. Hosted measurements remain pending until executed under the existing
-authorized path. The approved specification link must be published and verified
-with the implementation PR, preserving the rest of issue #28.
+authorized path. Draft [PR #125](https://github.com/Avistian/r0/pull/125) publishes
+the specification. Issue #28 links the verified scope at `66e91e2`; fresh readback
+and the saved before/after bodies confirm the original issue body is unchanged.
 
 ## Source gate result
 
