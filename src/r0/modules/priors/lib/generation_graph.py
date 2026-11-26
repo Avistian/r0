@@ -7,6 +7,7 @@ from typing import Any, cast
 import numpy as np
 import torch
 
+from r0.modules.priors.lib.causal import causal_rng
 from r0.modules.priors.lib.causal_inspection import causal_steps
 from r0.modules.priors.lib.graph_functions import analytic_steps, composite_steps, gp_steps
 from r0.modules.priors.lib.representatives import record_fingerprint
@@ -151,6 +152,8 @@ def explain_generation(
 
     def rng(stream: str) -> np.random.Generator:
         recipe = record["recipe"]
+        if recipe["version"] in ("causal-v1", "causal-v2"):
+            return causal_rng(record["seed"], record["task_id"], stream)
         namespace: tuple[object, ...] = (recipe["version"],)
         if recipe["version"] in ("fourier-v1", "smooth-v1"):
             namespace += (recipe["family"],)
