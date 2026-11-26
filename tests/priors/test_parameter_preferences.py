@@ -62,3 +62,31 @@ def test_meta_preferences_share_beta_law_while_local_draws_remain_independent() 
     replay = priors.ParameterSampler(np.random.default_rng(29), default_mode="meta")
     for draw in record.draws:
         assert replay.numerical(draw.request) == draw
+
+
+def test_numerical_realizations_preserve_extreme_ranges_boundaries_and_integer_laws() -> None:
+    parameter, draw = priors.NumericalParameter, priors.NumericalDraw
+    assert draw(parameter("extreme", -1e308, 1e308), 0, (0.5,), (0.0,)).values == (0.0,)
+    assert draw(parameter("log", 1e-300, 1e300, scale="log"), 0, (0.5,), (1.0,)).values == (1.0,)
+    rounded = parameter("round", 0.0, 4.0, shape=(4,), integer="round")
+    assert draw(rounded, 0, (0.125, 0.375, 0.625, 0.875), (0, 2, 2, 4)).values == (0, 2, 2, 4)
+    floored = parameter("floor", 0, 5, shape=(3,), integer="floor")
+    assert draw(floored, 0, (0.0, 0.5, 1.0), (0, 2, 4)).values == (0, 2, 4)
+    boundary = parameter("atoms", 0.0, 1.0, shape=(5,), boundary_mass=True)
+    assert draw(boundary, 0, (0.0, 0.05, 0.5, 0.95, 1.0), (0.0, 0.0, 0.5, 1.0, 1.0)).values == (
+        0.0,
+        0.0,
+        0.5,
+        1.0,
+        1.0,
+    )
+    with pytest.raises(ValueError, match="positive"):
+        parameter("invalid-log", 0.0, 1.0, scale="log")
+    with pytest.raises(ValueError, match="integer bounds"):
+        parameter("invalid-floor", 0.5, 5, integer="floor")
+    with pytest.raises(ValueError, match="realization"):
+        draw(rounded, 0, (0.125, 0.375, 0.625, 0.875), (1, 2, 3, 4))
+    sampler = priors.ParameterSampler(np.random.default_rng(30), default_mode="local")
+    sampler.numerical(parameter("sampled", 0.001, 10.0, scale="log", boundary_mass=True))
+    record = sampler.freeze()
+    assert priors.parameter_preferences_from_dict(json.loads(json.dumps(asdict(record)))) == record

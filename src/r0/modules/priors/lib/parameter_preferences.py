@@ -17,6 +17,9 @@ class NumericalParameter:
     high: float
     shape: tuple[int, ...] = ()
     mode: str = "meta"
+    scale: str = "linear"
+    integer: str = "none"
+    boundary_mass: bool = False
 
     def __post_init__(self) -> None:
         if type(self.name) is not str or not self.name:
@@ -25,6 +28,16 @@ class NumericalParameter:
             raise ValueError("numerical bounds must be ordered finite numbers")
         if self.mode not in ("meta", "local", "global"):
             raise ValueError("unsupported numerical sampling mode")
+        if self.scale not in ("linear", "log") or self.integer not in ("none", "round", "floor"):
+            raise ValueError("unsupported numerical scale or integer conversion")
+        if self.scale == "log" and self.low <= 0:
+            raise ValueError("log numerical bounds must be positive")
+        if type(self.boundary_mass) is not bool:
+            raise ValueError("boundary mass must be boolean")
+        if self.integer == "floor" and (
+            type(self.low) is not int or type(self.high) is not int or self.low >= self.high
+        ):
+            raise ValueError("floor sampling requires distinct ordered integer bounds")
         if (
             type(self.shape) is not tuple
             or len(self.shape) > 8
@@ -35,10 +48,26 @@ class NumericalParameter:
 
 
 def _values(request: NumericalParameter, units: tuple[float, ...]) -> tuple[float, ...]:
+    values: list[float] = []
     with localcontext() as context:
-        context.prec = 2 * (309 + 1074) + 10
+        context.prec = 80 if request.scale == "log" else 2 * (309 + 1074) + 10
         low, high = Decimal.from_float(float(request.low)), Decimal.from_float(float(request.high))
-        return tuple(float(low * (1 - Decimal(u)) + high * Decimal(u)) for u in units)
+        for unit in units:
+            u = min(1.0, max(0.0, 1.2 * unit - 0.1)) if request.boundary_mass else unit
+            if u == 0 or low == high:
+                value = float(low)
+            elif u == 1:
+                value = float(high)
+            elif request.scale == "log":
+                value = float((low.ln() * (1 - Decimal(u)) + high.ln() * Decimal(u)).exp())
+            else:
+                value = float(low * (1 - Decimal(u)) + high * Decimal(u))
+            if request.integer == "round":
+                value = round(value)
+            elif request.integer == "floor":
+                value = max(int(request.low), min(int(request.high) - 1, math.floor(value)))
+            values.append(value)
+    return tuple(values)
 
 
 @dataclass(frozen=True, slots=True)
@@ -99,6 +128,7 @@ class NumericalDraw:
         if (
             type(self.values) is not tuple
             or any(not finite_number(v) for v in self.values)
+            or (self.request.integer != "none" and any(type(v) is not int for v in self.values))
             or self.values != _values(self.request, self.units)
         ):
             raise ValueError("numerical realization does not match retained units and request")
