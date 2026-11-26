@@ -13,6 +13,7 @@ from r0.modules.priors.lib.authored import authored_episode as authored_episode
 from r0.modules.priors.lib.causal import ActivatedCausalNode as ActivatedCausalNode
 from r0.modules.priors.lib.causal import CausalNode as CausalNode
 from r0.modules.priors.lib.causal import CausalRecipe as CausalRecipe
+from r0.modules.priors.lib.causal import MatrixCausalNode as MatrixCausalNode
 from r0.modules.priors.lib.causal import StochasticCausalNode as StochasticCausalNode
 from r0.modules.priors.lib.causal_activations import CausalActivation as CausalActivation
 from r0.modules.priors.lib.causal_graph import CausalGraph as CausalGraph
@@ -58,6 +59,7 @@ from r0.modules.priors.lib.representatives import sample_proposal as sample_prop
 from r0.modules.priors.lib.signals import evaluate_signal as evaluate_signal
 from r0.modules.priors.lib.smooth import SmoothRecipe as SmoothRecipe
 from r0.modules.priors.lib.training_task import TrainingTask as TrainingTask
+from r0.modules.priors.lib.weight_matrices import FactorizedWeights as FactorizedWeights
 
 
 @dataclass(frozen=True)

@@ -26,7 +26,7 @@ def test_factorized_weights_retain_the_worked_projection_and_its_construction() 
                 CausalNode(bias=(0.0, 0.0), noise_scale=(1.0, 1.0)),
                 CausalNode(
                     parents=(0,),
-                    weights=((17.0, 20.0), (44.0, 50.0)),
+                    weights=((17.0, 20.0), (44.0, 52.0)),
                     bias=(0.0, 0.0),
                     noise_scale=(0.0, 0.0),
                 ),
@@ -36,7 +36,7 @@ def test_factorized_weights_retain_the_worked_projection_and_its_construction() 
             version="causal-v2",
         )
     )
-    # [[1,2],[3,4]] diag(2,.5) [[5,6],[7,8]] = [[17,20],[44,50]].
+    # [[1,2],[3,4]] diag(2,.5) [[5,6],[7,8]] = [[17,20],[44,52]].
     data["nodes"][1]["weight_construction"] = {
         "version": "factorized-weights-v1",
         "left": [[1, 2], [3, 4]],
@@ -48,7 +48,7 @@ def test_factorized_weights_retain_the_worked_projection_and_its_construction() 
     expected = 17 * task.inputs[:, 0] + 44 * task.inputs[:, 1]
     torch.testing.assert_close(task.scores[:, 0], expected, rtol=1e-14, atol=1e-14)
     trace = {n["id"]: n for n in explain_generation(task, [0, 15])["nodes"]}
-    assert trace["causal-1"]["parameters"]["weight_construction"]["diagonal"] == [2, 0.5]
+    assert trace["causal-1"]["parameters"]["weight_construction"]["diagonal"] == (2, 0.5)
     assert json.loads(task.mechanism_json)["resource_admission"]["parameters"] == 29
     assert (
         generate_task(

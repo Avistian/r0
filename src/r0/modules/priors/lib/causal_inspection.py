@@ -9,6 +9,7 @@ import torch
 
 from r0.modules.priors.lib.causal import (
     ActivatedCausalNode,
+    MatrixCausalNode,
     StochasticCausalNode,
     causal_node_from_dict,
     causal_rng,
@@ -73,6 +74,8 @@ def causal_steps(
             else "bias + innovation"
         )
         parameters: dict[str, Any] = {"weights": node.weights, "bias": node.bias, "node": i}
+        if isinstance(node, MatrixCausalNode):
+            parameters["weight_construction"] = asdict(node.weight_construction)
         if isinstance(node, ActivatedCausalNode):
             affine = (
                 "input_activation(concat(parent channels)) @ weights + bias"

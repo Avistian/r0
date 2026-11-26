@@ -7,6 +7,7 @@ from typing import Any
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
 from r0.modules.priors.lib.inputs import InputDistribution
+from r0.modules.priors.lib.weight_matrices import FactorizedWeights, weight_construction_from_dict
 
 
 @dataclass(frozen=True, slots=True)
@@ -113,6 +114,28 @@ class StochasticCausalNode(ActivatedCausalNode):
             raise ValueError("stochastic nodes require NoiseResponse")
 
 
+@dataclass(frozen=True, slots=True)
+class MatrixCausalNode(StochasticCausalNode):
+    weight_construction: FactorizedWeights = FactorizedWeights()
+
+    @property
+    def structural_parameter_count(self) -> int:
+        return (
+            super(MatrixCausalNode, self).structural_parameter_count
+            + self.weight_construction.parameter_count
+        )
+
+    def __post_init__(self) -> None:
+        StochasticCausalNode.__post_init__(self)
+        if type(self.weight_construction) is not FactorizedWeights:
+            raise ValueError("matrix nodes require a frozen weight construction")
+        if not self.parents or self.weight_construction.shape != (
+            len(self.weights),
+            len(self.bias),
+        ):
+            raise ValueError("weight construction shape must match the node projection")
+
+
 def causal_node_from_dict(data: dict[str, Any]) -> CausalNode:
     """One decoder shared by recipe loading and original-row inspection."""
     fields = dict(data)
@@ -136,11 +159,17 @@ def causal_node_from_dict(data: dict[str, Any]) -> CausalNode:
                 tuple(pair) for pair in activation.get("parameters", ())
             )
             fields[key] = CausalActivation(**activation)
-    if "exogenous" in fields or "noise_response" in fields:
+    if "weight_construction" in fields:
+        fields["weight_construction"] = weight_construction_from_dict(fields["weight_construction"])
+    if any(key in fields for key in ("exogenous", "noise_response", "weight_construction")):
         spec = dict(fields.get("exogenous", {}))
         spec["inputs"] = InputDistribution(**spec.get("inputs", {}))
         spec["factor"] = tuple(tuple(row) for row in spec.get("factor", ()))
         fields["exogenous"] = ExogenousDistribution(**spec)
         fields["noise_response"] = NoiseResponse(**fields.get("noise_response", {}))
-        return StochasticCausalNode(**fields)
+        return (
+            MatrixCausalNode(**fields)
+            if "weight_construction" in fields
+            else StochasticCausalNode(**fields)
+        )
     return ActivatedCausalNode(**fields) if activated else CausalNode(**fields)

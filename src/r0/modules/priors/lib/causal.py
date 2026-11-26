@@ -17,6 +17,7 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.causal_moments import causal_moment_orders
 from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode as ActivatedCausalNode
 from r0.modules.priors.lib.causal_nodes import CausalNode as CausalNode
+from r0.modules.priors.lib.causal_nodes import MatrixCausalNode as MatrixCausalNode
 from r0.modules.priors.lib.causal_nodes import StochasticCausalNode as StochasticCausalNode
 from r0.modules.priors.lib.causal_nodes import causal_node_from_dict as causal_node_from_dict
 from r0.modules.priors.lib.causal_stochastic import stochastic_value
@@ -55,9 +56,12 @@ class CausalRecipe:
         if type(self.nodes) is not tuple or not self.nodes:
             raise ValueError("causal recipe requires a nonempty node tuple")
         for i, node in enumerate(self.nodes):
-            if type(node) not in (CausalNode, ActivatedCausalNode, StochasticCausalNode) or any(
-                p >= i for p in node.parents
-            ):
+            if type(node) not in (
+                CausalNode,
+                ActivatedCausalNode,
+                StochasticCausalNode,
+                MatrixCausalNode,
+            ) or any(p >= i for p in node.parents):
                 raise ValueError("causal nodes must be in acyclic parent-before-child order")
             if isinstance(node, ActivatedCausalNode) and self.version != "causal-v2":
                 raise ValueError("activated nodes require causal-v2")
@@ -110,6 +114,12 @@ class CausalRecipe:
             features=self.task.features,
             outputs=outputs,
         )
+        for node in self.nodes:
+            if (
+                isinstance(node, MatrixCausalNode)
+                and node.weights != node.weight_construction.materialize()
+            ):
+                raise ValueError("recorded weights disagree with their frozen construction")
 
         if self.normalize and any(isinstance(node, StochasticCausalNode) for node in self.nodes):
             orders = causal_moment_orders(self.nodes)
