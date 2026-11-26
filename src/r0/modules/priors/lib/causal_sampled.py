@@ -34,6 +34,10 @@ class SampledCausalRecipe(CausalRecipe):
         base = self.activation_prior.base_probabilities()
         if any(w == 0 and p != 0 for w, p in zip(base, probabilities, strict=True)):
             raise ValueError("sampling probabilities cannot enable a zero-weight choice")
+        if self.activation_prior.mode == "dirichlet" and any(
+            w > 0 and p == 0 for w, p in zip(base, probabilities, strict=True)
+        ):
+            raise ValueError("Dirichlet sampling probabilities must retain positive support")
         if self.activation_prior.mode == "independent" and probabilities != base:
             raise ValueError("independent sampling probabilities must match the prior weights")
         selected = [i for i, p in enumerate(probabilities) if p > 0]
@@ -91,11 +95,13 @@ def with_activation_prior(
         if not np.isfinite(alpha).all() or np.any(alpha <= 0):
             raise ValueError("unrepresentable Dirichlet parameters; draw was not retried")
         gamma = rng.gamma(alpha)
-        if not np.isfinite(gamma).all() or not np.any(gamma > 0):
+        if not np.isfinite(gamma).all() or np.any(gamma <= 0):
             raise ValueError("nonfinite or underflowed Dirichlet draw; draw was not retried")
         gamma = gamma / gamma.max()
         values = np.zeros(len(base))
         values[support] = gamma / gamma.sum()
+        if np.any(values[support] <= 0):
+            raise ValueError("underflowed Dirichlet probabilities; draw was not retried")
         probabilities = tuple(float(p) for p in values)
 
     common = (

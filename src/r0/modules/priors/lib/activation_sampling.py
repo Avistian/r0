@@ -151,7 +151,10 @@ class CausalActivationPrior:
         weights = self.weights or (1.0,) * len(self.choices)
         scaled = tuple(w / max(weights) for w in weights)
         total = math.fsum(scaled)
-        return tuple(w / total for w in scaled)
+        probabilities = tuple(w / total for w in scaled)
+        if any(w > 0 and p == 0 for w, p in zip(weights, probabilities, strict=True)):
+            raise ValueError("unrepresentable activation probabilities; positive weight underflow")
+        return probabilities
 
 
 def activation_prior_from_dict(data: dict[str, Any]) -> CausalActivationPrior:
