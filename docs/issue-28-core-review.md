@@ -69,3 +69,20 @@ distinct descendant variables or infer leakage solely from high predictability.
 
 Further independently reviewed source/runtime limits and final #28 acceptance
 are still required. Later passing evidence does not erase this checkpoint's defects.
+
+### Repair checkpoints
+
+- Direct outcome exposure: RED `9406302`, GREEN `fb5d4d1`; the exact test command
+  is above. Generation and inspection now also share the causal RNG identity
+  helper, addressing the duplication heuristic without changing sampled streams.
+- Resource admission: RED `1a8d889`, command
+  `python3 scripts/run_check.py pytest tests/priors/test_causal_generation.py -k resource_limits`;
+  it failed with `DID NOT RAISE ValueError` on the 65,537-channel constructor probe.
+  The subsequent fix adds explicit configurable node/channel/parameter limits and
+  a conservative working-array estimate checked before tensor generation.
+
+Default admission limits are 1,024 nodes, 1,024 channels per node, 8,192 total
+channels, 1,000,000 numeric parameters and 256 MiB estimated working storage. These
+are initial configurable admission settings, not qualified throughput maxima or
+permanent architecture ceilings. The estimate is not measured process RSS or an
+OS memory limit. Actual device/shape resource qualification remains outstanding.

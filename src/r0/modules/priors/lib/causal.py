@@ -8,6 +8,7 @@ import numpy as np
 import torch
 
 from r0.modules.priors.lib.calibration import stable_calibration
+from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.task_output import complete_task
@@ -57,6 +58,7 @@ class CausalRecipe:
     target: tuple[tuple[int, int], ...]
     normalize: bool = False
     calibration_rows: int = 256
+    limits: CausalLimits = CausalLimits()
     version: str = "causal-v1"
 
     def __post_init__(self) -> None:
@@ -89,6 +91,15 @@ class CausalRecipe:
             type(self.calibration_rows) is not int or not 32 <= self.calibration_rows <= 65536
         ):
             raise ValueError("normalization requires a boolean and 32..65536 calibration rows")
+        if type(self.limits) is not CausalLimits:
+            raise ValueError("causal limits must use CausalLimits")
+        self.limits.admit(
+            self.nodes,
+            rows=self.task.rows,
+            calibration_rows=self.calibration_rows if self.normalize else 0,
+            features=self.task.features,
+            outputs=outputs,
+        )
 
 
 def causal_values(
@@ -197,6 +208,14 @@ def generate_causal(
         "innovation": "independent standard Gaussian per node/channel; keyed by seed/task",
         "seed": seed,
         "task_id": task_id,
+        "resource_limits": asdict(recipe.limits),
+        "resource_admission": recipe.limits.admit(
+            recipe.nodes,
+            rows=recipe.task.rows,
+            calibration_rows=recipe.calibration_rows if recipe.normalize else 0,
+            features=recipe.task.features,
+            outputs=len(recipe.target),
+        ),
     }
     return complete_task(
         recipe.task, asdict(recipe), card, inputs, scores, seed=seed, task_id=task_id, rng=rng

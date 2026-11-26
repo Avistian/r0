@@ -125,3 +125,11 @@ states, interventions and the expanded workbench remain outstanding.
 Independent review rejected the first core checkpoint for direct outcome exposure;
 see [the review and reproduction record](issue-28-core-review.md). The first
 regression fix has a committed RED state; the original review is retained.
+
+
+The direct exposure defect is fixed at `fb5d4d1`, with committed RED `9406302`.
+Resource admission has committed RED `1a8d889`; limits now explicitly bound graph
+geometry, parameters and estimated working storage before generation. These are
+admission estimates, not measured resource-qualification claims. See the review
+record for defaults and reproducible commands; broad inventory execution remains
+outstanding.

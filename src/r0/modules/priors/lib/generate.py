@@ -3,6 +3,7 @@
 from typing import Any, cast
 
 from r0.modules.priors.lib.causal import CausalNode, CausalRecipe, generate_causal
+from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.compositions import (
     Combination,
     CompositeRecipe,
@@ -71,6 +72,7 @@ def recipe_from_dict(data: object) -> Recipe:
         if not isinstance(task, LinearRecipe):
             raise ValueError("task controls must use linear-v1 settings")
         fields["task"] = task
+        fields["limits"] = CausalLimits(**fields.get("limits", {}))
         nodes: list[CausalNode] = []
         for item in fields["nodes"]:
             node = dict(item)
