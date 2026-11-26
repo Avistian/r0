@@ -12,6 +12,7 @@ from r0.modules.priors.lib.causal_graph import CausalGraph as CausalGraph
 from r0.modules.priors.lib.causal_graph import CausalGraphPrior as CausalGraphPrior
 from r0.modules.priors.lib.causal_graph import sample_causal_graph as sample_causal_graph
 from r0.modules.priors.lib.causal_limits import CausalLimits as CausalLimits
+from r0.modules.priors.lib.causal_sampling import sample_causal_recipe as sample_causal_recipe
 from r0.modules.priors.lib.compositions import Combination as Combination
 from r0.modules.priors.lib.compositions import CompositeRecipe as CompositeRecipe
 from r0.modules.priors.lib.compositions import FunctionComponent as FunctionComponent
