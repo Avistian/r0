@@ -1,12 +1,18 @@
 """Reconstruct structural values and innovations for selected original rows."""
 
 from collections.abc import Callable, Sequence
+from dataclasses import asdict
 from typing import Any
 
 import numpy as np
 import torch
 
-from r0.modules.priors.lib.causal import CausalNode, causal_rng, causal_values
+from r0.modules.priors.lib.causal import (
+    ActivatedCausalNode,
+    causal_node_from_dict,
+    causal_rng,
+    causal_values,
+)
 
 
 def causal_steps(
@@ -15,15 +21,7 @@ def causal_steps(
     indices: Sequence[int],
     add: Callable[..., None],
 ) -> torch.Tensor:
-    nodes = tuple(
-        CausalNode(
-            parents=tuple(node["parents"]),
-            weights=tuple(tuple(row) for row in node["weights"]),
-            bias=tuple(node["bias"]),
-            noise_scale=tuple(node["noise_scale"]),
-        )
-        for node in card["nodes"]
-    )
+    nodes = tuple(causal_node_from_dict(node) for node in card["nodes"])
 
     def rng(*keys: object) -> np.random.Generator:
         return causal_rng(card["seed"], card["task_id"], *keys)
@@ -38,15 +36,35 @@ def causal_steps(
             noise,
             {"noise_scale": node.noise_scale, "row_indices": list(indices)},
         )
+        equation = (
+            "concat(parent channels) @ weights + bias + innovation"
+            if node.parents
+            else "bias + innovation"
+        )
+        parameters: dict[str, Any] = {"weights": node.weights, "bias": node.bias, "node": i}
+        if isinstance(node, ActivatedCausalNode):
+            affine = (
+                "input_activation(concat(parent channels)) @ weights + bias"
+                if node.parents
+                else "bias"
+            )
+            equation = (
+                f"output_activation({affine} + innovation)"
+                if node.noise_position == "before_output"
+                else f"output_activation({affine}) + innovation"
+            )
+            parameters.update(
+                input_activation=asdict(node.input_activation),
+                output_activation=asdict(node.output_activation),
+                noise_position=node.noise_position,
+            )
         add(
             f"causal-{i}",
             f"Causal node {i}",
             [*[f"causal-{p}" for p in node.parents], f"innovation-{i}"],
-            "concat(parent channels) @ weights + bias + innovation"
-            if node.parents
-            else "bias + innovation",
+            equation,
             value,
-            {"weights": node.weights, "bias": node.bias, "node": i},
+            parameters,
         )
     raw = torch.stack([values[i][:, j] for i, j in card["target"]], dim=1)
     calibration = card["calibration"]

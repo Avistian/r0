@@ -2,7 +2,7 @@
 
 from typing import Any, cast
 
-from r0.modules.priors.lib.causal import CausalNode, CausalRecipe, generate_causal
+from r0.modules.priors.lib.causal import CausalRecipe, causal_node_from_dict, generate_causal
 from r0.modules.priors.lib.causal_graph import CausalGraph, CausalGraphPrior
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.compositions import (
@@ -68,7 +68,7 @@ def recipe_from_dict(data: object) -> Recipe:
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
-    if version == "causal-v1":
+    if version in ("causal-v1", "causal-v2"):
         task = recipe_from_dict(fields.get("task", {}))
         if not isinstance(task, LinearRecipe):
             raise ValueError("task controls must use linear-v1 settings")
@@ -81,16 +81,7 @@ def recipe_from_dict(data: object) -> Recipe:
             topology["prior"] = CausalGraphPrior(**prior)
             topology["parents"] = tuple(tuple(row) for row in topology["parents"])
             fields["topology"] = CausalGraph(**topology)
-        nodes: list[CausalNode] = []
-        for item in fields["nodes"]:
-            node = dict(item)
-            for key in ("parents", "bias", "noise_scale"):
-                if key in node:
-                    node[key] = tuple(node[key])
-            if "weights" in node:
-                node["weights"] = tuple(tuple(row) for row in node["weights"])
-            nodes.append(CausalNode(**node))
-        fields["nodes"] = tuple(nodes)
+        fields["nodes"] = tuple(causal_node_from_dict(item) for item in fields["nodes"])
         for key in ("observed", "target"):
             fields[key] = tuple(tuple(ref) for ref in fields[key])
         return CausalRecipe(**fields)

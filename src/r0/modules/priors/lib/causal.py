@@ -3,12 +3,13 @@
 import math
 from collections.abc import Callable, Sequence
 from dataclasses import asdict, dataclass
+from typing import Any
 
 import numpy as np
 import torch
 
 from r0.modules.priors.lib.calibration import stable_calibration
-from r0.modules.priors.lib.causal_activations import CausalActivation
+from r0.modules.priors.lib.causal_activations import CausalActivation, activate
 from r0.modules.priors.lib.causal_graph import CausalGraph
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.linear import LinearRecipe
@@ -58,6 +59,43 @@ class ActivatedCausalNode(CausalNode):
     output_activation: CausalActivation = CausalActivation()
     noise_position: str = "before_output"
 
+    def __post_init__(self) -> None:
+        CausalNode.__post_init__(self)
+        if any(
+            type(a) is not CausalActivation
+            for a in (
+                self.input_activation,
+                self.output_activation,
+            )
+        ):
+            raise ValueError("node activations must use CausalActivation")
+        if self.noise_position not in ("before_output", "after_output"):
+            raise ValueError("noise position must be before_output or after_output")
+        if not self.parents and self.input_activation != CausalActivation():
+            raise ValueError("root nodes have no parent channels to activate")
+
+
+def causal_node_from_dict(data: dict[str, Any]) -> CausalNode:
+    """One decoder shared by recipe loading and original-row inspection."""
+    fields = dict(data)
+    for key in ("parents", "bias", "noise_scale"):
+        if key in fields:
+            fields[key] = tuple(fields[key])
+    if "weights" in fields:
+        fields["weights"] = tuple(tuple(row) for row in fields["weights"])
+    activated = any(
+        key in fields
+        for key in (
+            "input_activation",
+            "output_activation",
+            "noise_position",
+        )
+    )
+    for key in ("input_activation", "output_activation"):
+        if key in fields:
+            fields[key] = CausalActivation(**fields[key])
+    return ActivatedCausalNode(**fields) if activated else CausalNode(**fields)
+
 
 @dataclass(frozen=True, slots=True)
 class CausalRecipe:
@@ -73,13 +111,17 @@ class CausalRecipe:
     version: str = "causal-v1"
 
     def __post_init__(self) -> None:
-        if self.version != "causal-v1" or type(self.task) is not LinearRecipe:
-            raise ValueError("causal-v1 requires shared linear-v1 task controls")
+        if self.version not in ("causal-v1", "causal-v2") or type(self.task) is not LinearRecipe:
+            raise ValueError("causal recipes require shared linear-v1 task controls")
         if type(self.nodes) is not tuple or not self.nodes:
             raise ValueError("causal recipe requires a nonempty node tuple")
         for i, node in enumerate(self.nodes):
-            if type(node) is not CausalNode or any(p >= i for p in node.parents):
+            if type(node) not in (CausalNode, ActivatedCausalNode) or any(
+                p >= i for p in node.parents
+            ):
                 raise ValueError("causal nodes must be in acyclic parent-before-child order")
+            if isinstance(node, ActivatedCausalNode) and self.version != "causal-v2":
+                raise ValueError("activated nodes require causal-v2")
             incoming = sum(len(self.nodes[p].bias) for p in node.parents)
             if len(node.weights) != incoming:
                 raise ValueError("causal weight input width must match all parent channels")
@@ -142,9 +184,19 @@ def causal_values(
             node.noise_scale, dtype=torch.float64, device=device
         )
         value = innovation + torch.tensor(node.bias, dtype=torch.float64, device=device)
+        if isinstance(node, ActivatedCausalNode) and node.noise_position == "after_output":
+            value = torch.zeros_like(innovation) + torch.tensor(
+                node.bias, dtype=torch.float64, device=device
+            )
         if node.parents:
             parents = torch.cat([values[p] for p in node.parents], dim=1)
+            if isinstance(node, ActivatedCausalNode):
+                parents = activate(parents, node.input_activation)
             value = value + parents @ torch.tensor(node.weights, dtype=torch.float64, device=device)
+        if isinstance(node, ActivatedCausalNode):
+            value = activate(value, node.output_activation)
+            if node.noise_position == "after_output":
+                value = value + innovation
         if not torch.isfinite(value).all():
             raise ValueError(f"nonfinite causal node {i}; task was not retried")
         values.append(value)
