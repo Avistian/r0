@@ -146,7 +146,7 @@ class CausalRecipe:
             or self.topology.parents != tuple(node.parents for node in self.nodes)
         ):
             raise ValueError("saved topology must match structural node parents")
-        if self.construction not in ("authored", "gaussian-affine-v1") or (
+        if self.construction not in ("authored", "gaussian-affine-v1", "gaussian-activated-v1") or (
             self.construction != "authored" and self.topology is None
         ):
             raise ValueError("sampled construction requires its saved topology")

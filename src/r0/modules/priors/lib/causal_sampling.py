@@ -1,24 +1,51 @@
 """Sample fixed structural mechanisms on an explicitly selected graph prior."""
 
 import math
+from dataclasses import asdict, replace
 
 import numpy as np
 
-from r0.modules.priors.lib.causal import CausalNode, CausalRecipe
+from r0.modules.priors.lib.causal import ActivatedCausalNode, CausalNode, CausalRecipe
+from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.causal_graph import CausalGraphPrior, sample_causal_graph
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
 
+_EXPLORATION_ACTIVATIONS = (
+    "identity",
+    "tanh",
+    "sigmoid",
+    "relu",
+    "leaky_relu",
+    "elu",
+    "selu",
+    "silu",
+    "softplus",
+    "relu6",
+    "hardtanh",
+    "sign",
+    "gaussian_bump",
+    "sqrt_abs",
+    "interval_abs_le_1",
+    "sin",
+    "square",
+    "abs",
+    "log_clip_abs",
+    "step",
+    "modulo",
+    "gelu",
+    "signed_power",
+)
+
 
 def sample_causal_profile(
-    family: str, *, task: LinearRecipe, seed: int, task_id: int
+    family: str, *, task: LinearRecipe, seed: int, task_id: int, activated: bool = False
 ) -> CausalRecipe:
     """An r0 exploration profile, not a complete published neural/causal prior."""
     outputs = task.classes if task.task_type == "multiclass" else 1
-    rng = np.random.default_rng(
-        int(record_fingerprint(("causal-affine-v1", family, seed, task_id)), 16)
-    )
+    profile = "causal-activated-v1" if activated else "causal-affine-v1"
+    rng = np.random.default_rng(int(record_fingerprint((profile, family, seed, task_id)), 16))
     nodes = task.features + outputs + int(rng.integers(2, 17))
     components = int(rng.integers(1, 4))
     layers: tuple[int, ...] = ()
@@ -41,7 +68,28 @@ def sample_causal_profile(
         if family == "redirection"
         else 0.5,
     )
-    return sample_causal_recipe(prior, task=task, seed=seed, task_id=task_id)
+    recipe = sample_causal_recipe(prior, task=task, seed=seed, task_id=task_id)
+    if not activated:
+        return recipe
+    activated_nodes: list[CausalNode] = []
+    for node in recipe.nodes:
+        input_activation = CausalActivation()
+        if node.parents and rng.random() < 0.5:
+            input_activation = CausalActivation(str(rng.choice(_EXPLORATION_ACTIVATIONS)))
+        activated_nodes.append(
+            ActivatedCausalNode(
+                **asdict(node),
+                input_activation=input_activation,
+                output_activation=CausalActivation(str(rng.choice(_EXPLORATION_ACTIVATIONS))),
+                noise_position=str(rng.choice(("before_output", "after_output"))),
+            )
+        )
+    return replace(
+        recipe,
+        nodes=tuple(activated_nodes),
+        version="causal-v2",
+        construction="gaussian-activated-v1",
+    )
 
 
 def sample_causal_recipe(
