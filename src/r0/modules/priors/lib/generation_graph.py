@@ -7,6 +7,7 @@ from typing import Any, cast
 import numpy as np
 import torch
 
+from r0.modules.priors.lib.causal_inspection import causal_steps
 from r0.modules.priors.lib.graph_functions import analytic_steps, composite_steps, gp_steps
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.signals import component_inputs, multiply_signals
@@ -115,16 +116,23 @@ def explain_generation(
     add(
         "inputs",
         "Observed inputs",
-        [],
-        "independent per-column input streams",
+        list(dict.fromkeys(f"causal-{i}" for i, _ in card["observed"]))
+        if card["version"] == "causal-v1"
+        else [],
+        "select declared causal node channels"
+        if card["version"] == "causal-v1"
+        else "independent per-column input streams",
         inputs,
         {
             "distribution": card.get("inputs", card.get("input")),
             "active_columns": card["active"],
             "row_indices": list(indices),
+            **({"observed_channels": card["observed"]} if card["version"] == "causal-v1" else {}),
         },
     )
-    if card["version"] == "exact-gp-v1":
+    if card["version"] == "causal-v1":
+        signal = causal_steps(card, len(task.inputs), indices, add)
+    elif card["version"] == "exact-gp-v1":
         signal = gp_steps(card, record["recipe"], indices, add)
     elif card["version"] == "composite-v1":
         signal = composite_steps(card, inputs, add)

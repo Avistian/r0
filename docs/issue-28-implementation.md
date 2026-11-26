@@ -52,8 +52,8 @@ requirements and option records to have appropriate evidence.
 
 | Stage | State | Completion evidence |
 | --- | --- | --- |
-| Primary-source option extraction and finite inventory | IN_PROGRESS | Source/option record for every documented relevant choice, including variants and scope boundaries |
-| Replayable explicit causal and neural mechanisms | NOT_STARTED | Independent worked calculations through shared public interfaces |
+| Primary-source option extraction and finite inventory | READY | Source/option record for every documented relevant choice, including variants and scope boundaries |
+| Replayable explicit causal and neural mechanisms | IN_PROGRESS | Independent worked calculations through shared public interfaces |
 | Topology, function, activation, weights, roots/noise and hyperprior sampling | NOT_STARTED | Every inventory option exercised with traceable recipe and evidence |
 | Mixed typed variables and native/adapted targets | NOT_STARTED | Schema, probabilities, held-out-label separation and saved roundtrips |
 | Matched/population interventions and graph/mechanism edits | NOT_STARTED | Independent invariants, versioned identities and saved comparisons |
@@ -87,3 +87,36 @@ merge, deployment, or real-data download. Local code and synthetic verification
 can proceed. Hosted measurements remain pending until executed under the existing
 authorized path. The approved specification link must be published and verified
 with the implementation PR, preserving the rest of issue #28.
+
+## Source gate result
+
+[The finite inventory](research/0028-source-option-inventory.md) contains 581
+source/extension/disposition records and 140 specification anchors. The eight JSON
+chunks have unique IDs and explicit ownership/unknown states. These are traceability
+records, not unique algorithms or implementation counts. Exact peer/checkpoint
+reproduction is not claimed. Documented choices are ready for implementation;
+unknown unpublished algorithms remain explicit.
+
+## Local hardware
+
+The inspected environment reports PyTorch `2.15.0+cpu`, 12 CPU threads, no CUDA
+runtime and no available CUDA device. GPU execution evidence is NOT_RUN here.
+Sandboxed Pyright failed to resolve NumPy/Torch despite passing runtime imports;
+an explicit-interpreter unsandboxed run resolved dependencies and exposed only the
+new tests' `Tensor.tolist` typing, which was corrected. Retained logs live under
+`docs/evidence/issue-28/`.
+
+## First causal core slice
+
+Implemented explicit affine scalar/vector DAGs through `recipe_from_dict` and
+`generate_task`, with independently keyed structural innovations, original-row
+trace reconstruction, partial-channel readouts and exact recipe replay. Fixed
+independent calibration is optional; constant channels retain their raw value
+with identity normalization and a diagnostic flag. Shared nonzero-edge channel
+ancestry is labeled as potential dependence, not proof of predictive usefulness.
+
+Five public-behavior RED/GREEN cycles are retained under `docs/evidence/issue-28/`:
+`causal-authored-*`, `causal-trace-*`, `causal-vector-*`, `causal-calibration-*`,
+and `causal-constant-*`. This is a foundation slice, not completed paper-family
+coverage. Sampled topology/function priors, nonlinear mechanisms, typed categorical
+states, interventions and the expanded workbench remain outstanding.

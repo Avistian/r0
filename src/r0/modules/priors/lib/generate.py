@@ -2,6 +2,7 @@
 
 from typing import Any, cast
 
+from r0.modules.priors.lib.causal import CausalNode, CausalRecipe, generate_causal
 from r0.modules.priors.lib.compositions import (
     Combination,
     CompositeRecipe,
@@ -26,7 +27,7 @@ from r0.modules.priors.lib.sampling import BaseRecipe, generate_base_task
 from r0.modules.priors.lib.smooth import SmoothRecipe
 from r0.modules.priors.lib.training_task import TrainingTask
 
-type Recipe = BaseRecipe | CompositeRecipe
+type Recipe = BaseRecipe | CompositeRecipe | CausalRecipe
 
 
 def _kernel_from_dict(data: dict[str, Any]) -> Kernel:
@@ -65,6 +66,24 @@ def recipe_from_dict(data: object) -> Recipe:
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
+    if version == "causal-v1":
+        task = recipe_from_dict(fields.get("task", {}))
+        if not isinstance(task, LinearRecipe):
+            raise ValueError("task controls must use linear-v1 settings")
+        fields["task"] = task
+        nodes: list[CausalNode] = []
+        for item in fields["nodes"]:
+            node = dict(item)
+            for key in ("parents", "bias", "noise_scale"):
+                if key in node:
+                    node[key] = tuple(node[key])
+            if "weights" in node:
+                node["weights"] = tuple(tuple(row) for row in node["weights"])
+            nodes.append(CausalNode(**node))
+        fields["nodes"] = tuple(nodes)
+        for key in ("observed", "target"):
+            fields[key] = tuple(tuple(ref) for ref in fields[key])
+        return CausalRecipe(**fields)
     if version == "composite-v1":
         task = recipe_from_dict(fields.get("task", {}))
         if not isinstance(task, LinearRecipe):
@@ -75,7 +94,7 @@ def recipe_from_dict(data: object) -> Recipe:
         for item in fields["components"]:
             component = dict(item)
             child = recipe_from_dict(component.pop("recipe"))
-            if isinstance(child, CompositeRecipe):
+            if isinstance(child, (CompositeRecipe, CausalRecipe)):
                 raise ValueError("nest combinations in expression, not in component recipes")
             component["recipe"] = child
             if "axes" in component:
@@ -127,6 +146,8 @@ def recipe_from_dict(data: object) -> Recipe:
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, CausalRecipe):
+        return generate_causal(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, CompositeRecipe):
         return generate_composite(recipe, seed=seed, task_id=task_id, device=device)
     return generate_base_task(recipe, seed=seed, task_id=task_id, device=device)

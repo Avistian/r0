@@ -6,6 +6,8 @@ import numpy as np
 
 from r0.modules.episodes import Feature, Row, Target, TaskType
 from r0.modules.priors.lib.authored import authored_episode as authored_episode
+from r0.modules.priors.lib.causal import CausalNode as CausalNode
+from r0.modules.priors.lib.causal import CausalRecipe as CausalRecipe
 from r0.modules.priors.lib.compositions import Combination as Combination
 from r0.modules.priors.lib.compositions import CompositeRecipe as CompositeRecipe
 from r0.modules.priors.lib.compositions import FunctionComponent as FunctionComponent
