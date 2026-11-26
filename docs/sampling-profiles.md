@@ -147,10 +147,10 @@ profiles keep their larger ranges; the reference restrictions do not change libr
 limits. Sources: [integer powers](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_activation.py#L168-L173),
 [quadratic, Fourier and product functions](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_function.py#L206-L313).
 
-The sampler is a public selection function in this slice. Integrating per-task
-selection into resumable runs and the explorer is subsequent #27 work; callers
-can already save and generate any selected recipe through the existing interfaces.
-No profile is yet marked bulk-training eligible by this document.
+The public selection function is integrated with resumable saved runs, the local
+explorer and the Colab notebook's generation and embedded-explorer controls.
+See the [coverage map](generator-coverage.md) for measured evidence and outstanding
+target-runtime checks. No profile is marked bulk-training eligible by this document.
 
 ## Reproduce the settings and examples
 
