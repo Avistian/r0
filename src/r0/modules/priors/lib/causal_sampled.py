@@ -10,6 +10,7 @@ from r0.modules.priors.lib.activation_sampling import CausalActivationPrior, fin
 from r0.modules.priors.lib.causal import ActivatedCausalNode, CausalRecipe, MatrixCausalNode
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.weight_matrices import FactorizedWeights
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,7 +55,10 @@ class SampledCausalRecipe(CausalRecipe):
             if (
                 self.construction == "activation-factorized-v1"
                 and node.parents
-                and not isinstance(node, MatrixCausalNode)
+                and (
+                    not isinstance(node, MatrixCausalNode)
+                    or type(node.weight_construction) is not FactorizedWeights
+                )
             ):
                 raise ValueError("factorized sampling requires every projection construction")
             if not isinstance(node, ActivatedCausalNode):
