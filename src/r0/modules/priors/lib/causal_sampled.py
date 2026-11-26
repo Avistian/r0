@@ -31,11 +31,8 @@ class SampledCausalRecipe(CausalRecipe):
             or not math.isclose(math.fsum(probabilities), 1, rel_tol=0, abs_tol=1e-12)
         ):
             raise ValueError("activation probabilities must form a simplex matching the choices")
-        selected = [
-            choice
-            for choice, p in zip(self.activation_prior.choices, probabilities, strict=True)
-            if p > 0
-        ]
+        selected = [i for i, p in enumerate(probabilities) if p > 0]
+        homogeneous: set[CausalActivation] = set()
         if self.activation_prior.mode == "homogeneous" and len(selected) != 1:
             raise ValueError("homogeneous activation preferences must be one-hot")
         for node in self.nodes:
@@ -48,8 +45,14 @@ class SampledCausalRecipe(CausalRecipe):
                 ),
                 (node.output_activation, self.activation_prior.placement in ("output", "both")),
             ):
-                if stage not in selected if active else stage != CausalActivation():
-                    raise ValueError("node activation disagrees with recorded sampling support")
+                if active:
+                    homogeneous.add(stage)
+                    if not any(self.activation_prior.accepts(i, stage) for i in selected):
+                        raise ValueError("node activation disagrees with recorded sampling support")
+                elif stage != CausalActivation():
+                    raise ValueError("inactive activation stage must be identity")
+        if self.activation_prior.mode == "homogeneous" and len(homogeneous) > 1:
+            raise ValueError("homogeneous graphs must share frozen activation parameters")
 
     @property
     def sampling_record(self) -> dict[str, Any]:
@@ -85,8 +88,16 @@ def with_activation_prior(
         values[support] = gamma / gamma.sum()
         probabilities = tuple(float(p) for p in values)
 
+    common = (
+        prior.sample_choice(probabilities.index(1.0), rng) if prior.mode == "homogeneous" else None
+    )
+
     def choose() -> CausalActivation:
-        return prior.choices[int(rng.choice(len(prior.choices), p=probabilities))]
+        return (
+            common
+            if common is not None
+            else prior.sample_choice(int(rng.choice(len(prior.choices), p=probabilities)), rng)
+        )
 
     nodes = tuple(
         ActivatedCausalNode(
