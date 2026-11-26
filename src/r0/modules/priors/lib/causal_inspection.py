@@ -28,8 +28,9 @@ def causal_steps(
         return causal_rng(card["seed"], card["task_id"], *keys)
 
     exogenous: list[torch.Tensor] = []
+    scales: list[torch.Tensor] = []
     values, innovations = causal_values(
-        nodes, rows, rng, "cpu", indices, exogenous_values=exogenous
+        nodes, rows, rng, "cpu", indices, exogenous_values=exogenous, noise_scales=scales
     )
     for i, (node, value, noise) in enumerate(zip(nodes, values, innovations, strict=True)):
         stochastic = isinstance(node, StochasticCausalNode)
@@ -42,11 +43,25 @@ def causal_steps(
                 exogenous[i],
                 {"distribution": asdict(node.exogenous), "row_indices": list(indices)},
             )
+            add(
+                f"noise-scale-{i}",
+                f"Node {i} structural-noise scale",
+                [f"causal-{p}" for p in node.parents],
+                "noise_scale * (offset + strength * abs(pre-noise affine response)**power)",
+                scales[i],
+                {
+                    "noise_scale": node.noise_scale,
+                    "response": asdict(node.noise_response),
+                    "weights": node.weights,
+                    "bias": node.bias,
+                    "input_activation": asdict(node.input_activation),
+                },
+            )
         add(
             f"innovation-{i}",
             f"Node {i} structural innovation",
-            [f"exogenous-{i}"] if stochastic else [],
-            "noise_scale * recorded exogenous draw"
+            [f"exogenous-{i}", f"noise-scale-{i}"] if stochastic else [],
+            "recorded row-wise scale * recorded exogenous draw"
             if stochastic
             else "noise_scale * recorded independently keyed standard Gaussian draw",
             noise,

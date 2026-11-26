@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from r0.modules.priors.lib.causal_activations import CausalActivation
-from r0.modules.priors.lib.exogenous import ExogenousDistribution
+from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
 from r0.modules.priors.lib.inputs import InputDistribution
 
 
@@ -76,16 +76,19 @@ class ActivatedCausalNode(CausalNode):
 @dataclass(frozen=True, slots=True)
 class StochasticCausalNode(ActivatedCausalNode):
     exogenous: ExogenousDistribution = ExogenousDistribution()
+    noise_response: NoiseResponse = NoiseResponse()
 
     @property
     def structural_parameter_count(self) -> int:
-        return self.activation_parameter_count + self.exogenous.parameter_count
+        return self.activation_parameter_count + self.exogenous.parameter_count + 3
 
     def __post_init__(self) -> None:
         ActivatedCausalNode.__post_init__(self)
         if type(self.exogenous) is not ExogenousDistribution:
             raise ValueError("stochastic nodes require ExogenousDistribution")
         self.exogenous.validate_width(len(self.bias))
+        if type(self.noise_response) is not NoiseResponse:
+            raise ValueError("stochastic nodes require NoiseResponse")
 
 
 def causal_node_from_dict(data: dict[str, Any]) -> CausalNode:
@@ -111,10 +114,11 @@ def causal_node_from_dict(data: dict[str, Any]) -> CausalNode:
                 tuple(pair) for pair in activation.get("parameters", ())
             )
             fields[key] = CausalActivation(**activation)
-    if "exogenous" in fields:
-        spec = dict(fields["exogenous"])
+    if "exogenous" in fields or "noise_response" in fields:
+        spec = dict(fields.get("exogenous", {}))
         spec["inputs"] = InputDistribution(**spec.get("inputs", {}))
         spec["factor"] = tuple(tuple(row) for row in spec.get("factor", ()))
         fields["exogenous"] = ExogenousDistribution(**spec)
+        fields["noise_response"] = NoiseResponse(**fields.get("noise_response", {}))
         return StochasticCausalNode(**fields)
     return ActivatedCausalNode(**fields) if activated else CausalNode(**fields)

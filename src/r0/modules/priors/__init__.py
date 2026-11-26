@@ -26,6 +26,7 @@ from r0.modules.priors.lib.compositions import CompositeRecipe as CompositeRecip
 from r0.modules.priors.lib.compositions import FunctionComponent as FunctionComponent
 from r0.modules.priors.lib.exact_gp import GaussianProcessRecipe as GaussianProcessRecipe
 from r0.modules.priors.lib.exogenous import ExogenousDistribution as ExogenousDistribution
+from r0.modules.priors.lib.exogenous import NoiseResponse as NoiseResponse
 from r0.modules.priors.lib.fourier import FourierRecipe as FourierRecipe
 from r0.modules.priors.lib.fourier import generate_fourier as generate_fourier
 from r0.modules.priors.lib.generate import Recipe as Recipe

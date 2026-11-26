@@ -18,6 +18,7 @@ from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode as ActivatedC
 from r0.modules.priors.lib.causal_nodes import CausalNode as CausalNode
 from r0.modules.priors.lib.causal_nodes import StochasticCausalNode as StochasticCausalNode
 from r0.modules.priors.lib.causal_nodes import causal_node_from_dict as causal_node_from_dict
+from r0.modules.priors.lib.causal_stochastic import stochastic_value
 from r0.modules.priors.lib.exogenous import sample_exogenous
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
@@ -115,6 +116,7 @@ def causal_values(
     *,
     diagnostics: list[dict[str, Any]] | None = None,
     exogenous_values: list[torch.Tensor] | None = None,
+    noise_scales: list[torch.Tensor] | None = None,
 ) -> tuple[list[torch.Tensor], list[torch.Tensor]]:
     """Replay selected original rows without retaining all intermediate task values."""
     values: list[torch.Tensor] = []
@@ -131,6 +133,28 @@ def causal_values(
             noise = noise[list(indices)]
         if exogenous_values is not None:
             exogenous_values.append(torch.tensor(noise, dtype=torch.float64, device=device))
+        if isinstance(node, StochasticCausalNode):
+            parent_values = (
+                torch.cat([values[p] for p in node.parents], dim=1) if node.parents else None
+            )
+            value, innovation, scale = stochastic_value(
+                node,
+                torch.tensor(noise, dtype=torch.float64, device=device),
+                parent_values,
+                i,
+                diagnostics,
+            )
+            if noise_scales is not None:
+                noise_scales.append(scale)
+            values.append(value)
+            innovations.append(innovation)
+            continue
+        if noise_scales is not None:
+            noise_scales.append(
+                torch.tensor(node.noise_scale, dtype=torch.float64, device=device).expand(
+                    len(noise), -1
+                )
+            )
         innovation = torch.tensor(noise, dtype=torch.float64, device=device) * torch.tensor(
             node.noise_scale, dtype=torch.float64, device=device
         )
@@ -236,6 +260,7 @@ def generate_causal(
                 if node.weights[incoming][channel] != 0:
                     related.update(parents)
             projected.append(related)
+        pre_output = [set(related) for related in projected]
         if isinstance(node, ActivatedCausalNode):
             if not node.output_activation.uses_input(len(node.bias)):
                 projected = (
@@ -249,6 +274,14 @@ def generate_causal(
                 if node.noise_position == "after_output":
                     shared = {ref for ref in shared if ref[0] != i}
                 projected = [shared | source for source in sources]
+        if (
+            isinstance(node, StochasticCausalNode)
+            and node.noise_position == "after_output"
+            and node.noise_response.strength
+        ):
+            for channel, related in enumerate(projected):
+                if sources[channel]:
+                    related.update(pre_output[channel])
         for channel, related in enumerate(projected):
             ancestry[i, channel] = related
     target_ancestors: set[tuple[int, int]] = set()

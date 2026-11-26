@@ -76,3 +76,21 @@ def sample_exogenous(
         if not np.isfinite(values).all():
             raise ValueError("nonfinite transformed exogenous draw; task was not retried")
     return values
+
+
+@dataclass(frozen=True, slots=True)
+class NoiseResponse:
+    offset: float = 1.0
+    strength: float = 0.0
+    power: float = 1.0
+
+    def __post_init__(self) -> None:
+        if any(
+            type(v) not in (int, float) or not math.isfinite(v)
+            for v in (self.offset, self.strength, self.power)
+        ):
+            raise ValueError("noise-response parameters must be finite numbers")
+        if self.offset < 0 or self.strength < 0 or self.power <= 0:
+            raise ValueError(
+                "noise response requires nonnegative offset/strength and positive power"
+            )
