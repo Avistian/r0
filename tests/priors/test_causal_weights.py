@@ -148,3 +148,25 @@ def test_uniform_importance_weights_retain_their_normalized_projection() -> None
         ).episode()
         == task.episode()
     )
+
+
+def test_factorized_profile_rejects_a_different_matrix_construction() -> None:
+    recipe = sample_recipe(
+        "redirection",
+        task=LinearRecipe(rows=16, context_rows=8),
+        seed=28,
+        task_id=10,
+        profile="causal-factorized-v1",
+    )
+    data = asdict(recipe)
+    child = next(node for node in data["nodes"] if node["parents"])
+    width = len(child["bias"])
+    zero = [[0] * width for _ in child["weights"]]
+    child["weights"] = zero
+    child["weight_construction"] = {
+        "version": "importance-weights-v1",
+        "gaussian": zero,
+        "importance": [{"draws": [0.5] * width} for _ in zero],
+    }
+    with pytest.raises(ValueError, match="factorized.*construction"):
+        recipe_from_dict(data)
