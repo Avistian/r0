@@ -199,3 +199,29 @@ def test_direct_outcome_exposure_is_rejected_but_descendant_prediction_is_valid(
     task = generate_task(effect_to_cause, seed=28, task_id=5)
     assert torch.isfinite(task.inputs).all()
     assert not torch.equal(task.inputs[:, 0], task.targets)
+
+
+def test_causal_resource_limits_reject_before_generation_and_are_explicit() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    # Constructor-only probe: no giant tensors need to be allocated to reject this.
+    wide = CausalNode(bias=(0.0,) * 65537, noise_scale=(0.0,) * 65537)
+    with pytest.raises(ValueError, match="node channel limit"):
+        CausalRecipe(task=controls, nodes=(wide,), observed=((0, 0),), target=((0, 1),))
+    small = CausalRecipe(
+        task=controls,
+        nodes=(CausalNode(bias=(1.0, 2.0), noise_scale=(0.0, 0.0)),),
+        observed=((0, 0),),
+        target=((0, 1),),
+    )
+    record = asdict(small)
+    record["limits"] = {"node_channels": 1}
+    with pytest.raises(ValueError, match="node channel limit"):
+        recipe_from_dict(record)
+    record["limits"] = {"node_channels": 2, "working_bytes": 1}
+    with pytest.raises(ValueError, match="working memory"):
+        recipe_from_dict(record)
+    record["limits"] = {"node_channels": 2, "working_bytes": 1024 * 1024}
+    task = generate_task(recipe_from_dict(record), seed=28, task_id=6)
+    assert torch.equal(task.targets, torch.full((16,), 2.0, dtype=torch.float64))
