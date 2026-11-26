@@ -10,6 +10,7 @@ from r0.modules.priors.lib.causal import ActivatedCausalNode, CausalNode, Causal
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.causal_graph import CausalGraphPrior, sample_causal_graph
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.causal_sampled import with_activation_prior
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
 
@@ -104,8 +105,6 @@ def sample_causal_recipe(
     activations: CausalActivationPrior | None = None,
 ) -> CausalRecipe:
     """Return a frozen editable recipe; sampling never reads generated task rows."""
-    if activations is not None:
-        raise ValueError("activation hyperprior sampling is not implemented")
     limits = CausalLimits() if limits is None else limits
     topology = sample_causal_graph(graph, seed=seed, task_id=task_id, limits=limits)
     if type(widths) is not tuple or any(type(w) is not int or w < 1 for w in widths):
@@ -144,7 +143,7 @@ def sample_causal_recipe(
         )
     channels = tuple((i, j) for i, width in enumerate(widths) for j in range(width))
     chosen = [channels[int(i)] for i in rng("readouts").permutation(len(channels))]
-    return CausalRecipe(
+    recipe = CausalRecipe(
         task=task,
         nodes=tuple(nodes),
         observed=tuple(chosen[: task.features]),
@@ -152,4 +151,10 @@ def sample_causal_recipe(
         limits=limits,
         topology=topology,
         construction="gaussian-affine-v1",
+    )
+
+    return (
+        recipe
+        if activations is None
+        else with_activation_prior(recipe, activations, seed=seed, task_id=task_id)
     )

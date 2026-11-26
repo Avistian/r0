@@ -2,9 +2,11 @@
 
 from typing import Any, cast
 
+from r0.modules.priors.lib.activation_sampling import activation_prior_from_dict
 from r0.modules.priors.lib.causal import CausalRecipe, causal_node_from_dict, generate_causal
 from r0.modules.priors.lib.causal_graph import CausalGraph, CausalGraphPrior
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.causal_sampled import SampledCausalRecipe
 from r0.modules.priors.lib.compositions import (
     Combination,
     CompositeRecipe,
@@ -84,6 +86,10 @@ def recipe_from_dict(data: object) -> Recipe:
         fields["nodes"] = tuple(causal_node_from_dict(item) for item in fields["nodes"])
         for key in ("observed", "target"):
             fields[key] = tuple(tuple(ref) for ref in fields[key])
+        if "activation_prior" in fields:
+            fields["activation_prior"] = activation_prior_from_dict(fields["activation_prior"])
+            fields["activation_probabilities"] = tuple(fields["activation_probabilities"])
+            return SampledCausalRecipe(**fields)
         return CausalRecipe(**fields)
     if version == "composite-v1":
         task = recipe_from_dict(fields.get("task", {}))

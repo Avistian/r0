@@ -126,6 +126,10 @@ class CausalRecipe:
     construction: str = "authored"
     version: str = "causal-v1"
 
+    @property
+    def sampling_record(self) -> dict[str, Any] | None:
+        return None
+
     def __post_init__(self) -> None:
         if self.version not in ("causal-v1", "causal-v2") or type(self.task) is not LinearRecipe:
             raise ValueError("causal recipes require shared linear-v1 task controls")
@@ -146,9 +150,12 @@ class CausalRecipe:
             or self.topology.parents != tuple(node.parents for node in self.nodes)
         ):
             raise ValueError("saved topology must match structural node parents")
-        if self.construction not in ("authored", "gaussian-affine-v1", "gaussian-activated-v1") or (
-            self.construction != "authored" and self.topology is None
-        ):
+        if self.construction not in (
+            "authored",
+            "gaussian-affine-v1",
+            "gaussian-activated-v1",
+            "gaussian-activation-prior-v1",
+        ) or (self.construction != "authored" and self.topology is None):
             raise ValueError("sampled construction requires its saved topology")
         for refs in (self.observed, self.target):
             if type(refs) is not tuple or any(
@@ -351,6 +358,8 @@ def generate_causal(
     }
     if recipe.version == "causal-v2":
         card["activation_diagnostics"] = diagnostics
+    if recipe.sampling_record is not None:
+        card["activation_sampling"] = recipe.sampling_record
     return complete_task(
         recipe.task, asdict(recipe), card, inputs, scores, seed=seed, task_id=task_id, rng=rng
     )
