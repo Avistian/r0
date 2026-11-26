@@ -1,7 +1,8 @@
 """Retain a small CPU-only topology census; not a performance benchmark."""
 
+import argparse
 import json
-import sys
+import subprocess
 from collections import Counter
 from dataclasses import asdict
 from pathlib import Path
@@ -12,7 +13,7 @@ from r0.modules.generation import save_group
 from r0.modules.priors import CausalRecipe, LinearRecipe, generate_task, sample_recipe
 
 
-def run(destination: Path) -> None:
+def run(destination: Path, profile: str = "causal-affine-v1") -> None:
     destination.mkdir(parents=True, exist_ok=False)
     summary = {}
     for family in ("forward", "layered", "redirection"):
@@ -31,7 +32,7 @@ def run(destination: Path) -> None:
             record = {"family": family, "seed": 28, "task_id": task_id}
             try:
                 recipe = sample_recipe(
-                    family, task=controls, seed=28, task_id=task_id, profile="causal-affine-v1"
+                    family, task=controls, seed=28, task_id=task_id, profile=profile
                 )
                 assert isinstance(recipe, CausalRecipe)
                 record["recipe"] = asdict(recipe)
@@ -73,11 +74,14 @@ def run(destination: Path) -> None:
             "ranges": {
                 name: [min(r[name] for r in valid), max(r[name] for r in valid)]
                 for name in ("nodes", "edges", "depth", "components")
+                if valid
             },
             "task_types": dict(Counter(r["recipe"]["task"]["task_type"] for r in valid)),
         }
     report = {
         "seed": 28,
+        "profile": profile,
+        "head": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
         "device": "cpu",
         "torch": torch.__version__,
         "filter": "none",
@@ -89,4 +93,10 @@ def run(destination: Path) -> None:
 
 
 if __name__ == "__main__":
-    run(Path(sys.argv[1]))
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("destination", type=Path)
+    parser.add_argument(
+        "--profile", choices=("causal-affine-v1", "causal-activated-v1"), default="causal-affine-v1"
+    )
+    args = parser.parse_args()
+    run(args.destination, args.profile)

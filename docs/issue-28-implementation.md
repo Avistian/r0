@@ -54,13 +54,13 @@ requirements and option records to have appropriate evidence.
 | --- | --- | --- |
 | Primary-source option extraction and finite inventory | READY | Source/option record for every documented relevant choice, including variants and scope boundaries |
 | Replayable explicit causal and neural mechanisms | IN_PROGRESS | Independent worked calculations through shared public interfaces |
-| Topology, function, activation, weights, roots/noise and hyperprior sampling | NOT_STARTED | Every inventory option exercised with traceable recipe and evidence |
+| Topology, function, activation, weights, roots/noise and hyperprior sampling | IN_PROGRESS | Every inventory option exercised with traceable recipe and evidence |
 | Mixed typed variables and native/adapted targets | NOT_STARTED | Schema, probabilities, held-out-label separation and saved roundtrips |
 | Matched/population interventions and graph/mechanism edits | NOT_STARTED | Independent invariants, versioned identities and saved comparisons |
-| Diagnostics and coverage/filtering evidence | NOT_STARTED | Original/retained denominators, failure reasons and structural/functional diversity |
+| Diagnostics and coverage/filtering evidence | IN_PROGRESS | Original/retained denominators, failure reasons and structural/functional diversity |
 | Shared explorer/Colab workbench and exports | NOT_STARTED | Actual interactions and rendered artifacts in each environment |
 | Generation/storage/parallel/restart integration | NOT_STARTED | Retained execution, failure/restart and resource measurements |
-| Independent review, checks and publication | NOT_STARTED | Fixed-revision review, required repository checks, PR and approved-specification link |
+| Independent review, checks and publication | IN_PROGRESS | Fixed-revision review, required repository checks, PR and approved-specification link |
 
 ## Important semantic constraints
 
@@ -172,3 +172,27 @@ recorded in the topology checkpoint document. Scoped standards recheck PASS at
 reviewed revision. Broader graph families, nonlinear/tree/network mechanisms,
 typed categorical states, interventions, workbench UI and final environment/scale
 evidence remain required and incomplete.
+
+## Nonlinear structural checkpoint
+
+`causal-v2` adds explicit input/output activation placement and structural-noise
+order, frozen numeric parameters, row-wise channel transforms and saturation
+inspection. The 42 operation names include aliases and boundary conventions;
+they are not 42 unique algorithms. The limited `causal-activated-v1` sampling
+profile reaches generation, save/reopen and row inspection. See the
+[definitions, source mapping and verification](issue-28-nonlinear-mechanisms.md).
+
+At `fbb1aa8`, `make check` passed **567 tests, 1 skipped** and all static gates.
+The earlier 562-pass suite at `28a478f` did not detect three independent numerical
+findings: reciprocal-power intermediate overflow, lost integer-exponent parity,
+and avoidable additive-log rejection. Their original REJECT remains retained;
+committed RED `d6d368e` and repair `fbb1aa8` address them. Scoped independent review
+and its results are recorded in the nonlinear checkpoint document.
+
+An author CPU census retained all **192/192 valid** draws, including disconnected,
+inactive, saturated and zero-dispersion cases. This verifies one small convenience
+profile, not full paper-option coverage or throughput. Noise/root distributions,
+weight hyperpriors, GP/Fourier/tree/neural constructions, wider graphs, native
+typed variables, interventions, workbench UI and final environment/scale evidence
+remain required. Smoke/eval-smoke remain NOT_AVAILABLE; browser, Colab and GPU
+acceptance remain PENDING. The full #28 goal is still active.

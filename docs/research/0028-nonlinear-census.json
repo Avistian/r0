@@ -1,0 +1,112 @@
+{
+  "device": "cpu",
+  "families": {
+    "forward": {
+      "attempted": 64,
+      "failed": 0,
+      "flag_counts": {
+        "disconnected_target": 33,
+        "inactive_relu": 11,
+        "saturated_activation": 13
+      },
+      "ranges": {
+        "components": [
+          1,
+          23
+        ],
+        "depth": [
+          0,
+          16
+        ],
+        "edges": [
+          0,
+          122
+        ],
+        "nodes": [
+          7,
+          23
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64
+    },
+    "layered": {
+      "attempted": 64,
+      "failed": 0,
+      "flag_counts": {
+        "disconnected_target": 36,
+        "inactive_relu": 10,
+        "saturated_activation": 10,
+        "zero_target_dispersion": 2
+      },
+      "ranges": {
+        "components": [
+          1,
+          22
+        ],
+        "depth": [
+          0,
+          4
+        ],
+        "edges": [
+          0,
+          76
+        ],
+        "nodes": [
+          7,
+          23
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64
+    },
+    "redirection": {
+      "attempted": 64,
+      "failed": 0,
+      "flag_counts": {
+        "disconnected_target": 4,
+        "inactive_relu": 10,
+        "saturated_activation": 8,
+        "zero_target_dispersion": 1
+      },
+      "ranges": {
+        "components": [
+          1,
+          3
+        ],
+        "depth": [
+          1,
+          6
+        ],
+        "edges": [
+          4,
+          22
+        ],
+        "nodes": [
+          7,
+          23
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64
+    }
+  },
+  "filter": "none",
+  "head": "fbb1aa883dba5228d019ed4653ddee0117934586",
+  "profile": "causal-activated-v1",
+  "seed": 28,
+  "timing": "NOT_MEASURED",
+  "torch": "2.15.0+cpu"
+}
