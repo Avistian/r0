@@ -1,6 +1,7 @@
 """Structured projection records through shared decoding, generation and traces."""
 
 import json
+import math
 from dataclasses import asdict
 
 import pytest
@@ -9,7 +10,9 @@ import torch
 from r0.modules.priors import (
     CausalNode,
     CausalRecipe,
+    ImportanceWeights,
     LinearRecipe,
+    MatrixCausalNode,
     explain_generation,
     generate_task,
     recipe_from_dict,
@@ -170,3 +173,73 @@ def test_factorized_profile_rejects_a_different_matrix_construction() -> None:
     }
     with pytest.raises(ValueError, match="factorized.*construction"):
         recipe_from_dict(data)
+
+
+@pytest.mark.parametrize(
+    ("decay", "noise", "draws", "permutation"),
+    [
+        (1.0, 0.0, [0.0, 0.0], [1, 0]),
+        (0.0, 1.0, [0.0, math.log(2)], [0, 1]),
+        (1.0, 1e200, [1.0, 1.0], [1, 0]),
+    ],
+)
+def test_polynomial_importance_records_decay_log_noise_and_permutation(
+    decay: float, noise: float, draws: list[float], permutation: list[int]
+) -> None:
+    vector = {
+        "version": "polynomial-weight-vector-v1",
+        "draws": draws,
+        "decay": decay,
+        "log_noise_scale": noise,
+        "permutation": permutation,
+    }
+    recipe = recipe_from_dict(
+        {
+            "version": "causal-v2",
+            "task": {
+                "rows": 16,
+                "context_rows": 8,
+                "features": 2,
+                "signal_features": 2,
+                "active_features": 2,
+            },
+            "observed": [[0, 0], [0, 1]],
+            "target": [[1, 0]],
+            "nodes": [
+                {"bias": [0, 0], "noise_scale": [1, 1]},
+                {
+                    "parents": [0],
+                    "weights": [[1, 0], [0, 1]],
+                    "bias": [0, 0],
+                    "noise_scale": [0, 0],
+                    "weight_construction": {
+                        "version": "importance-weights-v1",
+                        "gaussian": [[1, 0], [0, 1]],
+                        "importance": [vector, vector],
+                        "epsilon": 0,
+                    },
+                },
+            ],
+        }
+    )
+    assert isinstance(recipe, CausalRecipe)
+    node = recipe.nodes[1]
+    assert isinstance(node, MatrixCausalNode)
+    assert isinstance(node.weight_construction, ImportanceWeights)
+    # Both independently worked laws give weights with ratio 1:2 and squared norm 2.
+    assert node.weight_construction.importance[0].values() == pytest.approx(
+        (math.sqrt(2 / 5), math.sqrt(8 / 5)), rel=1e-14
+    )
+    task = generate_task(recipe, seed=28, task_id=13)
+    torch.testing.assert_close(task.scores[:, 0], task.inputs[:, 0], rtol=0, atol=0)
+    assert json.loads(task.mechanism_json)["resource_admission"]["parameters"] == 36
+    trace = {n["id"]: n for n in explain_generation(task, [0])["nodes"]}
+    assert trace["causal-1"]["parameters"]["weight_construction"]["importance"][0][
+        "permutation"
+    ] == tuple(permutation)
+    assert (
+        generate_task(
+            recipe_from_dict(json.loads(json.dumps(asdict(recipe)))), seed=28, task_id=13
+        ).episode()
+        == task.episode()
+    )
