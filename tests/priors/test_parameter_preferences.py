@@ -113,3 +113,38 @@ def test_global_quantile_policy_remaps_bounds_but_rejects_changed_batch_shape() 
     corrupted["global_policy"] = "strict"
     with pytest.raises(ValueError, match="global.*contract"):
         priors.parameter_preferences_from_dict(corrupted)
+
+
+def test_preference_limits_reject_before_random_draws_and_check_frozen_record_cost() -> None:
+    limits = priors.PreferenceLimits(max_draws=2, max_values=3, max_parameters=30)
+    rng = np.random.default_rng(32)
+    sampler = priors.ParameterSampler(rng, default_mode="global", limits=limits)
+    request = priors.NumericalParameter("gain", 0.0, 1.0, shape=(2,))
+    sampler.numerical(request)
+    record = sampler.freeze()
+    # Preference: two bounds + one shape dimension + two units = 5.
+    # Draw: two bounds + one shape dimension + index + two units + two values = 8.
+    assert record.parameter_count == 13
+    before = json.dumps(rng.bit_generator.state, sort_keys=True)
+    with pytest.raises(ValueError, match="value limit"):
+        sampler.numerical(priors.NumericalParameter("other", 0.0, 1.0, shape=(2,)))
+    assert json.dumps(rng.bit_generator.state, sort_keys=True) == before
+    assert sampler.freeze() == record
+    sampler.numerical(priors.NumericalParameter("last", 0.0, 1.0))
+    before = json.dumps(rng.bit_generator.state, sort_keys=True)
+    with pytest.raises(ValueError, match="draw limit"):
+        sampler.numerical(priors.NumericalParameter("last", 0.0, 1.0))
+    assert json.dumps(rng.bit_generator.state, sort_keys=True) == before
+    encoded = json.loads(json.dumps(asdict(record)))
+    assert priors.parameter_preferences_from_dict(encoded) == record
+    encoded["limits"]["max_parameters"] = 12
+    with pytest.raises(ValueError, match="parameter limit"):
+        priors.parameter_preferences_from_dict(encoded)
+    small = priors.ParameterSampler(rng, limits=priors.PreferenceLimits(max_parameters=1))
+    with pytest.raises(ValueError, match="parameter limit"):
+        small.numerical(priors.NumericalParameter("big", 0.0, 1.0, shape=(100000,)))
+    assert json.dumps(rng.bit_generator.state, sort_keys=True) == before
+    encoded = json.loads(json.dumps(asdict(record)))
+    encoded["preferences"][0]["request"]["high"] = 2.0
+    with pytest.raises(ValueError, match="first request|contract"):
+        priors.parameter_preferences_from_dict(encoded)

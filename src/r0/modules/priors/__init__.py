@@ -57,6 +57,7 @@ from r0.modules.priors.lib.parameter_preferences import (
     parameter_preferences_from_dict as parameter_preferences_from_dict,
 )
 from r0.modules.priors.lib.polynomial import PolynomialRecipe as PolynomialRecipe
+from r0.modules.priors.lib.preference_limits import PreferenceLimits as PreferenceLimits
 from r0.modules.priors.lib.profile import diagnostic_profile as diagnostic_profile
 from r0.modules.priors.lib.quadratic import QuadraticRecipe as QuadraticRecipe
 from r0.modules.priors.lib.recipe_sampling import sample_recipe as sample_recipe

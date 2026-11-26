@@ -8,6 +8,9 @@ from typing import Any
 import numpy as np
 
 from r0.modules.priors.lib.activation_sampling import finite_number
+from r0.modules.priors.lib.preference_limits import PreferenceLimits
+
+_DEFAULT_LIMITS = PreferenceLimits()
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,6 +48,10 @@ class NumericalParameter:
             or math.prod(self.shape) > 100_000
         ):
             raise ValueError("numerical shape requires at most eight positive bounded dimensions")
+
+    @property
+    def parameter_count(self) -> int:
+        return 2 + len(self.shape)
 
 
 def _values(request: NumericalParameter, units: tuple[float, ...]) -> tuple[float, ...]:
@@ -100,6 +107,10 @@ class NumericalPreference:
         elif self.mean is not None or self.concentration is not None:
             raise ValueError("Beta hyperparameters apply only to meta preferences")
 
+    @property
+    def parameter_count(self) -> int:
+        return self.request.parameter_count + len(self.units) + (2 if self.mode == "meta" else 0)
+
 
 def _validate_units(
     request: NumericalParameter, units: tuple[float, ...], *, uniform: bool = False
@@ -133,6 +144,10 @@ class NumericalDraw:
         ):
             raise ValueError("numerical realization does not match retained units and request")
 
+    @property
+    def parameter_count(self) -> int:
+        return self.request.parameter_count + 1 + len(self.units) + len(self.values)
+
 
 @dataclass(frozen=True, slots=True)
 class ParameterPreferences:
@@ -141,6 +156,7 @@ class ParameterPreferences:
     default_mode: str = "meta"
     version: str = "parameter-preferences-v1"
     global_policy: str = "strict"
+    limits: PreferenceLimits = _DEFAULT_LIMITS
 
     def __post_init__(self) -> None:
         if self.version != "parameter-preferences-v1" or self.default_mode not in (
@@ -155,12 +171,15 @@ class ParameterPreferences:
             type(p) is not NumericalPreference for p in self.preferences
         ):
             raise ValueError("parameter preferences must be frozen numerical preferences")
-        if (
-            type(self.draws) is not tuple
-            or len(self.draws) > 10_000
-            or any(type(d) is not NumericalDraw for d in self.draws)
-        ):
-            raise ValueError("parameter preferences require at most 10000 frozen draws")
+        if type(self.draws) is not tuple or any(type(d) is not NumericalDraw for d in self.draws):
+            raise ValueError("parameter preferences require frozen draws")
+        if type(self.limits) is not PreferenceLimits:
+            raise ValueError("parameter preferences require frozen limits")
+        self.limits.admit(
+            draws=len(self.draws),
+            values=sum(len(d.values) for d in self.draws),
+            parameters=self.parameter_count,
+        )
         names = [(p.request.name, p.mode) for p in self.preferences]
         if len(set(names)) != len(names):
             raise ValueError("numerical preference names must be unique within each mode")
@@ -178,9 +197,19 @@ class ParameterPreferences:
                 or draw.units != preference.units
             ):
                 raise ValueError("global numerical realization violates the cached contract")
+            if draw.preference not in used and (
+                draw.preference != len(used) or draw.request != preference.request
+            ):
+                raise ValueError("numerical preference first request or order is inconsistent")
             used.add(draw.preference)
         if used != set(range(len(self.preferences))):
             raise ValueError("numerical preferences must each have a retained realization")
+
+    @property
+    def parameter_count(self) -> int:
+        return sum(p.parameter_count for p in self.preferences) + sum(
+            d.parameter_count for d in self.draws
+        )
 
 
 def _global_compatible(
@@ -195,12 +224,22 @@ class ParameterSampler:
     """One explicitly seeded sampling scope; freeze it for replay and inspection."""
 
     def __init__(
-        self, rng: np.random.Generator, *, default_mode: str = "meta", global_policy: str = "strict"
+        self,
+        rng: np.random.Generator,
+        *,
+        default_mode: str = "meta",
+        global_policy: str = "strict",
+        limits: PreferenceLimits = _DEFAULT_LIMITS,
     ) -> None:
         if type(rng) is not np.random.Generator or default_mode not in ("meta", "local", "global"):
             raise ValueError("parameter sampler requires an injected Generator and supported mode")
         if global_policy not in ("strict", "quantile"):
             raise ValueError("unsupported global numerical reuse policy")
+        if type(limits) is not PreferenceLimits:
+            raise ValueError("parameter sampler requires frozen limits")
+        self._limits = limits
+        self._value_count = 0
+        self._parameter_count = 0
         self._global_policy = global_policy
         self._rng = rng
         self._default_mode = default_mode
@@ -211,11 +250,19 @@ class ParameterSampler:
     def numerical(self, request: NumericalParameter) -> NumericalDraw:
         if type(request) is not NumericalParameter:
             raise ValueError("numerical sampling requires a frozen request")
-        if len(self._draws) >= 10_000:
-            raise ValueError("parameter preference draw limit exceeded")
         mode = self._default_mode if request.mode == "meta" else request.mode
         key = (request.name, mode)
         index = self._names.get(key)
+        width = math.prod(request.shape)
+        additional = request.parameter_count + 1 + 2 * width
+        if index is None:
+            additional += request.parameter_count + (width if mode == "global" else 0)
+            additional += 2 if mode == "meta" else 0
+        self._limits.admit(
+            draws=len(self._draws) + 1,
+            values=self._value_count + width,
+            parameters=self._parameter_count + additional,
+        )
         if index is None:
             index = len(self._preferences)
             if mode == "meta":
@@ -257,6 +304,8 @@ class ParameterSampler:
             self._preferences.append(preference)
             self._names[key] = index
         self._draws.append(draw)
+        self._value_count += width
+        self._parameter_count += additional
         return draw
 
     def freeze(self) -> ParameterPreferences:
@@ -265,6 +314,7 @@ class ParameterSampler:
             tuple(self._draws),
             self._default_mode,
             global_policy=self._global_policy,
+            limits=self._limits,
         )
 
 
@@ -281,9 +331,32 @@ def parameter_preferences_from_dict(data: dict[str, Any]) -> ParameterPreference
         return NumericalPreference(**values)
 
     fields = dict(data)
-    fields["preferences"] = tuple(preference(p) for p in fields.get("preferences", ()))
-    fields["draws"] = tuple(
-        NumericalDraw(request(d["request"]), d["preference"], tuple(d["units"]), tuple(d["values"]))
-        for d in fields.get("draws", ())
+    limits = PreferenceLimits(**fields.get("limits", {}))
+    raw_preferences, raw_draws = fields.get("preferences", ()), fields.get("draws", ())
+    if len(raw_preferences) > len(raw_draws):
+        raise ValueError("numerical preferences must each have a retained realization")
+    # Admit the raw dimensions before allocating decoded tuples or recomputing values.
+    parameters = sum(
+        2
+        + len(p["request"].get("shape", ()))
+        + len(p.get("units", ()))
+        + (2 if p.get("mode", "global") == "meta" else 0)
+        for p in raw_preferences
+    ) + sum(
+        3 + len(d["request"].get("shape", ())) + len(d["units"]) + len(d["values"])
+        for d in raw_draws
     )
+    limits.admit(
+        draws=len(raw_draws), values=sum(len(d["values"]) for d in raw_draws), parameters=parameters
+    )
+    fields["limits"] = limits
+    fields["preferences"] = tuple(preference(p) for p in fields.get("preferences", ()))
+    draws: list[NumericalDraw] = []
+    for raw in raw_draws:
+        values = dict(raw)
+        values["request"] = request(values["request"])
+        values["units"] = tuple(values["units"])
+        values["values"] = tuple(values["values"])
+        draws.append(NumericalDraw(**values))
+    fields["draws"] = tuple(draws)
     return ParameterPreferences(**fields)
