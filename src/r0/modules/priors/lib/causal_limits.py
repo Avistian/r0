@@ -44,6 +44,8 @@ class CausalLimits:
             features=features,
             outputs=outputs,
             extra_parameters=sum(node.structural_parameter_count for node in nodes),
+            extra_working_channels=max(node.working_extra_channels for node in nodes),
+            row_floor=max(node.working_row_floor for node in nodes),
         )
 
     def admit_dimensions(
@@ -56,6 +58,8 @@ class CausalLimits:
         features: int,
         outputs: int,
         extra_parameters: int = 0,
+        extra_working_channels: int = 0,
+        row_floor: int = 0,
     ) -> dict[str, int]:
         """Admit validated DAG dimensions before allocating sampled parameter arrays."""
         count, widest, total = len(widths), max(widths), sum(widths)
@@ -72,13 +76,15 @@ class CausalLimits:
         if parameters > self.parameters:
             raise ValueError("causal parameter limit exceeded")
         fan_in = max(sum(widths[parent] for parent in incoming) for incoming in parents)
-        peak_rows = max(rows, calibration_rows)
+        peak_rows = max(rows, calibration_rows, row_floor)
         # Float64: simultaneous values/innovations, calibration, parent concatenation,
         # temporary evaluation buffers, observation/target arrays, and serialized
         # parameter copies. Interpreter/library baseline and allocator overhead are
         # deliberately not described as measured or hard OS-enforced memory.
         working = (
-            8 * peak_rows * (6 * total + 2 * fan_in + 2 * features + 4 * outputs + 4)
+            8
+            * peak_rows
+            * (6 * total + 2 * fan_in + 2 * features + 4 * outputs + 4 + extra_working_channels)
             + 128 * parameters
         )
         if working > self.working_bytes:

@@ -24,6 +24,14 @@ class CausalNode:
     def structural_parameter_count(self) -> int:
         return self.activation_parameter_count
 
+    @property
+    def working_extra_channels(self) -> int:
+        return 0
+
+    @property
+    def working_row_floor(self) -> int:
+        return 0
+
     def __post_init__(self) -> None:
         if (
             type(self.parents) is not tuple
@@ -81,6 +89,14 @@ class StochasticCausalNode(ActivatedCausalNode):
     @property
     def structural_parameter_count(self) -> int:
         return self.activation_parameter_count + self.exogenous.parameter_count + 3
+
+    @property
+    def working_extra_channels(self) -> int:
+        return 8 * len(self.bias)
+
+    @property
+    def working_row_floor(self) -> int:
+        return 256 if self.exogenous.inputs.bound is not None else 0
 
     def has_noise_scale(self, channel: int) -> bool:
         response = self.noise_response
