@@ -5,6 +5,7 @@ from dataclasses import asdict, replace
 
 import numpy as np
 
+from r0.modules.priors.lib.causal_sampling import sample_causal_profile
 from r0.modules.priors.lib.compositions import (
     Combination,
     CompositeRecipe,
@@ -312,9 +313,12 @@ def sample_recipe(
     families = {
         "broad-v1": BROAD_FAMILIES,
         "tabiclv2-adapted-v1": ("power", "quadratic", "rff", "product"),
+        "causal-affine-v1": ("forward", "layered", "redirection"),
     }
     if profile not in families or family not in families[profile]:
         raise ValueError("unsupported sampling profile or family")
+    if profile == "causal-affine-v1":
+        return sample_causal_profile(family, task=task, seed=seed, task_id=task_id)
     rng = np.random.default_rng(
         int(record_fingerprint((profile, family, asdict(task), seed, task_id)), 16)
     )

@@ -11,6 +11,39 @@ from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
 
 
+def sample_causal_profile(
+    family: str, *, task: LinearRecipe, seed: int, task_id: int
+) -> CausalRecipe:
+    """An r0 exploration profile, not a complete published neural/causal prior."""
+    outputs = task.classes if task.task_type == "multiclass" else 1
+    rng = np.random.default_rng(
+        int(record_fingerprint(("causal-affine-v1", family, seed, task_id)), 16)
+    )
+    nodes = task.features + outputs + int(rng.integers(2, 17))
+    components = int(rng.integers(1, 4))
+    layers: tuple[int, ...] = ()
+    if family == "layered":
+        size = math.ceil(nodes / components)
+        depth = int(rng.integers(2, min(size, 5) + 1))
+        cuts = sorted(int(i) for i in rng.choice(np.arange(1, size), depth - 1, replace=False))
+        boundaries = [0, *cuts, size]
+        layers = tuple(b - a for a, b in zip(boundaries[:-1], boundaries[1:], strict=True))
+        nodes = size * components
+    prior = CausalGraphPrior(
+        family=family,
+        nodes=nodes,
+        components=components,
+        layer_widths=layers,
+        edge_probability=0.25
+        if family == "redirection"
+        else float(rng.choice((0, 0.05, 0.15, 0.35, 0.65, 1))),
+        redirection_probability=float(rng.choice((0, 0.25, 0.5, 0.75, 1)))
+        if family == "redirection"
+        else 0.5,
+    )
+    return sample_causal_recipe(prior, task=task, seed=seed, task_id=task_id)
+
+
 def sample_causal_recipe(
     graph: CausalGraphPrior,
     *,
