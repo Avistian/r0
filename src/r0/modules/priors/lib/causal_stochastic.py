@@ -29,23 +29,31 @@ def stochastic_value(
         raise ValueError("nonfinite pre-noise affine response; task was not retried")
     response = node.noise_response
     base = torch.tensor(node.noise_scale, dtype=raw.dtype, device=raw.device)
-    multiplier = torch.full_like(raw, response.offset)
+    scale = torch.full_like(raw, response.offset)
+    rescue = torch.zeros_like(raw, dtype=torch.bool)
     if response.strength:
         # A zero structural scale removes this path before evaluating its power.
         magnitude = torch.where(base == 0, 0.0, affine.abs())
-        multiplier = multiplier + response.strength * magnitude.pow(response.power)
-    scale = multiplier * base
-    if response.strength and not torch.isfinite(scale).all():
-        # An intermediate power/product may overflow while the full positive term
-        # remains representable after scaling. Rescue only those entries in logs.
-        affected = ~torch.isfinite(scale) & (base > 0)
-        selected_base = base.expand_as(raw)[affected]
+        term = magnitude.pow(response.power)
+        tiny = torch.finfo(raw.dtype).tiny
+        rescue = (term < tiny) & (magnitude > 0) & (base > 0)
+        term *= response.strength
+        rescue |= (term < tiny) & (magnitude > 0) & (base > 0)
+        scale += term
+        del magnitude, term
+    scale *= base
+    if response.strength:
+        rescue |= ~torch.isfinite(scale) & (base > 0)
+    if torch.any(rescue):
+        # Intermediate powers/products can overflow or underflow even when the
+        # final positive term is representable. Keep ordinary arithmetic elsewhere.
+        selected_base = base.expand_as(raw)[rescue]
         log_term = (
             selected_base.log()
             + math.log(response.strength)
-            + response.power * affine[affected].abs().log()
+            + response.power * affine[rescue].abs().log()
         )
-        scale[affected] = selected_base * response.offset + log_term.exp()
+        scale[rescue] = selected_base * response.offset + log_term.exp()
     if not torch.isfinite(scale).all():
         raise ValueError("nonfinite signal-dependent noise scale; task was not retried")
     innovation = scale * raw

@@ -285,4 +285,5 @@ def test_finite_structural_scales_survive_extreme_intermediate_values(
         scale = trace["noise-scale-1"]["values"][row][0]
         assert math.isclose(scale, expected_scale, rel_tol=2e-13)
         raw = trace["exogenous-1"]["values"][row][0]
-        assert float(task.scores[row, 0]) == math.tanh(bias + expected_scale * raw)
+        expected = math.tanh(bias + expected_scale * raw)
+        assert math.isclose(float(task.scores[row, 0]), expected, rel_tol=1e-12)
