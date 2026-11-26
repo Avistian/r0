@@ -154,3 +154,29 @@ def test_admission_diagnostics_preserve_the_requested_family(
         assert isinstance(recipe, (FourierRecipe, PolynomialRecipe))
         assert recipe.task.rows == 64
         assert recipe.task.noise_ratio == 0
+
+
+def test_sampled_request_admission_keeps_family_and_profile(
+    launch: tuple[Path, dict[str, str]],
+) -> None:
+    from r0.modules.generation import RecipeSampling, request_from_dict
+    from r0.modules.priors import PolynomialRecipe, recipe_from_dict
+
+    root, env = launch
+    config = root / "configs/generation/request.toml"
+    config.write_text(
+        config.read_text() + '\n[sampling]\nfamily = "polynomial"\nprofile = "broad-v1"\n'
+    )
+    result = invoke(root, env)
+    assert result.returncode == 0, result.stderr
+    plan = json.loads((root / "reservation.json").read_text())
+    request = request_from_dict(plan["request"])
+    assert request.sampling == RecipeSampling("polynomial", "broad-v1")
+    task_types: set[str] = set()
+    for entry in plan["agreement_recipes"]:
+        recipe = recipe_from_dict(entry)
+        assert isinstance(recipe, PolynomialRecipe)
+        assert recipe.task.rows == 64
+        assert recipe.task.noise_ratio == 0
+        task_types.add(recipe.task.task_type)
+    assert task_types == {"regression", "binary", "multiclass"}

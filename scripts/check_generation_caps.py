@@ -12,7 +12,7 @@ from dataclasses import asdict, replace
 from pathlib import Path
 
 from r0.modules.generation import load_request
-from r0.modules.priors import LinearRecipe
+from r0.modules.priors import LinearRecipe, sample_recipe
 
 
 def positive_limit(name: str) -> float:
@@ -89,13 +89,21 @@ def main() -> None:
             class_offsets=(),
             noise_ratio=0.0,
         )
-        agreement_recipes.append(
-            asdict(
+        if request.sampling is not None:
+            agreement = sample_recipe(
+                request.sampling.family,
+                profile=request.sampling.profile,
+                task=diagnostic,
+                seed=request.seed,
+                task_id=request.start,
+            )
+        else:
+            agreement = (
                 diagnostic
                 if isinstance(request.recipe, LinearRecipe)
                 else replace(request.recipe, task=diagnostic)
             )
-        )
+        agreement_recipes.append(asdict(agreement))
     plan = {
         "source": source,
         "run": args.run,

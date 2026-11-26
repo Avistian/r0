@@ -61,3 +61,17 @@ jobs:
       - name: Job summary
         if: always()
         run: echo "### checks · $(git rev-parse --short HEAD)" >> "$GITHUB_STEP_SUMMARY"
+      - name: Sampled saved-run walkthrough
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: python3 scripts/run_check.py python scripts/sampled_run_walkthrough.py --out "${{ runner.temp }}/sampled-run-evidence"
+      - name: Retain sampled run evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sampled-run-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/sampled-run-evidence/
+          if-no-files-found: ignore
+          retention-days: 14
