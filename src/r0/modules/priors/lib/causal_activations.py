@@ -39,6 +39,11 @@ _FIXED: dict[str, Callable[[torch.Tensor], torch.Tensor]] = {
     "heaviside_positive": lambda x: (x >= 0).to(x.dtype),
     "modulo": lambda x: torch.remainder(x, 1.0),
     "gelu": F.gelu,
+    "softmax": lambda x: torch.softmax(x, dim=-1),
+    "tied_max": lambda x: (x == x.max(dim=-1, keepdim=True).values).to(x.dtype),
+    "argmax": lambda x: F.one_hot(x.argmax(dim=-1), num_classes=x.shape[-1]).to(x.dtype),
+    "rank": lambda x: x.argsort(dim=-1, stable=True).argsort(dim=-1, stable=True).to(x.dtype),
+    "argsort": lambda x: x.argsort(dim=-1, stable=True).to(x.dtype),
 }
 
 _COMMON = {"input_scale", "input_shift", "output_scale", "output_shift"}
@@ -62,6 +67,19 @@ _PARAMETERS = {
 class CausalActivation:
     kind: str = "identity"
     parameters: tuple[tuple[str, float], ...] = ()
+
+    @property
+    def mixes_channels(self) -> bool:
+        return self.kind in ("softmax", "tied_max", "argmax", "rank", "argsort")
+
+    def uses_input(self, width: int) -> bool:
+        parameters = dict(self.parameters)
+        return (
+            parameters.get("input_scale", 1) != 0
+            and parameters.get("output_scale", 1) != 0
+            and not (self.mixes_channels and width == 1)
+            and not (self.kind in ("power", "integer_power") and parameters.get("exponent", 2) == 0)
+        )
 
     def __post_init__(self) -> None:
         if type(self.kind) is not str or self.kind not in _FIXED.keys() | _PARAMETERS.keys():

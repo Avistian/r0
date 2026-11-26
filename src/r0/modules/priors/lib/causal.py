@@ -258,11 +258,29 @@ def generate_causal(
     ancestry: dict[tuple[int, int], set[tuple[int, int]]] = {}
     for i, node in enumerate(recipe.nodes):
         parent_channels = [(p, j) for p in node.parents for j in range(len(recipe.nodes[p].bias))]
+        incoming_ancestry: list[set[tuple[int, int]]] = [
+            ancestry[parent] for parent in parent_channels
+        ]
+        if isinstance(node, ActivatedCausalNode):
+            if not node.input_activation.uses_input(len(parent_channels)):
+                incoming_ancestry = [set[tuple[int, int]]() for _ in parent_channels]
+            elif node.input_activation.mixes_channels:
+                shared = set[tuple[int, int]]().union(*incoming_ancestry)
+                incoming_ancestry = [shared for _ in parent_channels]
+        projected: list[set[tuple[int, int]]] = []
         for channel in range(len(node.bias)):
             related = {(i, channel)}
-            for incoming, parent in enumerate(parent_channels):
+            for incoming, parents in enumerate(incoming_ancestry):
                 if node.weights[incoming][channel] != 0:
-                    related.update(ancestry[parent])
+                    related.update(parents)
+            projected.append(related)
+        if isinstance(node, ActivatedCausalNode):
+            if not node.output_activation.uses_input(len(node.bias)):
+                projected = [{(i, channel)} for channel in range(len(node.bias))]
+            elif node.output_activation.mixes_channels:
+                shared = set[tuple[int, int]]().union(*projected)
+                projected = [shared for _ in node.bias]
+        for channel, related in enumerate(projected):
             ancestry[i, channel] = related
     target_ancestors: set[tuple[int, int]] = set()
     for ref in recipe.target:
@@ -282,7 +300,11 @@ def generate_causal(
         "observed": recipe.observed,
         "target": recipe.target,
         "active": active,
-        "active_definition": "shared nonzero-edge channel ancestry; potential dependence only",
+        "active_definition": (
+            "declared projection paths and channel-coupled activations; potential dependence only"
+            if recipe.version == "causal-v2"
+            else "shared nonzero-edge channel ancestry; potential dependence only"
+        ),
         "flags": flags,
         "normalization": "fixed independent calibration" if recipe.normalize else "none",
         "calibration": {
