@@ -8,6 +8,7 @@ from typing import Any
 import numpy as np
 
 from r0.modules.priors.lib.activation_sampling import finite_number
+from r0.modules.priors.lib.weight_vectors import UniformWeightVector, weight_vector_from_dict
 
 type Matrix = tuple[tuple[float, ...], ...]
 
@@ -121,8 +122,85 @@ class FactorizedWeights:
         return result
 
 
-def weight_construction_from_dict(data: dict[str, Any]) -> FactorizedWeights:
+@dataclass(frozen=True, slots=True)
+class ImportanceWeights:
+    gaussian: Matrix = ((1.0,),)
+    importance: tuple[UniformWeightVector, ...] = (UniformWeightVector(),)
+    epsilon: float = 1e-6
+    version: str = "importance-weights-v1"
+
+    def __post_init__(self) -> None:
+        rows, columns = matrix_shape(self.gaussian)
+        if self.version != "importance-weights-v1" or (
+            type(self.importance) is not tuple
+            or len(self.importance) != rows
+            or any(
+                type(v) is not UniformWeightVector or len(v.draws) != columns
+                for v in self.importance
+            )
+        ):
+            raise ValueError("importance vectors must match every Gaussian matrix row")
+        if not finite_number(self.epsilon) or self.epsilon < 0:
+            raise ValueError("row normalization epsilon must be finite and nonnegative")
+
+    @property
+    def shape(self) -> tuple[int, int]:
+        return len(self.gaussian), len(self.gaussian[0])
+
+    @property
+    def parameter_count(self) -> int:
+        return (
+            sum(len(row) for row in self.gaussian)
+            + sum(v.parameter_count for v in self.importance)
+            + 1
+        )
+
+    def materialize(self) -> Matrix:
+        return tuple(
+            _importance_row(row, vector, self.epsilon)
+            for row, vector in zip(self.gaussian, self.importance, strict=True)
+        )
+
+
+def _importance_row(
+    gaussian: tuple[float, ...], vector: UniformWeightVector, epsilon: float
+) -> tuple[float, ...]:
+    weights = vector.values()
+    with np.errstate(over="ignore", invalid="ignore", under="ignore"):
+        row = np.asarray(gaussian, dtype=np.float64) * weights
+    unsafe = not np.isfinite(row).all() or any(
+        g != 0 and w != 0 and abs(v) < np.finfo(np.float64).tiny
+        for g, w, v in zip(gaussian, weights, row, strict=True)
+    )
+    if not unsafe:
+        scale = max(float(np.abs(row).max()), epsilon)
+        if scale == 0:
+            return (0.0,) * len(row)
+        scaled = row / scale
+        return tuple(float(v) for v in scaled / (epsilon / scale + np.linalg.norm(scaled)))
+    logs = np.asarray(
+        [
+            math.log(abs(g)) + w if g else -math.inf
+            for g, w in zip(gaussian, vector.log_values(), strict=True)
+        ]
+    )
+    largest = float(logs.max())
+    if largest == -math.inf:
+        return (0.0,) * len(row)
+    log_norm = largest + math.log(float(np.linalg.norm(np.exp(logs - largest))))
+    log_denominator = np.logaddexp(log_norm, math.log(epsilon) if epsilon else -math.inf)
+    return tuple(float(v) for v in np.sign(gaussian) * np.exp(logs - log_denominator))
+
+
+type WeightConstruction = FactorizedWeights | ImportanceWeights
+
+
+def weight_construction_from_dict(data: dict[str, Any]) -> WeightConstruction:
     fields = dict(data)
+    if fields.get("version") == "importance-weights-v1":
+        fields["gaussian"] = tuple(tuple(row) for row in fields["gaussian"])
+        fields["importance"] = tuple(weight_vector_from_dict(v) for v in fields["importance"])
+        return ImportanceWeights(**fields)
     for name in ("left", "right"):
         if name in fields:
             fields[name] = tuple(tuple(row) for row in fields[name])

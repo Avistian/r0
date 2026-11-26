@@ -7,7 +7,12 @@ from typing import Any
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
 from r0.modules.priors.lib.inputs import InputDistribution
-from r0.modules.priors.lib.weight_matrices import FactorizedWeights, weight_construction_from_dict
+from r0.modules.priors.lib.weight_matrices import (
+    FactorizedWeights,
+    ImportanceWeights,
+    WeightConstruction,
+    weight_construction_from_dict,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -120,7 +125,7 @@ class StochasticCausalNode(ActivatedCausalNode):
 
 @dataclass(frozen=True, slots=True)
 class MatrixCausalNode(StochasticCausalNode):
-    weight_construction: FactorizedWeights = FactorizedWeights()
+    weight_construction: WeightConstruction = FactorizedWeights()
 
     @property
     def structural_parameter_count(self) -> int:
@@ -131,7 +136,7 @@ class MatrixCausalNode(StochasticCausalNode):
 
     def __post_init__(self) -> None:
         StochasticCausalNode.__post_init__(self)
-        if type(self.weight_construction) is not FactorizedWeights:
+        if type(self.weight_construction) not in (FactorizedWeights, ImportanceWeights):
             raise ValueError("matrix nodes require a frozen weight construction")
         if not self.parents or self.weight_construction.shape != (
             len(self.weights),
