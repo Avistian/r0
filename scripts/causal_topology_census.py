@@ -104,6 +104,22 @@ def run(destination: Path, profile: str = "causal-affine-v1") -> None:
                     if "noise_response" in node
                 )
             ),
+            "weight_constructions": dict(
+                Counter(
+                    node["weight_construction"]["version"]
+                    for r in records
+                    for node in r.get("recipe", {}).get("nodes", [])
+                    if "weight_construction" in node
+                )
+            ),
+            "factor_inner_dimensions": dict(
+                Counter(
+                    str(len(node["weight_construction"]["diagonal"]))
+                    for r in records
+                    for node in r.get("recipe", {}).get("nodes", [])
+                    if "weight_construction" in node
+                )
+            ),
             "flag_counts": dict(Counter(flag for r in valid for flag in r["flags"])),
             "ranges": {
                 name: [min(r[name] for r in valid), max(r[name] for r in valid)]
@@ -136,6 +152,7 @@ if __name__ == "__main__":
             "causal-activated-v1",
             "causal-preferences-v1",
             "causal-exogenous-v1",
+            "causal-factorized-v1",
         ),
         default="causal-affine-v1",
     )
