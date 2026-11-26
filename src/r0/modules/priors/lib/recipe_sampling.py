@@ -315,16 +315,18 @@ def sample_recipe(
         "tabiclv2-adapted-v1": ("power", "quadratic", "rff", "product"),
         "causal-affine-v1": ("forward", "layered", "redirection"),
         "causal-activated-v1": ("forward", "layered", "redirection"),
+        "causal-preferences-v1": ("forward", "layered", "redirection"),
     }
     if profile not in families or family not in families[profile]:
         raise ValueError("unsupported sampling profile or family")
-    if profile in ("causal-affine-v1", "causal-activated-v1"):
+    if profile in ("causal-affine-v1", "causal-activated-v1", "causal-preferences-v1"):
         return sample_causal_profile(
             family,
             task=task,
             seed=seed,
             task_id=task_id,
             activated=profile == "causal-activated-v1",
+            preferences=profile == "causal-preferences-v1",
         )
     rng = np.random.default_rng(
         int(record_fingerprint((profile, family, asdict(task), seed, task_id)), 16)

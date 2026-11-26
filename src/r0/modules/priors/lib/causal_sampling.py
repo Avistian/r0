@@ -5,7 +5,10 @@ from dataclasses import asdict, replace
 
 import numpy as np
 
-from r0.modules.priors.lib.activation_sampling import CausalActivationPrior
+from r0.modules.priors.lib.activation_sampling import (
+    ActivationParameterPrior,
+    CausalActivationPrior,
+)
 from r0.modules.priors.lib.causal import ActivatedCausalNode, CausalNode, CausalRecipe
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.causal_graph import CausalGraphPrior, sample_causal_graph
@@ -42,11 +45,23 @@ _EXPLORATION_ACTIVATIONS = (
 
 
 def sample_causal_profile(
-    family: str, *, task: LinearRecipe, seed: int, task_id: int, activated: bool = False
+    family: str,
+    *,
+    task: LinearRecipe,
+    seed: int,
+    task_id: int,
+    activated: bool = False,
+    preferences: bool = False,
 ) -> CausalRecipe:
     """An r0 exploration profile, not a complete published neural/causal prior."""
     outputs = task.classes if task.task_type == "multiclass" else 1
-    profile = "causal-activated-v1" if activated else "causal-affine-v1"
+    profile = (
+        "causal-preferences-v1"
+        if preferences
+        else "causal-activated-v1"
+        if activated
+        else "causal-affine-v1"
+    )
     rng = np.random.default_rng(int(record_fingerprint((profile, family, seed, task_id)), 16))
     nodes = task.features + outputs + int(rng.integers(2, 17))
     components = int(rng.integers(1, 4))
@@ -71,6 +86,8 @@ def sample_causal_profile(
         else 0.5,
     )
     recipe = sample_causal_recipe(prior, task=task, seed=seed, task_id=task_id)
+    if preferences:
+        return with_activation_prior(recipe, _preference_profile(rng), seed=seed, task_id=task_id)
     if not activated:
         return recipe
     activated_nodes: list[CausalNode] = []
@@ -157,4 +174,31 @@ def sample_causal_recipe(
         recipe
         if activations is None
         else with_activation_prior(recipe, activations, seed=seed, task_id=task_id)
+    )
+
+
+def _preference_profile(rng: np.random.Generator) -> CausalActivationPrior:
+    """Versioned r0 exploration ranges; not a reproduction of a complete source prior."""
+    names = (*_EXPLORATION_ACTIVATIONS, "relu_power", "integer_power", "reciprocal_abs_power")
+    mode = str(rng.choice(("independent", "dirichlet", "homogeneous")))
+    power = (ActivationParameterPrior("exponent", 0.1, 10, "log_uniform"),)
+    ranges = {
+        "signed_power": power,
+        "relu_power": power,
+        "reciprocal_abs_power": power,
+        "integer_power": (ActivationParameterPrior("exponent", 2, 6, "randint"),),
+        "leaky_relu": (ActivationParameterPrior("negative_slope", 0, 1),),
+        "elu": (ActivationParameterPrior("alpha", 0.1, 10, "log_uniform"),),
+        "softplus": (ActivationParameterPrior("beta", 0.1, 10, "log_uniform"),),
+        "modulo": (ActivationParameterPrior("period", 0.1, 10, "log_uniform"),),
+    }
+    return CausalActivationPrior(
+        choices=tuple(CausalActivation(name) for name in names),
+        mode=mode,
+        concentration=float(math.exp(rng.uniform(math.log(0.5), math.log(50))))
+        if mode == "dirichlet"
+        else 1,
+        placement=str(rng.choice(("input", "output", "both"))),
+        noise_after_probability=float(rng.choice((0, 0.5, 1))),
+        parameter_priors=tuple(ranges.get(name, ()) for name in names),
     )
