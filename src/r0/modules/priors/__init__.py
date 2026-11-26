@@ -6,8 +6,10 @@ import numpy as np
 
 from r0.modules.episodes import Feature, Row, Target, TaskType
 from r0.modules.priors.lib.authored import authored_episode as authored_episode
+from r0.modules.priors.lib.causal import ActivatedCausalNode as ActivatedCausalNode
 from r0.modules.priors.lib.causal import CausalNode as CausalNode
 from r0.modules.priors.lib.causal import CausalRecipe as CausalRecipe
+from r0.modules.priors.lib.causal_activations import CausalActivation as CausalActivation
 from r0.modules.priors.lib.causal_graph import CausalGraph as CausalGraph
 from r0.modules.priors.lib.causal_graph import CausalGraphPrior as CausalGraphPrior
 from r0.modules.priors.lib.causal_graph import sample_causal_graph as sample_causal_graph

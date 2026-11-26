@@ -8,6 +8,7 @@ import numpy as np
 import torch
 
 from r0.modules.priors.lib.calibration import stable_calibration
+from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.causal_graph import CausalGraph
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.linear import LinearRecipe
@@ -49,6 +50,13 @@ class CausalNode:
             raise ValueError("causal parameters must be finite numbers")
         if any(v < 0 for v in self.noise_scale):
             raise ValueError("structural noise scales must be nonnegative")
+
+
+@dataclass(frozen=True, slots=True)
+class ActivatedCausalNode(CausalNode):
+    input_activation: CausalActivation = CausalActivation()
+    output_activation: CausalActivation = CausalActivation()
+    noise_position: str = "before_output"
 
 
 @dataclass(frozen=True, slots=True)
