@@ -250,9 +250,16 @@ def test_stochastic_admission_includes_exogenous_and_scale_buffers() -> None:
 
 @pytest.mark.parametrize(
     ("bias", "base_scale", "strength", "expected_scale"),
-    [(1e200, 0, 1, 0), (1e200, 1e-200, 1, 1e200), (1e100, 1e-200, 1e200, 1e200)],
+    [
+        (1e200, 0, 1, 0),
+        (1e200, 1e-200, 1, 1e200),
+        (1e100, 1e-200, 1e200, 1e200),
+        (1e-200, 1e200, 1, 1e-200),
+        (1e-200, 1e300, 1e300, 1e200),
+        (1e-100, 1e300, 1e-200, 1e-100),
+    ],
 )
-def test_finite_structural_scales_survive_irrelevant_intermediate_overflow(
+def test_finite_structural_scales_survive_extreme_intermediate_values(
     bias: float, base_scale: float, strength: float, expected_scale: float
 ) -> None:
     controls = LinearRecipe(
