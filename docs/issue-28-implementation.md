@@ -196,3 +196,27 @@ weight hyperpriors, GP/Fourier/tree/neural constructions, wider graphs, native
 typed variables, interventions, workbench UI and final environment/scale evidence
 remain required. Smoke/eval-smoke remain NOT_AVAILABLE; browser, Colab and GPU
 acceptance remain PENDING. The full #28 goal is still active.
+
+
+## Activation preference checkpoint
+
+The shared sampler now supports independent categorical, per-task Dirichlet and
+homogeneous activation choices, with frozen uniform/log-uniform/integer numeric
+parameter distributions. `SampledCausalRecipe` retains the prior, realized
+probabilities and actual node parameters without changing legacy recipe fields.
+The new `causal-preferences-v1` exploration profile reaches generation, saved
+explorer sessions, row inspection and replay. [Laws, ranges and evidence](issue-28-activation-priors.md)
+remain explicit about source-specific selectors and numerical correlations still
+pending; this implements the activation part of decision 11, not the mechanism
+and weight preference requirements.
+
+Independent spec review originally rejected an approximately one-hot homogeneous
+record that should have been rejected exactly. RED `3eafcd5` and GREEN `ec06de3`
+retain that repair. Standards review also identified a missing evidence attribution
+and an ambiguous internal profile selector; both are resolved with the historical
+finding retained. `make check` at `ec06de3` passed **579 tests, 1 skipped**, and all
+static gates; the complete earlier and repaired outputs are published in the
+checkpoint record. An author census at `c92a551` retained **192/192 valid** tasks
+across three modes, with flagged cases intact and no filtering. Full source
+coverage, wider mechanisms/noise/weights, typed variables, interventions, full
+workbench delivery and final environment/resource acceptance remain required.

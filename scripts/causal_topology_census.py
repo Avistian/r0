@@ -70,6 +70,16 @@ def run(destination: Path, profile: str = "causal-affine-v1") -> None:
             "attempted": len(records),
             "valid": len(valid),
             "failed": len(records) - len(valid),
+            "failure_reasons": dict(
+                Counter(r["error"] for r in records if r["status"] == "FAILED")
+            ),
+            "activation_modes": dict(
+                Counter(
+                    r["recipe"]["activation_prior"]["mode"]
+                    for r in records
+                    if "activation_prior" in r.get("recipe", {})
+                )
+            ),
             "flag_counts": dict(Counter(flag for r in valid for flag in r["flags"])),
             "ranges": {
                 name: [min(r[name] for r in valid), max(r[name] for r in valid)]
@@ -96,7 +106,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("destination", type=Path)
     parser.add_argument(
-        "--profile", choices=("causal-affine-v1", "causal-activated-v1"), default="causal-affine-v1"
+        "--profile",
+        choices=("causal-affine-v1", "causal-activated-v1", "causal-preferences-v1"),
+        default="causal-affine-v1",
     )
     args = parser.parse_args()
     run(args.destination, args.profile)
