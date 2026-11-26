@@ -9,7 +9,11 @@ import numpy as np
 import torch
 
 from r0.modules.priors.lib.calibration import stable_calibration
-from r0.modules.priors.lib.causal_activations import CausalActivation, activate
+from r0.modules.priors.lib.causal_activations import (
+    CausalActivation,
+    activate,
+    activation_diagnostic,
+)
 from r0.modules.priors.lib.causal_graph import CausalGraph
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.linear import LinearRecipe
@@ -182,6 +186,8 @@ def causal_values(
     rng: Callable[..., np.random.Generator],
     device: str,
     indices: Sequence[int] | None = None,
+    *,
+    diagnostics: list[dict[str, Any]] | None = None,
 ) -> tuple[list[torch.Tensor], list[torch.Tensor]]:
     """Replay selected original rows without retaining all intermediate task values."""
     values: list[torch.Tensor] = []
@@ -203,9 +209,17 @@ def causal_values(
         if node.parents:
             parents = torch.cat([values[p] for p in node.parents], dim=1)
             if isinstance(node, ActivatedCausalNode):
+                if diagnostics is not None:
+                    diagnostic = activation_diagnostic(parents, node.input_activation)
+                    if diagnostic is not None:
+                        diagnostics.append({"node": i, "stage": "input", **diagnostic})
                 parents = activate(parents, node.input_activation)
             value = value + parents @ torch.tensor(node.weights, dtype=torch.float64, device=device)
         if isinstance(node, ActivatedCausalNode):
+            if diagnostics is not None:
+                diagnostic = activation_diagnostic(value, node.output_activation)
+                if diagnostic is not None:
+                    diagnostics.append({"node": i, "stage": "output", **diagnostic})
             value = activate(value, node.output_activation)
             if node.noise_position == "after_output":
                 value = value + innovation
@@ -230,7 +244,14 @@ def generate_causal(
     def rng(*keys: object) -> np.random.Generator:
         return causal_rng(seed, task_id, *keys)
 
-    values, _ = causal_values(recipe.nodes, recipe.task.rows, rng, device)
+    diagnostics: list[dict[str, Any]] = []
+    values, _ = causal_values(
+        recipe.nodes,
+        recipe.task.rows,
+        rng,
+        device,
+        diagnostics=diagnostics if recipe.version == "causal-v2" else None,
+    )
     inputs = torch.stack([values[i][:, j] for i, j in recipe.observed], dim=1)
     scores = torch.stack([values[i][:, j] for i, j in recipe.target], dim=1)
     center, scale = np.zeros(len(recipe.target)), np.ones(len(recipe.target))
@@ -291,6 +312,7 @@ def generate_causal(
         flags.append("disconnected_target")
     if torch.all(scores == scores[0]).item():
         flags.append("zero_target_dispersion")
+    flags.extend(sorted({flag for diagnostic in diagnostics for flag in diagnostic["flags"]}))
     card = {
         "version": recipe.version,
         "family": "causal",
@@ -325,6 +347,8 @@ def generate_causal(
             outputs=len(recipe.target),
         ),
     }
+    if recipe.version == "causal-v2":
+        card["activation_diagnostics"] = diagnostics
     return complete_task(
         recipe.task, asdict(recipe), card, inputs, scores, seed=seed, task_id=task_id, rng=rng
     )

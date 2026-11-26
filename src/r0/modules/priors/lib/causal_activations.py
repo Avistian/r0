@@ -161,3 +161,46 @@ def activate(value: torch.Tensor, activation: CausalActivation) -> torch.Tensor:
         if not torch.isfinite(result).all():
             raise ValueError("nonfinite rescaled activation output; task was not retried")
     return result
+
+
+def activation_diagnostic(
+    value: torch.Tensor, activation: CausalActivation
+) -> dict[str, object] | None:
+    """Describe base-activation boundaries, never filter a draw or fit a parameter."""
+    parameters = dict(activation.parameters)
+    argument = parameters.get("input_scale", 1.0) * value + parameters.get("input_shift", 0.0)
+    kind = activation.kind
+    flags: list[str] = []
+    if parameters.get("input_scale", 1) == 0 or parameters.get("output_scale", 1) == 0:
+        flags.append("constant_activation_transform")
+    if kind == "tanh":
+        boundary = argument.tanh().abs() >= 1 - 1e-6
+    elif kind == "sigmoid":
+        sigmoid = argument.sigmoid()
+        boundary = (sigmoid <= 1e-6) | (sigmoid >= 1 - 1e-6)
+    elif kind == "hardtanh":
+        boundary = argument.abs() >= 1
+    elif kind == "relu6":
+        boundary = (argument <= 0) | (argument >= 6)
+    elif kind == "relu":
+        boundary = argument <= 0
+    elif flags:
+        boundary = torch.ones_like(argument, dtype=torch.bool)
+    else:
+        return None
+    fractions: list[float] = boundary.to(torch.float64).mean(dim=0).detach().cpu().numpy().tolist()
+    if kind in ("tanh", "sigmoid", "hardtanh", "relu6", "relu") and any(
+        f >= 0.95 for f in fractions
+    ):
+        flags.append("inactive_relu" if kind == "relu" else "saturated_activation")
+    return {
+        "kind": kind,
+        "rows": len(value),
+        "boundary_fraction": fractions,
+        "fraction_threshold": 0.95,
+        "tail_tolerance": 1e-6,
+        "flags": flags,
+        "meaning": (
+            "base activation after input transform; before output scaling and any later noise"
+        ),
+    }
