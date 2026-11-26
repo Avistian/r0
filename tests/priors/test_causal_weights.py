@@ -3,6 +3,7 @@
 import json
 from dataclasses import asdict
 
+import pytest
 import torch
 
 from r0.modules.priors import (
@@ -12,6 +13,7 @@ from r0.modules.priors import (
     explain_generation,
     generate_task,
     recipe_from_dict,
+    sample_recipe,
 )
 
 
@@ -56,3 +58,18 @@ def test_factorized_weights_retain_the_worked_projection_and_its_construction() 
         ).episode()
         == task.episode()
     )
+
+
+def test_sampled_factorized_record_cannot_silently_discard_its_construction() -> None:
+    recipe = sample_recipe(
+        "redirection",
+        task=LinearRecipe(rows=16, context_rows=8),
+        seed=28,
+        task_id=10,
+        profile="causal-factorized-v1",
+    )
+    data = asdict(recipe)
+    child = next(node for node in data["nodes"] if node["parents"])
+    child.pop("weight_construction")
+    with pytest.raises(ValueError, match="factorized.*construction"):
+        recipe_from_dict(data)
