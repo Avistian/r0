@@ -102,3 +102,49 @@ def test_representable_factor_products_survive_extreme_intermediates(
     data["nodes"][1]["weight_construction"] = {"left": left, "diagonal": diagonal, "right": right}
     task = generate_task(recipe_from_dict(data), seed=28, task_id=11)
     torch.testing.assert_close(task.scores[:, 0], expected * task.inputs[:, 0], rtol=0, atol=0)
+
+
+def test_uniform_importance_weights_retain_their_normalized_projection() -> None:
+    recipe = recipe_from_dict(
+        {
+            "version": "causal-v2",
+            "task": {
+                "rows": 16,
+                "context_rows": 8,
+                "features": 2,
+                "signal_features": 2,
+                "active_features": 2,
+            },
+            "observed": [[0, 0], [0, 1]],
+            "target": [[1, 0]],
+            "nodes": [
+                {"bias": [0, 0], "noise_scale": [1, 1]},
+                {
+                    "parents": [0],
+                    "weights": [[0.6, 0.8], [0, 0]],
+                    "bias": [0, 0],
+                    "noise_scale": [0, 0],
+                    "weight_construction": {
+                        "version": "importance-weights-v1",
+                        "gaussian": [[3, 4], [0, 0]],
+                        "importance": [{"draws": [0.5, 0.5]}, {"draws": [0.1, 0.2]}],
+                        "epsilon": 0,
+                    },
+                },
+            ],
+        }
+    )
+    task = generate_task(recipe, seed=28, task_id=12)
+    torch.testing.assert_close(task.scores[:, 0], 0.6 * task.inputs[:, 0], rtol=0, atol=0)
+    trace = {n["id"]: n for n in explain_generation(task, [0, 15])["nodes"]}
+    assert trace["causal-1"]["parameters"]["weight_construction"]["importance"][0]["draws"] == (
+        0.5,
+        0.5,
+    )
+    assert json.loads(task.mechanism_json)["resource_admission"]["parameters"] == 28
+    assert (
+        generate_task(
+            recipe_from_dict(json.loads(json.dumps(asdict(recipe)))), seed=28, task_id=12
+        ).episode()
+        == task.episode()
+    )
