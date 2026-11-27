@@ -6,6 +6,7 @@ from dataclasses import asdict
 import numpy as np
 import torch
 
+from r0.modules.priors.lib.causal_intervention_execution import InterventionExecution
 from r0.modules.priors.lib.native_vector_evaluation import (
     evaluate_native_vector_graph,
     native_vector_rng,
@@ -17,9 +18,16 @@ from r0.modules.priors.lib.training_task import TrainingTask
 
 
 def generate_native_vector(
-    recipe: NativeVectorRecipe, *, seed: int, task_id: int, device: str = "cpu"
+    recipe: NativeVectorRecipe,
+    *,
+    seed: int,
+    task_id: int,
+    device: str = "cpu",
+    execution: InterventionExecution | None = None,
 ) -> TrainingTask:
-    result = evaluate_native_vector_graph(recipe, seed=seed, task_id=task_id, device=device)
+    result = evaluate_native_vector_graph(
+        recipe, seed=seed, task_id=task_id, device=device, execution=execution
+    )
     config = asdict(recipe)
     source = {
         **config,
@@ -33,8 +41,15 @@ def generate_native_vector(
     span = recipe.nodes[target_node].spans[target_channel]
     inputs = torch.stack([result.values[i][j].to(torch.float64) for i, j in recipe.observed], dim=1)
     targets = result.values[target_node][target_channel]
+    split_rng = (
+        execution.rng(
+            lambda *keys: native_vector_rng(seed, task_id, *keys), "split", recipe.task.split
+        )
+        if execution
+        else native_vector_rng(seed, task_id, "split", recipe.task.split)
+    )
     permutation = torch.tensor(
-        native_vector_rng(seed, task_id, "split", recipe.task.split).permutation(recipe.task.rows),
+        split_rng.permutation(recipe.task.rows),
         device=device,
     )
     emissions = {

@@ -71,6 +71,7 @@ promise empirical class marginals. Undisclosed source laws, source-specific
 mixture probabilities and the broader #28 options remain required/unknown as
 inventoried; they are not silently replaced by these presets.
 
-Vector causal intervention pairs remain a required follow-on integration. Current
-adapter-pair APIs reject native vector recipes; ordinary mechanism edits are not
-causal interventions. Hosted execution and scientific reproduction are unverified.
+[Vector causal interventions](issue-28-vector-interventions.md) now retain joint
+mechanisms with explicit logical-variable clamps and domain changes. Adapter-pair
+APIs still reject native vector recipes; ordinary mechanism edits are distinct
+from causal interventions. Hosted execution and scientific reproduction are unverified.

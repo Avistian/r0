@@ -136,8 +136,9 @@ draws, overwritten overflow, fixed target calibration, malformed archives and
 persisted pair replay. Raw logs and the base-RED/current-GREEN program are ignored
 under `docs/evidence/issue-28-causal-interventions/`.
 
-This implementation supports explicit CPU execution. GPU agreement, workbench/Colab
-controls and saved UI comparisons are still pending. Legacy non-functional
+This implementation supports explicit CPU execution. The [intervention explorer](issue-28-intervention-explorer.md)
+and [joint vector integration](issue-28-vector-interventions.md) provide local controls
+and saved comparisons. GPU agreement and hosted Colab verification remain pending. Legacy non-functional
 `CausalRecipe` conversion, stochastic stage sampling and independently scoped pipeline-component soft
 replacement, stochastic/per-row hard assignments, surgery inside coupled functions,
 and additional intervention locations remain extensions to implement rather than

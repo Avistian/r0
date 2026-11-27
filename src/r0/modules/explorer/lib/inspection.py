@@ -140,22 +140,26 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
             if native["version"] == "native-vector-causal-v1"
             else target_node["domain"]
         )
-        if record["recipe"]["version"] == "causal-intervention-v1":
-            for change in record["recipe"]["interventions"]:
-                if (
-                    change["version"] == "stage-causal-intervention-v1"
-                    and change["node"] == native["target"][0]
-                    and change.get("domain") is not None
-                ):
-                    view["original_target_emission"] = domain["emission"]
-                    view["original_target_frequency_weights"] = domain.get("frequencies")
-                    domain = change["domain"]
+        original_domain = domain
+        changes = record["recipe"].get("interventions", ())
+        target_node_index, target_variable = native["target"]
+        relevant = [
+            c
+            for c in changes
+            if c["node"] == target_node_index
+            and ("variable" not in c or c["variable"] == target_variable)
+        ]
+        for change in relevant:
+            if change.get("domain") is not None:
+                domain = change["domain"]
         view["target_emission"] = domain["emission"]
-        if record["recipe"]["version"] == "causal-intervention-v1" and any(
-            c.get("category") is not None and c["node"] == native["target"][0]
-            for c in record["recipe"]["interventions"]
-        ):
-            view["original_target_emission"] = domain["emission"]
+        if domain != original_domain:
+            view["original_target_emission"] = original_domain["emission"]
+            view["original_target_frequency_weights"] = original_domain.get("frequencies")
+            view["original_target_domain"] = original_domain
+            view["effective_target_domain"] = domain
+        if any(c.get("category") is not None for c in relevant):
+            view["original_target_emission"] = original_domain["emission"]
             view["target_emission"] = "forced-category indicator"
         view["target_frequency_weights"] = domain.get("frequencies")
         for feature, schema in zip(view["features"], task.feature_schema, strict=True):

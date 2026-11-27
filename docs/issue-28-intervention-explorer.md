@@ -46,8 +46,9 @@ not publish a successful session result.
 The local HTTP UI and embedded Colab adapter share these controls and session
 operations. Local callback tests cover create/reopen; hosted Colab is **NOT_RUN**.
 This slice exposes hard and frozen-function/noise soft changes on the base API.
-Additional root/domain/pipeline-stage controls and heterogeneous native vectors
-remain required follow-on work; no complete issue #28 acceptance is implied.
+[Joint vector intervention controls](issue-28-vector-interventions.md) add explicit
+logical-variable selection and root/domain/pipeline-stage changes. No complete
+issue #28 acceptance is implied.
 
 Verification uses public session round trips, timeout/size/stale-identity failures,
 native categories, actual Chromium numerical/native/fitted workflows, pipeline

@@ -10,9 +10,16 @@ from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
 from r0.modules.priors.lib.joint_function_admission import function_record_cost
 from r0.modules.priors.lib.native_causal import NativeCausalNode, NativeCausalRecipe
+from r0.modules.priors.lib.native_vector_intervention import (
+    NativeVectorDomainIntervention,
+    NativeVectorHardIntervention,
+    validate_variable_change,
+)
+from r0.modules.priors.lib.native_vector_records import NativeVectorNode, NativeVectorRecipe
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
 from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
+from r0.modules.priors.lib.sampled_native_vector_graph import SampledNativeVectorGraph
 from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
 from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.stage_intervention import StageIntervention
@@ -25,6 +32,8 @@ type CausalBase = (
     | SampledNativeGraph
     | SampledParentGraph
     | SampledTopologyGraph
+    | NativeVectorRecipe
+    | SampledNativeVectorGraph
 )
 
 
@@ -89,10 +98,12 @@ class SoftIntervention:
             function_geometry(self.function)
 
 
-def causal_runtime(base: object) -> FunctionalCausalRecipe | NativeCausalRecipe:
-    if isinstance(base, (FunctionalCausalRecipe, NativeCausalRecipe)):
+def causal_runtime(
+    base: object,
+) -> FunctionalCausalRecipe | NativeCausalRecipe | NativeVectorRecipe:
+    if isinstance(base, (FunctionalCausalRecipe, NativeCausalRecipe, NativeVectorRecipe)):
         return base
-    if isinstance(base, SampledNativeGraph):
+    if isinstance(base, (SampledNativeGraph, SampledNativeVectorGraph)):
         return base.recipe
     if isinstance(
         base,
@@ -105,7 +116,14 @@ def causal_runtime(base: object) -> FunctionalCausalRecipe | NativeCausalRecipe:
 @dataclass(frozen=True, slots=True)
 class CausalInterventionRecipe:
     base: CausalBase
-    interventions: tuple[HardIntervention | SoftIntervention | StageIntervention, ...]
+    interventions: tuple[
+        HardIntervention
+        | SoftIntervention
+        | StageIntervention
+        | NativeVectorHardIntervention
+        | NativeVectorDomainIntervention,
+        ...,
+    ]
     mode: str = "matched"
     population: int = 1
     version: str = "causal-intervention-v1"
@@ -133,16 +151,37 @@ class CausalInterventionRecipe:
                 HardIntervention,
                 SoftIntervention,
                 StageIntervention,
+                NativeVectorHardIntervention,
+                NativeVectorDomainIntervention,
             ) or change.node >= len(runtime.nodes):
                 raise ValueError("intervention refers to an invalid node")
             node = runtime.nodes[change.node]
+            if isinstance(change, (NativeVectorHardIntervention, NativeVectorDomainIntervention)):
+                if not isinstance(node, NativeVectorNode):
+                    raise ValueError("logical-variable intervention requires a native vector node")
+                validate_variable_change(change, node)
+                key = (change.node, "variable", change.variable)
+                if key in occupied:
+                    raise ValueError("overlapping vector intervention locations")
+                occupied.add(key)
+                continue
+            if isinstance(node, NativeVectorNode) and isinstance(change, HardIntervention):
+                raise ValueError("vector clamps require explicit logical-variable records")
             native = node if isinstance(node, NativeCausalNode) else None
-            equation = node.equation if isinstance(node, NativeCausalNode) else node
+            equation = (
+                node.equation if isinstance(node, (NativeCausalNode, NativeVectorNode)) else node
+            )
             if isinstance(change, (SoftIntervention, StageIntervention)):
-                if change.node in soft or change.node in hard:
-                    raise ValueError("overlapping hard/soft or duplicate soft interventions")
-                soft.add(change.node)
                 kwargs = replacement_equation_fields(change)
+                if isinstance(node, NativeVectorNode):
+                    keys = [(change.node, field, -1) for field in kwargs]
+                    if any(key in occupied for key in keys):
+                        raise ValueError("overlapping joint vector equation replacements")
+                    occupied.update(keys)
+                else:
+                    if change.node in soft or change.node in hard:
+                        raise ValueError("overlapping hard/soft or duplicate soft interventions")
+                    soft.add(change.node)
                 if isinstance(change, StageIntervention):
                     if change.root is not None and equation.root is None:
                         raise ValueError("root-law changes require an existing root node")
@@ -199,7 +238,7 @@ class CausalInterventionRecipe:
                 + 8 * n.equation.function.output_width
                 + 4 * n.state_width
             )
-            if isinstance(n, NativeCausalNode)
+            if isinstance(n, (NativeCausalNode, NativeVectorNode))
             else (n.function.input_width + 10 * n.function.output_width)
             for n in original.nodes
         )
@@ -213,7 +252,7 @@ class CausalInterventionRecipe:
             raise ValueError("causal intervention comparison working memory limit exceeded")
         return {"parameters": metadata, "estimated_working_bytes": working}
 
-    def effective_runtime(self) -> FunctionalCausalRecipe | NativeCausalRecipe:
+    def effective_runtime(self) -> FunctionalCausalRecipe | NativeCausalRecipe | NativeVectorRecipe:
         original = causal_runtime(self.base)
         replacements = {
             c.node: c
@@ -222,11 +261,13 @@ class CausalInterventionRecipe:
         }
 
         def equation(index: int, node: FunctionalCausalNode) -> FunctionalCausalNode:
-            change = replacements.get(index)
-            if change is None:
-                return node
-            kwargs = replacement_equation_fields(change)
-            return replace(node, **kwargs)
+            kwargs: dict[str, Any] = {}
+            for change in self.interventions:
+                if change.node == index and isinstance(
+                    change, (SoftIntervention, StageIntervention)
+                ):
+                    kwargs.update(replacement_equation_fields(change))
+            return replace(node, **kwargs) if kwargs else node
 
         def domain(index: int, node: NativeCausalNode):
             change = replacements.get(index)
@@ -236,6 +277,23 @@ class CausalInterventionRecipe:
                 else node.domain
             )
 
+        if isinstance(original, NativeVectorRecipe):
+            domains = {
+                (c.node, c.variable): c.domain
+                for c in self.interventions
+                if isinstance(c, NativeVectorDomainIntervention)
+            }
+            return replace(
+                original,
+                nodes=tuple(
+                    replace(
+                        n,
+                        equation=equation(i, n.equation),
+                        domains=tuple(domains.get((i, j), d) for j, d in enumerate(n.domains)),
+                    )
+                    for i, n in enumerate(original.nodes)
+                ),
+            )
         if isinstance(original, NativeCausalRecipe):
             return replace(
                 original,

@@ -21,8 +21,16 @@ from r0.modules.priors.lib.functional_causal_evaluation import (
 )
 from r0.modules.priors.lib.native_causal import NativeCausalRecipe
 from r0.modules.priors.lib.native_evaluation import evaluate_native_graph, generate_native_causal
+from r0.modules.priors.lib.native_vector_evaluation import evaluate_native_vector_graph
+from r0.modules.priors.lib.native_vector_intervention import (
+    NativeVectorDomainIntervention,
+    NativeVectorHardIntervention,
+)
+from r0.modules.priors.lib.native_vector_output import generate_native_vector
+from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
+from r0.modules.priors.lib.sampled_native_vector_graph import SampledNativeVectorGraph
 from r0.modules.priors.lib.stage_intervention import StageIntervention
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -39,14 +47,20 @@ def generate_intervened(
         raise ValueError("causal intervention execution currently supports explicit CPU only")
     execution = execution or InterventionExecution(recipe)
     original = causal_runtime(recipe.base)
-    if not isinstance(recipe.base, (FunctionalCausalRecipe, NativeCausalRecipe)):
-        if isinstance(recipe.base, SampledNativeGraph):
+    if not isinstance(
+        recipe.base, (FunctionalCausalRecipe, NativeCausalRecipe, NativeVectorRecipe)
+    ):
+        if isinstance(recipe.base, (SampledNativeGraph, SampledNativeVectorGraph)):
             recipe.base.validate_replay()
         else:
             recipe.base.validate()
     recipe.admit()
     runtime = recipe.effective_runtime()
-    if isinstance(runtime, NativeCausalRecipe):
+    if isinstance(runtime, NativeVectorRecipe):
+        task = generate_native_vector(
+            runtime, seed=seed, task_id=task_id, device=device, execution=execution
+        )
+    elif isinstance(runtime, NativeCausalRecipe):
         task = generate_native_causal(
             runtime, seed=seed, task_id=task_id, device=device, execution=execution
         )
@@ -86,7 +100,9 @@ def trace_original(
 ) -> InterventionExecution:
     trace = InterventionExecution(recipe, baseline=True)
     runtime = causal_runtime(recipe.base)
-    if isinstance(runtime, NativeCausalRecipe):
+    if isinstance(runtime, NativeVectorRecipe):
+        evaluate_native_vector_graph(runtime, seed=seed, task_id=task_id, execution=trace)
+    elif isinstance(runtime, NativeCausalRecipe):
         evaluate_native_graph(runtime, seed=seed, task_id=task_id, execution=trace)
     else:
         generate_functional_causal(
@@ -98,7 +114,14 @@ def trace_original(
 def generate_causal_pair(
     base: CausalBase,
     *,
-    interventions: tuple[HardIntervention | SoftIntervention | StageIntervention, ...],
+    interventions: tuple[
+        HardIntervention
+        | SoftIntervention
+        | StageIntervention
+        | NativeVectorHardIntervention
+        | NativeVectorDomainIntervention,
+        ...,
+    ],
     mode: str = "matched",
     population: int = 1,
     seed: int,
@@ -176,7 +199,12 @@ def compare_causal_pair(
     checks: dict[str, bool] = {}
     for i in unchanged_laws:
         left, right = original.traces[i], execution.traces[i]
-        for field in ("root", "exogenous", "uniform"):
+        for field in (
+            "root",
+            "exogenous",
+            "uniform",
+            *(k for k in left if k.startswith("uniform:")),
+        ):
             changed_root = field == "root" and any(
                 isinstance(c, StageIntervention) and c.node == i and c.root is not None
                 for c in recipe.interventions
@@ -190,6 +218,12 @@ def compare_causal_pair(
     }
     if recipe.mode == "matched" and (not all(checks.values()) or not all(stream_checks.values())):
         raise ValueError("matched intervention changed an unaffected exogenous draw")
+    before_inputs, after_inputs = before.inputs, after.inputs
+    before_targets, after_targets = before.targets.double(), after.targets.double()
+    if isinstance(causal_runtime(recipe.base), NativeVectorRecipe):
+        # Group archives restore contiguous tensors; reduce the same layout before/after load.
+        before_inputs, after_inputs = before_inputs.contiguous(), after_inputs.contiguous()
+        before_targets, after_targets = before_targets.contiguous(), after_targets.contiguous()
     return {
         "version": "causal-intervention-pair-v1",
         "mode": recipe.mode,
@@ -208,8 +242,8 @@ def compare_causal_pair(
         "coupling": "same keyed exogenous variates"
         if recipe.mode == "matched"
         else "fresh keyed population; equal row positions do not mean same units",
-        "input_mean_change": (after.inputs.mean(0) - before.inputs.mean(0)).cpu().numpy().tolist(),
-        "target_mean_change": float(after.targets.double().mean() - before.targets.double().mean()),
+        "input_mean_change": (after_inputs.mean(0) - before_inputs.mean(0)).cpu().numpy().tolist(),
+        "target_mean_change": float(after_targets.mean() - before_targets.mean()),
         "interpretation": (
             "generated interventional comparison, not observational conditioning "
             "or a causal estimate from observations"

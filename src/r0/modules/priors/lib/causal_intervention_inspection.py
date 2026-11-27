@@ -13,6 +13,7 @@ from r0.modules.priors.lib.causal_intervention_generation import generate_interv
 from r0.modules.priors.lib.causal_intervention_records import causal_runtime
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.native_causal import NativeCausalNode
+from r0.modules.priors.lib.native_vector_records import NativeVectorNode
 from r0.modules.priors.lib.network_inspection import network_steps
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -38,10 +39,12 @@ def intervention_steps(
     runtime = causal_runtime(recipe.base)
     selected = list(indices)
     for i, node in enumerate(runtime.nodes):
-        equation = node.equation if isinstance(node, NativeCausalNode) else node
+        equation = node.equation if isinstance(node, (NativeCausalNode, NativeVectorNode)) else node
         effective = recipe.effective_runtime().nodes[i]
         effective_equation = (
-            effective.equation if isinstance(effective, NativeCausalNode) else effective
+            effective.equation
+            if isinstance(effective, (NativeCausalNode, NativeVectorNode))
+            else effective
         )
         if (
             isinstance(effective_equation.function, FrozenNetworkFunction)
@@ -60,11 +63,16 @@ def intervention_steps(
         changes = [asdict(c) for c in recipe.interventions if c.node == i]
         for role, value in execution.traces[i].items():
             matrix = value[:, None] if value.ndim == 1 else value
-            if i in execution.bypassed or role in (
-                "root",
-                "exogenous",
-                "uniform",
-                "forced_probability",
+            if (
+                i in execution.bypassed
+                or role.startswith(("uniform:", "forced-"))
+                or role
+                in (
+                    "root",
+                    "exogenous",
+                    "uniform",
+                    "forced_probability",
+                )
             ):
                 parents = []
             elif role == "inputs":
@@ -83,7 +91,19 @@ def intervention_steps(
                 if i in execution.bypassed
                 else "frozen equation evaluated with declared intervention locations",
                 matrix[selected],
-                {"changes": changes, "role": role, "original_equation": asdict(equation)},
+                {
+                    "changes": changes,
+                    "role": role,
+                    "original_equation": asdict(equation),
+                    **(
+                        {
+                            "variable_spans": [asdict(s) for s in node.spans],
+                            "domains": [asdict(d) for d in node.domains],
+                        }
+                        if isinstance(node, NativeVectorNode)
+                        else {}
+                    ),
+                },
             )
     add(
         "inputs",

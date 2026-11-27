@@ -4,7 +4,8 @@
 <button id="intervention-load">Prepare causal intervention</button>
 <p id="intervention-notice" class="muted">CPU execution. Hosted Colab and GPU verification remain pending.</p>
 <div id="intervention-controls" hidden>
-<div class="fields"><label>Node<select id="intervention-node"></select></label><label>Change<select id="intervention-kind"><option value="hard">Hard clamp</option><option value="soft">Soft equation / noise change</option></select></label></div>
+<div class="fields"><label>Node<select id="intervention-node"></select></label><label>Change<select id="intervention-kind"><option value="hard">Hard clamp</option><option value="soft">Soft equation / noise change</option><option value="stage">Root / pipeline change</option><option value="domain">Native emission domain change</option></select></label></div>
+<label id="intervention-variable-label" hidden>Logical variable<select id="intervention-variable"></select></label>
 <p id="intervention-node-note" class="muted"></p>
 <div id="intervention-hard">
 <label id="intervention-category-label" hidden>Declared category<select id="intervention-category"></select></label>
@@ -12,6 +13,8 @@
 <p id="intervention-location-note" class="muted"></p>
 </div>
 <div id="intervention-soft" hidden><label>Replacement frozen function (JSON; null keeps it)<textarea id="intervention-function" rows="7"></textarea></label><label>Noise changes (JSON; omit fields to retain them)<textarea id="intervention-noise" rows="3">{}</textarea></label><p class="muted">Function input/output dimensions stay fixed. Optional fields: noise_scale, noise_response, exogenous. Original pipeline and calibration stay frozen; this does not refit a tree or network.</p></div>
+<div id="intervention-stage-fields" hidden><label>Stage change fields (JSON; root, replace_pipeline, pipeline)<textarea id="intervention-stage-fields-json" rows="5">{}</textarea></label></div>
+<div id="intervention-domain-fields" hidden><label>Replacement emission domain (JSON)<textarea id="intervention-domain-json" rows="5">{}</textarea></label></div>
 <button id="intervention-add">Add change to comparison</button>
 <label>All interventions (editable JSON array; multiple disjoint changes)<textarea id="intervention-json" rows="8">[]</textarea></label>
 <div class="fields"><label>Draw coupling<select id="intervention-mode"><option value="matched">Matched original exogenous draws</option><option value="population">Fresh population draws</option></select></label><label>Population key (exact integer)<input id="intervention-population" value="1" inputmode="numeric"></label></div>

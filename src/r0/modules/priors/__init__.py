@@ -1,5 +1,11 @@
 """Inspectable synthetic priors."""
 
+from r0.modules.priors.lib.native_vector_intervention import (
+    NativeVectorDomainIntervention as NativeVectorDomainIntervention,
+)
+from r0.modules.priors.lib.native_vector_intervention import (
+    NativeVectorHardIntervention as NativeVectorHardIntervention,
+)
 from r0.modules.priors.lib.stage_intervention import StageIntervention as StageIntervention
 
 from .lib.activation_sampling import (

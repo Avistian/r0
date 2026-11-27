@@ -116,7 +116,7 @@ class InterventionExecution:
         )
 
     def metadata(self) -> dict[str, Any]:
-        return {
+        result = {
             "changes": [asdict(c) for c in self.recipe.interventions],
             "mode": self.recipe.mode,
             "population": self.recipe.population if self.recipe.mode == "population" else None,
@@ -137,3 +137,17 @@ class InterventionExecution:
                 "original keyed streams in matched mode; bypassed equations consume no draws"
             ),
         }
+        from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
+
+        if isinstance(self.recipe.effective_runtime(), NativeVectorRecipe):
+            result["vector_semantics"] = {
+                "clamp": "logical emitted value and entire encoded descendant-state span",
+                "partial": "one joint equation and correlated innovation evaluated before clamps",
+                "full": "all logical variables clamped: joint equation and emission draws bypassed",
+                "forced_score": (
+                    "threshold: category index in original single score slot; "
+                    "other discrete: indicator in original K slots; not original logits"
+                ),
+                "forced_probability": "separate K-wide category indicator",
+            }
+        return result

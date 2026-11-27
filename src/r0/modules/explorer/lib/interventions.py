@@ -20,16 +20,18 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
     runtime = original.get("runtime", original)
     if "graph" in original:
         runtime = original["graph"]["runtime"]
-    if version == "sampled-native-graph-v1":
+    if version in ("sampled-native-graph-v1", "sampled-native-vector-graph-v1"):
         runtime = original["recipe"]
     if runtime.get("version") not in (
         "functional-causal-v1",
         "functional-causal-v2",
         "fitted-functional-causal-v1",
         "native-causal-v1",
+        "native-vector-causal-v1",
     ):
         raise ValueError("causal interventions require a frozen functional or native graph")
-    native = runtime["version"] == "native-causal-v1"
+    native = runtime["version"] in ("native-causal-v1", "native-vector-causal-v1")
+    vector = runtime["version"] == "native-vector-causal-v1"
     nodes: list[dict[str, Any]] = []
     for i, node in enumerate(runtime["nodes"]):
         equation = node["equation"] if native else node
@@ -40,6 +42,9 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
                 "index": i,
                 "parents": equation["parents"],
                 "domain": domain,
+                "domains": node.get("domains"),
+                "root": equation.get("root"),
+                "pipeline": equation.get("pipeline"),
                 "function": equation["function"],
                 "noise_scale": equation["noise_scale"],
                 "noise_response": equation["noise_response"],
@@ -50,12 +55,14 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
     return {
         "nodes": nodes,
         "native": native,
+        "vector": vector,
         "version": version,
         "notice": (
             "Original construction and fit archives remain unchanged. "
             "Interventions use frozen calibration. CPU only; partial coupled mechanisms "
-            "are evaluated before clamping. Root, pipeline and native emission stage changes "
-            "are available through versioned JSON. Native vector interventions remain pending."
+            "are evaluated before clamping. Vector clamps select logical variables; "
+            "all-variable clamps bypass the joint equation. Root/domain/pipeline changes "
+            "retain original archive and geometry."
         ),
     }
 
