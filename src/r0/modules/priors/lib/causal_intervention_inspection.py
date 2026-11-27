@@ -105,6 +105,19 @@ def intervention_steps(
                 parents = [f"intervention-{i}-function"]
             else:
                 parents = [f"intervention-{i}-function", f"intervention-{i}-exogenous"]
+            if role == "function":
+                from r0.modules.priors.lib.feature_conv_inspection import feature_conv_steps
+                from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+
+                if isinstance(effective_equation.function, FrozenFeatureConv1D):
+                    parents = feature_conv_steps(
+                        effective_equation.function,
+                        execution.traces[i]["inputs"],
+                        prefix=f"convolution-{i}",
+                        parents=parents,
+                        indices=indices,
+                        add=add,
+                    )
             add(
                 f"intervention-{i}-{role}",
                 f"Node {i}: {role}",

@@ -25,3 +25,9 @@ Channel certificates follow only nonzero in-bounds kernel taps in the archived l
 Functional tasks retain authored kernels in their archives, original-row equation traces and intervention bases. This seam does not yet retain a sampled convolution receipt as a shared function: callers must not discard that receipt and claim construction provenance. Sampled-function envelopes, layer-level raw/stage traces, complete native/converted coverage, graph sampler catalogs, innovations and the guarded shared workbench remain required. Independent review and the full integration check remain pending for this seam.
 
 Shared evaluation also charges the full retained convolution record, including geometry, activation controls and container/text storage. The same applies to complete parent-composition records containing convolution members. Counting only learned coefficients is insufficient for this family; metadata rejection must precede convolution backend allocation. Functional graph admission already counts its full retained node records.
+
+## Authored layer traces
+
+Functional equation and parent-member inspection now emits each convolution's affine, before/after activation and residual stages using the same evaluator as generation. Values retain the archived flattened layout and requested original row order, including repeated rows. Each residual explicitly depends on both the activated output and the unchanged layer input. Joint members and separate parent slices retain distinct trace namespaces. Soft equation interventions trace the effective replacement convolution and link its stages to already emitted inputs.
+
+Trace values are selected as each stage is emitted; ordinary generation does not retain stage tensors. This does not yet expose sampled initializer raw draws or claim a completed native/vector/converter/workbench trace matrix. Those remain required along with the sampled construction envelope.

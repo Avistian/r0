@@ -5,6 +5,8 @@ from dataclasses import asdict
 
 import torch
 
+from r0.modules.priors.lib.feature_conv_inspection import feature_conv_steps
+from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
 from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_function
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
@@ -41,6 +43,15 @@ def parent_function_steps(
                 add=add,
                 input_parents=parents,
             )
+        if isinstance(function.joint, FrozenFeatureConv1D):
+            joint_parents = feature_conv_steps(
+                function.joint,
+                inputs,
+                prefix=identifier,
+                parents=parents,
+                indices=indices,
+                add=add,
+            )
         add(
             identifier,
             f"Joint member {node}",
@@ -74,6 +85,15 @@ def parent_function_steps(
                 indices=indices,
                 add=add,
                 input_parents=[parents[index]],
+            )
+        if isinstance(child, FrozenFeatureConv1D):
+            child_parents = feature_conv_steps(
+                child,
+                inputs[:, offset:stop],
+                prefix=identifier,
+                parents=[parents[index]],
+                indices=indices,
+                add=add,
             )
         add(
             identifier,

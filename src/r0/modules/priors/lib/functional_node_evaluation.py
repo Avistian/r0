@@ -179,6 +179,19 @@ def evaluate_functional_nodes(
                     add=add,
                     input_parents=parents,
                 )
+            from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+
+            if isinstance(node.function, FrozenFeatureConv1D):
+                from r0.modules.priors.lib.feature_conv_inspection import feature_conv_steps
+
+                parents = feature_conv_steps(
+                    node.function,
+                    inputs,
+                    prefix=f"convolution-{index}",
+                    parents=parents,
+                    indices=indices,
+                    add=add,
+                )
             if isinstance(node.function, FrozenParentFunction):
                 parents = parent_function_steps(
                     node.function, inputs, node=index, parents=parents, indices=indices, add=add
