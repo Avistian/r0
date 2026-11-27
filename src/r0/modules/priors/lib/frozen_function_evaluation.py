@@ -1,6 +1,7 @@
 """Deterministic admitted function evaluation on the input tensor's device."""
 
 import math
+from itertools import accumulate
 from typing import Any
 
 import torch
@@ -23,7 +24,12 @@ from r0.modules.priors.lib.frozen_function_primitives import (
 )
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
-from r0.modules.priors.lib.network_evaluation import evaluate_network, network_geometry
+from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
+from r0.modules.priors.lib.network_evaluation import (
+    evaluate_network,
+    evaluate_network_block,
+    network_geometry,
+)
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.weight_geometry import Matrix
 
@@ -39,6 +45,7 @@ type FrozenFunction = (
     | FrozenMLPFunction
     | FrozenParentFunction
     | FrozenFittedTreeFunction
+    | FrozenNetworkBlockFunction
     | FrozenNetworkFunction
 )
 
@@ -55,6 +62,7 @@ _FUNCTION_TYPES = (
     FrozenParentFunction,
     FrozenFittedTreeFunction,
     FrozenNetworkFunction,
+    FrozenNetworkBlockFunction,
 )
 _DEFAULT_LIMITS = CausalLimits()
 
@@ -62,6 +70,17 @@ _DEFAULT_LIMITS = CausalLimits()
 def function_geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, int]:
     if type(function) not in _FUNCTION_TYPES:
         raise ValueError("function geometry requires a frozen function record")
+    if type(function) is FrozenNetworkBlockFunction:
+        b = function.block
+        widths = (
+            *function.incoming_widths,
+            function.input_width,
+            b.experts[0].input_width,
+            function.output_width,
+            len(b.experts),
+        )
+        work = 16 * sum(widths) + 12 * function.output_width * (len(b.experts) + len(b.skips))
+        return widths, work, 0
     if type(function) is FrozenNetworkFunction:
         return network_geometry(function)
     widths = (function.input_width, function.output_width)
@@ -200,6 +219,18 @@ def _mlp_activation(
 def _evaluate(
     function: FrozenFunction, inputs: torch.Tensor, diagnostics: list[dict[str, Any]] | None = None
 ) -> torch.Tensor:
+    if type(function) is FrozenNetworkBlockFunction:
+        return evaluate_network_block(
+            function.block,
+            [
+                inputs[:, end - width : end]
+                for width, end in zip(
+                    function.incoming_widths, accumulate(function.incoming_widths), strict=True
+                )
+            ],
+            1,
+            diagnostics=diagnostics,
+        )
     if type(function) is FrozenNetworkFunction:
         return evaluate_network(function, inputs, diagnostics=diagnostics)
     if type(function) is FrozenParentFunction:

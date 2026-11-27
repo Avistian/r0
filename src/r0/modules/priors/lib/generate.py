@@ -149,6 +149,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         return matched_view_from_dict(fields, limits=limits)
     if version == "network-input-view-v1":
         return network_view_from_dict(fields, limits=limits)
+    if version == "standalone-network-innovations-v1":
+        from r0.modules.priors.lib.network_innovation_decoding import network_innovation_from_dict
+
+        return network_innovation_from_dict(fields, limits=limits)
     if version == "standalone-network-v1":
         return network_recipe_from_dict(fields, limits=limits)
     if version == "sampled-converted-graph-v1":

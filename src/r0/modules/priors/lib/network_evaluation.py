@@ -7,7 +7,11 @@ from typing import Any
 import torch
 
 from r0.modules.priors.lib.causal_activations import activation_diagnostic
-from r0.modules.priors.lib.structural_network import FrozenNetworkFunction, NetworkAffine
+from r0.modules.priors.lib.structural_network import (
+    FrozenNetworkFunction,
+    NetworkAffine,
+    NetworkBlock,
+)
 
 
 def network_geometry(function: FrozenNetworkFunction) -> tuple[tuple[int, ...], int, int]:
@@ -24,9 +28,10 @@ def network_geometry(function: FrozenNetworkFunction) -> tuple[tuple[int, ...], 
     return tuple(dimensions), work, 0
 
 
-def evaluate_network(
-    function: FrozenNetworkFunction,
-    inputs: torch.Tensor,
+def evaluate_network_block(
+    block: NetworkBlock,
+    values: list[torch.Tensor],
+    index: int,
     *,
     trace: Callable[[str, torch.Tensor, dict[str, Any]], None] | None = None,
     diagnostics: list[dict[str, Any]] | None = None,
@@ -65,30 +70,40 @@ def evaluate_network(
             )
         return result
 
+    name = f"block-{index}"
+    argument = retain(
+        name + "-inputs",
+        torch.cat([values[p] for p in block.parents], dim=1),
+        {"parents": block.parents},
+    )
+    experts = [affine(e, argument, f"{name}-expert-{j}") for j, e in enumerate(block.experts)]
+    if block.gate:
+        logits = affine(block.gate, argument, name + "-gate")
+        weights = retain(
+            name + "-weights", logits.softmax(dim=1), {"law": "input-dependent softmax"}
+        )
+        result = (torch.stack(experts, dim=1) * weights[:, :, None]).sum(dim=1)
+    else:
+        result = experts[0]
+    for j, skip in enumerate(block.skips):
+        result = result + affine(skip.affine, values[skip.source], f"{name}-skip-{j}")
+    return retain(
+        name + "-state",
+        result,
+        {"parents": block.parents, "skip_sources": [s.source for s in block.skips]},
+    )
+
+
+def evaluate_network(
+    function: FrozenNetworkFunction,
+    inputs: torch.Tensor,
+    *,
+    trace: Callable[[str, torch.Tensor, dict[str, Any]], None] | None = None,
+    diagnostics: list[dict[str, Any]] | None = None,
+) -> torch.Tensor:
     values = [inputs]
     for index, block in enumerate(function.blocks, 1):
-        name = f"block-{index}"
-        argument = retain(
-            name + "-inputs",
-            torch.cat([values[p] for p in block.parents], dim=1),
-            {"parents": block.parents},
-        )
-        experts = [affine(e, argument, f"{name}-expert-{j}") for j, e in enumerate(block.experts)]
-        if block.gate:
-            logits = affine(block.gate, argument, name + "-gate")
-            weights = retain(
-                name + "-weights", logits.softmax(dim=1), {"law": "input-dependent softmax"}
-            )
-            result = (torch.stack(experts, dim=1) * weights[:, :, None]).sum(dim=1)
-        else:
-            result = experts[0]
-        for j, skip in enumerate(block.skips):
-            result = result + affine(skip.affine, values[skip.source], f"{name}-skip-{j}")
         values.append(
-            retain(
-                name + "-state",
-                result,
-                {"parents": block.parents, "skip_sources": [s.source for s in block.skips]},
-            )
+            evaluate_network_block(block, values, index, trace=trace, diagnostics=diagnostics)
         )
     return values[-1]

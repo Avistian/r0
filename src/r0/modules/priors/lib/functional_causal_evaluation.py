@@ -274,6 +274,35 @@ def generate_functional_causal(
     if recipe.version == "sampled-population-fitted-functional-causal-v1":
         card["construction"] = "sampled-parameter-population-fit-v1"
         card["sampling_provenance"] = "retained-parameter-and-population-custody-v1"
+    from r0.modules.priors.lib.network_innovation_recipe import NetworkInnovationRecipe
+
+    if isinstance(recipe, NetworkInnovationRecipe):
+        assert recipe.plan is not None
+        card["construction"] = "standalone-network-with-explicit-internal-innovations"
+        card["network_innovations"] = {
+            "profile": recipe.plan.profile,
+            "source_scope": (
+                "placement profile plus explicit scale/mean/importance laws; "
+                "not full paper reproduction"
+            ),
+            "importance": (
+                "multiplies outgoing weight columns and direct-input skips; "
+                "gates only if explicitly selected"
+            ),
+            "masks": (
+                "frozen structural masks; per-row innovations from independent keyed streams"
+            ),
+            "response": (
+                "raw latent fixed-innovation or zero-innovation reference; "
+                "not conditional mean or class probability"
+            ),
+            "block_nodes": recipe.block_nodes,
+        }
+        card["sampling_provenance"] = (
+            "retained-statistics-stream-and-raw-records"
+            if recipe.sampling is not None
+            else "authored-noise-statistics"
+        )
     if calibration is not None:
         card["normalization"] = "fixed independent calibration"
         card["calibration"] = asdict(calibration)
