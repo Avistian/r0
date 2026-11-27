@@ -7,6 +7,8 @@ from dataclasses import dataclass
 import numpy as np
 from numpy.typing import NDArray
 
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
+
 
 @dataclass(frozen=True, slots=True)
 class InputDistribution:
@@ -45,6 +47,9 @@ def sample_inputs(
     columns: int,
     rng: Callable[..., np.random.Generator],
     channel: str,
+    *,
+    capture: RawDrawLedger | None = None,
+    owner: tuple[str, ...] = (),
 ) -> NDArray[np.float64]:
     result = np.empty((rows, columns), dtype=np.float64)
     for j in range(columns):
@@ -54,14 +59,47 @@ def sample_inputs(
             size: int,
             values_rng: np.random.Generator = values_rng,
             signs_rng: np.random.Generator = signs_rng,
+            draw_owner: tuple[str, ...] = (*owner, f"column:{j}"),
         ) -> NDArray[np.float64]:
             if spec.distribution == "uniform":
-                return values_rng.uniform(-math.sqrt(3), math.sqrt(3), size=size)
+                return recorded_draw(
+                    values_rng,
+                    capture,
+                    owner=draw_owner,
+                    role="values",
+                    distribution="uniform",
+                    shape=(size,),
+                    parameters=(("low", -math.sqrt(3)), ("high", math.sqrt(3))),
+                )
             if spec.distribution == "student_t":
-                return values_rng.standard_t(spec.df, size=size)
-            values = values_rng.normal(size=size)
+                return recorded_draw(
+                    values_rng,
+                    capture,
+                    owner=draw_owner,
+                    role="values",
+                    distribution="student_t",
+                    shape=(size,),
+                    parameters=(("df", spec.df),),
+                )
+            values = recorded_draw(
+                values_rng,
+                capture,
+                owner=draw_owner,
+                role="values",
+                distribution="normal",
+                shape=(size,),
+            )
             if spec.distribution == "mixture":
-                values += spec.mixture_gap * (2 * signs_rng.integers(0, 2, size=size) - 1)
+                signs = recorded_draw(
+                    signs_rng,
+                    capture,
+                    owner=draw_owner,
+                    role="mixture-components",
+                    distribution="integers",
+                    shape=(size,),
+                    parameters=(("high", 2),),
+                )
+                values += spec.mixture_gap * (2 * signs - 1)
             return values
 
         if spec.bound is None:

@@ -100,6 +100,9 @@ from r0.modules.priors.lib.functional_causal_evaluation import PrefixEvaluation 
 from r0.modules.priors.lib.functional_causal_evaluation import (
     evaluate_functional_prefix as evaluate_functional_prefix,
 )
+from r0.modules.priors.lib.functional_causal_evaluation import (
+    sample_functional_prefix as sample_functional_prefix,
+)
 from r0.modules.priors.lib.functional_prefix import FunctionalPrefix as FunctionalPrefix
 from r0.modules.priors.lib.generate import Recipe as Recipe
 from r0.modules.priors.lib.generate import generate_task as generate_task

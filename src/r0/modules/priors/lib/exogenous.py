@@ -8,6 +8,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from r0.modules.priors.lib.inputs import InputDistribution, sample_inputs
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
 
 
 @dataclass(frozen=True, slots=True)
@@ -66,6 +67,9 @@ def sample_exogenous(
     width: int,
     rng: Callable[..., np.random.Generator],
     node: int,
+    *,
+    capture: RawDrawLedger | None = None,
+    owner: tuple[str, ...] = (),
 ) -> NDArray[np.float64]:
     def stream(channel: str, column: int, purpose: str) -> np.random.Generator:
         return (
@@ -74,12 +78,21 @@ def sample_exogenous(
             else rng("innovation", node, column, purpose)
         )
 
-    values = sample_inputs(spec.inputs, rows, width, stream, "exogenous")
+    values = sample_inputs(
+        spec.inputs, rows, width, stream, "exogenous", capture=capture, owner=owner
+    )
     if spec.geometry == "ball":
         lengths = np.sqrt(np.square(values).sum(axis=1, keepdims=True))
         if np.any(lengths == 0) or not np.isfinite(lengths).all():
             raise ValueError("invalid ball direction; task was not retried")
-        radii = rng("innovation", node, "radius").random((rows, 1)) ** (1 / width)
+        radii = recorded_draw(
+            rng("innovation", node, "radius"),
+            capture,
+            owner=owner,
+            role="ball-radii",
+            distribution="random",
+            shape=(rows, 1),
+        ) ** (1 / width)
         values = values / lengths * radii
     if spec.factor:
         with np.errstate(over="ignore", invalid="ignore"):
