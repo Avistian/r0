@@ -13,6 +13,11 @@ explicit semantic/lifecycle gap. `PENDING` identifies missing implementation.
 Raw review records and worked examples are retained in ignored `docs/evidence/`;
 [retention limits](issue-28-evidence-retention.md) apply to fresh clones.
 
+The [neural-noise publication checkpoint](issue-28-neural-noise-checkpoint.md)
+records full-suite and independent evidence for its scoped seven-family delivery.
+It does not close unlisted inventory IDs or the remaining source-root/prototype,
+backend/lifecycle, hosted and measured-envelope requirements.
+
 ## Parent composition
 
 Common delivery contract: `ParentCompositionPrior` / `FrozenParentFunction`,

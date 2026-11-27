@@ -7,6 +7,17 @@ scientific acceptance or whole-issue completion.
 
 ## Latest verified publication checkpoint
 
+Source `ceb5e4f66666fe90526640bd97c320d17ea95a5e` passed full `make check`:
+2,554 passed, one skipped, one warning in 1,455.55 seconds; all static gates passed.
+This adds independently reviewed sampled neural hyperpriors, internal neural noise
+and guarded local workbench delivery across seven architectures. See the
+[neural-noise checkpoint](issue-28-neural-noise-checkpoint.md) for source semantics,
+actual browser/numerical evidence and preserved rejection history. Source-root and
+prototype integration, XGBoost, wider paper coverage and hosted/resource evidence
+remain separate open work. No whole-issue acceptance is implied.
+
+## Previous network-view publication checkpoint
+
 Source `0935822ab78cb7b49f803f5a68b4a521a38e4d87` passed full `make check`:
 2,488 passed, one skipped, one warning in 1,415.62 seconds; static gates passed.
 The warning is sklearn's high-class-count diagnostic in the observed-class-map
