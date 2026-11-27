@@ -410,6 +410,18 @@ class ExplorerSession:
             )
             return {"curve": _identity_numbers(curve, for_browser=True)}
         if action == "curve":
+            if (
+                json.loads(self.task.recipe_json)["recipe"].get("version")
+                == "standalone-network-v1"
+            ):
+                from r0.modules.explorer.lib.curves import inspect_network_curve_guarded
+
+                return {
+                    "curve": inspect_network_curve_guarded(
+                        self.task, data, self.output_dir, limits=caller_limits(data)
+                    )
+                }
+
             return {
                 "curve": inspect_curve(
                     self.task,

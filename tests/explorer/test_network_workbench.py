@@ -153,6 +153,9 @@ def test_network_colab_callback_uses_same_construction_edit_and_export(
         "construct", {"controls": control, "construction_seed": "12", "seed": "7", "task_id": "9"}
     )["application/json"]
     assert result["view"]["construction_details"]["kind"] == "standalone-network"
+    curve = invoke("curve", {"feature": 0, "points": 7})["application/json"]["curve"]
+    assert len(curve["scores"]) == 7
+    assert "not class probabilities" in curve["score_semantics"]
     editor = json.loads(json.dumps(invoke("mechanism", {})["application/json"]))
     editor["editable_recipe"]["network"]["blocks"][-1]["experts"][0]["bias"][0] += 1
     edit = invoke("edit", {"recipe": editor["editable_recipe"]})["application/json"]

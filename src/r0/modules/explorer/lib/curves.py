@@ -2,12 +2,15 @@
 
 import json
 import math
+from pathlib import Path
 from typing import Any
 
 import numpy as np
 import torch
 
-from r0.modules.priors import TrainingTask, condition_gp, evaluate_signal
+from r0.modules.priors import CausalLimits, TrainingTask, condition_gp, evaluate_signal
+
+_DEFAULT_LIMITS = CausalLimits()
 
 
 def inspect_curve(
@@ -17,6 +20,7 @@ def inspect_curve(
     anchor_row: int = 0,
     points: int = 129,
     bounds: tuple[float, float] | None = None,
+    limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> dict[str, Any]:
     """Evaluate an analytic response slice; never interpolate a direct GP draw.
 
@@ -26,7 +30,7 @@ def inspect_curve(
     classification separation/offsets; no new labels or random values are sampled.
     """
     inputs, metadata = _slice_inputs(task, feature, anchor_row, points, bounds, maximum=512)
-    scores = evaluate_signal(task, inputs)
+    scores = evaluate_signal(task, inputs, limits=limits)
     return {
         **metadata,
         "version": "response-curve-v1",
@@ -79,7 +83,7 @@ def inspect_gp_curve(
     }
 
 
-def _slice_inputs(
+def _slice_metadata(
     task: TrainingTask,
     feature: int,
     anchor_row: int,
@@ -87,7 +91,7 @@ def _slice_inputs(
     bounds: tuple[float, float] | None,
     *,
     maximum: int,
-) -> tuple[torch.Tensor, dict[str, Any]]:
+) -> dict[str, Any]:
     if type(feature) is not int or not 0 <= feature < task.inputs.shape[1]:
         raise ValueError("feature must identify an existing input column")
     if type(anchor_row) is not int or not 0 <= anchor_row < len(task.inputs):
@@ -106,13 +110,8 @@ def _slice_inputs(
         if low > high:
             raise ValueError("bounds must be ordered from low to high")
     anchor = task.inputs[anchor_row].detach()
-    inputs = anchor.repeat(points, 1)
-    fraction = torch.linspace(0, 1, points, dtype=inputs.dtype, device=inputs.device)
-    # Avoid high-low overflow for finite endpoints with opposite signs.
-    values = (1 - fraction) * low + fraction * high
-    inputs[:, feature] = values
     mechanism = json.loads(task.mechanism_json)
-    return inputs, {
+    return {
         "episode_id": task.episode_id,
         "feature": feature,
         "feature_role": "active" if feature in mechanism["active"] else "irrelevant",
@@ -121,5 +120,66 @@ def _slice_inputs(
         "bounds": [low, high],
         "range_source": "observed_min_max" if bounds is None else "explicit",
         "points": points,
-        "values": np.asarray(values.cpu().numpy(), dtype=np.float64).tolist(),
+    }
+
+
+def _slice_inputs(
+    task: TrainingTask,
+    feature: int,
+    anchor_row: int,
+    points: int,
+    bounds: tuple[float, float] | None,
+    *,
+    maximum: int,
+) -> tuple[torch.Tensor, dict[str, Any]]:
+    metadata = _slice_metadata(task, feature, anchor_row, points, bounds, maximum=maximum)
+    low, high = metadata["bounds"]
+    inputs = task.inputs[anchor_row].detach().repeat(points, 1)
+    fraction = torch.linspace(0, 1, points, dtype=inputs.dtype, device=inputs.device)
+    values = (1 - fraction) * low + fraction * high
+    inputs[:, feature] = values
+    metadata["values"] = np.asarray(values.cpu().numpy(), dtype=np.float64).tolist()
+    return inputs, metadata
+
+
+def inspect_network_curve_guarded(
+    task: TrainingTask, data: dict[str, Any], output_dir: Path, *, limits: CausalLimits
+) -> dict[str, Any]:
+    from dataclasses import asdict
+
+    from r0.modules.generation import run_guarded_document
+
+    metadata = _slice_metadata(
+        task,
+        data["feature"],
+        data.get("anchor_row", 0),
+        data.get("points", 129),
+        data.get("bounds"),
+        maximum=512,
+    )
+    result = run_guarded_document(
+        {
+            "validation": "network-curve",
+            "recipe": json.loads(task.recipe_json)["recipe"],
+            "anchor": metadata["anchor_inputs"],
+            "feature": metadata["feature"],
+            "points": metadata["points"],
+            "bounds": metadata["bounds"],
+            "causal_limits": asdict(limits),
+            "max_seconds": data.get("max_seconds", 60),
+            "max_bytes": data.get("max_bytes", 256 * 1024**2),
+        },
+        output_dir / "curve-validation",
+    )
+    if result.timed_out:
+        raise ValueError("Network response curve timed out; saved dataset unchanged")
+    if result.returncode or result.summary is None:
+        detail = result.stderr.strip().splitlines()
+        raise ValueError("Network response curve failed: " + (detail[-1] if detail else "failed"))
+    return {
+        **metadata,
+        **result.summary,
+        "version": "response-curve-v1",
+        "kind": "analytic_response",
+        "score_semantics": "raw latent network channels; not class probabilities",
     }

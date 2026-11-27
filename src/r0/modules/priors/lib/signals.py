@@ -7,10 +7,15 @@ import numpy as np
 import torch
 from numpy.typing import NDArray
 
+from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.training_task import TrainingTask
 
+_DEFAULT_LIMITS = CausalLimits()
 
-def evaluate_signal(task: TrainingTask, inputs: torch.Tensor) -> torch.Tensor:
+
+def evaluate_signal(
+    task: TrainingTask, inputs: torch.Tensor, *, limits: CausalLimits = _DEFAULT_LIMITS
+) -> torch.Tensor:
     """Evaluate the saved noiseless signal on a bounded float64 input matrix.
 
     Returns normalized latent scores on the input device. Targets and observed labels
@@ -27,6 +32,18 @@ def evaluate_signal(task: TrainingTask, inputs: torch.Tensor) -> torch.Tensor:
         raise ValueError(
             "inputs must be finite float64 CPU/CUDA rows, 1..20000, matching task columns"
         )
+    record = json.loads(task.recipe_json)
+    if record["recipe"].get("version") == "standalone-network-v1":
+        from r0.modules.priors.lib.frozen_function_evaluation import evaluate_frozen_function
+        from r0.modules.priors.lib.generate import recipe_from_dict
+        from r0.modules.priors.lib.network_recipe import NetworkRecipe
+
+        recipe = recipe_from_dict(record["recipe"], limits=limits)
+        if not isinstance(recipe, NetworkRecipe):
+            raise ValueError("network signal requires its standalone recipe")
+        # Observed coordinates already contain the root transformation. No root
+        # sampling, target adapter, class probabilities or observation noise here.
+        return evaluate_frozen_function(recipe.function, inputs, limits=recipe.limits)
     return evaluate_mechanism(json.loads(task.mechanism_json), inputs)
 
 

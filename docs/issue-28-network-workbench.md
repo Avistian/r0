@@ -42,6 +42,13 @@ interventions. The separate generation trace retains original row indices and
 shows affine/activation, gate, skip and state values. Architecture and generation
 figures have SVG/PNG export; the generation trace also has JSON export.
 
+Response curves evaluate the frozen network on observed input coordinates; the
+root transform is already present in those coordinates and is not applied again.
+Curves expose raw latent output channels, not class probabilities, labels,
+separation/offset adjustments or observation noise. Classification uses the
+existing score-channel selector. Query grids, decoding and replay in the session
+run inside the guarded worker under caller time/byte/geometry caps.
+
 Local session and actual Chromium checks cover construction, exact identity changes,
 original-row inspection, replay, export, linked edits, reopening and invalid-input
 recovery. Timeout checks cover construction and edit baseline preservation. A mocked

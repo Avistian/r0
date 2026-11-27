@@ -41,6 +41,9 @@ from r0.modules.priors.lib.frozen_function_decoding import (
 )
 from r0.modules.priors.lib.frozen_function_evaluation import FrozenFunction as FrozenFunction
 from r0.modules.priors.lib.frozen_function_evaluation import (
+    admit_frozen_function as admit_frozen_function,
+)
+from r0.modules.priors.lib.frozen_function_evaluation import (
     evaluate_frozen_function as evaluate_frozen_function,
 )
 from r0.modules.priors.lib.frozen_function_primitives import (
@@ -67,6 +70,7 @@ __all__ = [
     "FrozenProductFunction",
     "frozen_function_from_dict",
     "FrozenFunction",
+    "admit_frozen_function",
     "evaluate_frozen_function",
     "FrozenLinearFunction",
     "FrozenQuadraticFunction",

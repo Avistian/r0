@@ -21,9 +21,9 @@ function drawCurve() {
   else {
     const channel = Math.min(number("channel"), curve.scores[0].length - 1);
     const values = curve.scores.map(row => row[channel]);
-    const {svg, x, y} = plotFrame("response-plot", "Saved function response", `x${curve.feature}`, `Latent signal ${channel}`, ...curve.bounds, Math.min(...values), Math.max(...values));
+    const {svg, x, y} = plotFrame("response-plot", "Saved function response", `x${curve.feature}`, `Raw latent signal ${channel}`, ...curve.bounds, Math.min(...values), Math.max(...values));
     svg.append(element("polyline", {points: curve.values.map((value, i) => `${x(value)},${y(values[i])}`).join(" "), fill: "none", stroke: "#17826b", "stroke-width": 2}));
-    $("curve-note").textContent = `${curve.points} evaluated points across the observed range of x${curve.feature} (${curve.feature_role}). All other inputs are fixed to row ${curve.anchor_row}. Lines connect these points; behavior between them is not resolved.`;
+    $("curve-note").textContent = `${curve.points} evaluated points across the observed range of x${curve.feature} (${curve.feature_role}). All other inputs are fixed to row ${curve.anchor_row}. Lines connect these points; behavior between them is not resolved. ${curve.score_semantics || ""}`;
   }
   $("curve-values").textContent = pretty(curve); $("curve-json").hidden = false;
 }
@@ -61,7 +61,7 @@ for (const id of ["curve-row", "curve-points", "gp-draws", "gp-seed", "gp-approx
 $("curve").onclick = () => act("Evaluating saved function…", async () => {
   clearCurve();
   const parameters = curveArguments();
-  const result = await request(isGP() ? "gp_curve" : "curve", parameters);
+  const result = await request(isGP() ? "gp_curve" : "curve", {...parameters,...limits()});
   if (pretty(parameters) === pretty(curveArguments())) { curve = result.curve; drawCurve(); }
 });
 $("curve-json").onclick = () => download("response-curve.json", new Blob([pretty(curve)], {type: "application/json"}));
