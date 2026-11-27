@@ -3,6 +3,7 @@
 import json
 from typing import TYPE_CHECKING, Any, cast
 
+from r0.modules.priors.lib.fitted_backend_contract import fitted_backend_contract
 from r0.modules.priors.lib.generator_snapshot import snapshot_generator
 
 if TYPE_CHECKING:
@@ -56,21 +57,23 @@ def validate_fitted_custody(fit: "FittedTreeRealization") -> None:
             raise ValueError("retained fitted inputs, targets or seeds differ from their raw draws")
     if tuple(snapshot_generator(rng) for rng in streams.values()) != fit.final_rng:
         raise ValueError("fitted final RNG custody differs")
-    for output, seed, payload in zip(
-        fit.function.outputs, fit.backend_seeds, fit.backend_parameters, strict=True
+    for channel, (output, seed, payload) in enumerate(
+        zip(fit.function.outputs, fit.backend_seeds, fit.backend_parameters, strict=True)
     ):
         try:
             parameters = json.loads(payload)
         except (ValueError, TypeError) as exc:
             raise ValueError("invalid fitted backend parameters") from exc
-        if (
-            type(parameters) is not dict
-            or cast(dict[str, Any], parameters).get("random_state") != seed
-            or cast(dict[str, Any], parameters).get("max_depth") != fit.plan.depth
+        if type(parameters) is not dict or any(
+            key not in parameters
+            or cast(dict[str, Any], parameters)[key] != value
+            or type(cast(dict[str, Any], parameters)[key]) is not type(value)
+            for key, value in fitted_backend_contract(fit.plan, seed).items()
         ):
             raise ValueError("fitted backend parameters differ from plan and seeds")
         classifier = fit.plan.task == "classification"
-        if bool(output.classes) != classifier or any(c >= fit.plan.classes for c in output.classes):
+        observed = tuple(sorted({int(row[channel]) for row in fit.targets})) if classifier else ()
+        if output.classes != observed:
             raise ValueError("fitted class map differs from fit task")
         boosted = fit.plan.family == "gbdt"
         expected_combiner = (
@@ -91,3 +94,12 @@ def validate_fitted_custody(fit: "FittedTreeRealization") -> None:
         )
         if output.combiner != expected_combiner or len(output.trees) != trees:
             raise ValueError("fitted ensemble layout differs from fit plan")
+        if boosted and output.learning_rate != fit.plan.learning_rate:
+            raise ValueError("fitted learning rate differs from fit plan")
+        for tree in output.trees:
+            depths = [0] * len(tree.features)
+            for index, feature in enumerate(tree.features):
+                if feature >= 0:
+                    depths[tree.left[index]] = depths[tree.right[index]] = depths[index] + 1
+            if max(depths) > fit.plan.depth:
+                raise ValueError("fitted tree depth exceeds declared fit plan")

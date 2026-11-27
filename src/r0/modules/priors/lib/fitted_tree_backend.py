@@ -6,6 +6,7 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
+from r0.modules.priors.lib.fitted_backend_contract import fitted_backend_contract
 from r0.modules.priors.lib.fitted_tree_plan import FittedTreePlan
 from r0.modules.priors.lib.fitted_tree_records import FittedSplitTable, FittedTreeOutput
 
@@ -48,21 +49,7 @@ def fit_backend(
     outputs: list[FittedTreeOutput] = []
     parameters: list[str] = []
     for channel, seed in enumerate(seeds):
-        kwargs: dict[str, Any] = {"random_state": seed, "max_depth": plan.depth}
-        if plan.family == "dt":
-            kwargs.update(splitter=plan.splitter)
-        else:
-            kwargs.update(n_estimators=plan.estimators)
-        if plan.family in ("rf", "extra_trees"):
-            kwargs.update(
-                n_jobs=1, bootstrap=plan.family == "rf", max_features="sqrt" if classifier else 1.0
-            )
-        if plan.family == "gbdt":
-            kwargs.update(
-                learning_rate=plan.learning_rate,
-                loss="log_loss" if classifier else "squared_error",
-                init=None,
-            )
+        kwargs = fitted_backend_contract(plan, seed)
         estimator = constructors[plan.family](**kwargs)
         estimator.fit(inputs, targets[:, channel])
         parameters.append(

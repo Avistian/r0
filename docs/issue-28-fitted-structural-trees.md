@@ -21,7 +21,13 @@ The DT splitter is explicitly `random` by default and can be `best`. RF uses
 bootstrap; ExtraTrees does not. Both use one CPU job. Classification uses sqrt
 feature selection; regression uses all features. All actual sklearn parameters,
 including library defaults, are serialized with the sklearn version and each
-output's explicit seed. These local parameters are an r0 recipe, not inferred
+output's explicit seed. Fit-record validation binds every explicitly configured
+backend parameter to its plan, including meaningful DT/forest criteria and GBDT
+loss, initializer, stage count and learning rate. Observed class maps must equal
+the retained target classes; exported depths cannot exceed the requested depth.
+Other library defaults, including sklearn 1.9's unused deprecated GBDT criterion,
+remain versioned descriptive metadata. Validation neither rederives arbitrary
+library defaults nor proves backend execution or refits exported tables. These local parameters are an r0 recipe, not inferred
 historical defaults. sklearn's internal random draws are **not** claimed captured;
 the seed and algorithm version are their reproducibility metadata.
 
