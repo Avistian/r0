@@ -1,0 +1,12 @@
+E501 Line too long (108 > 100)
+   --> /tmp/r0-28-prefix-public-programs/verify.py:207:101
+    |
+205 | ):
+206 |     for rows in [True, 0, -1, 2**63]:
+207 |         rejects("invalid rows " + str(rows), lambda rows=rows: p.FunctionalPrefix((rr,), rows=rows), "rows")
+    |                                                                                                     ^^^^^^^^
+208 |     rejects(
+209 |         "forward parent",
+    |
+
+Found 1 error.

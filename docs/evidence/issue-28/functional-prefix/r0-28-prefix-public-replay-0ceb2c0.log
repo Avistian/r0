@@ -1,0 +1,3 @@
+base 0
+candidate 0
+PASS 24 byte-identical graph snapshots and candidate prefix checks

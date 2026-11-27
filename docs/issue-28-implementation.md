@@ -3,11 +3,11 @@
 The [accepted specification](specs/0028-causal-network-generators.md) is the
 authoritative scope. This ledger tracks execution, not a smaller replacement goal.
 
-Latest: [independent target calibration](issue-28-functional-target-calibration.md)
-at `09cdbba` has bounded independent acceptance; equivalent checked source passes
-1255 tests (one skipped). [Authored graphs](issue-28-functional-graph-integration.md)
-and their historical REJECTs remain retained. Sampled graphs, fresh ancestral fits,
-raw manifests, workbench delivery and full #28 acceptance remain open.
+Latest: [admitted ancestral prefixes](issue-28-functional-prefix.md) at `0ceb2c0`
+have bounded independent acceptance; equivalent source passes 1258 tests (one skipped).
+[Target calibration](issue-28-functional-target-calibration.md), authored graphs and
+historical REJECTs remain retained. Full sampled construction, raw manifests,
+fresh fit provenance, workbench delivery and full #28 acceptance remain open.
 
 ## Checkout and scope preservation
 

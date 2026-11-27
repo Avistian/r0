@@ -1,0 +1,33 @@
+python3 scripts/run_check.py ruff format --check .
+599 files already formatted
+python3 scripts/run_check.py ruff check .
+All checks passed!
+python3 scripts/run_check.py pyright
+0 errors, 0 warnings, 0 informations
+python3 scripts/run_check.py lint-imports
+
+╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐
+╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │
+ ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗
+ ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝
+╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║
+╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝
+  └──▶║║                    ▲ 
+      ╚╝────────────────────┘
+
+
+---------
+Contracts
+---------
+
+Analyzed 220 files, 1430 dependencies.
+--------------------------------------
+
+Layers KEPT
+ADR 0002: the training path never sees real data KEPT
+Only the adapter imports relbench KEPT
+Comparison stays isolated from training and real-data adapters KEPT
+
+Contracts: 4 kept, 0 broken.
+python3 scripts/run_check.py python scripts/check_module_tests.py
+python3 scripts/run_check.py python scripts/check_file_tokens.py

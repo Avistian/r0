@@ -1,0 +1,13 @@
+Standards review: no documented-standard violations found; no actionable heuristic smells.
+
+Scope: /tmp/r0-28-graph-prefix, HEAD 97cd0233726fed230a570435ab34dfbaf8e63556; git diff ca50743d1ebc2479d4c7a57fb4434141910270eb...HEAD. Sole commit: 97cd023 feat(priors): evaluate admitted ancestral prefixes for fitting (#28). Preflight and final status both showed only untracked .venv. Review was read-only; this report is the sole authored artifact.
+
+Documented standards:
+- functional_causal_evaluation.py:87-157 preserves explicit injected generator ownership (CODING_STANDARDS.md:1-3); extraction retains the existing node loop and random draw order.
+- __init__.py and tests/priors/test_functional_prefix.py expose/use the priors entry point; shared implementation stays within priors/lib (src/r0/modules/README.md).
+- functional_causal.py, functional_graph_admission.py, functional_causal_node.py and functional_prefix.py separate task constraints from shared node admission without introducing another domain module. Existing task workspace terms and node validation are preserved by inspection.
+- docs/issue-28-functional-prefix.md:30-53 explicitly limits completion and verification claims and supplies the focused command, selected environment and raw-output path, consistent with CODING_STANDARDS.md:20-32 and docs/agents/protocol-review.md. I read the retained log showing 29 passed; I did not run those tests or independently establish their provenance. Full-source and broader builder acceptance remain pending.
+
+Heuristic review: no actionable finding. Shared admission and evaluation remove meaningful duplication. PrefixEvaluation is a domain result, and FunctionalPrefix adds row validation, certificate checks and retained-metadata admission; neither is an unjustified middleman. The prefix seam is directly motivated by the sampled-graph ownership research, so its separation is not speculative generality.
+
+Sources also read: AGENTS.md, docs/requirements.md, README verification environments, and relevant draft ADRs 0001/0002/0006/0012. Home-repository TypeScript course standards were excluded. Tooling-enforced rules were skipped. Tests/static checks: NOT_RUN by this reviewer. This is a delta-only standards assessment, not scientific, source-fidelity, full-suite or full-issue acceptance.
