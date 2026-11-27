@@ -1,6 +1,0 @@
-Interpreter: /home/avist/Projects/r0/.venv/bin/python3
-r0 source: /tmp/r0-28-graph-admission/src/r0/__init__.py
-Expected package: /tmp/r0-28-graph-admission/src/r0
-[feat/issue-28-graph-admission ae815a6] fix(priors): validate root factors without pre-admission arrays
- 4 files changed, 123 insertions(+), 8 deletions(-)
- create mode 100644 tests/priors/test_functional_admission.py

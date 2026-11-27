@@ -1,7 +1,0 @@
-Interpreter: /home/avist/Projects/r0/.venv/bin/python3
-r0 source: /tmp/r0-28-root-realization/src/r0/__init__.py
-Expected package: /tmp/r0-28-root-realization/src/r0
-[feat/issue-28-root-realization 0c3a032] feat(priors): emit and reload fresh rows from frozen roots
- 5 files changed, 366 insertions(+), 2 deletions(-)
- create mode 100644 src/r0/modules/priors/lib/joint_root_emission.py
- create mode 100644 tests/priors/test_joint_root_emission.py
