@@ -265,13 +265,16 @@ def function_certificates(
 
 def functional_certificates(
     nodes: tuple["FunctionalCausalNode", ...],
+    *,
+    mechanism: Callable[[int, FrozenFunction, list[ChannelCertificate]], list[ChannelCertificate]]
+    | None = None,
 ) -> tuple[list[list[ChannelCertificate]], list[list[ChannelCertificate]]]:
     """Never infer population moments or delete dependencies from a finite sample."""
     states: list[list[ChannelCertificate]] = []
     readouts: list[list[ChannelCertificate]] = []
     for index, node in enumerate(nodes):
         state, readout = functional_node_certificates(
-            node, index, [c for p in node.parents for c in states[p]]
+            node, index, [c for p in node.parents for c in states[p]], mechanism=mechanism
         )
         states.append(state)
         readouts.append(readout)
@@ -284,6 +287,8 @@ def functional_node_certificates(
     incoming: list[ChannelCertificate],
     *,
     convert: Callable[[list[ChannelCertificate]], list[ChannelCertificate]] | None = None,
+    mechanism: Callable[[int, FrozenFunction, list[ChannelCertificate]], list[ChannelCertificate]]
+    | None = None,
 ) -> tuple[list[ChannelCertificate], list[ChannelCertificate]]:
     """Analyze one equation with caller-supplied parent state certificates."""
     from r0.modules.priors.lib.prototype_root_base import PrototypeRootBase
@@ -334,7 +339,11 @@ def functional_node_certificates(
                     bounded or not sources,
                 )
             )
-    output = function_certificates(node.function, incoming)
+    output = (
+        mechanism(index, node.function, incoming)
+        if mechanism
+        else function_certificates(node.function, incoming)
+    )
     before = output
     captured: dict[int, ChannelCertificate] = {}
     if node.pipeline:

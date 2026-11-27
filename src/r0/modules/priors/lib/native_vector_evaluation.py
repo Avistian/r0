@@ -16,6 +16,7 @@ from r0.modules.priors.lib.native_vector_intervention_execution import (
     vector_clamps,
 )
 from r0.modules.priors.lib.native_vector_records import NativeVectorNode, NativeVectorRecipe
+from r0.modules.priors.lib.node_mechanisms import NodeMechanisms
 from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
 from r0.modules.priors.lib.representatives import record_fingerprint
@@ -47,6 +48,7 @@ def evaluate_native_vector_graph(
     task_id: int,
     device: str = "cpu",
     execution: InterventionExecution | None = None,
+    mechanisms: NodeMechanisms | None = None,
 ) -> NativeVectorEvaluation:
     if type(recipe) is not NativeVectorRecipe or any(
         type(v) is not int or not 0 <= v < 2**63 for v in (seed, task_id)
@@ -65,6 +67,7 @@ def evaluate_native_vector_graph(
         ),
         device,
         execution=execution,
+        mechanisms=mechanisms,
         limits=recipe.limits,
     )
 
@@ -76,6 +79,7 @@ def evaluate_native_vector_nodes(
     device: str,
     *,
     execution: InterventionExecution | None = None,
+    mechanisms: NodeMechanisms | None = None,
     capture: RawDrawLedger | None = None,
     owner: tuple[str, ...] = ("native",),
     limits: CausalLimits = _DEFAULT_LIMITS,
@@ -96,6 +100,12 @@ def evaluate_native_vector_nodes(
             values.append(tuple(v[0] for v in forced))
             states.append(torch.cat([v[1] for v in forced], dim=1))
             scores.append(torch.cat([v[2] for v in forced], dim=1))
+            if mechanisms:
+                mechanisms.record(index, state=states[-1], scores=scores[-1])
+                for j, (value, encoded, score) in enumerate(forced):
+                    mechanisms.record(index, **{f"value:{j}": value, f"forced-score:{j}": score})
+                    if node.domains[j].kind != "continuous":
+                        mechanisms.record(index, **{f"probability:{j}": encoded})
             assert execution is not None
             execution.bypassed.append(index)
             execution.record(index, state=states[-1], score=scores[-1])
@@ -124,7 +134,11 @@ def evaluate_native_vector_nodes(
             execution.record(index, inputs=inputs)
             if equation.root:
                 execution.record(index, root=inputs)
-        output = evaluate_admitted_function(equation.function, inputs)
+        output = (
+            mechanisms.evaluate(index, equation.function, inputs)
+            if mechanisms
+            else evaluate_admitted_function(equation.function, inputs)
+        )
         raw = torch.tensor(
             sample_exogenous(
                 equation.exogenous,
@@ -144,12 +158,26 @@ def evaluate_native_vector_nodes(
         if execution:
             execution.record(index, function=output, exogenous=raw, scale=scale)
         pipeline = PipelineEvaluation(equation.pipeline, index, None) if equation.pipeline else None
-        state = (pipeline.before_noise(output) if pipeline else output) + scale * raw
+        transformed = pipeline.before_noise(output) if pipeline else output
+        state = transformed + scale * raw
+        pre_finish = state
         if pipeline:
             state, _ = pipeline.finish(state)
         if not torch.isfinite(state).all():
             raise ValueError("nonfinite native equation score; task was not retried")
         scores.append(state)
+        if mechanisms:
+            mechanisms.record(
+                index,
+                inputs=inputs,
+                function=output,
+                exogenous=raw,
+                scale=scale,
+                before_noise=transformed,
+                pre_finish=pre_finish,
+                post_finish=state,
+                scores=state,
+            )
         joint = state
         parts: list[torch.Tensor] = []
         node_values: list[torch.Tensor] = []
@@ -160,6 +188,8 @@ def evaluate_native_vector_nodes(
                 node_values.append(value)
                 parts.append(encoded)
                 joint[:, span.score_start : span.score_stop] = forced_score
+                if mechanisms:
+                    mechanisms.record(index, **{f"forced-score:{variable}": forced_score})
                 assert execution is not None
                 execution.record(
                     index, **{f"value:{variable}": value, f"forced-score:{variable}": forced_score}
@@ -222,6 +252,14 @@ def evaluate_native_vector_nodes(
             parts.append(encoded)
         values.append(tuple(node_values))
         states.append(torch.cat(parts, dim=1))
+        if mechanisms:
+            mechanisms.record(index, state=states[-1], scores=joint)
+            for j, value in enumerate(node_values):
+                mechanisms.record(index, **{f"value:{j}": value})
+                if (index, j) in probabilities:
+                    mechanisms.record(index, **{f"probability:{j}": probabilities[index, j]})
+                if (index, j) in uniforms:
+                    mechanisms.record(index, **{f"uniform:{j}": uniforms[index, j]})
         if execution:
             execution.record(index, state=states[-1], score=joint)
             for j, value in enumerate(node_values):

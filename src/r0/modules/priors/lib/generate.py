@@ -66,6 +66,10 @@ from r0.modules.priors.lib.recursive_population_dispatch import (
     generate_population_recipe,
     population_recipe_from_dict,
 )
+from r0.modules.priors.lib.recursive_population_graph_intervention import (
+    RecursivePopulationGraphIntervention,
+)
+from r0.modules.priors.lib.recursive_population_graph_records import RecursivePopulationGraph
 from r0.modules.priors.lib.recursive_population_intervention import RecursivePopulationIntervention
 from r0.modules.priors.lib.recursive_population_records import RecursivePopulationRecipe
 from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
@@ -90,6 +94,8 @@ from r0.modules.priors.lib.typed_policy_records import SampledTypedInterventionP
 
 type Recipe = (
     GPColumnRecipe
+    | RecursivePopulationGraph
+    | RecursivePopulationGraphIntervention
     | PrototypeBatchNetworkRecipe
     | RealizedPrototypeBatchNetworkRecipe
     | NetworkRecipe
@@ -318,7 +324,15 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
         return generate_gp_columns(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkObservationRecipe):
         return generate_network_observations(recipe, seed=seed, task_id=task_id, device=device)
-    if isinstance(recipe, (RecursivePopulationRecipe, RecursivePopulationIntervention)):
+    if isinstance(
+        recipe,
+        (
+            RecursivePopulationRecipe,
+            RecursivePopulationIntervention,
+            RecursivePopulationGraph,
+            RecursivePopulationGraphIntervention,
+        ),
+    ):
         return generate_population_recipe(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, SampledConvertedGraph):
         return generate_sampled_converted(recipe, seed=seed, task_id=task_id, device=device)
