@@ -333,7 +333,7 @@ def explain_generation(
         identity = (*namespace, record["seed"], record["task_id"], (stream,))
         return np.random.default_rng(int(record_fingerprint(identity), 16))
 
-    targets = _target_steps(controls, signal, indices, rng, add)
+    targets = target_steps(controls, signal, indices, rng, add)
     original_targets = task.targets.detach().cpu()[list(indices)]
     if not torch.allclose(targets, original_targets, rtol=1e-10, atol=1e-10):
         raise ValueError("reconstructed targets differ from saved values beyond 1e-10 tolerance")
@@ -362,7 +362,7 @@ def explain_generation(
     }
 
 
-def _target_steps(
+def target_steps(
     controls: dict[str, Any],
     signal: torch.Tensor,
     indices: Sequence[int],
