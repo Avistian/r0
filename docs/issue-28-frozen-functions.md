@@ -34,7 +34,8 @@ Discretization permits one center, covering degenerate source count cases. Its
 distance comparison uses power-of-two scaled mantissa/exponent pairs so logarithmic rounding
 does not turn adjacent large represented distances into false ties. Opposite-sign
 finite coordinates whose subtraction overflows are compared using half-scaled
-differences. p below one is a quasi-distance. EM uses the corresponding logarithmic
+differences. One-axis distances retain the absolute difference directly, avoiding
+pow/root rounding of adjacent values. p below one is a quasi-distance. EM uses the corresponding logarithmic
 distance for spread scaling. These float64 arithmetic adaptations do not promise
 bit identity with the source implementation. Intermediate arithmetic that still
 produces a nonfinite final output rejects; it is not silently clipped or retried.
@@ -87,7 +88,7 @@ UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
 python3 scripts/run_check.py pytest tests/priors/test_frozen_functions.py
 ```
 
-Current focused result: **13 passed**. Development RED/GREEN and static-check logs
+Current focused result: **14 passed**. Development RED/GREEN and static-check logs
 are retained locally under `/tmp/r0-28-functions-*`; the false-logarithmic-tie RED
 remains part of the history. Independent review rejected initial source `690297b`:
 per-center magnitude scaling broke exact L1 ties (expected first-center output 15,

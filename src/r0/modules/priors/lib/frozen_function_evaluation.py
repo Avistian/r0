@@ -85,7 +85,7 @@ def _distance_parts(
         difference = torch.where(overflow, half, difference)
     absolute = difference.abs()
     largest = absolute.max(dim=-1).values
-    _, exponent = torch.frexp(largest)
+    largest_mantissa, exponent = torch.frexp(largest)
     coordinates, coordinate_exponents = torch.frexp(absolute)
     # Power-of-two scaling is exact, unlike division by each pair's maximum,
     # which can give unequal rounded norms to exact ties such as (15,0)/(13,2).
@@ -93,6 +93,11 @@ def _distance_parts(
     scaled = torch.ldexp(coordinates, relative_exponents)
     norm = (scaled**p).sum(dim=-1) ** (1 / p)
     mantissa, adjustment = torch.frexp(norm)
+    # A distance along one axis is its absolute coordinate for every p. Avoid
+    # a needless pow/root round trip that can erase a one-ULP difference.
+    one_axis = (absolute != 0).sum(dim=-1) <= 1
+    mantissa = torch.where(one_axis, largest_mantissa, mantissa)
+    adjustment = torch.where(one_axis, 0, adjustment)
     exponent = exponent + adjustment + overflow.squeeze(-1).to(exponent.dtype)
     return mantissa, exponent
 

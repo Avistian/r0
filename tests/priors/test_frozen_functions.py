@@ -245,3 +245,13 @@ def test_frozen_mlp_json_keeps_all_accepted_activation_parameters() -> None:
         priors.evaluate_frozen_function(restored, values),
         priors.evaluate_frozen_function(function, values),
     )
+
+
+def test_discretization_quasi_distance_does_not_round_away_one_axis_difference() -> None:
+    function = priors.FrozenDiscretizationFunction(
+        centers=((math.nextafter(1.0, math.inf), 0.0), (1.0, 0.0)),
+        linear=priors.FrozenLinearFunction(((1.0, 0.0),)),
+        p=0.5,
+    )
+    result = priors.evaluate_frozen_function(function, torch.zeros((1, 2), dtype=torch.float64))
+    assert result.item() == 1.0
