@@ -1,6 +1,8 @@
 "use strict";
 function sourceRootConstructionNote(example) {
+  prototypeConstructionNote(example);
   if(example.topology==="network-innovations") example=example.source;
+  if(example.topology==="prototype-root-network") example=example.source;
   const active=example.topology==="source-root-network";
   $("source-root-controls").hidden=!active;
   if(!active) return;
@@ -13,7 +15,8 @@ function sourceRootConstructionNote(example) {
 $("source-root-mode").onchange=()=>{$("source-root-rows").disabled=$("source-root-mode").value==="identity";};
 $("source-root-apply").onclick=()=>act("Applying explicit root controls…",async()=>{
   const controls=JSON.parse($("construction-controls").value);
-  const draft=controls.topology==="network-innovations" ? controls.source : controls;
+  let draft=controls.topology==="network-innovations" ? controls.source : controls;
+  if(draft.topology==="prototype-root-network") draft=draft.source;
   if(draft.topology!=="source-root-network") throw new Error("Select a source-root network preset first.");
   const mode=$("source-root-mode").value;
   if(mode!=="custom") draft.modes=Array(draft.profile.width).fill(mode);
@@ -25,12 +28,14 @@ $("source-root-apply").onclick=()=>act("Applying explicit root controls…",asyn
 
 function showSourceRootEditor() {
   const root=(networkDraft?.base || networkDraft)?.root;
-  const active=["source-root-base-v1","sampled-source-root-base-v1"].includes(root?.version);
+  const active=["source-root-base-v1","sampled-source-root-base-v1","prototype-root-base-v1"].includes(root?.version);
   $("source-root-editor").hidden=!active;
   if(!active) return;
   $("source-root-edit-policy").value="retain";
   $("source-root-json").readOnly=true;
-  $("source-root-json").value=pretty({law:root.law,calibration:root.calibration,version:"source-root-base-v1"});
+  $("source-root-json").value=pretty(root.version==="prototype-root-base-v1"
+    ? {bank:root.bank.root || root.bank,version:"prototype-root-base-v1"}
+    : {law:root.law,calibration:root.calibration,version:"source-root-base-v1"});
   $("source-root-provenance").textContent=pretty(root);
 }
 $("source-root-edit-policy").onchange=()=>{$("source-root-json").readOnly=$("source-root-edit-policy").value!=="authored";};
@@ -39,7 +44,8 @@ $("source-root-edit-apply").onclick=()=>act("Validating frozen root draft…",as
   if($("network-recipe").value!==pretty(networkDraft)) throw new Error("Complete recipe has unapplied edits; both drafts retained.");
   const text=$("source-root-json").value, candidate=JSON.parse(JSON.stringify(networkDraft));
   const root=JSON.parse(text);
-  if(root.version!=="source-root-base-v1") throw new Error("Authored root edits require source-root-base-v1; sampled receipts cannot be edited.");
+  if(!["source-root-base-v1","prototype-root-base-v1"].includes(root.version)) throw new Error("Authored root edits require an explicit source law or frozen prototype bank; sampled receipts cannot be edited.");
+  if(root.version==="prototype-root-base-v1" && root.bank?.version!=="frozen-prototype-root-v1") throw new Error("Prototype edits require an authored frozen bank, not altered sampling receipts.");
   (candidate.base || candidate).root=root;
   const planText=networkNoiseMode ? $("network-noise-plan").value : null;
   const validated=await request(networkNoiseMode ? "network_noise_draft" : "network_draft", networkNoiseMode ? {recipe:candidate,innovation_plan:JSON.parse(planText),...limits()} : networkEditRequest(candidate));

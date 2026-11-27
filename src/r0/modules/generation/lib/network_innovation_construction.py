@@ -24,6 +24,7 @@ def construct_network_innovations(
         "network-authored",
         "network-hyperprior",
         "source-root-network",
+        "prototype-root-network",
     ):
         raise ValueError("network innovations wrap an explicit standalone network construction")
     source = construct_graph(source_controls, seed=seed, limits=limits)

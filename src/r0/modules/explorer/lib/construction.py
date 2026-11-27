@@ -16,6 +16,7 @@ from r0.modules.explorer.lib.native import (
 from r0.modules.explorer.lib.network_hyperprior_examples import network_hyperprior_examples
 from r0.modules.explorer.lib.network_innovation_examples import network_innovation_examples
 from r0.modules.explorer.lib.networks import network_editor, network_examples
+from r0.modules.explorer.lib.prototype_root_examples import prototype_root_examples
 from r0.modules.explorer.lib.source_root_examples import source_root_examples
 
 
@@ -81,6 +82,7 @@ def construction_examples() -> dict[str, Any]:
         **fitted_examples(),
         **network_examples(),
         **source_root_examples(),
+        **prototype_root_examples(),
         **network_hyperprior_examples(),
         **network_innovation_examples(),
         **converted_examples(),

@@ -4,6 +4,20 @@ from typing import Any
 
 
 def source_root_details(root: dict[str, Any] | None) -> dict[str, Any] | None:
+    if root is not None and root.get("version") == "prototype-root-base-v1":
+        bank = root["bank"]
+        sampled = bank.get("version") == "sampled-prototype-root-v1"
+        frozen = bank["root"] if sampled else bank
+        return {
+            "kind": "prototype-convex-mixture-root",
+            "version": root["version"],
+            "bank": frozen,
+            "sampling": bank if sampled else None,
+            "notice": "Frozen independent bank; fresh per-row weights shared across coordinates. "
+            "Integer count and beta mappings are named r0 reconstructions; probability temperature "
+            "and Dirichlet modes are extensions. Conditional bounded-bank moments differ from "
+            "construction moments. Batch-reference workbench remains pending, never substituted.",
+        }
     if root is None or root.get("version") not in (
         "source-root-base-v1",
         "sampled-source-root-base-v1",
