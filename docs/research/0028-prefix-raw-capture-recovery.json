@@ -1,0 +1,8 @@
+{
+  "verdict": "RESTORED_AND_VERIFIED",
+  "metadata": "/tmp/r0-28/docs/research/0028-prefix-raw-capture-spec-artifacts.json",
+  "output": "/tmp/r0-28-prefix-capture-public-recovery",
+  "source": "1b547ec0433d9fa7a6e623668dbd7a49bd22d328",
+  "manifest_entries": 61,
+  "archive_sha256": "578594e9415ff221b2d594b33b6068058c133fdd8ebacfdace3441f526468903"
+}

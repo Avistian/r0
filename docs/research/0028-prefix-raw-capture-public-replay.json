@@ -1,0 +1,32 @@
+{
+  "verdict": "PASS",
+  "cases": 180,
+  "populations": 360,
+  "compatibility_objects": 132,
+  "compatibility_sha256": "0be387ea43d7e396a2c9a8eeefedc6a01c6d90270bba82872096e9d92e91b12a",
+  "commands": [
+    {
+      "command": [
+        "/home/avist/Projects/r0/.venv/bin/python",
+        "/tmp/r0-28-prefix-capture-public-replay/oracle.py"
+      ],
+      "PYTHONPATH": "/tmp/r0-28-prefix-capture-public-replay/head/src"
+    },
+    {
+      "command": [
+        "/home/avist/Projects/r0/.venv/bin/python",
+        "/tmp/r0-28-prefix-capture-public-replay/compatibility.py",
+        "/tmp/r0-28-prefix-capture-public-replay/base-compatibility.json"
+      ],
+      "PYTHONPATH": "/tmp/r0-28-prefix-capture-public-replay/base/src"
+    },
+    {
+      "command": [
+        "/home/avist/Projects/r0/.venv/bin/python",
+        "/tmp/r0-28-prefix-capture-public-replay/compatibility.py",
+        "/tmp/r0-28-prefix-capture-public-replay/head-compatibility.json"
+      ],
+      "PYTHONPATH": "/tmp/r0-28-prefix-capture-public-replay/head/src"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+Spec: SCOPED_COMPONENT_PASS; no product defects or scope creep found in 4f80f9c against 6efde62.
+
+Implemented correctly: the component contract says “Roots and structural innovations consume it in node, column and draw order” (docs/issue-28-prefix-raw-capture.md:4–5), captures “rejected proposals and unused accepted tails” (13–14), and preserves earlier RNG/ledger state on failure (6–8,29–30). An independent direct NumPy oracle passed 180 cases / 360 populations across five engines, four root families, all innovation laws, truncation and covariance factors. It verified original arrays, state digests, draw order, reversed parents, pipelines, noise response and distinct successive populations. Late draw/number caps, nonfinite failures, earlier-record preservation, nested calibration binding and readmission before allocation passed.
+
+Compatibility: “existing keyed … and authored generation/inspection APIs keep their behavior” (8–9). 132 serialized base/head objects were byte-identical, including keyed prefixes, authored causal-v1/v2 and functional tasks, original-row traces, and fixtures.
+
+Missing/partial, explicitly outside this component: “The graph builder still must request a fresh population for each receiving function and pipeline fit, retain its receipts and bind it to frozen ancestors” (37–38). Typed ownership, complete graph-wide aggregate admission, browser/Colab, GPU, measured resources and scientific performance remain unaccepted (19–24,39–40). No whole-graph acceptance claim.
+
+Evidence: source archives, exact verifier programs, raw ledgers/populations, environment, commands, four documented harness-correction logs, passing outputs and SHA256SUMS. Portable replay from fresh archive extraction passed using existing dependencies, with outputs separate from sealed originals. Full-suite execution belongs to the parent review.

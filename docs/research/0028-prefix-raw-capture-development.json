@@ -1,0 +1,64 @@
+{
+  "source": "1b547ec0433d9fa7a6e623668dbd7a49bd22d328",
+  "archive": "0028-prefix-raw-capture-development.zip",
+  "bytes": 6877,
+  "sha256": "04f9995a39a8918a5b11ae06d710682be6a5ccd71ac0dc282d05d50515cde91a",
+  "files": {
+    "r0-28-prefix-raw-commit.log": {
+      "bytes": 423,
+      "sha256": "e0fb46aeb987771f86507e8b532632bd55772d8617b86408f45ff9959808378a",
+      "mirrored": true
+    },
+    "r0-28-prefix-raw-expanded-green.log": {
+      "bytes": 179,
+      "sha256": "a55eaaef0c03c30165e59231c30e87d2f675c55f03f18e7c81ea87fb27e7420f",
+      "mirrored": true
+    },
+    "r0-28-prefix-raw-expanded.log": {
+      "bytes": 88,
+      "sha256": "09826beec40d47ea52ad927be02d96c0bb0bef91a78bd6462120c28d0e6888b7",
+      "mirrored": true
+    },
+    "r0-28-prefix-raw-full-check.log": {
+      "bytes": 3610,
+      "sha256": "716261ba198ace0a9ed5068fa354b23e29658c14bb60da337cf23a74ad8d9d66",
+      "mirrored": true
+    },
+    "r0-28-prefix-raw-green.log": {
+      "bytes": 295,
+      "sha256": "90f87206db82a6ee9567bc03dc22935869c140408e07e7a58d55b1a9fdc07519",
+      "mirrored": true
+    },
+    "r0-28-prefix-raw-lint-initial.log": {
+      "bytes": 4125,
+      "sha256": "33aa5a2980acdeaa948e3942d31241475aff87d43474683fb6d7764d0fd76bbf",
+      "mirrored": true
+    },
+    "r0-28-prefix-raw-main-cherry.log": {
+      "bytes": 307,
+      "sha256": "6bc3ae530256fc53b67bf5991d00033401f5d57ed19bc5ddbc80c0af0b22bd67",
+      "mirrored": true
+    },
+    "r0-28-prefix-raw-red.log": {
+      "bytes": 18535,
+      "sha256": "e4ee62f2f39b27b45a8f96c1915ab79a6f78d1e3b6dc512c6edf660c523ecc72",
+      "mirrored": true
+    },
+    "r0-28-prefix-raw-static-final.log": {
+      "bytes": 279,
+      "sha256": "ce735188bc69b01a2a8fc188182e673f6a02bfca862b0d13661258ea58fdf8d9",
+      "mirrored": true
+    },
+    "r0-28-prefix-raw-static-green.log": {
+      "bytes": 918,
+      "sha256": "fdbd3e2b0bd2fe4a8cec40d70ddd79b618e09bb3ecaecb26a836585a7cec7cf9",
+      "mirrored": true
+    },
+    "r0-28-prefix-raw-static.log": {
+      "bytes": 2347,
+      "sha256": "4079219250bac6a149dce0c2a318f2fb987c7ecc6b81642e5bf51def32df493b",
+      "mirrored": true
+    }
+  },
+  "qualification": "Author development/static/full-suite and public-copy replay logs retained verbatim. Intermediate uncommitted source bytes and failed lint-copy bytes are not all retained. Independent review artifacts are separate."
+}

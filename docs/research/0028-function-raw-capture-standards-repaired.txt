@@ -1,0 +1,9 @@
+Standards repair delta review — 6a31732829cde097f5655cdb75dc31dd5f43f30c
+
+Scope: git diff a4354272484faca9961f5947bf661bcf89dad30e...HEAD in /tmp/r0-28-function-raw-repair. Verified expected HEAD, only untracked .venv, and exactly one changed file: tests/priors/test_raw_draw_streams.py. No product source changes. Review was read-only; tests NOT_RUN by this reviewer. Parent-reported 11 focused passes are not independent test evidence here.
+
+Original documented violation: RESOLVED. The private raw_transactions import is removed. Lines 70–99 now exercise priors.RawDrawLedger().transactions through the public module entry point, satisfying src/r0/modules/README.md:2–4. Six public mapping-mutation cases remain (caller/staged × replace/delete/add), with ledger and original generator assertions retained. Six uncaptured internal-helper cases were removed; this review does not establish replacement coverage or spec acceptance for those cases.
+
+New documented violations in the repair delta: 0. New smell findings in the repair delta: 0.
+
+The original nonblocking possible Duplicated Code heuristic in joint_root_base.py remains unchanged. Original report /tmp/r0-28-function-raw-standards-a435427.txt remains retained unchanged. This confirms only the standards repair delta; it is not whole-issue or scientific acceptance, nor a fullsuite result for the repaired HEAD.
