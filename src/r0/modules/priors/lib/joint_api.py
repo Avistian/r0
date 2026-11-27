@@ -74,6 +74,19 @@ from r0.modules.priors.lib.joint_matrix_realization import (
 from r0.modules.priors.lib.joint_mlp_realization import (
     JointMLPFunctionRealization as JointMLPFunctionRealization,
 )
+from r0.modules.priors.lib.joint_observation_plans import FeatureGroup as FeatureGroup
+from r0.modules.priors.lib.joint_observation_plans import (
+    JointObservationPlan as JointObservationPlan,
+)
+from r0.modules.priors.lib.joint_observation_plans import (
+    sample_joint_observations as sample_joint_observations,
+)
+from r0.modules.priors.lib.joint_observation_realization import (
+    JointObservationRealization as JointObservationRealization,
+)
+from r0.modules.priors.lib.joint_observation_realization import (
+    materialize_joint_observations as materialize_joint_observations,
+)
 from r0.modules.priors.lib.joint_operation_registry import (
     JointOperationRegistry as JointOperationRegistry,
 )

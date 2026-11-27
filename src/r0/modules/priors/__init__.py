@@ -114,210 +114,6 @@ from r0.modules.priors.lib.generation_graph import explain_generation as explain
 from r0.modules.priors.lib.gp_conditioning import condition_gp as condition_gp
 from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe as GroupedLinearRecipe
 from r0.modules.priors.lib.inputs import InputDistribution as InputDistribution
-from r0.modules.priors.lib.joint_api import (
-    FunctionCalibrationSample as FunctionCalibrationSample,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointActivationPlan as JointActivationPlan,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointConverterPlan as JointConverterPlan,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointDecision as JointDecision,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointDiscretizationFunctionRealization as JointDiscretizationFunctionRealization,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointEMFunctionRealization as JointEMFunctionRealization,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointFunctionPlan as JointFunctionPlan,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointFunctionPrior as JointFunctionPrior,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointGraphNodePlan as JointGraphNodePlan,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointGraphNoise as JointGraphNoise,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointGraphPlan as JointGraphPlan,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointGraphRequest as JointGraphRequest,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointMatrixFunctionRealization as JointMatrixFunctionRealization,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointMatrixPlan as JointMatrixPlan,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointMatrixPrior as JointMatrixPrior,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointMatrixRealization as JointMatrixRealization,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointMLPFunctionRealization as JointMLPFunctionRealization,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointNumericalConverterPrior as JointNumericalConverterPrior,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointOperationRegistry as JointOperationRegistry,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointOperationSpan as JointOperationSpan,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointPlanOwner as JointPlanOwner,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointPointPlan as JointPointPlan,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointProductFunctionRealization as JointProductFunctionRealization,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointRegistryLimits as JointRegistryLimits,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointRFFFunctionRealization as JointRFFFunctionRealization,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointRootBase as JointRootBase,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointRootEmission as JointRootEmission,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointRootPlan as JointRootPlan,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointRootPrior as JointRootPrior,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointRootRealization as JointRootRealization,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointSamplingContext as JointSamplingContext,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointSamplingRecord as JointSamplingRecord,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointStreamLimits as JointStreamLimits,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointTreeFunctionRealization as JointTreeFunctionRealization,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointWeightPlan as JointWeightPlan,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointWidthPlan as JointWidthPlan,
-)
-from r0.modules.priors.lib.joint_api import (
-    JointWidthPrior as JointWidthPrior,
-)
-from r0.modules.priors.lib.joint_api import (
-    fit_joint_activation as fit_joint_activation,
-)
-from r0.modules.priors.lib.joint_api import (
-    fit_joint_converter as fit_joint_converter,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_activation_plan_from_dict as joint_activation_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_converter_plan_from_dict as joint_converter_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_function_plan_from_dict as joint_function_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_function_realization_from_dict as joint_function_realization_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_matrix_plan_from_dict as joint_matrix_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_matrix_realization_from_dict as joint_matrix_realization_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_operation_registry_from_dict as joint_operation_registry_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_point_plan_from_dict as joint_point_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_root_emission_from_dict as joint_root_emission_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_root_plan_from_dict as joint_root_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_root_realization_from_dict as joint_root_realization_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_sampling_from_dict as joint_sampling_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    joint_weight_plan_from_dict as joint_weight_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_api import (
-    materialize_joint_function as materialize_joint_function,
-)
-from r0.modules.priors.lib.joint_api import (
-    materialize_joint_matrix as materialize_joint_matrix,
-)
-from r0.modules.priors.lib.joint_api import (
-    materialize_joint_points as materialize_joint_points,
-)
-from r0.modules.priors.lib.joint_api import (
-    materialize_joint_root as materialize_joint_root,
-)
-from r0.modules.priors.lib.joint_api import (
-    materialize_joint_weights as materialize_joint_weights,
-)
-from r0.modules.priors.lib.joint_api import (
-    sample_joint_activation as sample_joint_activation,
-)
-from r0.modules.priors.lib.joint_api import (
-    sample_joint_converter as sample_joint_converter,
-)
-from r0.modules.priors.lib.joint_api import (
-    sample_joint_function as sample_joint_function,
-)
-from r0.modules.priors.lib.joint_api import (
-    sample_joint_graph as sample_joint_graph,
-)
-from r0.modules.priors.lib.joint_api import (
-    sample_joint_graph_plan as sample_joint_graph_plan,
-)
-from r0.modules.priors.lib.joint_api import (
-    sample_joint_matrix as sample_joint_matrix,
-)
-from r0.modules.priors.lib.joint_api import (
-    sample_joint_points as sample_joint_points,
-)
-from r0.modules.priors.lib.joint_api import (
-    sample_joint_root as sample_joint_root,
-)
-from r0.modules.priors.lib.joint_api import (
-    sample_joint_root_values as sample_joint_root_values,
-)
-from r0.modules.priors.lib.joint_api import (
-    sample_joint_weights as sample_joint_weights,
-)
-from r0.modules.priors.lib.joint_api import (
-    sample_joint_widths as sample_joint_widths,
-)
 from r0.modules.priors.lib.kernel_points import KernelPointCloud as KernelPointCloud
 from r0.modules.priors.lib.kernels import GibbsKernel as GibbsKernel
 from r0.modules.priors.lib.kernels import RationalQuadraticKernel as RationalQuadraticKernel
@@ -411,3 +207,223 @@ from r0.modules.priors.lib.weight_matrices import ImportanceWeights as Importanc
 from r0.modules.priors.lib.weight_matrices import LaplaceKernelWeights as LaplaceKernelWeights
 from r0.modules.priors.lib.weight_vectors import PolynomialWeightVector as PolynomialWeightVector
 from r0.modules.priors.lib.weight_vectors import UniformWeightVector as UniformWeightVector
+
+from .lib.joint_api import (
+    FeatureGroup as FeatureGroup,
+)
+from .lib.joint_api import (
+    FunctionCalibrationSample as FunctionCalibrationSample,
+)
+from .lib.joint_api import (
+    JointActivationPlan as JointActivationPlan,
+)
+from .lib.joint_api import (
+    JointConverterPlan as JointConverterPlan,
+)
+from .lib.joint_api import (
+    JointDecision as JointDecision,
+)
+from .lib.joint_api import (
+    JointDiscretizationFunctionRealization as JointDiscretizationFunctionRealization,
+)
+from .lib.joint_api import (
+    JointEMFunctionRealization as JointEMFunctionRealization,
+)
+from .lib.joint_api import (
+    JointFunctionPlan as JointFunctionPlan,
+)
+from .lib.joint_api import (
+    JointFunctionPrior as JointFunctionPrior,
+)
+from .lib.joint_api import (
+    JointGraphNodePlan as JointGraphNodePlan,
+)
+from .lib.joint_api import (
+    JointGraphNoise as JointGraphNoise,
+)
+from .lib.joint_api import (
+    JointGraphPlan as JointGraphPlan,
+)
+from .lib.joint_api import (
+    JointGraphRequest as JointGraphRequest,
+)
+from .lib.joint_api import (
+    JointMatrixFunctionRealization as JointMatrixFunctionRealization,
+)
+from .lib.joint_api import (
+    JointMatrixPlan as JointMatrixPlan,
+)
+from .lib.joint_api import (
+    JointMatrixPrior as JointMatrixPrior,
+)
+from .lib.joint_api import (
+    JointMatrixRealization as JointMatrixRealization,
+)
+from .lib.joint_api import (
+    JointMLPFunctionRealization as JointMLPFunctionRealization,
+)
+from .lib.joint_api import (
+    JointNumericalConverterPrior as JointNumericalConverterPrior,
+)
+from .lib.joint_api import (
+    JointObservationPlan as JointObservationPlan,
+)
+from .lib.joint_api import (
+    JointObservationRealization as JointObservationRealization,
+)
+from .lib.joint_api import (
+    JointOperationRegistry as JointOperationRegistry,
+)
+from .lib.joint_api import (
+    JointOperationSpan as JointOperationSpan,
+)
+from .lib.joint_api import (
+    JointPlanOwner as JointPlanOwner,
+)
+from .lib.joint_api import (
+    JointPointPlan as JointPointPlan,
+)
+from .lib.joint_api import (
+    JointProductFunctionRealization as JointProductFunctionRealization,
+)
+from .lib.joint_api import (
+    JointRegistryLimits as JointRegistryLimits,
+)
+from .lib.joint_api import (
+    JointRFFFunctionRealization as JointRFFFunctionRealization,
+)
+from .lib.joint_api import (
+    JointRootBase as JointRootBase,
+)
+from .lib.joint_api import (
+    JointRootEmission as JointRootEmission,
+)
+from .lib.joint_api import (
+    JointRootPlan as JointRootPlan,
+)
+from .lib.joint_api import (
+    JointRootPrior as JointRootPrior,
+)
+from .lib.joint_api import (
+    JointRootRealization as JointRootRealization,
+)
+from .lib.joint_api import (
+    JointSamplingContext as JointSamplingContext,
+)
+from .lib.joint_api import (
+    JointSamplingRecord as JointSamplingRecord,
+)
+from .lib.joint_api import (
+    JointStreamLimits as JointStreamLimits,
+)
+from .lib.joint_api import (
+    JointTreeFunctionRealization as JointTreeFunctionRealization,
+)
+from .lib.joint_api import (
+    JointWeightPlan as JointWeightPlan,
+)
+from .lib.joint_api import (
+    JointWidthPlan as JointWidthPlan,
+)
+from .lib.joint_api import (
+    JointWidthPrior as JointWidthPrior,
+)
+from .lib.joint_api import (
+    fit_joint_activation as fit_joint_activation,
+)
+from .lib.joint_api import (
+    fit_joint_converter as fit_joint_converter,
+)
+from .lib.joint_api import (
+    joint_activation_plan_from_dict as joint_activation_plan_from_dict,
+)
+from .lib.joint_api import (
+    joint_converter_plan_from_dict as joint_converter_plan_from_dict,
+)
+from .lib.joint_api import (
+    joint_function_plan_from_dict as joint_function_plan_from_dict,
+)
+from .lib.joint_api import (
+    joint_function_realization_from_dict as joint_function_realization_from_dict,
+)
+from .lib.joint_api import (
+    joint_matrix_plan_from_dict as joint_matrix_plan_from_dict,
+)
+from .lib.joint_api import (
+    joint_matrix_realization_from_dict as joint_matrix_realization_from_dict,
+)
+from .lib.joint_api import (
+    joint_operation_registry_from_dict as joint_operation_registry_from_dict,
+)
+from .lib.joint_api import (
+    joint_point_plan_from_dict as joint_point_plan_from_dict,
+)
+from .lib.joint_api import (
+    joint_root_emission_from_dict as joint_root_emission_from_dict,
+)
+from .lib.joint_api import (
+    joint_root_plan_from_dict as joint_root_plan_from_dict,
+)
+from .lib.joint_api import (
+    joint_root_realization_from_dict as joint_root_realization_from_dict,
+)
+from .lib.joint_api import (
+    joint_sampling_from_dict as joint_sampling_from_dict,
+)
+from .lib.joint_api import (
+    joint_weight_plan_from_dict as joint_weight_plan_from_dict,
+)
+from .lib.joint_api import (
+    materialize_joint_function as materialize_joint_function,
+)
+from .lib.joint_api import (
+    materialize_joint_matrix as materialize_joint_matrix,
+)
+from .lib.joint_api import (
+    materialize_joint_observations as materialize_joint_observations,
+)
+from .lib.joint_api import (
+    materialize_joint_points as materialize_joint_points,
+)
+from .lib.joint_api import (
+    materialize_joint_root as materialize_joint_root,
+)
+from .lib.joint_api import (
+    materialize_joint_weights as materialize_joint_weights,
+)
+from .lib.joint_api import (
+    sample_joint_activation as sample_joint_activation,
+)
+from .lib.joint_api import (
+    sample_joint_converter as sample_joint_converter,
+)
+from .lib.joint_api import (
+    sample_joint_function as sample_joint_function,
+)
+from .lib.joint_api import (
+    sample_joint_graph as sample_joint_graph,
+)
+from .lib.joint_api import (
+    sample_joint_graph_plan as sample_joint_graph_plan,
+)
+from .lib.joint_api import (
+    sample_joint_matrix as sample_joint_matrix,
+)
+from .lib.joint_api import (
+    sample_joint_observations as sample_joint_observations,
+)
+from .lib.joint_api import (
+    sample_joint_points as sample_joint_points,
+)
+from .lib.joint_api import (
+    sample_joint_root as sample_joint_root,
+)
+from .lib.joint_api import (
+    sample_joint_root_values as sample_joint_root_values,
+)
+from .lib.joint_api import (
+    sample_joint_weights as sample_joint_weights,
+)
+from .lib.joint_api import (
+    sample_joint_widths as sample_joint_widths,
+)
