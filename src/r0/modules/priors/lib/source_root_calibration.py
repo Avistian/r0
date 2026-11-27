@@ -30,7 +30,7 @@ class SourceRootCalibration:
             or self.version != "source-root-independent-calibration-v1"
         ):
             raise ValueError("invalid independent root calibration law or version")
-        _validate_modes(self.law, self.modes, self.rows)
+        validate_root_normalization_modes(self.law, self.modes, self.rows)
         if (
             type(self.locations) is not tuple
             or type(self.scales) is not tuple
@@ -49,7 +49,7 @@ class SourceRootCalibration:
     ) -> NDArray[np.float64]:
         if type(values) is not np.ndarray or values.ndim != 2 or values.shape[1] != self.law.width:
             raise ValueError("root normalization requires a row by coordinate array")
-        _admit(self.law, values.shape[0], limits)
+        admit_root_normalization(self.law, values.shape[0], limits)
         if values.dtype != np.float64 or not np.isfinite(values).all():
             raise ValueError("root normalization requires finite binary64 input")
         with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
@@ -59,7 +59,9 @@ class SourceRootCalibration:
         return result
 
 
-def _validate_modes(law: SourceRootLaw, modes: tuple[str, ...], rows: int) -> None:
+def validate_root_normalization_modes(
+    law: SourceRootLaw, modes: tuple[str, ...], rows: int
+) -> None:
     if type(law) is not SourceRootLaw or type(modes) is not tuple or len(modes) != law.width:
         raise ValueError("root normalization requires one frozen mode per coordinate")
     if any(
@@ -70,7 +72,7 @@ def _validate_modes(law: SourceRootLaw, modes: tuple[str, ...], rows: int) -> No
         raise ValueError("root calibration rows must admit sample standard deviation")
 
 
-def _admit(law: SourceRootLaw, rows: int, limits: CausalLimits) -> None:
+def admit_root_normalization(law: SourceRootLaw, rows: int, limits: CausalLimits) -> None:
     if type(limits) is not CausalLimits or type(rows) is not int or not 1 <= rows < 2**63:
         raise ValueError("invalid root calibration limits or rows")
     limits.admit_dimensions(
@@ -103,8 +105,8 @@ def calibrate_source_root(
     underflowed or nonfinite scales reject without epsilon, retries or RNG advance.
     This is an explicit r0 lifecycle, not the source implementation's batch refit.
     """
-    _validate_modes(law, modes, rows)
-    _admit(law, rows, limits)
+    validate_root_normalization_modes(law, modes, rows)
+    admit_root_normalization(law, rows, limits)
     if capture is not None and type(capture) is not RawDrawLedger:
         raise ValueError("root calibration capture must be a raw draw ledger")
     ledger = capture if capture is not None else RawDrawLedger()
@@ -112,19 +114,7 @@ def calibrate_source_root(
         values = draw_source_root(
             law, rows=rows, rng=stream, capture=staged, limits=limits, owner=owner
         )
-        locations: list[float] = []
-        scales: list[float] = []
-        for column, mode in enumerate(modes):
-            channel = values[:, column]
-            with np.errstate(over="ignore", invalid="ignore", under="ignore"):
-                location = 0.0 if mode == "identity" else float(channel.mean())
-                scale = float(channel.std(ddof=1)) if mode == "standardize" else 1.0
-            if mode == "standardize" and (
-                np.all(channel == channel[0]) or not np.isfinite(scale) or scale <= 0
-            ):
-                raise ValueError("degenerate root calibration; no retry")
-            locations.append(location)
-            scales.append(scale)
+        locations, scales = root_normalization_statistics(values, modes)
         result = SourceRootCalibration(law, modes, rows, tuple(locations), tuple(scales))
         # Reject a calibration whose own transformed values overflow as well.
         result.apply(values, limits=limits)
@@ -145,3 +135,22 @@ def source_root_calibration_from_dict(data: dict[str, Any]) -> SourceRootCalibra
             raise ValueError("root calibration coordinate fields differ")
         record[key] = tuple(value)
     return SourceRootCalibration(**record)
+
+
+def root_normalization_statistics(
+    values: NDArray[np.float64], modes: tuple[str, ...]
+) -> tuple[tuple[float, ...], tuple[float, ...]]:
+    locations: list[float] = []
+    scales: list[float] = []
+    for column, mode in enumerate(modes):
+        channel = values[:, column]
+        with np.errstate(over="ignore", invalid="ignore", under="ignore"):
+            location = 0.0 if mode == "identity" else float(channel.mean())
+            scale = float(channel.std(ddof=1)) if mode == "standardize" else 1.0
+        if mode == "standardize" and (
+            np.all(channel == channel[0]) or not np.isfinite(scale) or scale <= 0
+        ):
+            raise ValueError("degenerate root calibration; no retry")
+        locations.append(location)
+        scales.append(scale)
+    return tuple(locations), tuple(scales)

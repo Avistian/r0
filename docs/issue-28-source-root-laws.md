@@ -93,3 +93,18 @@ This explicit r0 independent-calibration lifecycle differs from pinned P1 code's
 batch-reference normalization. Batch-reference generation, profile parameter
 selection, a replay-validating calibration envelope, and joint-root/network/UI
 integration remain required. Neither lifecycle may silently replace the other.
+
+## Batch-reference normalization lifecycle
+
+`draw_source_root_batch_reference` draws and normalizes the same batch. Identity,
+centering and sample-standard scaling remain coordinate-specific. The distinct
+`source-root-batch-reference-v1` record stores this batch's statistics and has no
+apply-to-future-rows method. Adding rows can change every normalized row; this is
+not interchangeable with independent frozen calibration. The two strict decoders
+reject each other's version. Raw ledger records retain the underlying emission,
+including unclipped integer Zipf draws, and degeneracy rejects atomically.
+
+This implements normalization arithmetic and lifecycle, not full pinned-source
+parameter-selection timing or an authenticated replay envelope. Those and the
+versioned graph/network/explorer integration remain pending. Shared arithmetic
+with independent calibration does not imply the same sampling lifecycle.
