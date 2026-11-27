@@ -135,6 +135,9 @@ from r0.modules.priors.lib.joint_function_realization import (
     JointMatrixFunctionRealization as JointMatrixFunctionRealization,
 )
 from r0.modules.priors.lib.joint_function_realization import (
+    JointProductFunctionRealization as JointProductFunctionRealization,
+)
+from r0.modules.priors.lib.joint_function_realization import (
     materialize_joint_function as materialize_joint_function,
 )
 from r0.modules.priors.lib.joint_function_realization_decoding import (

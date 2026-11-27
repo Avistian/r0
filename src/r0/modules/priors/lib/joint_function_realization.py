@@ -1,12 +1,14 @@
 """Atomic raw matrix function constructions bound to their frozen equations."""
 
 import copy
+import pickle
 from dataclasses import dataclass
 
 import numpy as np
 from numpy.typing import NDArray
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.frozen_function_composites import FrozenProductFunction
 from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenLinearFunction,
     FrozenQuadraticFunction,
@@ -19,7 +21,14 @@ from r0.modules.priors.lib.joint_em_realization import (
     JointEMFunctionRealization,
     materialize_joint_em,
 )
-from r0.modules.priors.lib.joint_function_admission import admit_matrix_function
+from r0.modules.priors.lib.joint_function_admission import (
+    admit_matrix_function,
+    admit_product_function,
+)
+from r0.modules.priors.lib.joint_function_calibration import (
+    FunctionCalibrationSample,
+    freeze_function_calibration,
+)
 from r0.modules.priors.lib.joint_function_plans import JointFunctionPlan
 from r0.modules.priors.lib.joint_matrix_realization import (
     JointMatrixRealization,
@@ -91,6 +100,65 @@ class JointMatrixFunctionRealization:
         self.matrix.validate(decisions)
 
 
+type CheapJointFunctionRealization = (
+    JointMatrixFunctionRealization
+    | JointRFFFunctionRealization
+    | JointTreeFunctionRealization
+    | JointDiscretizationFunctionRealization
+)
+
+_CHEAP_REALIZATION_TYPES = (
+    JointMatrixFunctionRealization,
+    JointRFFFunctionRealization,
+    JointTreeFunctionRealization,
+    JointDiscretizationFunctionRealization,
+)
+
+
+@dataclass(frozen=True, slots=True)
+class JointProductFunctionRealization:
+    plan: JointFunctionPlan
+    left: CheapJointFunctionRealization
+    right: CheapJointFunctionRealization
+    function: FrozenProductFunction
+    calibration: FunctionCalibrationSample | None = None
+    version: str = "joint-product-function-realization-v1"
+
+    def __post_init__(self) -> None:
+        if (
+            self.version != "joint-product-function-realization-v1"
+            or type(self.plan) is not JointFunctionPlan
+            or self.plan.family != "prod"
+            or type(self.left) not in _CHEAP_REALIZATION_TYPES
+            or type(self.right) not in _CHEAP_REALIZATION_TYPES
+            or type(self.function) is not FrozenProductFunction
+        ):
+            raise ValueError("product realization requires its plan and two cheap children")
+        if (self.left.plan, self.right.plan) != self.plan.children:
+            raise ValueError("product children differ from their ordered owned plans")
+        fitted = tuple(
+            child
+            for child in (self.left, self.right)
+            if isinstance(
+                child, (JointTreeFunctionRealization, JointDiscretizationFunctionRealization)
+            )
+        )
+        if fitted:
+            if type(self.calibration) is not FunctionCalibrationSample or any(
+                child.calibration != self.calibration for child in fitted
+            ):
+                raise ValueError("product fitted children must share the same retained calibration")
+        elif self.calibration is not None:
+            raise ValueError("product of unfitted functions cannot own a calibration sample")
+        if self.function != FrozenProductFunction(self.left.function, self.right.function):
+            raise ValueError("frozen product differs from its retained child constructions")
+
+    def validate(self, decisions: JointSamplingRecord) -> None:
+        self.plan.validate(decisions)
+        self.left.validate(decisions)
+        self.right.validate(decisions)
+
+
 def materialize_joint_function(
     plan: JointFunctionPlan,
     decisions: JointSamplingRecord,
@@ -106,6 +174,7 @@ def materialize_joint_function(
     | JointTreeFunctionRealization
     | JointDiscretizationFunctionRealization
     | JointEMFunctionRealization
+    | JointProductFunctionRealization
 ):
     """Freeze supported constructions using caller-owned samples for fitted functions.
 
@@ -117,6 +186,16 @@ def materialize_joint_function(
     if type(rng) is not np.random.Generator or type(limits) is not CausalLimits:
         raise ValueError("function realization requires an injected RNG and frozen limits")
     plan.validate(decisions)
+    if plan.family == "prod":
+        return _materialize_product(
+            plan,
+            decisions,
+            rng=rng,
+            fit_rng=fit_rng,
+            calibration=calibration,
+            calibration_id=calibration_id,
+            limits=limits,
+        )
     if plan.family == "em":
         return materialize_joint_em(
             plan,
@@ -167,4 +246,67 @@ def materialize_joint_function(
     result = JointMatrixFunctionRealization(plan, matrix, function, permutation)
     result.validate(decisions)
     rng.bit_generator.state = staged.bit_generator.state
+    return result
+
+
+def _materialize_product(
+    plan: JointFunctionPlan,
+    decisions: JointSamplingRecord,
+    *,
+    rng: np.random.Generator,
+    fit_rng: np.random.Generator | None,
+    calibration: NDArray[np.float64] | None,
+    calibration_id: str,
+    limits: CausalLimits,
+) -> JointProductFunctionRealization:
+    fitted = any(child.family in ("tree", "disc") for child in plan.children)
+    if (fitted and fit_rng is None) or (
+        fit_rng is not None
+        and (type(fit_rng) is not np.random.Generator or fit_rng.bit_generator is rng.bit_generator)
+    ):
+        raise ValueError("product fitting requires a separate injected fit RNG")
+    admit_product_function(plan, decisions, limits)
+    sample = freeze_function_calibration(plan, calibration, calibration_id) if fitted else None
+    shared = np.asarray(sample.sample, dtype=np.float64) if sample is not None else None
+    raw_before = pickle.dumps(rng.bit_generator.state)
+    fit_before = pickle.dumps(fit_rng.bit_generator.state) if fit_rng is not None else None
+    raw, fit = copy.deepcopy(rng), copy.deepcopy(fit_rng)
+    children: list[CheapJointFunctionRealization] = []
+    for child_plan in plan.children:
+        child = materialize_joint_function(
+            child_plan,
+            decisions,
+            rng=raw,
+            fit_rng=fit,
+            calibration=shared,
+            calibration_id=calibration_id,
+            limits=limits,
+        )
+        if not isinstance(
+            child,
+            (
+                JointMatrixFunctionRealization,
+                JointRFFFunctionRealization,
+                JointTreeFunctionRealization,
+                JointDiscretizationFunctionRealization,
+            ),
+        ):
+            raise ValueError("product construction requires cheap child realizations")
+        children.append(child)
+    left, right = children
+    result = JointProductFunctionRealization(
+        plan,
+        left,
+        right,
+        FrozenProductFunction(left.function, right.function),
+        sample,
+    )
+    result.validate(decisions)
+    if pickle.dumps(rng.bit_generator.state) != raw_before or (
+        fit_rng is not None and pickle.dumps(fit_rng.bit_generator.state) != fit_before
+    ):
+        raise ValueError("caller RNG changed during product construction")
+    rng.bit_generator.state = raw.bit_generator.state
+    if fit_rng is not None and fit is not None:
+        fit_rng.bit_generator.state = fit.bit_generator.state
     return result

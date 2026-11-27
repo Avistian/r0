@@ -192,3 +192,68 @@ def admit_em_function(
     if report["estimated_working_bytes"] > limits.working_bytes:
         raise ValueError("estimated EM fitting memory exceeds declared limit")
     return report
+
+
+def _cheap_frozen_parameters(plan: JointFunctionPlan) -> int:
+    i, o = plan.input_width, plan.output_width
+    if plan.family == "lin":
+        return i * o
+    if plan.family == "quad":
+        selected = min(i, 20)
+        return 1 + selected + o * (selected + 1) ** 2
+    if plan.family == "gp":
+        return plan.prior.frequencies * (i + 1 + o)
+    if plan.family == "disc":
+        assert plan.center_count is not None
+        return plan.center_count * i + i * o + 1
+    if plan.family == "tree":
+        values = dict(plan.parameters)
+        trees, depth = int(values["trees"]), int(values["depth"])
+        return 1 + 2 * trees * depth + trees * 2**depth * o
+    raise ValueError("product children must be nonrecursive cheap functions")
+
+
+def admit_product_function(
+    plan: JointFunctionPlan,
+    decisions: JointSamplingRecord,
+    limits: CausalLimits,
+) -> dict[str, int]:
+    if plan.family != "prod":
+        raise ValueError("product realization requires a product plan")
+    admitters = {
+        "lin": admit_matrix_function,
+        "quad": admit_matrix_function,
+        "gp": admit_rff_function,
+        "tree": admit_tree_function,
+        "disc": admit_discretization_function,
+    }
+    children = tuple(admitters[child.family](child, decisions, limits) for child in plan.children)
+    metadata, metadata_bytes = function_record_cost((plan, decisions), limits)
+    fitted = any(child.family in ("tree", "disc") for child in plan.children)
+    rows = plan.calibration_rows if fitted else 1
+    sample = rows * plan.input_width if fitted else 0
+    # Child budgets retain their complete constructions. The outer equation
+    # serializes a second copy of each frozen child equation, not just references.
+    frozen = sum(_cheap_frozen_parameters(child) for child in plan.children)
+    report = limits.admit_dimensions(
+        (max(plan.input_width, plan.output_width),),
+        ((),),
+        rows=rows,
+        calibration_rows=0,
+        features=plan.input_width,
+        outputs=plan.output_width,
+        extra_parameters=metadata + sample + frozen,
+        extra_working_channels=4 * (plan.input_width + plan.output_width),
+    )
+    report["parameters"] += sum(child["parameters"] for child in children)
+    report["estimated_working_bytes"] += (
+        sum(child["estimated_working_bytes"] for child in children)
+        + metadata_bytes
+        - 64 * metadata
+        + (256 if fitted else 0)
+    )
+    if report["parameters"] > limits.parameters:
+        raise ValueError("aggregate product parameter limit exceeded")
+    if report["estimated_working_bytes"] > limits.working_bytes:
+        raise ValueError("aggregate product working memory limit exceeded")
+    return report
