@@ -40,11 +40,13 @@ class GeometryGraphRequest:
     version: str = "geometry-graph-request-v1"
 
     def __post_init__(self) -> None:
+        from r0.modules.priors.lib.geometry_parent_request import GeometryParentRequest
         from r0.modules.priors.lib.geometry_pipeline_request import GeometryPipelineRequest
 
         expected_version = {
             GeometryGraphRequest: "geometry-graph-request-v1",
             GeometryPipelineRequest: "geometry-pipeline-request-v1",
+            GeometryParentRequest: "geometry-parent-request-v1",
         }.get(type(self))
         if (
             expected_version is None

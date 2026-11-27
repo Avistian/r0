@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.functional_analysis import (
     ChannelCertificate,
     functional_node_certificates,
@@ -160,6 +161,13 @@ class NativeCausalRecipe:
         for index, node in enumerate(self.nodes):
             if type(node) is not NativeCausalNode or any(p >= index for p in node.equation.parents):
                 raise ValueError("native nodes require parent-before-child order")
+            function = node.equation.function
+            if isinstance(function, FrozenParentFunction) and (
+                not node.equation.parents
+                or tuple(c.input_width for c in function.children)
+                != tuple(self.nodes[p].state_width for p in node.equation.parents)
+            ):
+                raise ValueError("native parent slices differ from encoded state widths")
             if node.equation.parents and node.equation.function.input_width != sum(
                 self.nodes[p].state_width for p in node.equation.parents
             ):

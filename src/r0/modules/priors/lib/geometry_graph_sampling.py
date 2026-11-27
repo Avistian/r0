@@ -4,6 +4,7 @@ import numpy as np
 
 from r0.modules.priors.lib.generator_snapshot import snapshot_generator
 from r0.modules.priors.lib.geometry_graph_request import GeometryGraphRequest
+from r0.modules.priors.lib.geometry_parent_request import GeometryParentRequest
 from r0.modules.priors.lib.geometry_pipeline_request import GeometryPipelineRequest
 from r0.modules.priors.lib.geometry_topology import sample_geometry_topology
 from r0.modules.priors.lib.joint_graph_materialization import materialize_joint_graph
@@ -17,6 +18,7 @@ from r0.modules.priors.lib.joint_width_plans import sample_joint_widths
 from r0.modules.priors.lib.observation_channel_layout import allocate_observation_channels
 from r0.modules.priors.lib.raw_draw_capture import raw_transactions
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
+from r0.modules.priors.lib.sampled_parent_geometry import SampledParentGeometry
 from r0.modules.priors.lib.sampled_pipeline_geometry import SampledPipelineGeometry
 
 
@@ -28,7 +30,7 @@ def sample_geometry_graph(
     calibration_rng: np.random.Generator,
     fit_rng: np.random.Generator,
 ) -> SampledGeometryGraph:
-    if type(request) not in (GeometryGraphRequest, GeometryPipelineRequest):
+    if type(request) not in (GeometryGraphRequest, GeometryPipelineRequest, GeometryParentRequest):
         raise ValueError("geometry sampling requires its frozen request")
     request.mechanism_raw_limits()
     callers = {"named": named_rng, "raw": raw_rng, "calibration": calibration_rng, "fit": fit_rng}
@@ -86,10 +88,16 @@ def sample_geometry_graph(
             root_prior=request.root_prior,
             function_prior=request.function_prior,
             limits=child_limits,
+            composition=request.composition if isinstance(request, GeometryParentRequest) else None,
         )
         pipeline_plans = ()
         pipeline_records: list[JointPipelineRealization] = []
-        if type(request) is GeometryPipelineRequest:
+        pipeline_prior = (
+            request.pipeline_prior
+            if isinstance(request, GeometryPipelineRequest | GeometryParentRequest)
+            else None
+        )
+        if pipeline_prior is not None:
             converter_groups = [[""] * count for count in layout.converter_channels]
             for group, spans in zip(request.groups, layout.spans, strict=True):
                 for node, start, stop in spans:
@@ -100,7 +108,7 @@ def sample_geometry_graph(
                     f"pipeline:{i}",
                     width=width,
                     groups=tuple(converter_groups[i]),
-                    prior=request.pipeline_prior,
+                    prior=pipeline_prior,
                 )
                 for i, width in enumerate(widths.widths)
             )
@@ -113,13 +121,26 @@ def sample_geometry_graph(
             initial,
             pipeline_plans=pipeline_plans,
             pipeline_records=pipeline_records,
+            composition=request.composition if isinstance(request, GeometryParentRequest) else None,
         )
         final = tuple(
             snapshot_generator(rng, byte_limit=request.raw_limits.state_bytes)
             for rng in staged.values()
         )
         result = (
-            SampledPipelineGeometry(
+            SampledParentGeometry(
+                request,
+                topology,
+                observations,
+                layout,
+                widths,
+                graph,
+                initial,
+                final,
+                pipelines=tuple(pipeline_records),
+            )
+            if type(request) is GeometryParentRequest
+            else SampledPipelineGeometry(
                 request,
                 topology,
                 observations,

@@ -22,12 +22,13 @@ from r0.modules.priors.lib.parent_composition_plans import (
     sample_parent_function,
 )
 from r0.modules.priors.lib.parent_function_realization import (
+    ParentCalibrationReceipt,
     ParentFunctionRealization,
     materialize_parent_function,
 )
 from r0.modules.priors.lib.parent_graph_admission import admit_parent_graph
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions
-from r0.modules.priors.lib.sampled_parent_graph import ParentCalibrationReceipt, SampledParentGraph
+from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
 
 _DEFAULT_COMPOSITION = ParentCompositionPrior()
 

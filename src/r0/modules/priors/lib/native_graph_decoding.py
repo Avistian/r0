@@ -1,6 +1,7 @@
 """Bounded native construction decoding by full retained-field replay comparison."""
 
 from dataclasses import fields as dataclass_fields
+from typing import Any, cast
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
@@ -10,19 +11,34 @@ from r0.modules.priors.lib.joint_root_plans import JointRootPrior
 from r0.modules.priors.lib.native_domain_prior import NativeDomainPrior
 from r0.modules.priors.lib.native_graph_request import NativeGraphRequest
 from r0.modules.priors.lib.native_graph_sampling import sample_native_graph
+from r0.modules.priors.lib.native_parent_request import NativeParentGraphRequest
+from r0.modules.priors.lib.parent_composition_plans import ParentCompositionPrior
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
 from r0.modules.priors.lib.sampled_graph_decoding import (
     construction_matches,
     decode_joint_function_prior,
 )
 from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
+from r0.modules.priors.lib.sampled_native_parent_graph import SampledNativeParentGraph
 
 
 def native_graph_from_dict(data: object, *, limits: CausalLimits) -> SampledNativeGraph:
     admit_function_metadata(data, limits)
     try:
-        record = functional_record(data, SampledNativeGraph)
-        request = functional_record(record["request"], NativeGraphRequest)
+        if type(data) is not dict:
+            raise ValueError("native construction archive requires an object")
+        raw_request = cast(dict[str, Any], data).get("request")
+        parent = (
+            type(raw_request) is dict
+            and cast(dict[str, Any], raw_request).get("version") == "native-parent-graph-request-v1"
+        )
+        record = functional_record(data, SampledNativeParentGraph if parent else SampledNativeGraph)
+        kind = NativeParentGraphRequest if parent else NativeGraphRequest
+        request = functional_record(record["request"], kind)
+        if parent:
+            request["composition"] = ParentCompositionPrior(
+                **functional_record(request["composition"], ParentCompositionPrior)
+            )
         declared = CausalLimits(**functional_record(request["limits"], CausalLimits))
         if any(
             getattr(declared, f.name) > getattr(limits, f.name) for f in dataclass_fields(limits)
@@ -58,7 +74,7 @@ def native_graph_from_dict(data: object, *, limits: CausalLimits) -> SampledNati
         root["families"] = functional_array(root["families"])
         root["function"] = decode_joint_function_prior(root["function"])
         request["root_prior"] = JointRootPrior(**root)
-        frozen = NativeGraphRequest(**request)
+        frozen = kind(**request)
         initial = functional_array(record["initial"])
         if len(initial) != 4:
             raise ValueError("native construction requires four initial streams")

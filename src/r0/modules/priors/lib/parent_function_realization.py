@@ -27,6 +27,16 @@ def _needs_fit(plan: JointFunctionPlan) -> bool:
 
 
 @dataclass(frozen=True, slots=True)
+class ParentCalibrationReceipt:
+    node: int
+    role: str
+    parents: tuple[int, ...]
+    raw_start: int
+    raw_stop: int
+    version: str = "parent-calibration-receipt-v1"
+
+
+@dataclass(frozen=True, slots=True)
 class ParentFunctionRealization:
     plan: ParentFunctionPlan
     children: tuple[RootFunctionRealization, ...]
@@ -34,6 +44,38 @@ class ParentFunctionRealization:
     reducer: RootFunctionRealization | None
     function: FrozenFunction
     version: str = "parent-function-realization-v1"
+
+    def validate(self, decisions: JointSamplingRecord) -> None:
+        self.plan.validate(decisions)
+        members = (
+            *((self.joint,) if self.joint else ()),
+            *self.children,
+            *((self.reducer,) if self.reducer else ()),
+        )
+        if (
+            self.version != "parent-function-realization-v1"
+            or tuple(r.plan for r in members) != self.plan.functions
+        ):
+            raise ValueError("parent realization members differ from planned functions")
+        for member in members:
+            member.validate(decisions)
+        reducer = self.reducer.function if self.reducer else None
+        if reducer is not None and not isinstance(reducer, FrozenMLPFunction):
+            raise ValueError("neural reduction requires a frozen MLP")
+        if self.plan.mode == "concat":
+            expected = self.children[0].function
+        else:
+            if not isinstance(self.function, FrozenParentFunction):
+                raise ValueError("parent realization lacks frozen reduction")
+            expected = FrozenParentFunction(
+                tuple(c.function for c in self.children),
+                self.plan.aggregation,
+                self.joint.function if self.joint else None,
+                self.function.weights,
+                reducer,
+            )
+        if self.function != expected:
+            raise ValueError("parent frozen equation differs from retained realization")
 
 
 def materialize_parent_function(

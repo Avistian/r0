@@ -9,6 +9,7 @@ from r0.modules.priors.lib.functional_causal_decoding import functional_array, f
 from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
 from r0.modules.priors.lib.geometry_graph_request import GeometryGraphRequest
 from r0.modules.priors.lib.geometry_graph_sampling import sample_geometry_graph
+from r0.modules.priors.lib.geometry_parent_request import GeometryParentRequest
 from r0.modules.priors.lib.geometry_pipeline_request import GeometryPipelineRequest
 from r0.modules.priors.lib.geometry_topology import decode_geometry_topology
 from r0.modules.priors.lib.joint_converter_plans import JointNumericalConverterPrior
@@ -16,25 +17,36 @@ from r0.modules.priors.lib.joint_pipeline_plans import JointPipelinePrior
 from r0.modules.priors.lib.joint_root_plans import JointRootPrior
 from r0.modules.priors.lib.joint_width_plans import JointWidthPrior
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.parent_composition_plans import ParentCompositionPrior
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
 from r0.modules.priors.lib.sampled_graph_decoding import (
     construction_matches,
     decode_joint_function_prior,
 )
+from r0.modules.priors.lib.sampled_parent_geometry import SampledParentGeometry
 from r0.modules.priors.lib.sampled_pipeline_geometry import SampledPipelineGeometry
 
 _DEFAULT_LIMITS = CausalLimits()
 
 
 def decode_geometry_graph_request(data: Any, limits: CausalLimits) -> GeometryGraphRequest:
-    pipeline = (
-        type(data) is dict
-        and cast(dict[str, Any], data).get("version") == "geometry-pipeline-request-v1"
+    mapping = cast(dict[str, Any], data) if type(data) is dict else {}
+    pipeline = mapping.get("version") == "geometry-pipeline-request-v1"
+    parent = mapping.get("version") == "geometry-parent-request-v1"
+    kind = (
+        GeometryParentRequest
+        if parent
+        else GeometryPipelineRequest
+        if pipeline
+        else GeometryGraphRequest
     )
-    kind = GeometryPipelineRequest if pipeline else GeometryGraphRequest
     raw = functional_record(data, kind)
-    if pipeline:
+    if parent:
+        raw["composition"] = ParentCompositionPrior(
+            **functional_record(raw["composition"], ParentCompositionPrior)
+        )
+    if pipeline or parent and raw.get("pipeline_prior") is not None:
         prior = functional_record(raw["pipeline_prior"], JointPipelinePrior)
         prior["converter"] = JointNumericalConverterPrior(
             **functional_record(prior["converter"], JointNumericalConverterPrior)
@@ -69,12 +81,16 @@ def geometry_graph_from_dict(
         if type(data) is not dict:
             raise ValueError("sampled geometry envelope must be an object")
         request_data = cast(dict[str, Any], data).get("request")
-        pipeline = (
-            type(request_data) is dict
-            and cast(dict[str, Any], request_data).get("version") == "geometry-pipeline-request-v1"
-        )
+        request_mapping = cast(dict[str, Any], request_data) if type(request_data) is dict else {}
+        pipeline = request_mapping.get("version") == "geometry-pipeline-request-v1"
+        parent = request_mapping.get("version") == "geometry-parent-request-v1"
         record = functional_record(
-            data, SampledPipelineGeometry if pipeline else SampledGeometryGraph
+            data,
+            SampledParentGeometry
+            if parent
+            else SampledPipelineGeometry
+            if pipeline
+            else SampledGeometryGraph,
         )
         if record.get("version") != "sampled-geometry-graph-v1":
             raise ValueError("unsupported sampled geometry graph version")

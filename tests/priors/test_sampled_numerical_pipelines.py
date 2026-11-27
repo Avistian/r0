@@ -235,6 +235,7 @@ def test_fitted_mechanisms_and_pipeline_populations_have_distinct_receipts(famil
     assert result.replay() == result
     assert len(result.graph.calibrations) == 2
     for receipt in result.graph.calibrations:
+        assert isinstance(receipt, priors.GraphCalibrationReceipt)
         fitted = result.pipelines[receipt.node]
         assert receipt.raw_stop <= fitted.raw_start
         assert receipt.identity != fitted.calibration.identity

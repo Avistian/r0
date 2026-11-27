@@ -16,19 +16,12 @@ from r0.modules.priors.lib.parent_composition_plans import (
     ParentCompositionPrior,
     ParentFunctionPlan,
 )
-from r0.modules.priors.lib.parent_function_realization import ParentFunctionRealization
+from r0.modules.priors.lib.parent_function_realization import (
+    ParentCalibrationReceipt,
+    ParentFunctionRealization,
+)
 from r0.modules.priors.lib.parent_graph_admission import admit_parent_graph
 from r0.modules.priors.lib.raw_draw_records import RawDrawRecord
-
-
-@dataclass(frozen=True, slots=True)
-class ParentCalibrationReceipt:
-    node: int
-    role: str
-    parents: tuple[int, ...]
-    raw_start: int
-    raw_stop: int
-    version: str = "parent-calibration-receipt-v1"
 
 
 @dataclass(frozen=True, slots=True)
@@ -125,8 +118,7 @@ class SampledParentGraph:
                 )
                 if tuple(r.plan for r in member_realizations) != plan.functions:
                     raise ValueError("parent realized member plans differ")
-                for member in member_realizations:
-                    member.validate(self.registry.decisions)
+                realized.validate(self.registry.decisions)
             else:
                 if self.request.parents[i] or type(realized) is not JointRootRealization:
                     raise ValueError("parent graph root plan or realization differs")
@@ -157,7 +149,14 @@ class SampledParentGraph:
         if tuple(derived) != self.owners:
             raise ValueError("parent graph typed ownership differs from plan tree")
         expected = tuple(owner.operation for owner in self.owners)
-        if tuple(span.operation for span in self.registry.operations) != expected:
+        if (
+            tuple(
+                span.operation
+                for span in self.registry.operations
+                if span.operation[:1] == ("graph",)
+            )
+            != expected
+        ):
             raise ValueError("parent graph operation ownership differs")
         for plan in self.plans:
             plan.validate(self.registry.decisions)

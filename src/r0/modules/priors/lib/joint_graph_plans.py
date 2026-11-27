@@ -12,6 +12,11 @@ from r0.modules.priors.lib.joint_plan_ownership import JointPlanOwner, plan_owne
 from r0.modules.priors.lib.joint_root_plans import JointRootPlan, JointRootPrior, sample_joint_root
 from r0.modules.priors.lib.joint_sampling import JointSamplingContext
 from r0.modules.priors.lib.joint_sampling_records import validate_path
+from r0.modules.priors.lib.parent_composition_plans import (
+    ParentCompositionPrior,
+    ParentFunctionPlan,
+    sample_parent_function,
+)
 
 _ROOT_PRIOR = JointRootPrior()
 _FUNCTION_PRIOR = JointFunctionPrior()
@@ -68,7 +73,7 @@ def validate_graph_geometry(
 class JointGraphNodePlan:
     parents: tuple[int, ...]
     width: int
-    mechanism: JointRootPlan | JointFunctionPlan
+    mechanism: JointRootPlan | JointFunctionPlan | ParentFunctionPlan
 
 
 @dataclass(frozen=True, slots=True)
@@ -95,7 +100,9 @@ class JointGraphPlan:
         )
         for i, node in enumerate(self.nodes):
             mechanism = node.mechanism
-            if type(mechanism) is not (JointFunctionPlan if node.parents else JointRootPlan):
+            if type(mechanism) not in (
+                (JointFunctionPlan, ParentFunctionPlan) if node.parents else (JointRootPlan,)
+            ):
                 raise ValueError("graph root/function plan kind differs from ancestry")
             if mechanism.operation != (*self.operation, f"node:{i}", "mechanism"):
                 raise ValueError("graph mechanism must have its owned node operation")
@@ -116,7 +123,11 @@ class JointGraphPlan:
         result = [JointPlanOwner(self.operation, "graph", ())]
         for i, node in enumerate(self.nodes):
             result.append(JointPlanOwner((*self.operation, f"node:{i}"), "node", ("nodes", i)))
-            result.extend(plan_owners(node.mechanism, ("nodes", i, "mechanism")))
+            result.extend(
+                node.mechanism.owners(("nodes", i, "mechanism"))
+                if isinstance(node.mechanism, ParentFunctionPlan)
+                else plan_owners(node.mechanism, ("nodes", i, "mechanism"))
+            )
         return tuple(result)
 
     def validate(
@@ -154,6 +165,7 @@ def sample_joint_graph_plan(
     root_prior: JointRootPrior = _ROOT_PRIOR,
     function_prior: JointFunctionPrior = _FUNCTION_PRIOR,
     limits: CausalLimits = _LIMITS,
+    composition: ParentCompositionPrior | None = None,
 ) -> JointGraphPlan:
     """Sample mechanism choices; the supplied topology and widths remain explicit inputs.
 
@@ -171,8 +183,18 @@ def sample_joint_graph_plan(
         nodes: list[JointGraphNodePlan] = []
         for i, incoming in enumerate(parents):
             with graph.transaction(f"node:{i}") as node:
-                mechanism: JointRootPlan | JointFunctionPlan
-                if incoming:
+                mechanism: JointRootPlan | JointFunctionPlan | ParentFunctionPlan
+                if incoming and composition is not None:
+                    mechanism = sample_parent_function(
+                        node,
+                        "mechanism",
+                        parent_widths=tuple(widths[p] for p in incoming),
+                        output_width=widths[i],
+                        calibration_rows=calibration_rows,
+                        functions=function_prior,
+                        prior=composition,
+                    )
+                elif incoming:
                     mechanism = sample_joint_function(
                         node,
                         "mechanism",

@@ -14,6 +14,8 @@ from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.native_causal import NativeCausalRecipe
 from r0.modules.priors.lib.native_domain_prior import NativeDomainPlan
 from r0.modules.priors.lib.native_graph_request import NativeGraphRequest
+from r0.modules.priors.lib.parent_composition_plans import ParentFunctionPlan
+from r0.modules.priors.lib.parent_function_realization import ParentFunctionRealization
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits, RawDrawRecord
 
 
@@ -21,9 +23,11 @@ from r0.modules.priors.lib.raw_draw_records import RawDrawLimits, RawDrawRecord
 class SampledNativeGraph:
     request: NativeGraphRequest
     domains: tuple[NativeDomainPlan, ...]
-    mechanisms: tuple[JointRootPlan | JointFunctionPlan, ...]
+    mechanisms: tuple[JointRootPlan | JointFunctionPlan | ParentFunctionPlan, ...]
     registry: JointOperationRegistry
-    realizations: tuple[JointRootRealization | RootFunctionRealization, ...]
+    realizations: tuple[
+        JointRootRealization | RootFunctionRealization | ParentFunctionRealization, ...
+    ]
     raw: tuple[RawDrawRecord, ...]
     recipe: NativeCausalRecipe
     initial: tuple[GeneratorSnapshot, ...]

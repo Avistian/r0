@@ -31,8 +31,15 @@ class NativeGraphRequest:
     version: str = "native-graph-request-v1"
 
     def __post_init__(self) -> None:
+        from r0.modules.priors.lib.native_parent_request import NativeParentGraphRequest
+
+        expected = {
+            NativeGraphRequest: "native-graph-request-v1",
+            NativeParentGraphRequest: "native-parent-graph-request-v1",
+        }.get(type(self))
         if (
-            self.version != "native-graph-request-v1"
+            expected is None
+            or self.version != expected
             or type(self.parents) is not tuple
             or type(self.domains) is not tuple
             or (

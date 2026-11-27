@@ -7,6 +7,7 @@ from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_graph_admission import admit_functional_graph
 from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
 from r0.modules.priors.lib.geometry_graph_request import GeometryGraphRequest
+from r0.modules.priors.lib.geometry_parent_request import GeometryParentRequest
 from r0.modules.priors.lib.geometry_pipeline_request import GeometryPipelineRequest
 from r0.modules.priors.lib.geometry_topology import GeometryTopology
 from r0.modules.priors.lib.joint_graph_request import JointGraphRequest
@@ -14,6 +15,7 @@ from r0.modules.priors.lib.joint_observation_realization import JointObservation
 from r0.modules.priors.lib.joint_width_plans import JointWidthPlan
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.materialized_joint_graph import MaterializedJointGraph
+from r0.modules.priors.lib.materialized_parent_graph import MaterializedParentGraph
 from r0.modules.priors.lib.observation_channel_layout import ObservationChannelLayout
 from r0.modules.priors.lib.structural_graph import StructuralGraph
 
@@ -25,7 +27,7 @@ class SampledGeometryGraph:
     observations: JointObservationRealization
     layout: ObservationChannelLayout
     widths: JointWidthPlan
-    graph: MaterializedJointGraph
+    graph: MaterializedJointGraph | MaterializedParentGraph
     initial: tuple[GeneratorSnapshot, ...]
     final: tuple[GeneratorSnapshot, ...]
     version: str = "sampled-geometry-graph-v1"
@@ -42,17 +44,19 @@ class SampledGeometryGraph:
         return (self.topology, self.observations, self.layout, self.widths, self.initial)
 
     def validate_structure(self) -> None:
+        from r0.modules.priors.lib.sampled_parent_geometry import SampledParentGeometry
         from r0.modules.priors.lib.sampled_pipeline_geometry import SampledPipelineGeometry
 
         if (
-            type(self) not in (SampledGeometryGraph, SampledPipelineGeometry)
+            type(self) not in (SampledGeometryGraph, SampledPipelineGeometry, SampledParentGeometry)
             or self.version != "sampled-geometry-graph-v1"
-            or type(self.request) not in (GeometryGraphRequest, GeometryPipelineRequest)
+            or type(self.request)
+            not in (GeometryGraphRequest, GeometryPipelineRequest, GeometryParentRequest)
             or type(self.topology) not in (CauchyGraph, StructuralGraph)
             or type(self.observations) is not JointObservationRealization
             or type(self.layout) is not ObservationChannelLayout
             or type(self.widths) is not JointWidthPlan
-            or type(self.graph) is not MaterializedJointGraph
+            or type(self.graph) not in (MaterializedJointGraph, MaterializedParentGraph)
         ):
             raise ValueError("sampled geometry requires complete frozen versioned records")
         if (

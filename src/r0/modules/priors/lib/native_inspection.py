@@ -8,9 +8,11 @@ from typing import Any
 import torch
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.native_decoding import native_recipe_from_dict
 from r0.modules.priors.lib.native_evaluation import evaluate_native_graph
 from r0.modules.priors.lib.native_graph_decoding import native_graph_from_dict
+from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -31,11 +33,21 @@ def native_steps(
     selection = list(indices)
     for i, node in enumerate(recipe.nodes):
         parents = [f"causal-{p}" for p in node.equation.parents]
+        equation = "f(concat(one-hot discrete parents, continuous parents)) + structural noise"
+        if isinstance(node.equation.function, FrozenParentFunction):
+            inputs = torch.cat([result.states[p] for p in node.equation.parents], dim=1)
+            parents = parent_function_steps(
+                node.equation.function, inputs, node=i, parents=parents, indices=indices, add=add
+            )
+            equation = (
+                f"{node.equation.function.aggregation}(ordered encoded parent members)"
+                " + structural noise"
+            )
         add(
             f"function-{i}",
             f"Native equation {i}",
             parents,
-            "f(concat(one-hot discrete parents, continuous parents)) + structural noise",
+            equation,
             result.scores[i][selection],
             asdict(node.equation),
         )
