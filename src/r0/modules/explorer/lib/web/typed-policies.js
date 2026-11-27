@@ -40,3 +40,12 @@ $("typed-policy-load-base").onclick=()=>act("Loading retained base constructionâ
   $("construction-panel").open=true;$("construction-family").value=selected;$("construction-family").onchange();
   $("typed-policy-note").textContent="Review the loaded construction controls and use Construct mechanism and save dataset. Then prepare causal intervention controls and add the desired typed policy addresses. No dataset or comparison has changed yet.";
 });
+
+function policyActiveControls(){
+  const active=["sampled-intervention-policy-v1","sampled-typed-intervention-policy-v1"].includes(current?.view?.recipe?.recipe?.version);
+  for(const id of ["mechanism-load","intervention-load","policy-create"]){$(id).disabled=active;$(id).dataset.unavailable=String(active);}
+  if(active){
+    $("workbench-intro").textContent="This frozen policy retains its original graph and realized interventions. Inspect generation stages, replay or advance query rows without resampling the policy. Direct edits to a realized policy envelope remain pending; reopen the original before.zip to edit its mechanism or policy settings and save a new comparison.";
+    $("intervention-notice").textContent="Nested policy construction is unavailable. Reopen the comparison's before.zip to edit eligibility, typed addresses, probabilities, parameter laws or stream seeds. The previous saved comparison remains intact.";
+  }
+}

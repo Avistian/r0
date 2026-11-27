@@ -106,6 +106,7 @@ def test_typed_category_pair_reopen_trace_frozen_next_and_rollback(tmp_path: Pat
 
 def test_public_request_decoder_admits_before_original_sampled_restore(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
     profile = p.sample_source_root_profile(
         p.SourceRootProfile(1, selector="forced-r0", families=("gaussian",)),
@@ -134,6 +135,9 @@ def test_public_request_decoder_admits_before_original_sampled_restore(
     )
     assert asdict(p.typed_intervention_policy_request_from_dict(asdict(request))) == asdict(request)
 
+    session = ExplorerSession(tmp_path)
+    baseline = session.request("generate", {"recipe": asdict(base), "seed": 19, "task_id": 7})
+
     def forbidden(*args: Any, **kwargs: Any):
         raise AssertionError("sampled base restored before request admission")
 
@@ -142,6 +146,25 @@ def test_public_request_decoder_admits_before_original_sampled_restore(
         p.typed_intervention_policy_request_from_dict(
             asdict(request), limits=p.CausalLimits(working_bytes=1024**2)
         )
+    # Worker subprocesses import an unpatched class. Parent-side replay would fail.
+    draft_record = {
+        "profile": "explicit-typed-policy-r0-v1",
+        "streams": [3, 5, 7],
+        "kind": "hard",
+        "eligibility": [0],
+        "count": 1,
+        "reference_rows": 16,
+        "locations": [{"node": 0, "channels": [0]}],
+    }
+    created = session.request(
+        "sample_intervention_policy", {"policy_json": json.dumps(draft_record)}
+    )
+    assert created["recipe_json"] == baseline["recipe_json"]
+    graph = session.request(
+        "intervention_graph",
+        {"indices": [15, 0, 15], "expected_intervention_id": created["intervention"]["after_id"]},
+    )
+    assert graph["after"]["rows"] == [15, 0, 15]
 
 
 @pytest.mark.parametrize("family", ["normal-r0", "uniform-r0", "log-uniform-r0", "choice-r0"])

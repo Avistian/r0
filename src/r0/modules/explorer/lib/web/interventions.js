@@ -10,6 +10,7 @@ function resetIntervention() {
     : noisy ? "Interventions address explicit compiled network state/noise/activation nodes. Use the block-to-node mapping in the architecture editor. Matched draws remain paired; hard state/readout semantics are explicit." : "CPU execution. Hosted Colab and GPU verification remain pending.";
   $("intervention-controls").hidden=true; $("intervention-traces").hidden=true;
   showIntervention();
+  policyActiveControls();
 }
 function selectedConverter() {
   return interventionInfo?.nodes[Number($("intervention-node").value)]?.converters?.find(c=>c.name===$("intervention-converter").value);

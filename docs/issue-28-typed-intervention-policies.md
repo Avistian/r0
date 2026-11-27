@@ -60,6 +60,24 @@ Typed receipts have a new version; scalar v1 policy archives remain unchanged.
 
 Task generation, exact recipe decode, before/after comparison and pair persistence,
 semantic metadata verification and repeated-row inspection are library seams.
-The typed workbench/local notebook integration remains required after independent
-core review. No hosted, full-suite or complete #28 acceptance follows from this
-slice.
+The local explorer and shared callback now route typed policy drafts through the
+bounded pair worker. `typed_intervention_policy_request_from_dict` performs full
+metadata admission before replaying the retained original envelope. The typed
+profile exposes native logical variables, numerical state/readout locations,
+converter captures, declared category probabilities, all four parameter laws,
+reference lifecycles, population coupling and exact decimal stream identities.
+Editable JSON retains the broader eligibility/count/fraction and multi-address
+options. Existing authored/sampled native, vector, converter, parent-composition,
+fixed fitted-tree and XGBoost construction catalogs remain selectable as originals.
+TAFFY controls retain their narrower source restrictions.
+
+Policy creation preserves the active original and any previous comparison on
+invalid requests or worker timeout. Original-row comparison traces, including
+construction draws with global scope, support repeated row indices. Saved pair
+reopening and ZIP export retain both complete recipes. Opening the policy result
+as active supports frozen Next, replay, ordinary task ZIP export and guarded
+inspection; it does not resample policy values. To edit policy settings, reopen
+the original before.zip and save another comparison. Direct mechanism editing of
+a realized policy envelope and intervention-aware reference curves remain explicit
+required follow-ons; those controls are unavailable rather than stripping policy
+custody. Hosted Colab, full-suite and complete #28 acceptance are not claimed.
