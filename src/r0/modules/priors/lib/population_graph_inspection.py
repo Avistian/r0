@@ -159,8 +159,10 @@ def population_graph_steps(
             for name in stages
             if name.startswith("value:") or name.startswith("capture:") and name.endswith(":value")
         ]
-        if not value_names and "readout" in stages:
-            value_names = ["readout"]
+        # Numeric readouts and categorical captures coexist on converted nodes.
+        # Keep both: targets/observations select either, descendants consume state.
+        if "readout" in stages:
+            value_names.append("readout")
         for name in value_names:
             stem = name.rsplit(":", 1)[0] if name.startswith("capture:") else ""
             suffix = name.split(":")[1] if name.startswith("value:") else ""
