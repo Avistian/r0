@@ -33,6 +33,11 @@ def evaluate_signal(
             "inputs must be finite float64 CPU/CUDA rows, 1..20000, matching task columns"
         )
     record = json.loads(task.recipe_json)
+    if record["recipe"].get("version") == "network-input-view-v2":
+        from r0.modules.priors.lib.matched_network_view import matched_view_from_dict
+        from r0.modules.priors.lib.network_input_view import view_signal
+
+        return view_signal(matched_view_from_dict(record["recipe"], limits=limits), inputs)
     if record["recipe"].get("version") == "network-input-view-v1":
         from r0.modules.priors.lib.network_input_view import network_view_from_dict, view_signal
 

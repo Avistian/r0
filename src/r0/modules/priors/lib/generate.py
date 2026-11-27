@@ -143,6 +143,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
+    if version == "network-input-view-v2":
+        from r0.modules.priors.lib.matched_network_view import matched_view_from_dict
+
+        return matched_view_from_dict(fields, limits=limits)
     if version == "network-input-view-v1":
         return network_view_from_dict(fields, limits=limits)
     if version == "standalone-network-v1":

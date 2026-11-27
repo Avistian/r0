@@ -364,6 +364,7 @@ from .lib.kernels import SpectralKernel as SpectralKernel
 from .lib.kernels import StationaryKernel as StationaryKernel
 from .lib.linear import LinearRecipe as LinearRecipe
 from .lib.linear import generate_linear as generate_linear
+from .lib.matched_network_view import MatchedNetworkInputView as MatchedNetworkInputView
 from .lib.matrix_preference_prior import CausalMatrixPrior as CausalMatrixPrior
 from .lib.native_domain_prior import AsymmetricNativeDomainPrior as AsymmetricNativeDomainPrior
 from .lib.native_graph_decoding import (
@@ -377,6 +378,8 @@ from .lib.native_vector_records import NativeVectorRecipe as NativeVectorRecipe
 from .lib.native_vector_request import NativeVectorGraphRequest as NativeVectorGraphRequest
 from .lib.native_vector_sampling import sample_native_vector_graph as sample_native_vector_graph
 from .lib.network_input_view import NetworkInputView as NetworkInputView
+from .lib.network_variance_match import NetworkVarianceMatch as NetworkVarianceMatch
+from .lib.network_variance_match import fit_network_variance_match as fit_network_variance_match
 from .lib.node_pipeline import CausalNodePipeline as CausalNodePipeline
 from .lib.node_pipeline import NumericalConverter as NumericalConverter
 from .lib.pairs import TaskPair as TaskPair

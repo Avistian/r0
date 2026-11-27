@@ -96,7 +96,13 @@ def view_signal(
     mask = torch.zeros(width, dtype=torch.bool, device=inputs.device)
     mask[list(view.active_inputs)] = True
     argument = torch.where(mask, inputs[:, :width], 0.0)
-    return evaluate_admitted_function(view.base.function, argument, diagnostics=diagnostics)
+    scores = evaluate_admitted_function(view.base.function, argument, diagnostics=diagnostics)
+    from r0.modules.priors.lib.matched_network_view import MatchedNetworkInputView
+
+    if isinstance(view, MatchedNetworkInputView):
+        assert view.matching is not None
+        return view.matching.apply(scores)
+    return scores
 
 
 def generate_network_view(
@@ -125,7 +131,7 @@ def generate_network_view(
     flags = sorted({flag for entry in diagnostics for flag in entry["flags"]})
     if bool(torch.all(scores == scores[0])):
         flags.append("zero_target_dispersion")
-    card = dict(
+    card: dict[str, Any] = dict(
         family="standalone_network",
         architecture="unchanged network block DAG behind an explicit input view",
         flags=flags,
@@ -143,6 +149,20 @@ def generate_network_view(
         normalization="none; input masking does not preserve signal variance",
         resource_admission=view.admit(),
     )
+    from r0.modules.priors.lib.matched_network_view import MatchedNetworkInputView
+
+    if isinstance(view, MatchedNetworkInputView):
+        assert view.matching is not None
+        card["normalization"] = (
+            "independent estimated matching to baseline mean/variance; not unit variance"
+        )
+        card["variance_matching"] = {
+            "version": view.matching.version,
+            "digest": view.matching.digest,
+            "rows": view.matching.rows,
+            "before_inputs": view.matching.before_inputs,
+            "after_inputs": view.matching.after_inputs,
+        }
     return complete_task(
         view.task,
         asdict(view),
