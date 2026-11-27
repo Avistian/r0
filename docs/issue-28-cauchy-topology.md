@@ -1,8 +1,8 @@
 # Issue 28: Cauchy topology candidate
 
-Status: standalone implementation candidate. Whole-graph sampling integration,
-shared topology archive decoding and workbench controls are pending. This does
-not complete topology breadth or issue #28.
+Status: standalone sampler reviewed; topology/mechanism integration is a candidate
+described in [topology assembly](issue-28-topology-assembly.md). Workbench controls
+remain pending. This does not complete topology breadth or issue #28.
 
 ## Source and numerical contract
 
@@ -73,10 +73,12 @@ python3 scripts/run_check.py pytest -ra tests/priors/test_cauchy_topology.py \
   tests/priors/test_raw_draw_capture.py tests/priors/test_raw_draw_streams.py
 ```
 
-Independent review, full-suite verification, resource measurement and portable
-evidence publication remain pending. Source options I2.graph.01–03 have this
-standalone implementation; their integrated generation/inspection verification
-is still pending. I2.graph.04–06 (latent widths, partial observations and hidden
+At standalone checkpoint `557bec83aeb66ebb0fbed07634441bb532ad825b`,
+independent scoped standards and specification reviews passed. Its full check
+passed with 1,749 tests and one skip in 618.99 seconds
+(`/tmp/r0-28-cauchy-check.log`). Resource measurement and portable evidence
+publication remain pending. Source options I2.graph.01–03 have this standalone
+implementation; final integration review remains pending. I2.graph.04–06 (latent widths, partial observations and hidden
 channel uncertainty) are not delivered by this topology sampler. Motifs,
 rewrites, preferential attachment and other required graph families remain in
 scope. No family-level substitute closes the option-level inventory.

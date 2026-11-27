@@ -136,6 +136,7 @@ def explain_generation(
             "functional-causal-v1",
             "functional-causal-v2",
             "sampled-functional-graph-v1",
+            "sampled-topology-graph-v1",
         )
         else [],
         "select declared converter readouts"
@@ -148,6 +149,7 @@ def explain_generation(
             "functional-causal-v1",
             "functional-causal-v2",
             "sampled-functional-graph-v1",
+            "sampled-topology-graph-v1",
         )
         else "independent per-column input streams",
         inputs,
@@ -164,6 +166,7 @@ def explain_generation(
                     "functional-causal-v1",
                     "functional-causal-v2",
                     "sampled-functional-graph-v1",
+                    "sampled-topology-graph-v1",
                 )
                 else {}
             ),
@@ -175,12 +178,14 @@ def explain_generation(
         "functional-causal-v1",
         "functional-causal-v2",
         "sampled-functional-graph-v1",
+        "sampled-topology-graph-v1",
     )
     observed_step = nodes.pop(0) if causal else None
     if card["version"] in (
         "functional-causal-v1",
         "functional-causal-v2",
         "sampled-functional-graph-v1",
+        "sampled-topology-graph-v1",
     ):
         signal = functional_steps(record, card, indices, add, limits=limits)
     elif card["version"] in ("causal-v1", "causal-v2"):
@@ -202,7 +207,7 @@ def explain_generation(
         raise ValueError("reconstructed signal differs from saved values beyond 1e-10 tolerance")
     controls = (
         record["recipe"]["request"]["task"]
-        if card["version"] == "sampled-functional-graph-v1"
+        if card["version"] in ("sampled-functional-graph-v1", "sampled-topology-graph-v1")
         else record["recipe"].get("task", record["recipe"])
     )
 
@@ -212,6 +217,7 @@ def explain_generation(
             "functional-causal-v1",
             "functional-causal-v2",
             "sampled-functional-graph-v1",
+            "sampled-topology-graph-v1",
         ):
             return functional_rng(record["seed"], record["task_id"], stream)
         if recipe["version"] in ("causal-v1", "causal-v2"):

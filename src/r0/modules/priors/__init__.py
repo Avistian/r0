@@ -304,6 +304,9 @@ from r0.modules.priors.lib.sampled_functional_graph import (
 from r0.modules.priors.lib.sampled_graph_decoding import (
     sampled_graph_from_dict as sampled_graph_from_dict,
 )
+from r0.modules.priors.lib.sampled_topology_graph import (
+    SampledTopologyGraph as SampledTopologyGraph,
+)
 from r0.modules.priors.lib.signals import evaluate_signal as evaluate_signal
 from r0.modules.priors.lib.smooth import SmoothRecipe as SmoothRecipe
 from r0.modules.priors.lib.source_activation_law import (
@@ -327,6 +330,15 @@ from r0.modules.priors.lib.source_causal_sampling import (
 from r0.modules.priors.lib.source_matrix import SourceMatrixCausalRecipe as SourceMatrixCausalRecipe
 from r0.modules.priors.lib.source_matrix_sampling import (
     with_source_matrices as with_source_matrices,
+)
+from r0.modules.priors.lib.topology_graph_decoding import (
+    topology_graph_from_dict as topology_graph_from_dict,
+)
+from r0.modules.priors.lib.topology_graph_request import (
+    TopologyGraphRequest as TopologyGraphRequest,
+)
+from r0.modules.priors.lib.topology_graph_sampling import (
+    sample_topology_graph as sample_topology_graph,
 )
 from r0.modules.priors.lib.training_task import TrainingTask as TrainingTask
 from r0.modules.priors.lib.transformed_weights import GaussianWeights as GaussianWeights

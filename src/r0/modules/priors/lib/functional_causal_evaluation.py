@@ -25,6 +25,7 @@ from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
+from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.signal_noise import signal_noise_scale
 from r0.modules.priors.lib.task_output import complete_task
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -279,16 +280,22 @@ def _evaluate_functional_nodes(
 
 
 def generate_functional_causal(
-    recipe: FunctionalCausalRecipe | SampledFunctionalGraph,
+    recipe: FunctionalCausalRecipe | SampledFunctionalGraph | SampledTopologyGraph,
     *,
     seed: int,
     task_id: int,
     device: str = "cpu",
 ) -> TrainingTask:
-    construction = recipe if isinstance(recipe, SampledFunctionalGraph) else None
+    construction = (
+        recipe if isinstance(recipe, (SampledFunctionalGraph, SampledTopologyGraph)) else None
+    )
     if construction is not None:
         construction.validate()
-    recipe = recipe.runtime if isinstance(recipe, SampledFunctionalGraph) else recipe
+    recipe = (
+        recipe.runtime
+        if isinstance(recipe, (SampledFunctionalGraph, SampledTopologyGraph))
+        else recipe
+    )
     if any(type(v) is not int or not 0 <= v < 2**63 for v in (seed, task_id)):
         raise ValueError("seed and task_id must be integers in [0, 2**63)")
     if device not in ("cpu", "cuda"):
@@ -374,20 +381,32 @@ def generate_functional_causal(
         card["version"] = construction.version
         card["construction"] = "sampled-frozen-functions-v1"
         card["sampling_provenance"] = "retained-four-stream-construction-v1"
+        if isinstance(construction, SampledTopologyGraph):
+            card["construction"] = "sampled-topology-and-functions-v1"
+            card["topology"] = asdict(construction.topology)
     config = asdict(construction if construction is not None else recipe)
     source_config: dict[str, object] | None = None
     if construction is not None:
-        # Episode partition controls appear twice inside the retained envelope.
-        # Keep both in the replay archive, exclude only these fields from source
-        # identity just as complete_task does for an authored top-level task.
+        # Retain all episode controls in the archive, but omit them from source
+        # identity at each known task location in the construction envelope.
         source_controls = {
             k: v for k, v in asdict(recipe.task).items() if k not in ("context_rows", "split")
         }
-        source_config = {
-            **config,
-            "request": {**config["request"], "task": source_controls},
-            "runtime": {**config["runtime"], "task": source_controls},
+        graph_config = config["graph"] if isinstance(construction, SampledTopologyGraph) else config
+        graph_source: dict[str, object] = {
+            **graph_config,
+            "request": {**graph_config["request"], "task": source_controls},
+            "runtime": {**graph_config["runtime"], "task": source_controls},
         }
+        source_config = (
+            {
+                **config,
+                "request": {**config["request"], "task": source_controls},
+                "graph": graph_source,
+            }
+            if isinstance(construction, SampledTopologyGraph)
+            else graph_source
+        )
     return complete_task(
         recipe.task,
         config,
@@ -411,7 +430,11 @@ def functional_steps(
 ) -> torch.Tensor:
     limits = CausalLimits() if limits is None else limits
     raw_recipe = record["recipe"]
-    if raw_recipe.get("version") == "sampled-functional-graph-v1":
+    if raw_recipe.get("version") == "sampled-topology-graph-v1":
+        from r0.modules.priors.lib.topology_graph_decoding import topology_graph_from_dict
+
+        recipe = topology_graph_from_dict(raw_recipe, limits=limits).runtime
+    elif raw_recipe.get("version") == "sampled-functional-graph-v1":
         from r0.modules.priors.lib.sampled_graph_decoding import sampled_graph_from_dict
 
         recipe = sampled_graph_from_dict(raw_recipe, limits=limits).runtime

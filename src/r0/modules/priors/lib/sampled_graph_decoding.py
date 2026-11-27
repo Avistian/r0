@@ -35,7 +35,7 @@ def _function_prior(raw: Any) -> JointFunctionPrior:
     return JointFunctionPrior(**value)
 
 
-def _request(raw: Any, limits: CausalLimits) -> JointGraphRequest:
+def decode_joint_graph_request(raw: Any, limits: CausalLimits) -> JointGraphRequest:
     value = functional_record(raw, JointGraphRequest)
     declared = CausalLimits(**functional_record(value.get("limits", {}), CausalLimits))
     # Do not rewrite a retained request or its admission record. Larger declared
@@ -91,7 +91,7 @@ def sampled_graph_from_dict(
         record = functional_record(data, SampledFunctionalGraph)
         if record.get("version") != "sampled-functional-graph-v1":
             raise ValueError("unsupported sampled graph version")
-        request = _request(record["request"], limits)
+        request = decode_joint_graph_request(record["request"], limits)
         admit_function_metadata(data, request.limits)
         initial = functional_array(record["initial"])
         if len(initial) != 4:
@@ -107,14 +107,14 @@ def sampled_graph_from_dict(
             calibration_rng=streams[2],
             fit_rng=streams[3],
         )
-        if not _matches(graph, data):
+        if not construction_matches(graph, data):
             raise ValueError("sampled graph archive differs from complete replay")
         return graph
     except (TypeError, KeyError, OverflowError, RecursionError) as exc:
         raise ValueError("invalid sampled graph archive") from exc
 
 
-def _matches(expected: Any, actual: Any) -> bool:
+def construction_matches(expected: Any, actual: Any) -> bool:
     """Compare admitted JSON directly, without duplicating the graph as dict/text."""
     if is_dataclass(expected) and not isinstance(expected, type):
         names = tuple(f.name for f in fields(expected))
@@ -122,7 +122,7 @@ def _matches(expected: Any, actual: Any) -> bool:
             return False
         mapping = cast(dict[str, Any], actual)
         return set(mapping) == set(names) and all(
-            _matches(getattr(expected, name), mapping[name]) for name in names
+            construction_matches(getattr(expected, name), mapping[name]) for name in names
         )
     if type(expected) is tuple:
         if type(actual) not in (tuple, list):
@@ -130,6 +130,7 @@ def _matches(expected: Any, actual: Any) -> bool:
         left_values = cast(tuple[Any, ...], expected)
         right_values = cast(tuple[Any, ...] | list[Any], actual)
         return len(left_values) == len(right_values) and all(
-            _matches(left, right) for left, right in zip(left_values, right_values, strict=True)
+            construction_matches(left, right)
+            for left, right in zip(left_values, right_values, strict=True)
         )
     return type(expected) is type(actual) and expected == actual

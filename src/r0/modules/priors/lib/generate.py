@@ -39,16 +39,23 @@ from r0.modules.priors.lib.preference_binding import PreferenceBinding
 from r0.modules.priors.lib.quadratic import QuadraticRecipe
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
 from r0.modules.priors.lib.sampled_graph_decoding import sampled_graph_from_dict
+from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.sampling import BaseRecipe, generate_base_task
 from r0.modules.priors.lib.smooth import SmoothRecipe
 from r0.modules.priors.lib.source_activation_sampling import source_activation_selections_from_dict
 from r0.modules.priors.lib.source_causal import SourceCausalRecipe
 from r0.modules.priors.lib.source_causal_prior import SourceActivationPrior, SourceStageBinding
 from r0.modules.priors.lib.source_matrix import SourceMatrixCausalRecipe
+from r0.modules.priors.lib.topology_graph_decoding import topology_graph_from_dict
 from r0.modules.priors.lib.training_task import TrainingTask
 
 type Recipe = (
-    BaseRecipe | CompositeRecipe | CausalRecipe | FunctionalCausalRecipe | SampledFunctionalGraph
+    BaseRecipe
+    | CompositeRecipe
+    | CausalRecipe
+    | FunctionalCausalRecipe
+    | SampledFunctionalGraph
+    | SampledTopologyGraph
 )
 
 
@@ -91,6 +98,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
+    if version == "sampled-topology-graph-v1":
+        return topology_graph_from_dict(fields, limits=limits)
     if version == "sampled-functional-graph-v1":
         return sampled_graph_from_dict(fields, limits=limits)
     if version in ("functional-causal-v1", "functional-causal-v2"):
@@ -167,7 +176,13 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
             child = recipe_from_dict(component.pop("recipe"))
             if isinstance(
                 child,
-                (CompositeRecipe, CausalRecipe, FunctionalCausalRecipe, SampledFunctionalGraph),
+                (
+                    CompositeRecipe,
+                    CausalRecipe,
+                    FunctionalCausalRecipe,
+                    SampledFunctionalGraph,
+                    SampledTopologyGraph,
+                ),
             ):
                 raise ValueError("nest combinations in expression, not in component recipes")
             component["recipe"] = child
@@ -220,7 +235,7 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
-    if isinstance(recipe, (FunctionalCausalRecipe, SampledFunctionalGraph)):
+    if isinstance(recipe, (FunctionalCausalRecipe, SampledFunctionalGraph, SampledTopologyGraph)):
         return generate_functional_causal(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, CausalRecipe):
         return generate_causal(recipe, seed=seed, task_id=task_id, device=device)
