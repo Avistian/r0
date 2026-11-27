@@ -38,6 +38,9 @@ from r0.modules.priors.lib.categorical_preferences import (
     categorical_preferences_from_dict as categorical_preferences_from_dict,
 )
 from r0.modules.priors.lib.categorical_sampling import CategoricalSampler as CategoricalSampler
+from r0.modules.priors.lib.cauchy_graph import CauchyGraph as CauchyGraph
+from r0.modules.priors.lib.cauchy_graph import CauchyGraphPrior as CauchyGraphPrior
+from r0.modules.priors.lib.cauchy_graph import sample_cauchy_graph as sample_cauchy_graph
 from r0.modules.priors.lib.causal import ActivatedCausalNode as ActivatedCausalNode
 from r0.modules.priors.lib.causal import CausalNode as CausalNode
 from r0.modules.priors.lib.causal import CausalRecipe as CausalRecipe

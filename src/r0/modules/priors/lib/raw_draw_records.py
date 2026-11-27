@@ -72,6 +72,7 @@ def draw_arguments(
         raise ValueError("raw draw parameters must have distinct names")
     expected: dict[str, set[str]] = {
         "normal": set(),
+        "cauchy": set(),
         "random": set(),
         "uniform": {"low", "high"},
         "student_t": {"df"},
@@ -117,6 +118,8 @@ def numpy_draw(
     args = draw_arguments(distribution, shape, parameters)
     if distribution == "normal":
         values = rng.normal(size=shape)
+    elif distribution == "cauchy":
+        values = rng.standard_cauchy(size=shape)
     elif distribution == "random":
         values = rng.random(size=shape)
     elif distribution == "uniform":
