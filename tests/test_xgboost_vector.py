@@ -77,3 +77,18 @@ def test_vector_admission_precedes_float_conversion() -> None:
 def test_vector_native_export_rejects_invalid_models(raw: bytes) -> None:
     with pytest.raises(ValueError, match="XGBoost"):
         export_xgboost_vector(raw)
+
+
+def test_vector_empty_rows_reject_before_array_conversion(monkeypatch: pytest.MonkeyPatch) -> None:
+    function = _model()
+    inputs = np.empty((0, 1), dtype=np.float64)
+    calls: list[bool] = []
+
+    def unexpected_array(*args: object, **kwargs: object) -> None:
+        calls.append(True)
+        raise AssertionError("known empty-row rejection must precede fixed-array allocation")
+
+    monkeypatch.setattr(np, "array", unexpected_array)
+    with pytest.raises(ValueError, match="admission"):
+        evaluate_xgboost_vector(function, inputs, max_cells=1)
+    assert not calls

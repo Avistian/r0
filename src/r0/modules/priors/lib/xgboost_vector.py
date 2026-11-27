@@ -122,6 +122,7 @@ def evaluate_xgboost_vector(
         or max_cells < 1
         or type(inputs) is not np.ndarray
         or inputs.ndim != 2
+        or len(inputs) < 1
         or inputs.dtype != np.float64
         or inputs.shape[1] != function.input_width
         or inputs.shape[0] * (function.input_width + 4 * function.output_width + 8) > max_cells
