@@ -1,6 +1,5 @@
 """Original observed coordinates, input masking and retained network architecture."""
 
-import json
 from collections.abc import Callable, Sequence
 from typing import Any
 
@@ -17,6 +16,11 @@ from r0.modules.priors.lib.network_input_view import (
     network_view_from_dict,
 )
 from r0.modules.priors.lib.network_inspection import network_steps
+from r0.modules.priors.lib.network_target_trace import (
+    network_target_steps,
+    network_trace_record,
+    validate_network_trace,
+)
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -27,7 +31,7 @@ def network_view_steps(
     *,
     limits: CausalLimits | None,
 ) -> dict[str, Any]:
-    record = json.loads(task.recipe_json)
+    record = network_trace_record(task)
     decoder = (
         matched_view_from_dict
         if record["recipe"].get("version") == "network-input-view-v2"
@@ -35,9 +39,7 @@ def network_view_steps(
     )
     view = decoder(record["recipe"], limits=limits or CausalLimits())
     replay = generate_network_view(view, seed=record["seed"], task_id=record["task_id"])
-    for field in ("inputs", "targets", "scores", "context_indices", "query_indices"):
-        if not torch.equal(getattr(replay, field), getattr(task, field).cpu()):
-            raise ValueError("saved network view differs from original-row replay")
+    validate_network_trace(task, replay)
     add(
         "view-observed",
         "Observed coordinates",
@@ -107,14 +109,7 @@ def network_view_steps(
         replay.scores[list(indices)],
         {},
     )
-    add(
-        "targets",
-        "Task targets",
-        ["signal"],
-        "shared target adapter",
-        replay.targets[list(indices), None],
-        {},
-    )
+    target_error = network_target_steps(view.task, task, replay, indices, add)
     return {
         "version": "generation-graph-v1",
         "episode_id": task.episode_id,
@@ -122,5 +117,6 @@ def network_view_steps(
         "component": None,
         "component_count": 0,
         "signal_max_error": 0.0,
+        "target_max_error": target_error,
         "architecture": "frozen network with explicit observed-input mask",
     }
