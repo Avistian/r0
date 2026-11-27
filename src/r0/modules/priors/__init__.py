@@ -392,6 +392,7 @@ from .lib.preferred_matrix_sampling import (
     sample_preferred_matrices as sample_preferred_matrices,
 )
 from .lib.profile import diagnostic_profile as diagnostic_profile
+from .lib.prototype_root_api import *  # noqa: F403
 from .lib.quadratic import QuadraticRecipe as QuadraticRecipe
 from .lib.raw_draw_api import *  # noqa: F403
 from .lib.recipe_sampling import sample_recipe as sample_recipe
