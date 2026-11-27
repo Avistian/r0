@@ -47,8 +47,12 @@ class TaskPair:
     card_json: str
 
 
-def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> Recipe:
+def paired_recipe(
+    recipe: Recipe, *, intervention: str, value: int | float, allow_estimated_variance: bool = False
+) -> Recipe:
     """Construct one explicit change; preserve all other recipe controls."""
+    if type(allow_estimated_variance) is not bool:
+        raise ValueError("allow_estimated_variance must be a boolean")
     if isinstance(
         recipe,
         (
@@ -71,7 +75,12 @@ def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> R
         raise ValueError("pair intervention must change the selected value")
     changed = replace(controls, **{field: value})
     if isinstance(recipe, (NetworkRecipe, NetworkInputView)):
-        return network_input_pair(recipe, changed, intervention=intervention)
+        return network_input_pair(
+            recipe,
+            changed,
+            intervention=intervention,
+            allow_estimated_variance=allow_estimated_variance,
+        )
     if intervention == "sparsity" and isinstance(recipe, CompositeRecipe):
         components = tuple(
             component
@@ -104,7 +113,12 @@ def generate_pair(
 ) -> TaskPair:
     """Generate two coupled variants; neither failures nor changed properties are hidden."""
     _variance_control(recipe, intervention, allow_estimated_variance)
-    changed = paired_recipe(recipe, intervention=intervention, value=value)
+    changed = paired_recipe(
+        recipe,
+        intervention=intervention,
+        value=value,
+        allow_estimated_variance=allow_estimated_variance,
+    )
     before = generate_task(recipe, seed=seed, task_id=task_id, device=device)
     after = generate_task(changed, seed=seed, task_id=task_id, device=device)
     return TaskPair(
@@ -139,7 +153,10 @@ def compare_pair(
     variance_control = _variance_control(recipes[0], intervention, allow_estimated_variance)
     field = _FIELDS[intervention]
     expected = paired_recipe(
-        recipes[0], intervention=intervention, value=getattr(controls[1], field)
+        recipes[0],
+        intervention=intervention,
+        value=getattr(controls[1], field),
+        allow_estimated_variance=allow_estimated_variance,
     )
     if asdict(expected) != asdict(recipes[1]):
         raise ValueError("pair changes recipe properties outside the declared intervention")
@@ -218,7 +235,7 @@ def _variance_control(recipe: Recipe, intervention: str, allow_estimate: bool) -
         return "unchanged_mechanism"
     if isinstance(recipe, (NetworkRecipe, NetworkInputView)):
         if allow_estimate:
-            raise ValueError("network independent variance matching is not implemented yet")
+            return "independent_network_baseline_moments_estimate"
         return "network_input_mask_uncontrolled"
     if isinstance(recipe, LinearRecipe):
         return "analytic_unit_variance"

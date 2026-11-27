@@ -92,7 +92,7 @@ def explain_generation(
         if component is not None:
             raise ValueError("converted graphs do not have composite children")
         return {**converted_steps(task, indices, add, limits=limits), "nodes": nodes}
-    if record["recipe"].get("version") == "network-input-view-v1":
+    if record["recipe"].get("version") in ("network-input-view-v1", "network-input-view-v2"):
         from r0.modules.priors.lib.network_view_inspection import network_view_steps
 
         if component is not None:

@@ -3,8 +3,8 @@
 This candidate adds a versioned input view around an unchanged standalone network
 archive. It is the library foundation for required irrelevant-feature and
 input-sparsity comparisons. Raw pair creation, comparison verification and original-row traces are implemented
-in the follow-on library candidate. Explorer/Colab controls and optional independent
-variance matching remain required before this feature is delivered.
+alongside opt-in independent variance matching. Explorer/Colab controls remain
+required before this feature is delivered.
 
 NetworkInputView stores the complete original NetworkRecipe, explicit task
 controls and sorted active input indices. Original network columns retain their
@@ -47,7 +47,10 @@ probabilities and splits. Sparsity pairs require exact observed inputs and split
 the same frozen network/root and nested masks; score changes are permitted and
 zero-dispersion cases remain valid. This raw protocol reports
 network_input_mask_uncontrolled; no expected-variance equality is claimed.
-Requesting estimated variance currently rejects until that separate protocol lands.
+Explicit estimated matching is now a separate opt-in protocol; see
+[network variance matching](issue-28-network-variance-matching.md). It fits both
+masks on one independent retained population, rejecting exact constant channels
+and nonfinite dispersion instead of assigning a fallback scale. Raw mode is unchanged.
 
 Pair verification decodes both recipes and regenerates both sides, checking
 arrays, identities, mechanism records and declared implementation versions.

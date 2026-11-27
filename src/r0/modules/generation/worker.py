@@ -42,7 +42,10 @@ def main() -> int:
         request = replace(
             request,
             recipe=paired_recipe(
-                request.recipe, intervention=pairing["intervention"], value=pairing["value"]
+                request.recipe,
+                intervention=pairing["intervention"],
+                value=pairing["value"],
+                allow_estimated_variance=pairing["allow_estimated_variance"],
             ),
         )
     sync_path: str | None = data["sync_path"]

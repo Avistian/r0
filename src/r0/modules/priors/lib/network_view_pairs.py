@@ -4,11 +4,15 @@ import json
 from dataclasses import asdict, replace
 from typing import Any
 
+import numpy as np
 import torch
 
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.matched_network_view import MatchedNetworkInputView
 from r0.modules.priors.lib.network_input_view import NetworkInputView
 from r0.modules.priors.lib.network_recipe import NetworkRecipe
+from r0.modules.priors.lib.network_variance_match import fit_network_variance_match
+from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.training_task import TrainingTask
 
 type NetworkSource = NetworkRecipe | NetworkInputView
@@ -23,8 +27,14 @@ def input_mask(recipe: NetworkSource) -> tuple[int, ...]:
 
 
 def network_input_pair(
-    recipe: NetworkSource, controls: LinearRecipe, *, intervention: str
+    recipe: NetworkSource,
+    controls: LinearRecipe,
+    *,
+    intervention: str,
+    allow_estimated_variance: bool = False,
 ) -> NetworkSource:
+    if intervention == "sparsity" and isinstance(recipe, MatchedNetworkInputView):
+        raise ValueError("already matched source sparsity requires a new baseline protocol")
     if intervention not in ("irrelevant", "sparsity"):
         return replace(recipe, task=controls)
     if intervention == "irrelevant" and isinstance(recipe, NetworkInputView):
@@ -38,6 +48,16 @@ def network_input_pair(
     if intervention == "sparsity":
         order = (*current, *(i for i in range(width) if i not in current))
         active = tuple(sorted(order[: controls.active_features]))
+    if intervention == "sparsity" and allow_estimated_variance:
+        identity = record_fingerprint((asdict(base), current, active, "network-pair-matching-v1"))
+        matching = fit_network_variance_match(
+            base,
+            before_inputs=current,
+            after_inputs=active,
+            rows=256,
+            rng=np.random.default_rng(int(identity, 16)),
+        )
+        return MatchedNetworkInputView(base, controls, active, matching=matching)
     return NetworkInputView(base, controls, active)
 
 

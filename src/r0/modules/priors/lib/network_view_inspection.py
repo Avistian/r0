@@ -7,6 +7,11 @@ from typing import Any
 import torch
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_function
+from r0.modules.priors.lib.matched_network_view import (
+    MatchedNetworkInputView,
+    matched_view_from_dict,
+)
 from r0.modules.priors.lib.network_input_view import (
     generate_network_view,
     network_view_from_dict,
@@ -23,7 +28,12 @@ def network_view_steps(
     limits: CausalLimits | None,
 ) -> dict[str, Any]:
     record = json.loads(task.recipe_json)
-    view = network_view_from_dict(record["recipe"], limits=limits or CausalLimits())
+    decoder = (
+        matched_view_from_dict
+        if record["recipe"].get("version") == "network-input-view-v2"
+        else network_view_from_dict
+    )
+    view = decoder(record["recipe"], limits=limits or CausalLimits())
     replay = generate_network_view(view, seed=record["seed"], task_id=record["task_id"])
     for field in ("inputs", "targets", "scores", "context_indices", "query_indices"):
         if not torch.equal(getattr(replay, field), getattr(task, field).cpu()):
@@ -56,11 +66,44 @@ def network_view_steps(
         add=add,
         input_parents=["view-mask"],
     )
+    if isinstance(view, MatchedNetworkInputView):
+        assert view.matching is not None
+        matching = view.matching
+        raw = evaluate_admitted_function(view.base.function, argument)
+        add(
+            "view-raw-scores",
+            "Raw masked network scores",
+            parents,
+            "frozen network before independent matching",
+            raw[list(indices)],
+            {},
+        )
+        add(
+            "view-matching",
+            "Estimated baseline moment matching",
+            ["view-raw-scores"],
+            "(raw - after_mean) / after_std * before_std + before_mean",
+            matching.apply(raw)[list(indices)],
+            {
+                "population_digest": matching.digest,
+                "calibration_rows": matching.rows,
+                "before_mean": matching.before_mean,
+                "before_std": matching.before_std,
+                "after_mean": matching.after_mean,
+                "after_std": matching.after_std,
+                "scope": "independent estimate; not unit variance or episode normalization",
+            },
+        )
+        parents = ["view-matching"]
     add(
         "signal",
         "View scores",
         parents,
-        "frozen network on masked inputs",
+        (
+            "independently matched network on masked inputs"
+            if isinstance(view, MatchedNetworkInputView)
+            else "frozen network on masked inputs"
+        ),
         replay.scores[list(indices)],
         {},
     )
