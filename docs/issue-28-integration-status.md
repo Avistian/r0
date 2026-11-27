@@ -24,7 +24,7 @@ scientific acceptance or whole-issue completion.
 | `103db8b` | Workbench review rejected parent-side pair reconstruction before the guarded worker and attempt receipt. Original failure evidence retained. |
 | `3411bf9` | Pair reconstruction and comparison moved inside guarded worker. Independent backend and Chromium checks passed; failed timeout preserves active dataset and previous pair. Local construction/edit/reopen/export checked. Standards: no hard findings, P3 lifecycle duplication open. |
 | `e668a1a` | Attachment/motif geometry integration independently checked: 684 budget configurations, 10 archive cases, 40 rollbacks; Cauchy archive unchanged byte-for-byte. |
-| `b8d8234` | Combined workbench/topology successor, with legacy generated evidence removed from tracking. Full check running when this document was updated; no exact-head full-suite pass claimed yet. |
+| `b8d8234` | Combined workbench/topology successor, with legacy generated evidence removed from tracking. Full check terminated with exit143 at86percent before its summary; no exact-head full-suite pass. Original log retained unchanged. |
 
 Original rejection probes and failure logs are retained alongside repairs. Local
 copies live under ignored `docs/evidence/issue-28-parallel/`, with a byte-verified
@@ -33,10 +33,25 @@ identified author/full-suite reports. It is local retention, not portable public
 artifact delivery. The terminal `a22eb63` full-check log is included; later worker candidates are
 not covered by that result.
 
+## Native core and topology controls
+
+Topology UI `b15b2f5` exposes attachment/motif settings with extension/adaptation
+labels. Independent Chromium runs verified both construction families, editing,
+saving, reopening, exports and exact repeated-row reconstruction.
+
+Native core `83501d5` passed nine independent public-API arithmetic/roundtrip
+cases spanning softmax, argmax and threshold emissions. Standards rejected private
+test imports; `eed4876` repairs those tests through public entrypoints. Root reviewed
+the exact test-only delta; original rejection remains retained. Native explorer
+schema/CSV delivery, sampled domain priors, heterogeneous discrete vectors and
+native interventions remain open. See [native variables](native-causal-variables.md).
+
 ## Parallel implementation ownership
 
 The current integration checkpoint is `b8d8234`, in
-`/tmp/r0-28-current-integration`. It remains frozen during its full check.
+`/tmp/r0-28-current-integration`. Its interrupted full-check source remains frozen. The successor native integration
+branch combines topology controls and the authored native categorical core;
+full-suite verification is scheduled on that successor.
 Three separate implementation worktrees extend it or its documented ancestors:
 
 - Native categorical variables: typed outcomes, one-hot descendant inputs,

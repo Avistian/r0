@@ -6,7 +6,8 @@ authoritative scope. This ledger tracks execution, not a smaller replacement goa
 Latest: [integration status](issue-28-integration-status.md) records complete
 geometry archives, structural topology integration and guarded workbench creation,
 editing and comparisons. The `16bfd23` combined checkpoint passed 1,804 tests
-(one skipped); its successor `b8d8234` is still being checked. Native categorical
+(one skipped); its successor `b8d8234` was interrupted before the final test summary.
+The next combined native checkpoint will receive full verification. Native categorical
 variables, sampled pipelines, remaining paper options and hosted evidence remain
 open. Earlier failures and repair-specific acceptance remain separately recorded.
 
