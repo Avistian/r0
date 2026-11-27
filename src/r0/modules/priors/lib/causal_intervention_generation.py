@@ -23,6 +23,7 @@ from r0.modules.priors.lib.native_causal import NativeCausalRecipe
 from r0.modules.priors.lib.native_evaluation import evaluate_native_graph, generate_native_causal
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
+from r0.modules.priors.lib.stage_intervention import StageIntervention
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -97,7 +98,7 @@ def trace_original(
 def generate_causal_pair(
     base: CausalBase,
     *,
-    interventions: tuple[HardIntervention | SoftIntervention, ...],
+    interventions: tuple[HardIntervention | SoftIntervention | StageIntervention, ...],
     mode: str = "matched",
     population: int = 1,
     seed: int,
@@ -176,7 +177,11 @@ def compare_causal_pair(
     for i in unchanged_laws:
         left, right = original.traces[i], execution.traces[i]
         for field in ("root", "exogenous", "uniform"):
-            if field in left and field in right:
+            changed_root = field == "root" and any(
+                isinstance(c, StageIntervention) and c.node == i and c.root is not None
+                for c in recipe.interventions
+            )
+            if field in left and field in right and not changed_root:
                 checks[f"{i}:{field}"] = torch.equal(left[field], right[field])
     stream_checks = {
         key: value == execution.stream_initial[key]

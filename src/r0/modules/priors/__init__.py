@@ -1,5 +1,7 @@
 """Inspectable synthetic priors."""
 
+from r0.modules.priors.lib.stage_intervention import StageIntervention as StageIntervention
+
 from .lib.activation_sampling import (
     ActivationParameterPrior as ActivationParameterPrior,
 )

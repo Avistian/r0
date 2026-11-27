@@ -98,7 +98,7 @@ def functional_pipeline(value: Any) -> CausalNodePipeline:
     return CausalNodePipeline(**fields)
 
 
-def _root(value: Any) -> JointRootBase:
+def functional_root(value: Any) -> JointRootBase:
     fields = functional_record(value, JointRootBase)
     for key in ("factor", "gaussian_factor"):
         if fields.get(key) is not None:
@@ -179,7 +179,7 @@ def functional_node_from_dict(raw: Any) -> FunctionalCausalNode:
     node["parents"] = functional_array(node["parents"])
     node["function"] = decode_admitted_function(node["function"])
     if node.get("root") is not None:
-        node["root"] = _root(node["root"])
+        node["root"] = functional_root(node["root"])
     node["noise_scale"] = functional_array(node.get("noise_scale", ()))
     exogenous = functional_record(node.get("exogenous", {}), ExogenousDistribution)
     exogenous["inputs"] = InputDistribution(

@@ -11,8 +11,15 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
 from r0.modules.priors.lib.frozen_function_decoding import frozen_function_from_dict
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
-from r0.modules.priors.lib.functional_causal_decoding import functional_array, functional_record
+from r0.modules.priors.lib.functional_causal_decoding import (
+    functional_array,
+    functional_pipeline,
+    functional_record,
+    functional_root,
+)
 from r0.modules.priors.lib.inputs import InputDistribution
+from r0.modules.priors.lib.native_causal import FrequencyVariableDomain, VariableDomain
+from r0.modules.priors.lib.stage_intervention import StageIntervention
 
 
 def intervention_from_dict(data: object, *, limits: CausalLimits) -> CausalInterventionRecipe:
@@ -22,7 +29,7 @@ def intervention_from_dict(data: object, *, limits: CausalLimits) -> CausalInter
     try:
         raw = functional_record(data, CausalInterventionRecipe)
         base = recipe_from_dict(raw["base"], limits=limits)
-        changes: list[HardIntervention | SoftIntervention] = []
+        changes: list[HardIntervention | SoftIntervention | StageIntervention] = []
         for item in functional_array(raw["interventions"]):
             if type(item) is not dict:
                 raise ValueError("intervention must be a versioned object")
@@ -31,6 +38,28 @@ def intervention_from_dict(data: object, *, limits: CausalLimits) -> CausalInter
                 for key in ("channels", "values"):
                     change[key] = functional_array(change[key])
                 changes.append(HardIntervention(**change))
+            elif cast(dict[str, Any], item).get("version") == "stage-causal-intervention-v1":
+                change = functional_record(item, StageIntervention)
+                if change.get("root") is not None:
+                    change["root"] = functional_root(change["root"])
+                if change.get("pipeline") is not None:
+                    change["pipeline"] = functional_pipeline(change["pipeline"])
+                if change.get("domain") is not None:
+                    raw_domain = change["domain"]
+                    if type(raw_domain) is not dict:
+                        raise ValueError("stage domain must be an object")
+                    domain_type = (
+                        FrequencyVariableDomain
+                        if cast(dict[str, Any], raw_domain).get("version")
+                        == "native-frequency-domain-v2"
+                        else VariableDomain
+                    )
+                    domain = functional_record(raw_domain, domain_type)
+                    for key in ("vocabulary", "thresholds", "frequencies"):
+                        if key in domain:
+                            domain[key] = functional_array(domain[key])
+                    change["domain"] = domain_type(**domain)
+                changes.append(StageIntervention(**change))
             else:
                 change = functional_record(item, SoftIntervention)
                 if change["function"] is not None:

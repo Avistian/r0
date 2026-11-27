@@ -50,6 +50,34 @@ coefficient changes and nonlinear/fitted-function replacements represented by th
 public immutable function records. The original backend fitting provenance stays
 with the original base archive; a replacement is not labeled as a refit.
 
+### Complete-stage soft replacements
+
+`StageIntervention` adds explicitly versioned root-law, numerical-pipeline and
+native-emission changes while retaining the complete original base archive.
+This is a named r0 extension, not a claim that a paper specifies this intervention
+sampler. These controls complement the function/innovation `SoftIntervention`.
+
+- `root=JointRootBase(...)` replaces an existing root distribution at unchanged
+  input width. It cannot create a new root or change graph topology. Matched mode
+  retains the keyed stream initialization; transformed root draws may differ under
+  the new law and are explicitly excluded from unchanged-draw equality checks.
+  Descendant innovations remain matched. Different root samplers need not consume
+  identical numbers of random values or represent identical latent units.
+- `replace_pipeline=True, pipeline=...` replaces the full frozen pipeline, including
+  its declared stages, channel weights, noise and measurement behavior. Supplying
+  `pipeline=None` with that explicit flag removes it. Supplied calibration constants
+  stay fixed; this operation does not refit a pipeline on intervened/query rows.
+- `domain=...` changes a native emission law, temperature, thresholds or frequency
+  offsets while retaining kind, ordered vocabulary, score width and encoded parent
+  width. Softmax-to-argmax is possible at the same score width; incompatible
+  threshold geometry rejects. Vocabulary relabelling is a different operation.
+
+All three may be declared in one stage record when applicable. Multiple soft
+records or hard/soft overlap at the same node reject rather than depending on list
+order. Root changes on nonroots, numerical-only domain changes, malformed records
+and incompatible pipeline/domain geometry reject before generation. Inspection
+and saved pairs retain the original mechanism and explicit stage replacements.
+
 ## Matched and population comparisons
 
 `generate_causal_pair(base, interventions=(...), mode="matched", seed=17, task_id=3)`
@@ -110,7 +138,7 @@ under `docs/evidence/issue-28-causal-interventions/`.
 
 This implementation supports explicit CPU execution. GPU agreement, workbench/Colab
 controls and saved UI comparisons are still pending. Legacy non-functional
-`CausalRecipe` conversion, direct root-law/domain-emission/pipeline-component soft
+`CausalRecipe` conversion, stochastic stage sampling and independently scoped pipeline-component soft
 replacement, stochastic/per-row hard assignments, surgery inside coupled functions,
 and additional intervention locations remain extensions to implement rather than
 claims made by this API. The broader accepted #28 inventory remains required; this

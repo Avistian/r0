@@ -1,6 +1,7 @@
 """Explicit surgical changes retain their original graph and intervention location."""
 
 from dataclasses import dataclass, replace
+from typing import Any
 
 from r0.modules.priors.lib.activation_sampling import finite_number
 from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
@@ -14,6 +15,7 @@ from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
 from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
 from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
 from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
+from r0.modules.priors.lib.stage_intervention import StageIntervention
 
 type CausalBase = (
     FunctionalCausalRecipe
@@ -103,7 +105,7 @@ def causal_runtime(base: object) -> FunctionalCausalRecipe | NativeCausalRecipe:
 @dataclass(frozen=True, slots=True)
 class CausalInterventionRecipe:
     base: CausalBase
-    interventions: tuple[HardIntervention | SoftIntervention, ...]
+    interventions: tuple[HardIntervention | SoftIntervention | StageIntervention, ...]
     mode: str = "matched"
     population: int = 1
     version: str = "causal-intervention-v1"
@@ -127,22 +129,29 @@ class CausalInterventionRecipe:
         soft: set[int] = set()
         hard: set[int] = set()
         for change in self.interventions:
-            if type(change) not in (HardIntervention, SoftIntervention) or change.node >= len(
-                runtime.nodes
-            ):
+            if type(change) not in (
+                HardIntervention,
+                SoftIntervention,
+                StageIntervention,
+            ) or change.node >= len(runtime.nodes):
                 raise ValueError("intervention refers to an invalid node")
             node = runtime.nodes[change.node]
             native = node if isinstance(node, NativeCausalNode) else None
             equation = node.equation if isinstance(node, NativeCausalNode) else node
-            if isinstance(change, SoftIntervention):
+            if isinstance(change, (SoftIntervention, StageIntervention)):
                 if change.node in soft or change.node in hard:
                     raise ValueError("overlapping hard/soft or duplicate soft interventions")
                 soft.add(change.node)
-                kwargs = {
-                    name: getattr(change, name)
-                    for name in ("function", "noise_scale", "noise_response", "exogenous")
-                    if getattr(change, name) is not None
-                }
+                kwargs = replacement_equation_fields(change)
+                if isinstance(change, StageIntervention):
+                    if change.root is not None and equation.root is None:
+                        raise ValueError("root-law changes require an existing root node")
+                    if change.domain is not None and (
+                        native is None
+                        or (change.domain.kind, change.domain.vocabulary)
+                        != (native.domain.kind, native.domain.vocabulary)
+                    ):
+                        raise ValueError("domain changes must retain kind and vocabulary")
                 revised = replace(equation, **kwargs)
                 if (revised.function.input_width, revised.function.output_width) != (
                     equation.function.input_width,
@@ -206,24 +215,36 @@ class CausalInterventionRecipe:
 
     def effective_runtime(self) -> FunctionalCausalRecipe | NativeCausalRecipe:
         original = causal_runtime(self.base)
-        replacements = {c.node: c for c in self.interventions if isinstance(c, SoftIntervention)}
+        replacements = {
+            c.node: c
+            for c in self.interventions
+            if isinstance(c, (SoftIntervention, StageIntervention))
+        }
 
         def equation(index: int, node: FunctionalCausalNode) -> FunctionalCausalNode:
             change = replacements.get(index)
             if change is None:
                 return node
-            kwargs = {
-                name: getattr(change, name)
-                for name in ("function", "noise_scale", "noise_response", "exogenous")
-                if getattr(change, name) is not None
-            }
+            kwargs = replacement_equation_fields(change)
             return replace(node, **kwargs)
+
+        def domain(index: int, node: NativeCausalNode):
+            change = replacements.get(index)
+            return (
+                change.domain
+                if isinstance(change, StageIntervention) and change.domain is not None
+                else node.domain
+            )
 
         if isinstance(original, NativeCausalRecipe):
             return replace(
                 original,
                 nodes=tuple(
-                    replace(n, equation=equation(i, n.equation))
+                    replace(
+                        n,
+                        equation=equation(i, n.equation),
+                        domain=domain(i, n),
+                    )
                     for i, n in enumerate(original.nodes)
                 ),
             )
@@ -234,3 +255,18 @@ class CausalInterventionRecipe:
             original.target,
             original.limits,
         )
+
+
+def replacement_equation_fields(change: SoftIntervention | StageIntervention) -> dict[str, Any]:
+    if isinstance(change, StageIntervention):
+        fields: dict[str, Any] = {}
+        if change.root is not None:
+            fields["root"] = change.root
+        if change.replace_pipeline:
+            fields["pipeline"] = change.pipeline
+        return fields
+    return {
+        name: getattr(change, name)
+        for name in ("function", "noise_scale", "noise_response", "exogenous")
+        if getattr(change, name) is not None
+    }
