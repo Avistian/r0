@@ -5,6 +5,24 @@ including every in-scope option in the recorded paper inventory. This checkpoint
 is incomplete. Scoped reviews below establish only the listed behavior. They do not establish
 scientific acceptance or whole-issue completion.
 
+## Latest verified publication checkpoint
+
+Source `738670c19017c78abb87683dc04a632f46db7528` passed full `make check`:
+1,893 passed, one skipped, 716.96 seconds, with all static gates passing.
+This combines numerical pipelines (including the half-open converter-span repair)
+and authored-native explorer controls with the previous published checkpoint.
+The span defect and its failed regressions remain retained alongside the repair;
+independent allocation/replay and six public workbench flows passed afterward.
+Authored-native explorer independently passed typed CSV, vocabulary editing,
+Chromium construction/export and six unchanged legacy archive cases.
+
+The exact-head receipt, runner and full output are retained locally under
+`docs/evidence/issue-28-pipeline-release/`. This result does not cover newer
+sampled-native priors/UI, parent-function compositions or fitted structural trees
+in separate integration worktrees. Hosted Colab, GPU, measured supported maxima,
+causal interventions and full paper-option coverage remain open. Training and
+evaluation CLI commands are absent, so smoke/eval-smoke remain NOT_AVAILABLE.
+
 ## Retained construction checkpoints
 
 | Source checkpoint | Result and limits |
