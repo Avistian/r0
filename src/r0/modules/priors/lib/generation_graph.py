@@ -177,6 +177,7 @@ def explain_generation(
             "causal-v2",
             "functional-causal-v1",
             "standalone-network-innovations-v1",
+            "network-observation-recipe-v1",
             "fitted-functional-causal-v1",
             "sampled-fitted-functional-causal-v1",
             "population-fitted-functional-causal-v1",
@@ -198,6 +199,7 @@ def explain_generation(
             "causal-v2",
             "functional-causal-v1",
             "standalone-network-innovations-v1",
+            "network-observation-recipe-v1",
             "fitted-functional-causal-v1",
             "sampled-fitted-functional-causal-v1",
             "population-fitted-functional-causal-v1",
@@ -223,6 +225,7 @@ def explain_generation(
                     "causal-v2",
                     "functional-causal-v1",
                     "standalone-network-innovations-v1",
+                    "network-observation-recipe-v1",
                     "fitted-functional-causal-v1",
                     "sampled-fitted-functional-causal-v1",
                     "population-fitted-functional-causal-v1",
@@ -243,6 +246,7 @@ def explain_generation(
         "causal-v2",
         "functional-causal-v1",
         "standalone-network-innovations-v1",
+        "network-observation-recipe-v1",
         "fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
         "population-fitted-functional-causal-v1",
@@ -258,6 +262,7 @@ def explain_generation(
     if card["version"] in (
         "functional-causal-v1",
         "standalone-network-innovations-v1",
+        "network-observation-recipe-v1",
         "fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
         "population-fitted-functional-causal-v1",
@@ -304,6 +309,7 @@ def explain_generation(
         if recipe["version"] in (
             "functional-causal-v1",
             "standalone-network-innovations-v1",
+            "network-observation-recipe-v1",
             "fitted-functional-causal-v1",
             "sampled-fitted-functional-causal-v1",
             "population-fitted-functional-causal-v1",
@@ -347,6 +353,11 @@ def explain_generation(
         "version": "generation-graph-v1",
         "episode_id": task.episode_id,
         "rows": list(indices),
+        **(
+            {"observation_selection": card["observation_selection"]}
+            if "observation_selection" in card
+            else {}
+        ),
         "component": None,
         "component_count": len(components),
         "nodes": nodes,

@@ -66,9 +66,8 @@ task must have matching feature count and regression/classification output width
 The runtime supports existing generation, traces and recipe persistence, but its
 archive alone contains the frozen graph, **not this construction receipt**. Retain
 and reopen the component receipt separately for source selection provenance.
-Automatic generation/archive custody integration, observation-aware interventions,
-workbench controls, and shared local/Colab workflows are remaining work, not
-accepted implicitly by the materialization helper.
+Use the versioned task envelope below to retain source selection custody.
+Workbench controls and shared local/Colab workflows remain required follow-ups.
 
 ## Pinned overlap materialization repair
 
@@ -79,5 +78,46 @@ copies that channel exactly and is a descendant of its original node; interventi
 on the original state therefore flows to the alias. This preserves the source's
 possible target leakage rather than filtering or resampling it. Generic graphs
 still reject identical observed/target references. Alias matrices, channels and
-working storage are admitted before construction. Receipt-aware task provenance
-and user-visible overlap/alias annotations remain the next envelope integration.
+working storage are admitted before construction. The task envelope exposes original references, overlap and derived aliases in
+its mechanism card and original-row traces.
+
+
+## Task envelope and intervention delivery
+
+`NetworkObservationRecipe(task, observations)` stores the complete immutable
+selection receipt and task controls. Its `network-observation-recipe-v1` JSON
+contains no independently editable duplicate graph: nodes, observed references,
+original targets and identity aliases are derived from the retained source and
+selection. `recipe_from_dict`, `generate_task`, task ZIP save/reopen and
+`explain_generation` preserve this record, exact seed/task IDs, raw construction
+receipts and original row order (including repeated selected rows).
+
+Admission counts full nested metadata and reserves retained/raw construction
+storage, sampled network/hyperprior/statistics/root/prototype replay and compiled
+graph emission before restoring any construction RNG. Caller limits cannot be
+expanded by source-declared limits. Source geometry is previewed without replay;
+strict component decoders then verify every retained draw and derived field.
+The envelope does not resample selections or silently shrink a source's limits.
+
+Causal comparisons accept the envelope as their original base. Hard state,
+readout and both-location interventions and soft equation/root replacements use
+the same compiled nodes and preserve the complete original receipt. For a target
+alias, a readout-only change to its parent changes the captured feature but not
+the downstream target; a state change propagates to the alias. Cards/traces keep
+original and effective target references and explicitly report source target
+leakage. The materialized runtime remains a generic functional graph; this does
+not add native categorical observation semantics.
+
+Exact replay applies at the same row shape for every admitted source. Existing
+coordinate-root v1 laws consume whole coordinate arrays sequentially, so changing
+the row count can shift later-coordinate RNG streams. The envelope preserves
+these versioned semantics, frozen normalization and exact same-shape replay; it
+does not claim universal prefix stability. A versioned prefix-stable extension
+remains required where the broader specification calls for it.
+
+Broad follow-up scope is unchanged: variable-width and nonsequential/gated/skip
+observation policies, source-qualified additional selection laws, interactive
+guarded workbench editing/inspection/export, and shared local/Colab workflows.
+The existing sequential profiles compose with sampled weights/hyperpriors,
+internal innovations/importance, coordinate roots and prototype roots; they do
+not silently substitute another architecture when a source is unsupported.

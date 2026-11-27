@@ -23,7 +23,22 @@ def functional_steps(
 ) -> torch.Tensor:
     limits = CausalLimits() if limits is None else limits
     raw_recipe = record["recipe"]
-    if raw_recipe.get("version") == "sampled-geometry-graph-v1":
+    if raw_recipe.get("version") == "network-observation-recipe-v1":
+        from r0.modules.priors.lib.network_observation_recipe_decoding import (
+            network_observation_recipe_from_dict,
+        )
+        from r0.modules.priors.lib.representatives import encode
+
+        envelope = network_observation_recipe_from_dict(raw_recipe, limits=limits)
+        recipe = envelope.runtime
+        if (
+            encode(card.get("observation_selection")) != encode(envelope.selection_card(recipe))
+            or encode(card.get("observed")) != encode(recipe.observed)
+            or encode(card.get("target")) != encode(recipe.target)
+            or encode(card.get("nodes")) != encode([asdict(n) for n in recipe.nodes])
+        ):
+            raise ValueError("observation inspection metadata differs from retained selection")
+    elif raw_recipe.get("version") == "sampled-geometry-graph-v1":
         from r0.modules.priors.lib.geometry_graph_decoding import geometry_graph_from_dict
 
         recipe = geometry_graph_from_dict(raw_recipe, limits=limits).runtime
@@ -52,6 +67,8 @@ def functional_steps(
     )
     scores = torch.stack([values[i][list(indices), j] for i, j in recipe.target], dim=1)
     parameters: dict[str, Any] = {"target": recipe.target}
+    if "observation_selection" in card:
+        parameters["observation_selection"] = card["observation_selection"]
     if recipe.target_calibration_rows:
         calibration = target_calibration_from_dict(card.get("calibration"), len(recipe.target))
         if (

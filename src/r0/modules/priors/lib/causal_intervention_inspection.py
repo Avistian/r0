@@ -18,10 +18,13 @@ from r0.modules.priors.lib.converter_intervention_inspection import (
     converted_trace_order,
     converted_trace_parents,
 )
+from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.native_causal import NativeCausalNode
 from r0.modules.priors.lib.native_vector_records import NativeVectorNode
 from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
 from r0.modules.priors.lib.network_inspection import network_steps
+from r0.modules.priors.lib.network_observation_recipe import NetworkObservationRecipe
+from r0.modules.priors.lib.representatives import encode
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -44,6 +47,14 @@ def intervention_steps(
     ):
         raise ValueError("saved intervention task differs from original-row replay")
     runtime = causal_runtime(recipe.base)
+    selection: dict[str, Any] = {}
+    if isinstance(recipe.base, NetworkObservationRecipe):
+        assert isinstance(runtime, FunctionalCausalRecipe)
+        selection = recipe.base.selection_card(runtime)
+        if encode(json.loads(task.mechanism_json).get("observation_selection")) != encode(
+            selection
+        ):
+            raise ValueError("intervention observation metadata differs from retained selection")
     selected = list(indices)
     for i, node in enumerate(runtime.nodes):
         equation = (
@@ -166,4 +177,5 @@ def intervention_steps(
         "rows": selected,
         "component_count": 0,
         "intervention": execution.metadata(),
+        **({"observation_selection": selection} if selection else {}),
     }

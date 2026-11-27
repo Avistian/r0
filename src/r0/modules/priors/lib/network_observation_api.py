@@ -13,6 +13,7 @@ from .network_observation_sampling import (
 )
 
 __all__ = [
+    "NetworkObservationRecipe",
     "NetworkObservationRequest",
     "NetworkObservationChannel",
     "SampledNetworkObservations",
@@ -21,3 +22,5 @@ __all__ = [
     "network_observation_request_from_dict",
     "network_observations_from_dict",
 ]
+
+from .network_observation_recipe import NetworkObservationRecipe as NetworkObservationRecipe

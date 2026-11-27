@@ -39,6 +39,7 @@ from r0.modules.priors.lib.native_vector_intervention import (
 )
 from r0.modules.priors.lib.native_vector_output import generate_native_vector
 from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
+from r0.modules.priors.lib.network_observation_recipe import NetworkObservationRecipe
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
 from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
@@ -101,6 +102,9 @@ def generate_intervened(
     record["execution"]["implementation"] = recipe.version
     card = json.loads(task.mechanism_json)
     card["intervention"] = execution.metadata()
+    if isinstance(recipe.base, NetworkObservationRecipe):
+        assert isinstance(original, FunctionalCausalRecipe)
+        card["observation_selection"] = recipe.base.selection_card(original)
     card["base_mechanism_identity"] = record_fingerprint(asdict(recipe.base))
     card["ancestry_scope"] = (
         "original graph certificates are conservative; "
@@ -164,11 +168,18 @@ def generate_causal_pair(
     # Sampled envelopes retain construction metadata outside the reduced runtime
     # allowance. Replay must use their original construction budget; explicit
     # caller limits on compare/load remain independently enforced by decoding.
+
     limits = (
         base.limits
         if isinstance(
             base,
-            (FunctionalCausalRecipe, NativeCausalRecipe, NativeVectorRecipe, ConvertedCausalRecipe),
+            (
+                FunctionalCausalRecipe,
+                NativeCausalRecipe,
+                NativeVectorRecipe,
+                ConvertedCausalRecipe,
+                NetworkObservationRecipe,
+            ),
         )
         else base.request.limits
     )

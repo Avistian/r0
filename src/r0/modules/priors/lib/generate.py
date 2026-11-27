@@ -53,6 +53,10 @@ from r0.modules.priors.lib.network_input_view import (
     generate_network_view,
     network_view_from_dict,
 )
+from r0.modules.priors.lib.network_observation_recipe import (
+    NetworkObservationRecipe,
+    generate_network_observations,
+)
 from r0.modules.priors.lib.network_recipe import (
     NetworkRecipe,
     generate_network,
@@ -85,6 +89,7 @@ from r0.modules.priors.lib.training_task import TrainingTask
 
 type Recipe = (
     NetworkRecipe
+    | NetworkObservationRecipe
     | NetworkInputView
     | CausalInterventionRecipe
     | BaseRecipe
@@ -143,6 +148,12 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
+    if version == "network-observation-recipe-v1":
+        from r0.modules.priors.lib.network_observation_recipe_decoding import (
+            network_observation_recipe_from_dict,
+        )
+
+        return network_observation_recipe_from_dict(fields, limits=limits)
     if version == "network-input-view-v2":
         from r0.modules.priors.lib.matched_network_view import matched_view_from_dict
 
@@ -328,6 +339,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, NetworkObservationRecipe):
+        return generate_network_observations(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, SampledConvertedGraph):
         return generate_sampled_converted(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, ConvertedCausalRecipe):
