@@ -2,6 +2,11 @@
 let interventionInfo=null, interventionTrace=null;
 function resetIntervention() {
   interventionInfo=null; interventionTrace=null;
+  const standalone=current?.view?.recipe?.recipe?.version==="standalone-network-v1";
+  $("intervention-load").hidden=standalone;
+  $("intervention-notice").textContent=standalone
+    ? "Causal interventions require an explicit causal graph. This standalone network supports architecture edits and task-property comparisons. Network mechanisms inside causal graphs support interventions."
+    : "CPU execution. Hosted Colab and GPU verification remain pending.";
   $("intervention-controls").hidden=true; $("intervention-traces").hidden=true;
   showIntervention();
 }
