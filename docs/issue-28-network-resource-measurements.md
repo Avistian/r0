@@ -7,10 +7,10 @@ throughput, GPU operation or 100 million task execution.
 
 The generator source was `343f3f117a2aec5b92a5aeb50e409f9d4c8e2258`, with no
 source-module diff. Each case samples a three-block network of widths (8, 8, 1),
-using named seed28 and raw seed29, then generates a regression task with seed28
-and task ID9007199254740993. The root is Gaussian and the context contains half
+using named seed 28 and raw seed 29, then generates a regression task with seed 28
+and task ID 9007199254740993. The root is Gaussian and the context contains half
 the rows. The complete request and sampled function are in the retained archive.
-Python3.12.3, Linux6.6.87.2 WSL2, twelve visible CPUs; concurrent verification
+Python 3.12.3, Linux 6.6.87.2 WSL2, twelve visible CPUs; concurrent verification
 and agent work were active. Timing variation therefore includes shared-host load.
 
 ## Measured cases
@@ -50,14 +50,14 @@ python3 scripts/run_check.py python scripts/measure_network_resources.py   docs/
 ```
 
 The runner refuses an existing output directory, executes every fixed case once
-in a separate process with a180-second deadline, and retains failures/timeouts
+in a separate process with a 180-second deadline, and retains failures/timeouts
 without retry. A complete summary requires both successful case assertions and
 successful worker exit. Interrupted runs retain their started record and completed
 case records; a missing summary is not success.
 
 Raw measurements are ignored under
 `docs/evidence/issue-28-resource-measurements/run-02/`. Each archive is retained in
-ordered chunks of at most900000bytes, with per-chunk and original-archive SHA256
+ordered chunks of at most 900000bytes, with per-chunk and original-archive SHA256
 in its case result. Concatenate the listed chunks in order to reconstruct task.zip;
 copy task-receipt.json beside it as task.json. The original archive is validated
 before chunking. Each summary records generator head, source diff and runner hash.
@@ -70,8 +70,8 @@ No source-module behavior changed in this measurement slice.
 
 ## Remaining qualification
 
-The20,000-row case has only eight input features; the256-feature case has only
-sixteen rows. Neither establishes a20,000-by256 workload or maximal network
+The 20,000-row case has only eight input features; the 256-feature case has only
+sixteen rows. Neither establishes a 20,000-by256 workload or maximal network
 complexity. One seed per family does not establish across-seed performance or
 diversity. Root laws, native vectors, fitted lifecycles, typed converters, graph
 topologies, sustained bulk throughput and hosted/GPU execution need their own

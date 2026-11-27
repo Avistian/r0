@@ -186,7 +186,9 @@ def main() -> int:
             except subprocess.TimeoutExpired:
                 state, code = "TIMED_OUT", None
         result_path = directory / "result.json"
-        result = json.loads(result_path.read_text()) if result_path.exists() else {"status": state}
+        result: dict[str, Any] = (
+            json.loads(result_path.read_text()) if result_path.exists() else {"status": state}
+        )
         result.update(process_status=state, returncode=code)
         results.append(result)
         write_json(directory / "process.json", {"status": state, "returncode": code})
