@@ -298,6 +298,9 @@ from r0.modules.priors.lib.representatives import sample_proposal as sample_prop
 from r0.modules.priors.lib.sampled_functional_graph import (
     SampledFunctionalGraph as SampledFunctionalGraph,
 )
+from r0.modules.priors.lib.sampled_graph_decoding import (
+    sampled_graph_from_dict as sampled_graph_from_dict,
+)
 from r0.modules.priors.lib.signals import evaluate_signal as evaluate_signal
 from r0.modules.priors.lib.smooth import SmoothRecipe as SmoothRecipe
 from r0.modules.priors.lib.source_activation_law import (

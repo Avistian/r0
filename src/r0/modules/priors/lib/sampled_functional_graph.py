@@ -1,6 +1,6 @@
 """Retained sampled graph constructions and explicit, executable provenance replay."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_graph_admission import admit_functional_graph
@@ -14,6 +14,7 @@ from r0.modules.priors.lib.joint_root_realization import (
     JointRootRealization,
     RootFunctionRealization,
 )
+from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.raw_draw_records import RawDrawRecord
 
 
@@ -42,6 +43,25 @@ class SampledFunctionalGraph:
     admission: JointGraphAdmission
     runtime: FunctionalCausalRecipe
     version: str = "sampled-functional-graph-v1"
+
+    @property
+    def task(self) -> LinearRecipe:
+        return self.request.task
+
+    def with_task(self, task: LinearRecipe) -> "SampledFunctionalGraph":
+        from r0.modules.priors.lib.joint_graph_sampling import sample_joint_graph
+
+        self.validate()
+        streams = tuple(
+            s.restore(byte_limit=self.request.raw_limits.state_bytes) for s in self.initial
+        )
+        return sample_joint_graph(
+            replace(self.request, task=task),
+            named_rng=streams[0],
+            raw_rng=streams[1],
+            calibration_rng=streams[2],
+            fit_rng=streams[3],
+        )
 
     def validate(self) -> None:
         """Check the envelope, then regenerate ALL choices, raw draws and fits.

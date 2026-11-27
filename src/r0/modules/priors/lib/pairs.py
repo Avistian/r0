@@ -12,6 +12,7 @@ from r0.modules.priors.lib.compositions import CompositeRecipe
 from r0.modules.priors.lib.generate import Recipe, generate_task, recipe_from_dict
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
 from r0.modules.priors.lib.training_task import TrainingTask
 
 _FIELDS = {
@@ -49,6 +50,8 @@ def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> R
             for component in recipe.components
         )
         return replace(recipe, task=changed, components=components)
+    if isinstance(recipe, SampledFunctionalGraph):
+        return recipe.with_task(changed)
     return changed if isinstance(recipe, LinearRecipe) else replace(recipe, task=changed)
 
 

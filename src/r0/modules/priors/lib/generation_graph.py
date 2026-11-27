@@ -125,13 +125,25 @@ def explain_generation(
             )
         )
         if card["version"]
-        in ("causal-v1", "causal-v2", "functional-causal-v1", "functional-causal-v2")
+        in (
+            "causal-v1",
+            "causal-v2",
+            "functional-causal-v1",
+            "functional-causal-v2",
+            "sampled-functional-graph-v1",
+        )
         else [],
         "select declared converter readouts"
         if "pipelines" in card
         else "select declared causal node channels"
         if card["version"]
-        in ("causal-v1", "causal-v2", "functional-causal-v1", "functional-causal-v2")
+        in (
+            "causal-v1",
+            "causal-v2",
+            "functional-causal-v1",
+            "functional-causal-v2",
+            "sampled-functional-graph-v1",
+        )
         else "independent per-column input streams",
         inputs,
         {
@@ -141,7 +153,13 @@ def explain_generation(
             **(
                 {"observed_channels": card["observed"]}
                 if card["version"]
-                in ("causal-v1", "causal-v2", "functional-causal-v1", "functional-causal-v2")
+                in (
+                    "causal-v1",
+                    "causal-v2",
+                    "functional-causal-v1",
+                    "functional-causal-v2",
+                    "sampled-functional-graph-v1",
+                )
                 else {}
             ),
         },
@@ -151,9 +169,14 @@ def explain_generation(
         "causal-v2",
         "functional-causal-v1",
         "functional-causal-v2",
+        "sampled-functional-graph-v1",
     )
     observed_step = nodes.pop(0) if causal else None
-    if card["version"] in ("functional-causal-v1", "functional-causal-v2"):
+    if card["version"] in (
+        "functional-causal-v1",
+        "functional-causal-v2",
+        "sampled-functional-graph-v1",
+    ):
         signal = functional_steps(record, card, indices, add)
     elif card["version"] in ("causal-v1", "causal-v2"):
         signal = causal_steps(card, len(task.inputs), indices, add)
@@ -172,11 +195,19 @@ def explain_generation(
     expected = task.scores.detach().cpu()[list(indices)]
     if not torch.allclose(signal, expected, rtol=1e-10, atol=1e-10):
         raise ValueError("reconstructed signal differs from saved values beyond 1e-10 tolerance")
-    controls = record["recipe"].get("task", record["recipe"])
+    controls = (
+        record["recipe"]["request"]["task"]
+        if card["version"] == "sampled-functional-graph-v1"
+        else record["recipe"].get("task", record["recipe"])
+    )
 
     def rng(stream: str) -> np.random.Generator:
         recipe = record["recipe"]
-        if recipe["version"] in ("functional-causal-v1", "functional-causal-v2"):
+        if recipe["version"] in (
+            "functional-causal-v1",
+            "functional-causal-v2",
+            "sampled-functional-graph-v1",
+        ):
             return functional_rng(record["seed"], record["task_id"], stream)
         if recipe["version"] in ("causal-v1", "causal-v2"):
             return causal_rng(record["seed"], record["task_id"], stream)
