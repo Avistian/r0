@@ -1,0 +1,101 @@
+{
+  "source": "be3643989df7349a295a62e242db9522a03cda5d",
+  "archive": "0028-joint-plans-development.zip",
+  "bytes": 13288,
+  "sha256": "01d6f627688739a454c5a2f7a3316928628cd994653c2cc43cc3af6d40e553f6",
+  "files": {
+    "r0-28-joint-activation-fit-green.log": {
+      "bytes": 98,
+      "sha256": "0b03dfee99857a0d6465c9433481a6c852d22831345a45813c23af44e8a705e6"
+    },
+    "r0-28-joint-activation-fit-red.log": {
+      "bytes": 1303,
+      "sha256": "a4ffdebc8a12778798e4676e573d65d3391a2daa53ab55033384898b3599f605"
+    },
+    "r0-28-joint-activation-fixed-green.log": {
+      "bytes": 98,
+      "sha256": "808dfae1ed8f9fdc74e04e9f4daf48a799b85ea62a74ce685b5f7c7368c58182"
+    },
+    "r0-28-joint-activation-fixed-red.log": {
+      "bytes": 1121,
+      "sha256": "3a8c1032015c4c66e8a5c728676ed5de7aa5db34d532aa29ea63fe23586a0983"
+    },
+    "r0-28-joint-activation-pair-red.log": {
+      "bytes": 1165,
+      "sha256": "139c0b40187e59d43c0c4626964920da8cbc50be6879633d21a9f7f596652c8d"
+    },
+    "r0-28-joint-converter-fit-green.log": {
+      "bytes": 98,
+      "sha256": "f931ef0b26a1e41a6ca6e192babe44f04c236aa11c27815d1807b276669fe219"
+    },
+    "r0-28-joint-converter-fit-red.log": {
+      "bytes": 3963,
+      "sha256": "b10a866ef9abdf283bb891146d11839df2dd32ca5f83af36ec7e6d47c1344195"
+    },
+    "r0-28-joint-converter-target-green.log": {
+      "bytes": 98,
+      "sha256": "f63ed36e155f51d176a24bf99a26b78f86aa6146b75b84adcff92d4ad1c40a97"
+    },
+    "r0-28-joint-converter-target-red.log": {
+      "bytes": 990,
+      "sha256": "818b6a9cff9857480fc03bc0d27d4d65c6b98f0458835840ad2fdd0c775b2daf"
+    },
+    "r0-28-joint-plans-cli-help-corrected.txt": {
+      "bytes": 533,
+      "sha256": "94976f5eb650874edbfb1285992d99516d32f12dd8e6bb2fae00f7e35119da62"
+    },
+    "r0-28-joint-plans-cli-help.txt": {
+      "bytes": 122,
+      "sha256": "fc9a919d4cf1cc9abb39d9ccd9c56306574e18556100cac28c77c1b98dd5d55d"
+    },
+    "r0-28-joint-plans-full-check.log": {
+      "bytes": 2854,
+      "sha256": "b50b670cc770a3b7f1e7ebe943292efe70867edd683f12b6e55f44acf3535158"
+    },
+    "r0-28-joint-plans-ruff-initial.log": {
+      "bytes": 8594,
+      "sha256": "31336b79e8be79663b44c976661e3b7dc312502b1b588d92eca52808057ec8f7"
+    },
+    "r0-28-joint-plans-targeted-green.log": {
+      "bytes": 99,
+      "sha256": "f43ecb1e9f4af25e57e94be0408eae8f44ebd4d00aa9c01bff840ae940d23dbc"
+    },
+    "r0-28-joint-plans-typecheck-final.log": {
+      "bytes": 37,
+      "sha256": "6d88a1b220adb7a3d62092b6e38431f0b3fe8babe9864fab90e5849766260332"
+    },
+    "r0-28-joint-plans-typecheck.log": {
+      "bytes": 494,
+      "sha256": "7ec7b9a0b28ab57109601e09b32f4040bd54376e5f4a3b3b97d517756a8898fc"
+    },
+    "r0-28-joint-weight-batch-green.log": {
+      "bytes": 99,
+      "sha256": "3ca9ede3a627578dbaf322d18e883749c448b1b195a6f4badcc7a7def650668b"
+    },
+    "r0-28-joint-weight-batch-red.log": {
+      "bytes": 924,
+      "sha256": "8089c89a4f00097f33d900bd7082d68359cda42006da8af6e2b9490ca668e3cc"
+    },
+    "r0-28-joint-weight-plan-green.log": {
+      "bytes": 98,
+      "sha256": "40f696584529a148f334775fcbead4d33981049fbcc122f5b6a0562a17a2725d"
+    },
+    "r0-28-joint-weight-plan-red.log": {
+      "bytes": 925,
+      "sha256": "b23e9e2ef901b87a38a7438a680f2e45aa834cbeb32cdb54b8600e282700c198"
+    },
+    "r0-28-joint-weight-source-batch-green.log": {
+      "bytes": 99,
+      "sha256": "f0c5c7574dd63d6d92a6ca31d3ba865f48c189a3d52b6e332103fe612758d9da"
+    },
+    "r0-28-joint-weight-source-batch-red.log": {
+      "bytes": 1042,
+      "sha256": "3360cc5c3a2e204f96a7004419825cfaeaf5164467a8e9993a6a72ffa63608ef"
+    },
+    "joint-plans-standards-be36439.txt": {
+      "bytes": 2499,
+      "sha256": "44e458437bb6ec00822d9ee2baf8ed5a77eb1c4f8aa086b8ea6706ceaba3a870"
+    }
+  },
+  "qualification": "Author development logs at intermediate states; final full check at frozen source. Initial Ruff/typecheck and package-module help failures retained. Independent behavior evidence is archived separately."
+}

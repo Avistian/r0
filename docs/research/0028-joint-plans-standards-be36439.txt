@@ -1,0 +1,18 @@
+Standards review: no documented-rule breaches; two non-blocking heuristics.
+
+BASE: 800af3e4cd0888fcea5232df452490b65a7a3f0f
+SOURCE: be3643989df7349a295a62e242db9522a03cda5d
+Scope: git diff 800af3e4cd0888fcea5232df452490b65a7a3f0f...be3643989df7349a295a62e242db9522a03cda5d
+Commit: be36439 feat(priors): bind joint activation converter and weight plans #28
+
+Preflight PASS: parent-owned /tmp/r0-28 resolves to SOURCE; tracked checkout clean, pre-existing untracked .venv only. Root, specification verifier and standards reviewer active; research agent completed (3/4 active slots). Home checkout was dirty and left untouched. No checkout/source/test edits, tests, dependency changes, cloud, downloads or secret reads. This report is the sole authored output.
+
+Documented rules: no breaches found. Reviewed AGENTS.md, docs/requirements.md, CODING_STANDARDS.md, src/r0/modules/README.md, README verification/evidence conventions, applicable ADRs, protocol-review guidance, component document and both integration designs. New randomness uses injected generators; fitting/materialization stage their RNG before committing. Existing calibration arithmetic is reused under the accepted independent-calibration adaptation. Retained author logs and the documented command support the focused development claim; no independent execution is claimed here. Full checks and publication evidence remain the parent's work. Tool-enforced issues excluded; the home repository's TypeScript course standards do not apply.
+
+Heuristics (judgment, not hard violations):
+
+1. [P3] Possible Duplicated Code: joint_activation_plans.py:109-113, joint_converter_plans.py:192-196 and joint_weight_plans.py:221-225 repeat `if type(path) not in (list, tuple) or not 1 <= len(path) <= 16`, then tuple conversion. A future path-policy correction requires three synchronized decoder changes. Consider one private bounded-path decoder while keeping branch-specific admission local.
+
+2. [P3] Possible Mysterious Name: joint_converter_plans.py:69-74, `_target(channel, group, prior) -> None`, validates channel/group/prior but neither identifies the target nor implements the exact-y restriction. Consider `_validate_converter_inputs` so its purpose is clear beside the separate target-warping branch.
+
+Boundary: typed activation/converter/batched-weight plans and local atomic fitting/materialization only. Complete graph ownership, matrix/root integration and ancestral fitting remain PENDING. This is not whole-issue #28 acceptance.

@@ -1,0 +1,23 @@
+{
+  "source": "be3643989df7349a295a62e242db9522a03cda5d",
+  "base": "800af3e4cd0888fcea5232df452490b65a7a3f0f",
+  "parts": [
+    {
+      "path": "0028-joint-plans-spec.zip.part01",
+      "bytes": 900000,
+      "sha256": "a0b63c14fdd91312cb225c8845d98d8e12d94a50022bba8fe0f73035a4a8ed87"
+    },
+    {
+      "path": "0028-joint-plans-spec.zip.part02",
+      "bytes": 322216,
+      "sha256": "b870c6e39d9c6d7ede046423f0b09df935ee8534aa130f3f1e1206032860b33a"
+    }
+  ],
+  "bytes": 1222216,
+  "sha256": "627b0a665c09512bd5447cb121857f52ce17dc447db582105d3089d6fcb684c4",
+  "manifest_sha256": "0f0096cb90947108fa69778049eedf08e57af2e1981a3aad145c742c1ebea4bb",
+  "manifest_entries": 1174,
+  "logical_non_source_files": 841,
+  "duplicate_paths": 578,
+  "qualification": "All original manifest entries are retained or reconstructed byte-for-byte. Source exports and tarballs are reconstructed from pinned Git objects; duplicate files are restored from the archived path map. Independent failed harness attempts remain included."
+}

@@ -3,6 +3,11 @@
 The [accepted specification](specs/0028-causal-network-generators.md) is the
 authoritative scope. This ledger tracks execution, not a smaller replacement goal.
 
+Latest: [joint activation, converter and batched-weight plans](issue-28-joint-plans.md)
+at `be36439` pass 835 tests (one skipped). Source-bound choices and atomic local
+fitting/materialization are implemented. Matrix/root integration, complete graph
+ownership and ancestral fitting remain required; this is not full #28 acceptance.
+
 ## Checkout and scope preservation
 
 - Working branch: `feat/issue-28-generators`, worktree `/tmp/r0-28`.
