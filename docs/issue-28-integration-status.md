@@ -33,6 +33,21 @@ identified author/full-suite reports. It is local retention, not portable public
 artifact delivery. The terminal `a22eb63` full-check log is included; later worker candidates are
 not covered by that result.
 
+## Published combined verification
+
+Exact source `606aa5ec922f9fd42c5a13da0b37b81b5f8e74e8` passes full `make check`:
+**1,852 passed, one skipped**, pytest-reported 689.98 seconds, all static gates.
+The detached runner retained exit code zero in
+`/tmp/r0-28-publication-integration/docs/evidence/issue-28-publication/`:
+`detached-check-receipt.json`, `detached-make-check.log` and
+`run_check_retained.py`. Reproduce repository verification with `make check` in
+the existing environment. Generated artifacts remain ignored.
+
+The earlier tool-managed check at `5330c88` also terminated with exit143 before
+its summary; both interrupted runs remain incomplete, not retroactively passed.
+Numerical pipeline and native explorer successors have separate scoped reviews;
+they are not included in this 1,852-test checkpoint. Hosted Colab/GPU remain pending.
+
 ## Native core and topology controls
 
 Topology UI `b15b2f5` exposes attachment/motif settings with extension/adaptation
