@@ -23,15 +23,15 @@
 </details>
 <div class="actions"><button id="generate" type="submit" class="primary">Generate dataset</button><button id="next" type="button">Next task</button></div>
 </form>
-<details id="construction-panel"><summary>Sample a causal graph</summary>
-<p class="muted">Sample frozen mechanisms and retain their construction draws. Construction and generation replay run under the selected timeout. Pair creation also guards preparation and comparison.</p>
+<details id="construction-panel"><summary>Construct a causal graph</summary>
+<p class="muted">Sample frozen mechanisms and retain their construction draws, or author a native mixed-domain graph. Native equations/domains are fixed controls; only emitted rows use the dataset seed. Construction and generation replay run under the selected timeout. Pair creation also guards preparation and comparison.</p>
 <label>Graph recipe<select id="construction-family"></select></label>
 <label>Construction seed<input id="construction-seed" value="28" inputmode="numeric"></label>
 <label>Construction controls<textarea id="construction-controls" rows="18" spellcheck="false"></textarea></label>
-<p class="muted">Explicit/Cauchy controls edit parents, widths and channel pairs. Geometry sampling chooses widths and feature-node assignments. Attachment is an r0 extension; recursive motifs and rewrites are r0 adaptations, not exact published prior reproductions. Edit all topology controls in the topology_prior object. Choose root families and function priors. Geometry sampling currently uses identity numerical readouts and adapter-score targets. These controls are separate from the dataset settings above.</p>
+<p class="muted">Explicit/Cauchy controls edit parents, widths and channel pairs. Geometry sampling chooses widths and feature-node assignments. Attachment is an r0 extension; recursive motifs and rewrites are r0 adaptations, not exact published prior reproductions. Edit all topology controls in the topology_prior object. Choose root families and function priors. Plain geometry defaults to identity numerical readouts and adapter-score targets. An optional pipeline_prior object enables channel importance, L2, Gaussian noise, node importance and numerical converters for any geometry topology. Pipeline presets expose all switches, weight/scalarization choices and converter restrictions. Historical tuple transforms descendant state but captures the raw readout; historical graph transforms both; readout-only transforms the readout and preserves descendant state. Readouts precede innovation and node importance. Readout-only and frozen independent fitting are explicit adaptations; these are numerical pipelines, not native categorical variables. Keep noise_scale zero when using the sampled pipeline noise prior. These controls are separate from the dataset settings above.</p>
 <label>Exploration caps (JSON)<textarea id="exploration-limits" rows="3" spellcheck="false">{}</textarea></label>
 <p class="muted">Empty uses default causal limits. Explicit larger caps also authorize replay and inspection. Graph inspection, the mechanism editor and pair reopening run synchronously under these caps, outside the generation timeout. Workloads are not promised at every combination of maxima.</p>
-<button id="construct" type="button">Sample graph and save dataset</button>
+<button id="construct" type="button">Construct graph and save dataset</button>
 </details>
 <details><summary>Replay or open saved data</summary>
 <label>Paste exported recipe.json<textarea id="replay-record" rows="5" spellcheck="false"></textarea></label><button id="replay" type="button">Replay recipe</button>
@@ -53,9 +53,10 @@
 <div class="chart-grid">
 <article><h3>Feature distribution</h3><p class="muted">All rows · active and irrelevant roles shown above</p><div id="feature-hist" class="plot"></div></article>
 <article><h3>Target distribution</h3><p class="muted">All rows · observed labels</p><div id="target-hist" class="plot"></div></article>
-<article><h3>Feature and latent signal</h3><p class="muted">Observed points, not a response curve · other features vary</p><div id="signal-plot" class="plot"></div></article>
+<article><h3 id="signal-title">Feature and latent signal</h3><p class="muted">Observed points, not a response curve · other features vary</p><div id="signal-plot" class="plot"></div></article>
 <article><h3 id="diagnostic-title">Signal and observation</h3><p class="muted" id="diagnostic-note"></p><div id="diagnostic-plot" class="plot"></div></article>
 </div>
+<p id="native-notice" class="muted" hidden></p>
 <article id="workbench-panel">
 <p class="eyebrow">CAUSAL MECHANISM WORKBENCH</p><h3>Inspect and edit the frozen graph</h3>
 <p class="muted">The causal structure below is distinct from the generation-process diagram. Select a node to see its channels, function and structural noise. An edit creates a new authored mechanism linked to the original archive; it is not a causal intervention or observational conditioning.</p>
@@ -64,8 +65,10 @@
 <label>Node<select id="mechanism-node"></select></label><pre id="mechanism-node-info"></pre>
 <div class="fields"><label>Parent node indices<input id="mechanism-parents"></label><label>Structural noise scales<input id="mechanism-noise"></label></div>
 <label>Frozen node function (JSON)<textarea id="mechanism-function" rows="9" spellcheck="false"></textarea></label>
+<label id="mechanism-pipeline-label" hidden>Frozen numerical pipeline (JSON)<textarea id="mechanism-pipeline" rows="8"></textarea></label>
+<label id="mechanism-domain-label" hidden>Native variable domain (JSON)<textarea id="mechanism-domain" rows="5" spellcheck="false"></textarea></label>
 <button id="mechanism-apply">Apply node to draft</button>
-<div class="fields"><label>Observed [node, channel] pairs<textarea id="mechanism-observed" rows="3"></textarea></label><label>Target [node, channel] pairs<textarea id="mechanism-target" rows="3"></textarea></label></div>
+<div class="fields"><label>Observed [node, channel] pairs<textarea id="mechanism-observed" rows="3"></textarea></label><label>Target [node, channel] (native) or pairs<textarea id="mechanism-target" rows="3"></textarea></label></div>
 <details><summary>Complete editable mechanism</summary><textarea id="mechanism-recipe" rows="16" spellcheck="false"></textarea></details>
 <button id="mechanism-save" class="primary">Generate and save mechanism edit</button>
 <p class="muted">Shape-changing edge or function edits must provide compatible function dimensions. Validation failures preserve the original dataset.</p></div>
@@ -116,5 +119,5 @@
 </div>
 </section>
 </main>
-<script>/* TRANSPORT */</script><script>/* APPLICATION */</script><script>/* CURVES */</script><script>/* GRAPHS */</script><script>/* PAIRS */</script><script>/* WORKBENCH */</script>
+<script>/* TRANSPORT */</script><script>/* APPLICATION */</script><script>/* CURVES */</script><script>/* GRAPHS */</script><script>/* PAIRS */</script><script>/* WORKBENCH */</script><script>/* NATIVE */</script>
 </body></html>

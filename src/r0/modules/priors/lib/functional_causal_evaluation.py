@@ -397,7 +397,11 @@ def generate_functional_causal(
                 "latent_widths": construction.widths.latent,
                 "converter_channels": construction.layout.converter_channels,
                 "assignments": construction.observations.assignments,
-                "converter_mode": "identity-numerical-v1",
+                "converter_mode": (
+                    "sampled-numerical-pipeline-v1"
+                    if construction.request.version == "geometry-pipeline-request-v1"
+                    else "identity-numerical-v1"
+                ),
             }
     config = asdict(construction if construction is not None else recipe)
     source_config: dict[str, object] | None = None

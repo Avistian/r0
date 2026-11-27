@@ -40,8 +40,15 @@ class GeometryGraphRequest:
     version: str = "geometry-graph-request-v1"
 
     def __post_init__(self) -> None:
+        from r0.modules.priors.lib.geometry_pipeline_request import GeometryPipelineRequest
+
+        expected_version = {
+            GeometryGraphRequest: "geometry-graph-request-v1",
+            GeometryPipelineRequest: "geometry-pipeline-request-v1",
+        }.get(type(self))
         if (
-            self.version != "geometry-graph-request-v1"
+            expected_version is None
+            or self.version != expected_version
             or type(self.topology) not in (CauchyGraphPrior, AttachmentGraphPrior, MotifGraphPrior)
             or type(self.task) is not LinearRecipe
             or type(self.subsample) is not bool

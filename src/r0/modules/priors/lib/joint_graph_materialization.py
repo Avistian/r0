@@ -1,5 +1,7 @@
 """Materialize a graph plan in an already staged shared construction scope."""
 
+from dataclasses import replace
+
 import numpy as np
 import torch
 
@@ -14,6 +16,11 @@ from r0.modules.priors.lib.joint_graph_admission import admit_joint_graph
 from r0.modules.priors.lib.joint_graph_plans import JointGraphPlan
 from r0.modules.priors.lib.joint_graph_request import JointGraphNoise, JointGraphRequest
 from r0.modules.priors.lib.joint_operation_registry import JointOperationRegistry
+from r0.modules.priors.lib.joint_pipeline_plans import JointPipelinePlan
+from r0.modules.priors.lib.joint_pipeline_realization import (
+    JointPipelineRealization,
+    fit_node_pipeline,
+)
 from r0.modules.priors.lib.joint_root_plans import JointRootPlan
 from r0.modules.priors.lib.joint_root_realization import (
     JointRootRealization,
@@ -39,8 +46,13 @@ def materialize_joint_graph(
     registry: JointOperationRegistry,
     staged: dict[str, np.random.Generator],
     initial: tuple[GeneratorSnapshot, ...],
+    *,
+    pipeline_plans: tuple[JointPipelinePlan, ...] = (),
+    pipeline_records: list[JointPipelineRealization] | None = None,
 ) -> MaterializedJointGraph:
     plan.validate(registry)
+    if pipeline_plans and (len(pipeline_plans) != len(plan.nodes) or pipeline_records is None):
+        raise ValueError("sampled pipeline plans require aligned construction records")
     admission = admit_joint_graph(request, plan, registry)
     ledger = RawDrawLedger(limits=admission.raw_limits)
     nodes: list[FunctionalCausalNode] = []
@@ -129,7 +141,51 @@ def materialize_joint_graph(
                     pipeline,
                 )
             )
+            if pipeline_plans:
+                assert pipeline_records is not None
+                # The current node contributes only its function output to the fit;
+                # all preceding nodes already have final pipelines and noise.
+                bare = replace(nodes[-1], pipeline=None, noise_scale=())
+                fitted = fit_node_pipeline(
+                    pipeline_plans[i],
+                    registry.decisions,
+                    (*nodes[:-1], bare),
+                    rows=request.calibration_rows,
+                    streams=streams,
+                    capture=capture,
+                    limits=request.limits,
+                    retained=(
+                        request,
+                        plan,
+                        registry,
+                        tuple(realizations),
+                        tuple(pipeline_records),
+                        capture.freeze(),
+                        initial,
+                    ),
+                )
+                pipeline_records.append(fitted)
+                nodes[-1] = replace(
+                    nodes[-1],
+                    pipeline=fitted.pipeline,
+                    noise_scale=(fitted.plan.sigma,) * node.width,
+                )
             realizations.append(realization)
+        if pipeline_plans:
+            request = replace(
+                request,
+                authored_pipelines=tuple(n.pipeline for n in nodes),
+                noise=tuple(
+                    JointGraphNoise(n.noise_scale, n.exogenous, n.noise_response) for n in nodes
+                ),
+            )
+            # The enclosing pipeline request separately reserves retained fits and
+            # transient buffers. Standard graph validation binds the final authored
+            # equations and independently recomputes this final graph admission.
+            final_admission = admit_joint_graph(request, plan, registry)
+            capture.admit_limits(final_admission.raw_limits)
+        else:
+            final_admission = admission
         runtime = FunctionalCausalRecipe(
             request.task, tuple(nodes), request.observed, request.target, request.limits
         )
@@ -142,6 +198,6 @@ def materialize_joint_graph(
         tuple(realizations),
         tuple(receipts),
         raw,
-        admission,
+        final_admission,
         runtime,
     )

@@ -4,6 +4,7 @@ import csv
 import io
 import json
 import zipfile
+from dataclasses import asdict
 from typing import Any
 
 import numpy as np
@@ -43,6 +44,15 @@ def replay_bundle(task: TrainingTask, *, max_bytes: int = 256 * 1024**2) -> byte
                     "episode_id": task.episode_id,
                     "classes": task.classes,
                     "task_type": task.task_type,
+                    **(
+                        {
+                            "feature_schema": [asdict(f) for f in task.feature_schema],
+                            "target_origin": task.target_origin,
+                            "array_encoding": "declared-vocabulary-indices",
+                        }
+                        if task.feature_schema
+                        else {}
+                    ),
                 }
             ),
         }
@@ -92,12 +102,19 @@ def replay_bundle(task: TrainingTask, *, max_bytes: int = 256 * 1024**2) -> byte
                 )
                 writer.writerow(header)
                 for i in range(len(x)):
-                    target: int | float = int(y[i]) if task.classes else float(y[i])
+                    target: int | float | str = int(y[i]) if task.classes else float(y[i])
+                    if task.target_origin == "native-variable-v1" and task.classes:
+                        target = task.classes[int(y[i])]
+                    values = (
+                        [f.decode(float(v)) for f, v in zip(task.feature_schema, x[i], strict=True)]
+                        if task.feature_schema
+                        else x[i].tolist()
+                    )
                     row: list[Any] = (
                         [
                             i,
                             "context" if i in context_set else "query",
-                            *x[i].tolist(),
+                            *values,
                             target if i in context_set else "",
                         ]
                         if name == "predictor.csv"

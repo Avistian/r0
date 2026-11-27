@@ -49,6 +49,20 @@ class RawDrawLedger:
         self._available()
         return tuple(self._records)
 
+    def admit_limits(self, limits: RawDrawLimits) -> None:
+        """Recheck already charged records against final enclosing construction caps."""
+        self._available()
+        if type(limits) is not RawDrawLimits:
+            raise ValueError("raw admission requires frozen limits")
+        if (
+            len(self._records) > limits.draws
+            or self._numbers > limits.numbers
+            or self._bytes + 2 * limits.state_bytes > limits.working_bytes
+        ):
+            raise ValueError("final aggregate raw record limit exceeded")
+        for rng in self._bindings.values():
+            state_digest(rng, limits.state_bytes)
+
     def _stream_for(self, rng: np.random.Generator) -> str:
         for name, bound in self._bindings.items():
             if rng is bound:

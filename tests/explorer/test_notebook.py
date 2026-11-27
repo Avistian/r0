@@ -13,6 +13,8 @@ from r0.modules.explorer import show_colab_explorer
 @pytest.mark.parametrize(
     "example",
     [
+        "Native mixed graph (authored)",
+        "Numerical pipeline: readout-only",
         "Explicit causal graph",
         "Attachment geometry (r0 extension)",
         "Motif geometry (r0 adaptation)",
@@ -59,7 +61,8 @@ def test_notebook_registers_callback_and_returns_structured_errors(
     assert 'id="workbench-panel"' in displayed[0]
     controls = callbacks[name]("construction_examples", {})["application/json"]["examples"][example]
     controls["task"].update(rows=16, context_rows=8)
-    controls["calibration_rows"] = 4
+    if controls["topology"] != "native":
+        controls["calibration_rows"] = 4
     if "width_prior" in controls:
         controls["width_prior"].update(low=1, high=3)
     created = callbacks[name](
@@ -67,7 +70,9 @@ def test_notebook_registers_callback_and_returns_structured_errors(
     )["application/json"]
     assert "error" not in created
     editor = callbacks[name]("mechanism", {})["application/json"]
-    editor["editable_recipe"]["nodes"][0]["noise_scale"] = [0.1] * editor["nodes"][0]["width"]
+    node = editor["editable_recipe"]["nodes"][0]
+    equation = node.get("equation", node)
+    equation["noise_scale"] = [0.1] * editor["nodes"][0]["width"]
     changed = callbacks[name]("edit", {"recipe": editor["editable_recipe"]})["application/json"]
     assert changed["edit"]["card"]["kind"] == "mechanism-edit"
     reopened = callbacks[name]("open_edit", {"path": changed["edit"]["path"]})["application/json"]
