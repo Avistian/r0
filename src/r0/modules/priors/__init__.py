@@ -159,6 +159,14 @@ from r0.modules.priors.lib.joint_function_realization_decoding import (
 from r0.modules.priors.lib.joint_function_sampling import (
     sample_joint_function as sample_joint_function,
 )
+from r0.modules.priors.lib.joint_graph_plans import JointGraphNodePlan as JointGraphNodePlan
+from r0.modules.priors.lib.joint_graph_plans import JointGraphPlan as JointGraphPlan
+from r0.modules.priors.lib.joint_graph_plans import (
+    sample_joint_graph_plan as sample_joint_graph_plan,
+)
+from r0.modules.priors.lib.joint_graph_request import JointGraphNoise as JointGraphNoise
+from r0.modules.priors.lib.joint_graph_request import JointGraphRequest as JointGraphRequest
+from r0.modules.priors.lib.joint_graph_sampling import sample_joint_graph as sample_joint_graph
 from r0.modules.priors.lib.joint_matrix_decoding import (
     joint_matrix_realization_from_dict as joint_matrix_realization_from_dict,
 )
@@ -188,6 +196,7 @@ from r0.modules.priors.lib.joint_plan_calibration import (
     fit_joint_activation as fit_joint_activation,
 )
 from r0.modules.priors.lib.joint_plan_calibration import fit_joint_converter as fit_joint_converter
+from r0.modules.priors.lib.joint_plan_ownership import JointPlanOwner as JointPlanOwner
 from r0.modules.priors.lib.joint_point_plans import JointPointPlan as JointPointPlan
 from r0.modules.priors.lib.joint_point_plans import (
     joint_point_plan_from_dict as joint_point_plan_from_dict,
@@ -286,6 +295,9 @@ from r0.modules.priors.lib.representatives import GeneratedTask as GeneratedTask
 from r0.modules.priors.lib.representatives import Proposal as Proposal
 from r0.modules.priors.lib.representatives import record_fingerprint as record_fingerprint
 from r0.modules.priors.lib.representatives import sample_proposal as sample_proposal
+from r0.modules.priors.lib.sampled_functional_graph import (
+    SampledFunctionalGraph as SampledFunctionalGraph,
+)
 from r0.modules.priors.lib.signals import evaluate_signal as evaluate_signal
 from r0.modules.priors.lib.smooth import SmoothRecipe as SmoothRecipe
 from r0.modules.priors.lib.source_activation_law import (
