@@ -77,9 +77,15 @@ all cases and full records are retained, with no filtering or retries.
 
 The retained procedure is
 `docs/evidence/issue-28-parallel/geometry_census.py`; results, per-case hashes and
-full records are in its `geometry-census/` directory. Run with the existing
-`python3 scripts/run_check.py python` launcher and the declared environment used
-above. Python 3.12.3 and NumPy 2.5.5 were observed. The complete component census
+full records are in its `geometry-census/` directory. Reproduce from `/tmp/r0-28-parallel-integration`:
+
+```sh
+UV_CACHE_DIR=/tmp/r0-28-uv-cache \
+UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
+python3 scripts/run_check.py python docs/evidence/issue-28-parallel/geometry_census.py
+```
+
+Python 3.12.3 and NumPy 2.5.5 were observed. The complete component census
 took 1.67 seconds on this run; this is not a full-generator throughput benchmark.
 Peak memory was not measured. No categorical conversion, generated-table quality,
 intervention, GPU, browser or Colab result follows from this census.
