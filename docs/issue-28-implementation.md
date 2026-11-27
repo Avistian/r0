@@ -3,11 +3,12 @@
 The [accepted specification](specs/0028-causal-network-generators.md) is the
 authoritative scope. This ledger tracks execution, not a smaller replacement goal.
 
-Latest: [function construction](issue-28-joint-function-realization.md) at `c1ee89e`
-passes 989 tests (one skipped) and independent component review. All eight
-families retain raw draws, fitted inputs and bound frozen equations. Prior
-[root plans](issue-28-joint-root-plans.md), evaluators and matrices remain included.
-Root realization, graph integration and full #28 acceptance remain pending.
+Latest: [root construction and emission](issue-28-joint-root-realization.md) at
+`7863295` passes 1098 tests (one skipped) and independent component review. All
+four bases compose with all eight frozen functions, with retained calibration,
+fresh emission and bounded reconstruction. [Function construction](issue-28-joint-function-realization.md)
+and prior checkpoints remain included. Graph integration and full #28 acceptance
+remain pending.
 
 ## Checkout and scope preservation
 

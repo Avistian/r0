@@ -1,0 +1,11 @@
+E501 Line too long (102 > 100)
+  --> src/r0/modules/priors/lib/joint_root_emission.py:51:101
+   |
+49 |             ).numpy()
+50 |         )
+51 |         if matrix_shape(self.outputs) != matrix_shape(self.sample.values) or self.outputs != expected:
+   |                                                                                                     ^^
+52 |             raise ValueError("root emission outputs differ from its fixed function")
+   |
+
+Found 1 error.

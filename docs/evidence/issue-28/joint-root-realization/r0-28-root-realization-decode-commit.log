@@ -1,0 +1,7 @@
+Interpreter: /home/avist/Projects/r0/.venv/bin/python3
+r0 source: /tmp/r0-28-root-realization/src/r0/__init__.py
+Expected package: /tmp/r0-28-root-realization/src/r0
+[feat/issue-28-root-realization d6b0c62] feat(priors): reconstruct and validate retained joint roots
+ 4 files changed, 292 insertions(+)
+ create mode 100644 src/r0/modules/priors/lib/joint_root_realization_decoding.py
+ create mode 100644 tests/priors/test_joint_root_reconstruction.py

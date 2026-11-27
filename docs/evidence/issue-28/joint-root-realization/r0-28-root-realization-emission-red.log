@@ -1,0 +1,44 @@
+F
+=================================== FAILURES ===================================
+_______ test_joint_root_emits_fresh_rows_without_refitting[lin-uniform] ________
+
+family = 'uniform', function = 'lin'
+
+    @pytest.mark.parametrize("family", ["uniform", "ball", "gaussian", "covariance"])
+    @pytest.mark.parametrize("function", ["lin", "quad", "gp", "tree", "disc", "em", "mlp", "prod"])
+    def test_joint_root_emits_fresh_rows_without_refitting(family: str, function: str) -> None:
+        context = priors.JointSamplingContext(np.random.default_rng(114), mode="local")
+        plan = priors.sample_joint_root(
+            context,
+            "root",
+            width=2,
+            calibration_rows=4,
+            prior=priors.JointRootPrior(
+                families=(family,),
+                function=priors.JointFunctionPrior(
+                    functions=function,
+                    frequencies=4,
+                    matrix=priors.JointMatrixPrior(families=("gaussian",)),
+                ),
+            ),
+        )
+        root = priors.materialize_joint_root(
+            plan,
+            context.freeze(),
+            rng=np.random.default_rng(115),
+            calibration_rng=np.random.default_rng(116),
+            fit_rng=np.random.default_rng(117),
+            calibration_id="root-fit",
+        )
+        before = pickle.dumps(root)
+        rng, oracle = np.random.default_rng(118), np.random.default_rng(118)
+>       emitted = priors.sample_joint_root_values(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            root, context.freeze(), rows=7, rng=rng, sample_id="fresh-rows"
+        )
+E       AttributeError: module 'r0.modules.priors' has no attribute 'sample_joint_root_values'. Did you mean: 'sample_joint_root'?
+
+tests/priors/test_joint_root_emission.py:40: AttributeError
+=========================== short test summary info ============================
+FAILED tests/priors/test_joint_root_emission.py::test_joint_root_emits_fresh_rows_without_refitting[lin-uniform]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!

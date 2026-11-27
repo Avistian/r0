@@ -1,0 +1,45 @@
+python3 scripts/run_check.py ruff format --check .
+555 files already formatted
+python3 scripts/run_check.py ruff check .
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+  --> tests/priors/test_joint_root_reconstruction.py:64:24
+   |
+62 |         target = target[key]
+63 |     target[path[-1]] += 0.125
+64 |     with pytest.raises(ValueError):
+   |                        ^^^^^^^^^^
+65 |         priors.joint_root_realization_from_dict(payload, decisions=decisions)
+   |
+
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+  --> tests/priors/test_joint_root_reconstruction.py:77:24
+   |
+75 |     payload = json.loads(json.dumps(asdict(root)))
+76 |     payload["function"] = json.loads(json.dumps(asdict(other.function)))
+77 |     with pytest.raises(ValueError):
+   |                        ^^^^^^^^^^
+78 |         priors.joint_root_realization_from_dict(payload, decisions=decisions)
+   |
+
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+  --> tests/priors/test_joint_root_reconstruction.py:97:32
+   |
+95 |             else:
+96 |                 del target[field]
+97 |             with pytest.raises(ValueError):
+   |                                ^^^^^^^^^^
+98 |                 priors.joint_root_realization_from_dict(payload, decisions=decisions)
+   |
+
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+   --> tests/priors/test_joint_root_reconstruction.py:124:28
+    |
+122 |             target = target[key]
+123 |         target[path[-1]] = True
+124 |         with pytest.raises(ValueError):
+    |                            ^^^^^^^^^^
+125 |             priors.joint_root_realization_from_dict(payload, decisions=decisions)
+    |
+
+Found 4 errors.
+make: *** [Makefile:10: lint] Error 1

@@ -1,0 +1,16 @@
+{
+  "source": "78632956b1caf236ba521397d564311e2b006465",
+  "base": "2488161135eca07374a8e433c9b76de81f573e5d",
+  "bytes": 45056,
+  "sha256": "40dca75be2143e240e5277dc07fa81f3316d9f40f4e7a157b8a5b83167d36398",
+  "parts": [
+    {
+      "path": "0028-joint-root-realization-spec.part01",
+      "bytes": 45056,
+      "sha256": "40dca75be2143e240e5277dc07fa81f3316d9f40f4e7a157b8a5b83167d36398"
+    }
+  ],
+  "manifest_entries": 25,
+  "manifest_sha256": "1158c1acc77c054cff1a52eadbf00a8353eea325fe565164a24ea9fc8fb55d09",
+  "qualification": "Independent root component evidence, attributed cached inputs, final executed programs and exact public-program replay. Pre-execution harness formatting/import repairs are described by the reviewer but intermediate bytes are not retained. No whole-issue, GPU/Colab/browser, measured RSS or scientific acceptance."
+}

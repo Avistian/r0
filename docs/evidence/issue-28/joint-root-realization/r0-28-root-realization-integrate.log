@@ -1,0 +1,17 @@
+[feat/issue-28-generators 79a8c19] feat(priors): realize root bases and sampled function calibration (#28)
+ Date: Fri Nov 27 09:35:28 2026 +0100
+ 6 files changed, 586 insertions(+), 1 deletion(-)
+ create mode 100644 src/r0/modules/priors/lib/joint_root_admission.py
+ create mode 100644 src/r0/modules/priors/lib/joint_root_base.py
+ create mode 100644 src/r0/modules/priors/lib/joint_root_realization.py
+ create mode 100644 tests/priors/test_joint_root_realization.py
+[feat/issue-28-generators 4fc1ff5] feat(priors): reconstruct and validate retained joint roots
+ Date: Fri Nov 27 09:46:40 2026 +0100
+ 4 files changed, 292 insertions(+)
+ create mode 100644 src/r0/modules/priors/lib/joint_root_realization_decoding.py
+ create mode 100644 tests/priors/test_joint_root_reconstruction.py
+[feat/issue-28-generators 7863295] feat(priors): emit and reload fresh rows from frozen roots
+ Date: Fri Nov 27 09:51:56 2026 +0100
+ 5 files changed, 366 insertions(+), 2 deletions(-)
+ create mode 100644 src/r0/modules/priors/lib/joint_root_emission.py
+ create mode 100644 tests/priors/test_joint_root_emission.py

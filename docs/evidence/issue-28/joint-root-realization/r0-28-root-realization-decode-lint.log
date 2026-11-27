@@ -1,0 +1,63 @@
+E501 Line too long (109 > 100)
+  --> tests/priors/test_joint_root_reconstruction.py:54:101
+   |
+52 |     ],
+53 | )
+54 | def test_saved_root_rejects_independently_tampered_numeric_construction(path: tuple[str | int, ...]) -> None:
+   |                                                                                                     ^^^^^^^^^
+55 |     root, decisions = _root()
+56 |     payload = json.loads(json.dumps(asdict(root)))
+   |
+
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+  --> tests/priors/test_joint_root_reconstruction.py:61:24
+   |
+59 |         target = target[key]
+60 |     target[path[-1]] += 0.125
+61 |     with pytest.raises(ValueError):
+   |                        ^^^^^^^^^^
+62 |         priors.joint_root_realization_from_dict(payload, decisions=decisions)
+   |
+
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+  --> tests/priors/test_joint_root_reconstruction.py:74:24
+   |
+72 |     payload = json.loads(json.dumps(asdict(root)))
+73 |     payload["function"] = json.loads(json.dumps(asdict(other.function)))
+74 |     with pytest.raises(ValueError):
+   |                        ^^^^^^^^^^
+75 |         priors.joint_root_realization_from_dict(payload, decisions=decisions)
+   |
+
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+  --> tests/priors/test_joint_root_reconstruction.py:94:32
+   |
+92 |             else:
+93 |                 del target[field]
+94 |             with pytest.raises(ValueError):
+   |                                ^^^^^^^^^^
+95 |                 priors.joint_root_realization_from_dict(payload, decisions=decisions)
+   |
+
+E501 Line too long (111 > 100)
+   --> tests/priors/test_joint_root_reconstruction.py:114:101
+    |
+112 |                 yield from paths(child, (*prefix, key))
+113 |
+114 |     for path in (*paths(original["calibration"], ("calibration",)), *paths(original["outputs"], ("outputs",))):
+    |                                                                                                     ^^^^^^^^^^^
+115 |         payload = copy.deepcopy(original)
+116 |         target = payload
+    |
+
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+   --> tests/priors/test_joint_root_reconstruction.py:120:28
+    |
+118 |             target = target[key]
+119 |         target[path[-1]] = True
+120 |         with pytest.raises(ValueError):
+    |                            ^^^^^^^^^^
+121 |             priors.joint_root_realization_from_dict(payload, decisions=decisions)
+    |
+
+Found 7 errors (1 fixed, 6 remaining).

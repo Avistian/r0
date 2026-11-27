@@ -1,0 +1,177 @@
+{
+  "source": "78632956b1caf236ba521397d564311e2b006465",
+  "archive": "0028-joint-root-realization-development.zip",
+  "bytes": 21151,
+  "sha256": "940644f7c279d566308b5fe21029393eb80ad25e4b65d23cad2f074e18f1f3ef",
+  "files": {
+    "r0-28-root-realization-base-commit.log": {
+      "bytes": 601,
+      "sha256": "609119fb9b27e3e070f26f1999ef0224fa082ff497674a3251fa479f2780e1fe"
+    },
+    "r0-28-root-realization-base-green.log": {
+      "bytes": 98,
+      "sha256": "25216d52c2a8e3f9f0baef0c48148e38c03a6db18d66b650ef169972f6a30c24"
+    },
+    "r0-28-root-realization-base-red.log": {
+      "bytes": 10179,
+      "sha256": "b0f3eb9eb7ef7f55177d3118e1789af0b935525adaf891213b1b28e267289d46"
+    },
+    "r0-28-root-realization-decode-adversarial-retry.log": {
+      "bytes": 1502,
+      "sha256": "e95a261ec2cf8ebc1c633183c7404611c3db8e52c69ae82185ee2a244ff14d06"
+    },
+    "r0-28-root-realization-decode-adversarial.log": {
+      "bytes": 80,
+      "sha256": "eb27a136c18598aedc0e4f11e6893b614a04335a9faf3ec03433325d777e2663"
+    },
+    "r0-28-root-realization-decode-commit.log": {
+      "bytes": 451,
+      "sha256": "2d664dd2f52414c44ff193a937135ea69f25430d5e6ab41aa30c07f70d6ab744"
+    },
+    "r0-28-root-realization-decode-focused.log": {
+      "bytes": 80,
+      "sha256": "4cf2124032e464147e816ec20702b3b32e3647b01af12dd56f695de26cf6f779"
+    },
+    "r0-28-root-realization-decode-format.log": {
+      "bytes": 44,
+      "sha256": "ecadcab6ba8db65f26e491b8a5abf181e94e6e96cf96718dc2e4c83e7c8ab2c5"
+    },
+    "r0-28-root-realization-decode-format2.log": {
+      "bytes": 19,
+      "sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127"
+    },
+    "r0-28-root-realization-decode-green.log": {
+      "bytes": 80,
+      "sha256": "b1caae85ec31d08a00b70488af9cc30676ea609b8012c2800620e199adf3bcb2"
+    },
+    "r0-28-root-realization-decode-lint.log": {
+      "bytes": 2715,
+      "sha256": "5a7a2d2500712ceab92f10fe98630894307d9bc1a1b2ce474e3b9c492d585f05"
+    },
+    "r0-28-root-realization-decode-red.log": {
+      "bytes": 2103,
+      "sha256": "96dbf1c8f304c92ecdb7720be47a7cb3031dad8446767523bbfe336f92f42133"
+    },
+    "r0-28-root-realization-decode-statics-retry.log": {
+      "bytes": 663,
+      "sha256": "cf1bc27ebdbd7db5cb706c81b00b034ff1d09ffaa682dda1a883fe5614251a62"
+    },
+    "r0-28-root-realization-decode-statics-retry2.log": {
+      "bytes": 1331,
+      "sha256": "56297514aa01e5492b9eeff9f3911ed71f8095f3c6c730e3b7c76647c3d91f51"
+    },
+    "r0-28-root-realization-decode-statics-retry3.log": {
+      "bytes": 1374,
+      "sha256": "d5ebd3285136aa7564b31e3ff11bbce0ef12f65cd4f2d4707ebb808656d9e885"
+    },
+    "r0-28-root-realization-decode-statics.log": {
+      "bytes": 1920,
+      "sha256": "df942f8a42c5462fc456e6fe7f4b8ee749a62047f58bf43d890cb1c0de65cd42"
+    },
+    "r0-28-root-realization-emission-adversarial.log": {
+      "bytes": 80,
+      "sha256": "986dbc9a5d6b6525242d1315dd44f9f5e97162596004680091f1927df955e4ea"
+    },
+    "r0-28-root-realization-emission-commit-retry.log": {
+      "bytes": 448,
+      "sha256": "7b5beeae43eff14e2829d194d9d67e8716f42ec55666ddd37dade7248b58151f"
+    },
+    "r0-28-root-realization-emission-commit.log": {
+      "bytes": 1237,
+      "sha256": "b2d9dc41bf7083bb8dd56f291c903ca3415a06eb31d43f692199b9612b874f1e"
+    },
+    "r0-28-root-realization-emission-decode-green.log": {
+      "bytes": 80,
+      "sha256": "5cba8a0d336f6301764b9e7cb54d2168880bd1238a4afa7c45b0666fad715409"
+    },
+    "r0-28-root-realization-emission-decode-red.log": {
+      "bytes": 3538,
+      "sha256": "067b4afb3267e5f5f1688f1f2b00ae3de5f771fc33ca13c70a338b94f6f6ea49"
+    },
+    "r0-28-root-realization-emission-format.log": {
+      "bytes": 43,
+      "sha256": "a9c322be5811cf4bd7ab6927ecb6751d36851790b8b4de75d87f0c39a56d2c8d"
+    },
+    "r0-28-root-realization-emission-green.log": {
+      "bytes": 80,
+      "sha256": "5cba8a0d336f6301764b9e7cb54d2168880bd1238a4afa7c45b0666fad715409"
+    },
+    "r0-28-root-realization-emission-lint.log": {
+      "bytes": 467,
+      "sha256": "648320e3112977ca364d00e31a03be2193b9d9756fd1a3a57e51be5c69bb348f"
+    },
+    "r0-28-root-realization-emission-red.log": {
+      "bytes": 2091,
+      "sha256": "73e5ef97a7de21cb4afca51689be9ab93508d09c9c18f358d2a599d679b29ab4"
+    },
+    "r0-28-root-realization-emission-statics.log": {
+      "bytes": 1374,
+      "sha256": "89ebc7ace1b3b8140f9331af2ee33e05d0855c411f2ca6dad75de9cedb17c03e"
+    },
+    "r0-28-root-realization-final-focused.log": {
+      "bytes": 180,
+      "sha256": "bcb65a709f54d6c1946abb372457583e3f3d7df2055169d7337eea3becf54898"
+    },
+    "r0-28-root-realization-final-format.log": {
+      "bytes": 42,
+      "sha256": "10869b88a75066aa23546ef1f95fcd4678c3fb92a56ed46ef91688052b67976a"
+    },
+    "r0-28-root-realization-focused.log": {
+      "bytes": 99,
+      "sha256": "2a668566b6fbb51748b1ce71005e637e16a586afa40f002793d6a4bd38aaff96"
+    },
+    "r0-28-root-realization-format-retry1.log": {
+      "bytes": 43,
+      "sha256": "44b7183e1f210a4817679f52d6f965f5de6331fb1c9174e863b4b0fc479a3e24"
+    },
+    "r0-28-root-realization-format-retry2.log": {
+      "bytes": 19,
+      "sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127"
+    },
+    "r0-28-root-realization-format.log": {
+      "bytes": 58,
+      "sha256": "0fff885d8d9d5bdd13f1921dfd9c2a91e0db1a63beb7958cf9328a76c070a069"
+    },
+    "r0-28-root-realization-full-check.log": {
+      "bytes": 3177,
+      "sha256": "970fe3914a102f2e01f06910575251d1015a5e56943cc8cc4ec1a0a057c786a9"
+    },
+    "r0-28-root-realization-functions.log": {
+      "bytes": 99,
+      "sha256": "99d155a3cf6e0b7a0616d9fe7972f782b534a6999ea5c757be5d4b7efd58058e"
+    },
+    "r0-28-root-realization-integrate.log": {
+      "bytes": 1098,
+      "sha256": "4d81dbf5b355d1fada62c739708fb10962fdeed6cea78bed615a4c956320445c"
+    },
+    "r0-28-root-realization-public-program-format.log": {
+      "bytes": 26,
+      "sha256": "eee76f865de5a9f2456950f710ae5d5f9b5bd0ea02aa54f614c5eed6642a0bfd"
+    },
+    "r0-28-root-realization-public-program-lint.log": {
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "r0-28-root-realization-publication-replay.log": {
+      "bytes": 60,
+      "sha256": "a52fa57f4e55a741464641aa2a6ddb3d7989bbf5896984ed9b28801fdad0fa5c"
+    },
+    "r0-28-root-realization-statics-retry1.log": {
+      "bytes": 551,
+      "sha256": "3992939f4934317009e6fb667dc8c4b448c5477cf51abd9349ed6e150ca038c1"
+    },
+    "r0-28-root-realization-statics-retry2.log": {
+      "bytes": 1374,
+      "sha256": "61b5f2cadd29df38471337c4691ebea44142b3bd88179680a7573bc4b4d4e67e"
+    },
+    "r0-28-root-realization-statics-retry3.log": {
+      "bytes": 1374,
+      "sha256": "61b5f2cadd29df38471337c4691ebea44142b3bd88179680a7573bc4b4d4e67e"
+    },
+    "r0-28-root-realization-statics.log": {
+      "bytes": 1331,
+      "sha256": "9301f43b2255d34329cce71c042cffad5e6f3eea56f486b4644a9765aa3fa532"
+    }
+  },
+  "qualification": "Author RED/GREEN, repairs, statics, commit logs and full check. Intermediate uncommitted source snapshots are not all retained; fixed-source independent evidence is separate."
+}

@@ -1,0 +1,44 @@
+....F
+=================================== FAILURES ===================================
+_ test_joint_root_all_bases_and_functions_use_retained_base_calibration[lin-uniform] _
+
+family = 'uniform', function = 'lin'
+
+    @pytest.mark.parametrize("family", ["uniform", "ball", "gaussian", "covariance"])
+    @pytest.mark.parametrize("function", ["lin", "quad", "gp", "tree", "disc", "em", "mlp", "prod"])
+    def test_joint_root_all_bases_and_functions_use_retained_base_calibration(
+        family: str, function: str
+    ) -> None:
+        context = priors.JointSamplingContext(np.random.default_rng(114), mode="local")
+        plan = priors.sample_joint_root(
+            context,
+            "root",
+            width=2,
+            calibration_rows=4,
+            prior=priors.JointRootPrior(
+                families=(family,),
+                function=priors.JointFunctionPrior(
+                    functions=function,
+                    frequencies=4,
+                    matrix=priors.JointMatrixPrior(families=("gaussian",)),
+                ),
+            ),
+        )
+        result = priors.materialize_joint_root(
+            plan,
+            context.freeze(),
+            rng=np.random.default_rng(115),
+            calibration_rng=np.random.default_rng(116),
+            fit_rng=np.random.default_rng(117),
+            calibration_id="sampled-root-fit",
+        )
+>       restored = priors.joint_root_realization_from_dict(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            json.loads(json.dumps(asdict(result))), decisions=context.freeze()
+        )
+E       AttributeError: module 'r0.modules.priors' has no attribute 'joint_root_realization_from_dict'. Did you mean: 'joint_matrix_realization_from_dict'?
+
+tests/priors/test_joint_root_realization.py:118: AttributeError
+=========================== short test summary info ============================
+FAILED tests/priors/test_joint_root_realization.py::test_joint_root_all_bases_and_functions_use_retained_base_calibration[lin-uniform]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!

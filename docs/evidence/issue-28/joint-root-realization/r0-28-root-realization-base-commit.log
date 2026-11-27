@@ -1,0 +1,9 @@
+Interpreter: /home/avist/Projects/r0/.venv/bin/python3
+r0 source: /tmp/r0-28-root-realization/src/r0/__init__.py
+Expected package: /tmp/r0-28-root-realization/src/r0
+[feat/issue-28-root-realization dcbcec2] feat(priors): realize root bases and sampled function calibration (#28)
+ 6 files changed, 586 insertions(+), 1 deletion(-)
+ create mode 100644 src/r0/modules/priors/lib/joint_root_admission.py
+ create mode 100644 src/r0/modules/priors/lib/joint_root_base.py
+ create mode 100644 src/r0/modules/priors/lib/joint_root_realization.py
+ create mode 100644 tests/priors/test_joint_root_realization.py
