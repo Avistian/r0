@@ -66,7 +66,12 @@ def converted_trace_parents(
             return [prefix + "capture:" + name]
         # Capture-only cuts leave the original representation mechanism unchanged.
         if clamp or converter.mode.endswith("_id"):
-            return [prefix + "function"]
+            parents = [prefix + "function"]
+            if clamp and converter.stochastic and not converter.mode.endswith("_id"):
+                # The forced capture is independent, but its unchanged representation
+                # still selects a category using the original emission uniform.
+                parents.append(prefix + "uniform:" + name)
+            return parents
         return [prefix + "capture:" + name]
     if role == "converter-state":
         return [prefix + key for key in trace if key.startswith("representation:")]
