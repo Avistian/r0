@@ -4,6 +4,9 @@
 <label>Network block<select id="network-block"></select></label><pre id="network-block-info"></pre>
 <label>Block equations and connectivity<textarea id="network-block-json" rows="16" spellcheck="false"></textarea></label>
 <p id="network-draft-status" class="muted" aria-live="polite"></p>
+<label id="network-matching-policy-label" hidden>Variance matching after an architecture edit
+<select id="network-matching-policy"><option value="recalibrate">Recalculate matching using the retained independent random state</option><option value="raw">Remove matching and keep raw network scores</option></select>
+<span class="muted">Recalculation uses the original calibration seed and row count with the edited root and architecture. Unchanged roots reproduce the original calibration inputs. It does not use displayed dataset rows. Both policies save a new authored edit; the original stays unchanged.</span></label>
 <button id="network-apply">Apply block to draft</button>
 <label>Complete authored network recipe<textarea id="network-recipe" rows="18" spellcheck="false"></textarea></label>
 <button id="network-save">Generate and save linked network edit</button>

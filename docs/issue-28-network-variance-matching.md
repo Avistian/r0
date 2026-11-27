@@ -34,4 +34,26 @@ The new `network-input-view-v2` archive binds the calibration to the original ba
 
 Author checks cover independent NumPy arithmetic for regression and multiclass scores, Gaussian/uniform/ball/covariance roots, retained RNG state, strict archive tamper rejection, pre-draw cap rejection, failure rollback, and legacy archive/output hashes. Evidence is under ignored `docs/evidence/issue-28-network-variance-match/`.
 
-Paired comparisons now accept `allow_estimated_variance=True` for network sparsity. `paired_recipe`, `generate_pair`, saved `compare_pair`, and the guarded generation worker use a deterministic independent RNG keyed by the original base archive, both masks and `network-pair-matching-v1`, with 256 retained calibration rows. Episode/query seed and task identity do not enter that key. Raw mode remains the default. Already matched sources reject further sparsity changes; extra columns, noise and separation preserve their frozen matching record. Original-row traces show raw network scores, the retained matching transform and its downstream signal dependencies. Explorer controls remain a separate required follow-on. This slice adds no UI and does not claim the entire feature-extension/sparsity scope is complete. Full-suite integration, independent review, hosted runs and GPU checks are not supplied by these author checks.
+Paired comparisons now accept `allow_estimated_variance=True` for network sparsity. `paired_recipe`, `generate_pair`, saved `compare_pair`, and the guarded generation worker use a deterministic independent RNG keyed by the original base archive, both masks and `network-pair-matching-v1`, with 256 retained calibration rows. Episode/query seed and task identity do not enter that key. Raw mode remains the default. Already matched sources reject further sparsity changes; extra columns, noise and separation preserve their frozen matching record. Original-row traces show raw network scores, the retained matching transform and its downstream signal dependencies. The library checks above are distinct from the explorer integration described below; they do not claim the entire feature-extension/sparsity scope is complete. Full-suite integration, independent review, hosted runs and GPU checks are not supplied by these author checks.
+
+
+## Explorer comparisons and authored edit policies
+
+The workbench can request independent baseline-moment matching for input sparsity,
+or leave the comparison raw and uncontrolled. Matching targets the original
+baseline mean and spread on independent shared synthetic rows, not unit variance
+or equality of true population moments. Frozen replay, Next, details and guarded
+response curves include the retained transform. Existing matched views retain
+noise/separation and extra-column comparisons; remasking requires returning to
+the original baseline because chained matching has no declared protocol.
+
+A matched architecture edit offers explicit policies. Recalculation restores the
+original independent random state and row count, then fits the edited root and
+architecture with the original before-mask and edited after-mask. Unchanged roots
+reproduce the original calibration inputs. It never uses the displayed episode
+or query rows. The raw policy removes matching and saves an unnormalized authored
+view. Both policies retain the original dataset and its calibration archive.
+Failed fitting, invalid policy, and caller limits leave the baseline unchanged.
+
+This workbench slice has public session checks and actual local Chromium evidence.
+Hosted execution, GPU and full-suite coverage remain separately qualified.

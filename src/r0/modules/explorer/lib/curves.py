@@ -181,5 +181,7 @@ def inspect_network_curve_guarded(
         **result.summary,
         "version": "response-curve-v1",
         "kind": "analytic_response",
-        "score_semantics": "raw latent network channels; not class probabilities",
+        "score_semantics": (
+            "frozen latent network channels, including retained matching; not class probabilities"
+        ),
     }

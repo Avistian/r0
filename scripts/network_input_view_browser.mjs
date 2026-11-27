@@ -12,7 +12,7 @@ try {
  const after=await b.evaluate("current.pair.after.recipe_json");
  await b.click("pair-open");
  await b.evaluate("$('pair-intervention').value='sparsity';pairControls();$('pair-value').value='1'");
- assert.equal(await b.evaluate("$('pair-estimate-label').hidden"),true);
+ assert.equal(await b.evaluate("$('pair-estimate-label').hidden"),false);
  await b.click("pair-create");
  assert.ok(await b.evaluate("$('pair-variance').textContent.includes('uncontrolled')"));
  await b.evaluate(`$('replay-record').value=${JSON.stringify(after)}`);

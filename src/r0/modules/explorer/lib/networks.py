@@ -1,5 +1,6 @@
 """Broad standalone architecture presets and an authored frozen network editor."""
 
+import json
 from dataclasses import asdict, replace
 from pathlib import Path
 from typing import Any
@@ -86,11 +87,14 @@ def network_editor(recipe: priors.NetworkRecipe | priors.NetworkInputView) -> di
     base = recipe.base if isinstance(recipe, priors.NetworkInputView) else recipe
     authored = replace(base, network=base.function)
     editable = (
-        replace(recipe, base=authored) if isinstance(recipe, priors.NetworkInputView) else authored
+        priors.NetworkInputView(authored, recipe.task, recipe.active_inputs)
+        if isinstance(recipe, priors.NetworkInputView)
+        else authored
     )
     return {
         "kind": "mechanism-edit",
         "network": True,
+        "matching_edit": isinstance(recipe, priors.MatchedNetworkInputView),
         "construction": recipe.version,
         "editable_recipe": asdict(editable),
         "notice": NOTICE,
@@ -109,7 +113,11 @@ def network_editor(recipe: priors.NetworkRecipe | priors.NetworkInputView) -> di
 
 
 def network_details(recipe: dict[str, Any]) -> dict[str, Any]:
-    view = recipe if recipe.get("version") == "network-input-view-v1" else None
+    view = (
+        recipe
+        if recipe.get("version") in ("network-input-view-v1", "network-input-view-v2")
+        else None
+    )
     network = (view["base"] if view else recipe)["network"]
     sampled = network.get("version") == "sampled-structural-network-v1"
     function = network["function"] if sampled else network
@@ -122,7 +130,24 @@ def network_details(recipe: dict[str, Any]) -> dict[str, Any]:
             "observed_features": view["task"]["features"],
             "fill": 0.0,
             "position": "after original joint root",
-            "variance": "uncontrolled; no normalization",
+            "variance": "independent baseline matching estimate"
+            if view.get("matching")
+            else "uncontrolled; no normalization",
+            "matching": None
+            if not view.get("matching")
+            else {
+                key: view["matching"][key]
+                for key in (
+                    "rows",
+                    "before_inputs",
+                    "after_inputs",
+                    "before_mean",
+                    "before_std",
+                    "after_mean",
+                    "after_std",
+                    "version",
+                )
+            },
         },
         "notice": NOTICE,
         "sampled": sampled,
@@ -141,14 +166,18 @@ def network_details(recipe: dict[str, Any]) -> dict[str, Any]:
 
 
 def validate_editor_draft(
-    data: dict[str, Any], output_dir: Path, *, limits: priors.CausalLimits
+    data: dict[str, Any], output_dir: Path, *, limits: priors.CausalLimits, source: str
 ) -> dict[str, Any]:
     from r0.modules.generation import run_guarded_document
 
+    original = json.loads(source)["recipe"]
+    matched = original.get("version") == "network-input-view-v2"
     result = run_guarded_document(
         {
             "validation": "network-draft",
             "recipe": data["recipe"],
+            "matching_source": original if matched else None,
+            "matching_policy": data.get("matching_policy", "recalibrate" if matched else None),
             "causal_limits": asdict(limits),
             "max_seconds": data.get("max_seconds", 60),
             "max_bytes": data.get("max_bytes", 256 * 1024**2),

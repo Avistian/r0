@@ -335,7 +335,9 @@ class ExplorerSession:
         if action == "network_draft":
             from r0.modules.explorer.lib.networks import validate_editor_draft
 
-            return validate_editor_draft(data, self.output_dir, limits=caller_limits(data))
+            return validate_editor_draft(
+                data, self.output_dir, limits=caller_limits(data), source=self.task.recipe_json
+            )
         if action == "mechanism":
             return mechanism_editor(self.task, limits=caller_limits(data))
         if action == "edit":
@@ -407,6 +409,7 @@ class ExplorerSession:
             if json.loads(self.task.recipe_json)["recipe"].get("version") in (
                 "standalone-network-v1",
                 "network-input-view-v1",
+                "network-input-view-v2",
             ):
                 from r0.modules.explorer.lib.curves import inspect_network_curve_guarded
 

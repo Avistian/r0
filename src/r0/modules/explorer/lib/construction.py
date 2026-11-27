@@ -192,4 +192,5 @@ def frozen_archive_version(version: object) -> bool:
         "standalone-network-v1",
         "population-fitted-functional-causal-v1",
         "network-input-view-v1",
+        "network-input-view-v2",
     )

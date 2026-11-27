@@ -76,6 +76,6 @@ views show the same causal-intervention applicability notice as ordinary network
 Browser verification exercises both raw comparison controls, saved pair reopening,
 frozen Next, view replay, validated block editing and export interaction. Public
 session checks additionally verify a nonprefix mask survives an edit and its
-scores equal the independent affine oracle. The estimated matching view has a
-separate lifecycle and requires its own integration; this slice does not qualify
-hosted Colab or GPU execution.
+scores equal the independent affine oracle. The estimated matching view has a separate lifecycle described in
+[variance matching](issue-28-network-variance-matching.md), including explicit
+authored-edit policies. These checks do not qualify hosted Colab or GPU execution.

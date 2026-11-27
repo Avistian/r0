@@ -4,7 +4,7 @@ const pairFields = {noise: "noise_ratio", irrelevant: "features", sparsity: "act
 function resetPair() {
   const regression = current.view.task_type === "regression";
   const choices = current.view.family === "causal" ? [regression ? "noise" : "separation"] : [regression ? "noise" : "separation", "irrelevant", "sparsity"];
-  $("pair-intervention").replaceChildren(...choices.map(key => new Option(pairNames[key], key)));
+  $("pair-intervention").replaceChildren(...choices.filter(key => current.view.recipe.recipe.version !== "network-input-view-v2" || key !== "sparsity").map(key => new Option(pairNames[key], key)));
   $("pair-metric").replaceChildren(...(regression ? [["Observed target", "target"], ["Latent signal", "scores"], ["Residual noise", "noise"]] : [["Class probability", "probabilities"], ["Latent score", "scores"], ["Sampled label index", "target"]]).map(([label, value]) => new Option(label, value)));
   $("pair-estimate").checked = false;
   $("pair-feature").replaceChildren(); $("pair-channel").replaceChildren();
@@ -16,11 +16,11 @@ function pairControls() {
   $("pair-value-label").firstChild.textContent = `${pairNames[intervention]} · currently ${old}`;
   $("pair-value").step = ["sparsity", "irrelevant"].includes(intervention) ? "1" : "0.1";
   $("pair-value").value = intervention === "irrelevant" ? Math.min(256, old + 8) : intervention === "sparsity" ? Math.max(1, Math.floor(old / 2)) : intervention === "separation" ? 0 : old > 0 ? old * 2 : 0.5;
-  const estimated = current.view.family !== "standalone_network" && intervention === "sparsity" && current.view.recipe.recipe.version !== "linear-v1";
+  const estimated = intervention === "sparsity" && current.view.recipe.recipe.version !== "linear-v1";
   $("pair-estimate-label").hidden = !estimated;
   $("pair-estimate").checked = false;
   $("pair-policy-note").textContent = estimated ? "This family uses independent calibration to target unit signal variance. True expected variances may differ. Check the box to request this comparison explicitly." : intervention === "sparsity" ? "Gaussian linear coefficients preserve expected unit signal variance; realized sample variance can differ." : "The saved latent function stays unchanged. Only the selected control changes.";
-  if (current.view.family === "standalone_network") $("pair-policy-note").textContent = intervention === "sparsity" ? "An explicit mask zeroes selected inputs after the original joint root. The frozen architecture is retained. Signal variance is uncontrolled." : intervention === "irrelevant" ? "Extra observed columns use independent keyed Gaussian draws. Original inputs and frozen network outputs stay unchanged." : "The saved network, input mask and root distribution stay unchanged. Only the selected task control changes.";
+  if (current.view.family === "standalone_network") $("pair-policy-note").textContent = intervention === "sparsity" ? "An explicit mask zeroes selected inputs after the original joint root. The frozen architecture is retained. Signal variance is uncontrolled by default. Check the box to estimate the original baseline mean and spread on an independent shared population; this does not target unit variance." : intervention === "irrelevant" ? "Extra observed columns use independent keyed Gaussian draws. Original inputs and frozen network outputs stay unchanged." : "The saved network, input mask and root distribution stay unchanged. Only the selected task control changes.";
 }
 function showPair() {
   const pair = current?.pair;
@@ -47,7 +47,7 @@ function drawPair() {
   $("pair-title").textContent = `${name}: ${card.control.before} → ${card.control.after}`;
   $("pair-before-title").textContent = `Before · ${name} ${card.control.before}`;
   $("pair-after-title").textContent = `After · ${name} ${card.control.after}`;
-  const variance = {network_input_mask_uncontrolled: "Signal variance is uncontrolled after input masking.", unchanged_mechanism: "Identical latent function and normalizers.", analytic_unit_variance: "Expected signal variance is exactly 1 under standard Gaussian inputs. Sample spread may differ.", independent_calibration_unit_variance_estimate: "Calibration estimate: each variant targets unit variance using an independent calibration sample. Equality of true expected variances is not established."};
+  const variance = {independent_network_baseline_moments_estimate: "Independent shared-population estimate matches the original baseline mean and spread; true population equality is not established.", network_input_mask_uncontrolled: "Signal variance is uncontrolled after input masking.", unchanged_mechanism: "Identical latent function and normalizers.", analytic_unit_variance: "Expected signal variance is exactly 1 under standard Gaussian inputs. Sample spread may differ.", independent_calibration_unit_variance_estimate: "Calibration estimate: each variant targets unit variance using an independent calibration sample. Equality of true expected variances is not established."};
   $("pair-variance").textContent = `${variance[card.variance_control]} One coupled root draw, two variants.`;
   const labels = {seed: "root seed", task_id: "task identifier", execution: "generation environment", common_inputs: "shared input columns", scores: "latent scores", mechanism: "sampled mechanism", context_indices: "context rows", query_indices: "query rows", classes: "declared classes", targets: "observed targets", probabilities: "class probabilities", nested_active_features: "nested active feature sets"};
   $("pair-fixed").textContent = `Verified: ${Object.keys(card.required_equalities).map(key => labels[key] || key).join(" · ")}`;

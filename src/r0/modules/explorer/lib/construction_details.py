@@ -4,7 +4,11 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
-    if recipe.get("version") in ("standalone-network-v1", "network-input-view-v1"):
+    if recipe.get("version") in (
+        "standalone-network-v1",
+        "network-input-view-v1",
+        "network-input-view-v2",
+    ):
         from r0.modules.explorer.lib.networks import network_details
 
         return network_details(recipe)
