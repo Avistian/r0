@@ -73,6 +73,12 @@ from r0.modules.priors.lib.generation_graph import explain_generation as explain
 from r0.modules.priors.lib.gp_conditioning import condition_gp as condition_gp
 from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe as GroupedLinearRecipe
 from r0.modules.priors.lib.inputs import InputDistribution as InputDistribution
+from r0.modules.priors.lib.joint_sampling import JointSamplingContext as JointSamplingContext
+from r0.modules.priors.lib.joint_sampling_records import JointDecision as JointDecision
+from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord as JointSamplingRecord
+from r0.modules.priors.lib.joint_sampling_records import (
+    joint_sampling_from_dict as joint_sampling_from_dict,
+)
 from r0.modules.priors.lib.kernel_points import KernelPointCloud as KernelPointCloud
 from r0.modules.priors.lib.kernels import GibbsKernel as GibbsKernel
 from r0.modules.priors.lib.kernels import RationalQuadraticKernel as RationalQuadraticKernel

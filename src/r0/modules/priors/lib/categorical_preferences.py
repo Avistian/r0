@@ -247,16 +247,9 @@ class CategoricalPreferences:
         )
 
 
-def categorical_preferences_from_dict(data: dict[str, Any]) -> CategoricalPreferences:
-    def request(raw: dict[str, Any]) -> CategoricalParameter:
-        fields = dict(raw)
-        fields["choices"] = tuple(fields["choices"])
-        return CategoricalParameter(**fields)
-
-    fields = dict(data)
-    limits = PreferenceLimits(**fields.get("limits", {}))
-    raw_preferences, raw_draws = fields.get("preferences", ()), fields.get("draws", ())
-    limits.admit(
+def raw_categorical_admission(data: dict[str, Any]) -> dict[str, int]:
+    raw_preferences, raw_draws = data.get("preferences", ()), data.get("draws", ())
+    return dict(
         draws=len(raw_draws)
         + sum(
             len(cast(dict[str, Any], p.get("hyperparameters") or {}).get("draws", ()))
@@ -270,6 +263,18 @@ def categorical_preferences_from_dict(data: dict[str, Any]) -> CategoricalPrefer
         ),
         parameters=raw_parameter_count(raw_preferences) + raw_parameter_count(raw_draws),
     )
+
+
+def categorical_preferences_from_dict(data: dict[str, Any]) -> CategoricalPreferences:
+    def request(raw: dict[str, Any]) -> CategoricalParameter:
+        fields = dict(raw)
+        fields["choices"] = tuple(fields["choices"])
+        return CategoricalParameter(**fields)
+
+    fields = dict(data)
+    limits = PreferenceLimits(**fields.get("limits", {}))
+    raw_preferences, raw_draws = fields.get("preferences", ()), fields.get("draws", ())
+    limits.admit(**raw_categorical_admission(fields))
     if len(raw_preferences) > len(raw_draws):
         raise ValueError("categorical preferences must each have a retained realization")
     preferences: list[CategoricalPreference] = []

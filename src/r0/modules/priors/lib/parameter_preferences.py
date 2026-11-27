@@ -248,12 +248,25 @@ class ParameterSampler:
         self._draws: list[NumericalDraw] = []
         self._names: dict[tuple[str, str], int] = {}
 
-    def fork(self, rng: np.random.Generator) -> "ParameterSampler":
+    @property
+    def admission(self) -> dict[str, int]:
+        return dict(
+            draws=len(self._draws), values=self._value_count, parameters=self._parameter_count
+        )
+
+    def fork(
+        self, rng: np.random.Generator, *, limits: PreferenceLimits | None = None
+    ) -> "ParameterSampler":
         """Copy scope bookkeeping onto an injected stream, sharing frozen records."""
         if type(rng) is not np.random.Generator:
             raise ValueError("sampling fork requires an injected Generator")
         fork = copy.copy(self)
         fork._rng = rng
+        if limits is not None:
+            if type(limits) is not PreferenceLimits:
+                raise ValueError("sampling fork requires frozen limits")
+            limits.admit(**self.admission)
+            fork._limits = limits
         fork._preferences = self._preferences.copy()
         fork._draws = self._draws.copy()
         fork._names = self._names.copy()
@@ -330,6 +343,22 @@ class ParameterSampler:
         )
 
 
+def raw_numerical_admission(data: dict[str, Any]) -> dict[str, int]:
+    preferences, draws = data.get("preferences", ()), data.get("draws", ())
+    parameters = sum(
+        2
+        + len(p["request"].get("shape", ()))
+        + len(p.get("units", ()))
+        + (2 if p.get("mode", "global") == "meta" else 0)
+        for p in preferences
+    ) + sum(
+        3 + len(d["request"].get("shape", ())) + len(d["units"]) + len(d["values"]) for d in draws
+    )
+    return dict(
+        draws=len(draws), values=sum(len(d["values"]) for d in draws), parameters=parameters
+    )
+
+
 def parameter_preferences_from_dict(data: dict[str, Any]) -> ParameterPreferences:
     def request(raw: dict[str, Any]) -> NumericalParameter:
         fields = dict(raw)
@@ -348,19 +377,7 @@ def parameter_preferences_from_dict(data: dict[str, Any]) -> ParameterPreference
     if len(raw_preferences) > len(raw_draws):
         raise ValueError("numerical preferences must each have a retained realization")
     # Admit the raw dimensions before allocating decoded tuples or recomputing values.
-    parameters = sum(
-        2
-        + len(p["request"].get("shape", ()))
-        + len(p.get("units", ()))
-        + (2 if p.get("mode", "global") == "meta" else 0)
-        for p in raw_preferences
-    ) + sum(
-        3 + len(d["request"].get("shape", ())) + len(d["units"]) + len(d["values"])
-        for d in raw_draws
-    )
-    limits.admit(
-        draws=len(raw_draws), values=sum(len(d["values"]) for d in raw_draws), parameters=parameters
-    )
+    limits.admit(**raw_numerical_admission(fields))
     fields["limits"] = limits
     fields["preferences"] = tuple(preference(p) for p in fields.get("preferences", ()))
     draws: list[NumericalDraw] = []

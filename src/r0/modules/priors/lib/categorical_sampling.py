@@ -46,12 +46,23 @@ class CategoricalSampler:
         self._draw_count = 0
         self._value_count = 0
 
-    def fork(self, rng: np.random.Generator) -> "CategoricalSampler":
+    @property
+    def admission(self) -> dict[str, int]:
+        return dict(draws=self._draw_count, values=self._value_count, parameters=self._parameters)
+
+    def fork(
+        self, rng: np.random.Generator, *, limits: PreferenceLimits | None = None
+    ) -> "CategoricalSampler":
         """Copy scope bookkeeping onto an injected stream, sharing frozen records."""
         if type(rng) is not np.random.Generator:
             raise ValueError("sampling fork requires an injected Generator")
         fork = copy.copy(self)
         fork._rng = rng
+        if limits is not None:
+            if type(limits) is not PreferenceLimits:
+                raise ValueError("sampling fork requires frozen limits")
+            limits.admit(**self.admission)
+            fork._limits = limits
         fork._preferences = self._preferences.copy()
         fork._draws = self._draws.copy()
         fork._keys = self._keys.copy()
