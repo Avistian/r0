@@ -19,7 +19,9 @@ from r0.modules.priors.lib.functional_target_calibration import (
     target_calibration_from_dict,
 )
 from r0.modules.priors.lib.joint_root_base import draw_root_base
+from r0.modules.priors.lib.joint_sampling_records import validate_path
 from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.signal_noise import signal_noise_scale
 from r0.modules.priors.lib.task_output import complete_task
@@ -100,6 +102,43 @@ def evaluate_functional_prefix(
     return PrefixEvaluation(tuple(states), tuple(readouts))
 
 
+def sample_functional_prefix(
+    prefix: FunctionalPrefix,
+    *,
+    rng: np.random.Generator,
+    owner: tuple[str, ...],
+    capture: RawDrawLedger | None = None,
+    device: str = "cpu",
+) -> PrefixEvaluation:
+    """Draw a fresh ancestor population atomically from one calibration stream.
+
+    All roots and innovations consume this stream in node/column/draw order.
+    The keyed evaluator remains available for authored generation and inspection.
+    """
+    if type(prefix) is not FunctionalPrefix:
+        raise ValueError("functional prefix sampling requires its admitted frozen record")
+    validate_path(owner)
+    if len(owner) > 13:
+        raise ValueError("prefix sampling owner must leave room for node and column paths")
+    if device not in ("cpu", "cuda"):
+        raise ValueError("device must be cpu or cuda; no implicit fallback")
+    if device == "cuda" and not torch.cuda.is_available():
+        raise ValueError("CUDA is unavailable; select CPU explicitly")
+    prefix.admit()
+    with raw_transactions({"calibration": rng}, capture) as (streams, ledger):
+        readouts: list[torch.Tensor] = []
+        states = _evaluate_functional_nodes(
+            prefix.nodes,
+            prefix.rows,
+            lambda *keys: streams["calibration"],
+            device,
+            readouts=readouts,
+            capture=ledger,
+            owner=owner,
+        )
+        return PrefixEvaluation(tuple(states), tuple(readouts))
+
+
 def _evaluate_functional_nodes(
     nodes: tuple[FunctionalCausalNode, ...],
     rows: int,
@@ -110,12 +149,20 @@ def _evaluate_functional_nodes(
     indices: Sequence[int] = (),
     readouts: list[torch.Tensor] | None = None,
     diagnostics: list[dict[str, Any]] | None = None,
+    capture: RawDrawLedger | None = None,
+    owner: tuple[str, ...] = (),
 ) -> list[torch.Tensor]:
     values: list[torch.Tensor] = []
     for index, node in enumerate(nodes):
         parents = [f"causal-{p}" for p in node.parents]
         if node.root is not None:
-            sample = draw_root_base(node.root, rows, rng("root-base", index))
+            sample = draw_root_base(
+                node.root,
+                rows,
+                rng("root-base", index),
+                capture=capture,
+                owner=(*owner, f"node:{index}", "root"),
+            )
             inputs = torch.tensor(sample.values, dtype=torch.float64, device=device)
             parents = [f"root-{index}"]
             if add is not None:
@@ -135,7 +182,15 @@ def _evaluate_functional_nodes(
             diagnostics.extend({"node": index, **entry} for entry in function_diagnostics or ())
         _constant_diagnostic(output, index, "function", diagnostics)
         raw = torch.tensor(
-            sample_exogenous(node.exogenous, rows, node.function.output_width, rng, index),
+            sample_exogenous(
+                node.exogenous,
+                rows,
+                node.function.output_width,
+                rng,
+                index,
+                capture=capture,
+                owner=(*owner, f"node:{index}", "innovation"),
+            ),
             dtype=torch.float64,
             device=device,
         )
