@@ -27,3 +27,18 @@ Retained development evidence is gitignored under
 RED, corrected JSON-list test oracle, focused fit/graph checks, guarded session and
 local notebook callback checks, static checks and browser receipts when completed.
 Full-suite acceptance and independent workbench review remain pending.
+
+## Authored edit transport
+
+Browser JSON has one numeric type and serializes integral real values as integer
+tokens. The guarded authored-edit path explicitly adapts XGBoost initial margins,
+thresholds and leaf values to schema floats, including intentionally edited integer
+values. Boolean/nonfinite values and noninteger child/feature indices still reject.
+Metadata and model geometry are bounded before conversion. Stored graph/fit decoders
+remain strict; this adaptation never runs during archive reopening or fit replay.
+The original fitted archive remains intact when a linked authored edit is saved.
+
+The first workbench review found this transport failure on a noise-only edit;
+its REJECT and counterfactual evidence are retained in the original frozen tree.
+The repair also routes tests through public module entry points and keeps
+construction tests under `tests/generation/`.
