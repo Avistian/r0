@@ -93,6 +93,9 @@ from r0.modules.priors.lib.frozen_function_primitives import (
 )
 from r0.modules.priors.lib.functional_causal import FunctionalCausalNode as FunctionalCausalNode
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe as FunctionalCausalRecipe
+from r0.modules.priors.lib.functional_causal_decoding import (
+    functional_recipe_from_dict as functional_recipe_from_dict,
+)
 from r0.modules.priors.lib.generate import Recipe as Recipe
 from r0.modules.priors.lib.generate import generate_task as generate_task
 from r0.modules.priors.lib.generate import recipe_from_dict as recipe_from_dict
