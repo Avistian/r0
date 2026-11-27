@@ -458,6 +458,7 @@ from .lib.topology_graph_request import (
 from .lib.topology_graph_sampling import (
     sample_topology_graph as sample_topology_graph,
 )
+from .lib.topology_hyperprior_api import *  # noqa: F403
 from .lib.training_task import TrainingTask as TrainingTask
 from .lib.transformed_weights import GaussianWeights as GaussianWeights
 from .lib.transformed_weights import NormalizedWeights as NormalizedWeights
