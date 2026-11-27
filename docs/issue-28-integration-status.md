@@ -25,6 +25,14 @@ scientific acceptance or whole-issue completion.
 | `3411bf9` | Pair reconstruction and comparison moved inside guarded worker. Independent backend and Chromium checks passed; failed timeout preserves active dataset and previous pair. Local construction/edit/reopen/export checked. Standards: no hard findings, P3 lifecycle duplication open. |
 | `e668a1a` | Attachment/motif geometry integration independently checked: 684 budget configurations, 10 archive cases, 40 rollbacks; Cauchy archive unchanged byte-for-byte. |
 | `b8d8234` | Combined workbench/topology successor, with legacy generated evidence removed from tracking. Full check terminated with exit143 at86percent before its summary; no exact-head full-suite pass. Original log retained unchanged. |
+| `606aa5e` | Combined authored-native and topology workbench checkpoint; full check passed 1,852 tests, one skipped, in 689.98 seconds. Generated evidence migrated to ignored local storage with byte verification. Published successor `058465e` changes verification documentation only. |
+| `39ae972` | Sampled numerical pipelines passed independent stage arithmetic, but subsequent public workbench composition rejected converter allocation: half-open channel spans were incorrectly interpreted as start plus width. Original failures retained. |
+| `d11390d` | Both allocation and validation now use half-open spans. Two public regressions failed before repair; 36 focused checks and six public workbench flows passed afterward. Independent six-case assignment/replay review passed. |
+| `30468e7` | Authored native explorer independently checked for typed CSV labels, vocabulary editing, construction/export in Chromium and unchanged legacy archives. Hosted Colab not run. |
+| `738670c` | Combined repaired numerical pipelines and native explorer release candidate. Full check is pending; the earlier 1,852-test result does not cover this source. |
+| `be03845` | Sampled native-domain graphs initially rejected because a malformed domain leaked AttributeError before validation. Original rejection retained. |
+| `c7495bd` | Native decoder repaired. Independent bounded review passed 15 emission/frequency/cutpoint combinations, eight function families, five RNG engines, typed ancestor calibration, raw replay, limits and archive corruption checks. This is not whole-issue acceptance. |
+| `30a8cb3` | Sampled-native integration atop `738670c`; public exports preserved. Focused native, pipeline and explorer checks passed. Research-only successor `123c0b7` adds fitted-tree source contracts. Full integrated suite remains pending. |
 
 Original rejection probes and failure logs are retained alongside repairs. Local
 copies live under ignored `docs/evidence/issue-28-parallel/`, with a byte-verified
