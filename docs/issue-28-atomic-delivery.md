@@ -93,18 +93,35 @@ populations, retained base archives, inspection and pair persistence. The origin
 metadata-validation REJECT at `27f2683` remains historical evidence. Repair
 `69fb169` passed independent metadata/persistence checks and 77 numerical cases.
 Root integration probes add nine Kumo and eight fitted-archive intervention cases.
-These are scoped API checks; intervention explorer controls, heterogeneous native
-vectors and further soft mechanism-component variants remain required work.
+These are scoped API checks. Checkpoint `076bc13` additionally includes guarded
+explorer controls, native vector logical-variable interventions, and frozen
+root/domain/pipeline replacements. Independent vector checks cover 14
+clamp/population/archive cases and four correlated-noise/emission cases. Sampled
+construction-budget repair `0930474` separately preserves explicit caller limits.
+Stochastic assignments and further component-level variants remain required.
 
 ## Explicit next gaps
 
-Standalone residual/dropout/skip/gated networks, heterogeneous native vectors,
-additional source-specific fitted-tree lifecycles and XGBoost remain required.
-Broad families, parameter laws, combinations and deliberate beyond-paper extensions
-must remain visible in implementation and diversity evidence. Existing scalar
-native nodes, parent reductions and task-control pairs do not close these gaps.
+**A lot of variety, including intentional extensions beyond the papers, remains
+required:** broad family catalogs, configurable parameter laws, meaningful
+combinations and across-seed structural/functional diversity. Preset counts and
+shared operators do not substitute for those requirements.
+
+Checkpoint `076bc13` contains seven standalone network families, heterogeneous
+native vectors, intervention workflows and five sampled innovation families.
+Its full suite passed 2,276 tests; independent applicability review passed. Network editor
+draft and response-curve rejections have separately reviewed repairs. The original
+failures remain retained. Feature-extension and sparsity task-only comparisons
+remain unsupported required breadth; architecture edits are distinct.
+
+Additional source-specific neural profiles, all categorical converter
+representations, fitted-tree populations/lifecycles and XGBoost remain required.
+Fitted parameter sampling and typed converter work proceed separately; no in-flight
+candidate closes those obligations. Generic innovation laws do not establish every
+paper's noise or root distribution.
+
 Hosted execution, measured supported maxima, throughput and full structural and
-functional diversity qualification remain unaccepted. The latest combined source
-checkpoint is `01a4a4c`; full `make check` passed 2,162 tests with one skip and one
-warning. Later stage-intervention, native-vector, explorer and network candidates
-are not covered by that result.
+functional diversity qualification remain unaccepted. Source `076bc13`
+passed 2,276 tests with one skip and one warning. Earlier `01a4a4c` and
+`31f6fd0` results remain historical; none qualifies later candidates. Unlisted inventory
+IDs remain NOT_AUDITED; no whole-issue completion percentage is inferred.
