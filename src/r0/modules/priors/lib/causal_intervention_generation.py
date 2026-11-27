@@ -185,6 +185,10 @@ def compare_causal_pair(
     from r0.modules.priors.lib.generate import generate_task, recipe_from_dict
 
     b, a = json.loads(before.recipe_json), json.loads(after.recipe_json)
+    if a["recipe"].get("version") == "sampled-intervention-policy-v1":
+        from r0.modules.priors.lib.intervention_policy_output import compare_policy_pair
+
+        return compare_policy_pair(before, after, limits=limits)
     recipe = recipe_from_dict(a["recipe"], limits=limits)
     if not isinstance(recipe, CausalInterventionRecipe) or b["recipe"] != asdict_json(recipe.base):
         raise ValueError("causal comparison must retain its original base recipe")

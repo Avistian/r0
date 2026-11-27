@@ -113,6 +113,13 @@ def explain_generation(
             raise ValueError("standalone networks do not have composite children")
         return {**standalone_network_steps(task, indices, add, limits=limits), "nodes": nodes}
 
+    if record["recipe"].get("version") == "sampled-intervention-policy-v1":
+        from r0.modules.priors.lib.intervention_policy_output import policy_steps
+
+        if component is not None:
+            raise ValueError("sampled policies do not have composite children")
+        return {**policy_steps(task, indices, add, limits=limits), "nodes": nodes}
+
     if record["recipe"].get("version") == "causal-intervention-v1":
         from r0.modules.priors.lib.causal_intervention_inspection import intervention_steps
 
