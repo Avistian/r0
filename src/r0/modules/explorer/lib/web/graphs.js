@@ -1,6 +1,7 @@
 "use strict";
 let generationGraph = null, graphNode = null, graphScale = 1;
 function clearGraph() {
+  clearGPPopulationMatrices();
   generationGraph = null; graphNode = null;
   $("generation-graph").replaceChildren(); $("graph-downloads").replaceChildren();
   $("graph-detail").hidden = true; $("graph-tools").hidden = true;
@@ -35,6 +36,7 @@ function fitGraph() {
 }
 function drawGenerationGraph(graph) {
   generationGraph = graph;
+  showGPPopulationMatrices(graph);
   const selected = graph.component === null ? "" : String(graph.component);
   $("graph-component").replaceChildren(new Option("Whole task", ""), ...Array.from({length: graph.component_count}, (_, i) => new Option(`Component ${i}`, i)));
   $("graph-component").value = selected;
