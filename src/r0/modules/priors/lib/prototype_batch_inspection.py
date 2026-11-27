@@ -3,7 +3,7 @@
 import json
 from collections.abc import Callable, Sequence
 from dataclasses import asdict
-from typing import Any
+from typing import Any, cast
 
 import torch
 
@@ -42,8 +42,26 @@ def prototype_batch_steps(
         if not exact_frozen_equal(getattr(task, field), getattr(replay, field)):
             raise ValueError("saved prototype semantic metadata differs from original-row replay")
     expected_record = json.loads(replay.recipe_json)
-    # Historical execution environment is retained, not re-proven by CPU inspection.
-    # Recipe, identities, outer schema and mechanism semantics must still replay.
+    # Implementation identity and schema are semantic. Only explicitly descriptive
+    # historical environment values may differ from this CPU replay environment.
+    execution = record.get("execution")
+    if type(execution) is not dict:
+        raise ValueError("saved prototype execution schema differs from original-row replay")
+    execution = cast(dict[str, Any], execution)
+    if (
+        set(execution) != set(expected_record["execution"])
+        or type(execution.get("implementation")) is not str
+        or execution.get("implementation") != expected_record["execution"]["implementation"]
+        or execution.get("device") not in ("cpu", "cuda")
+        or any(type(execution.get(key)) is not str for key in ("python", "numpy", "torch"))
+        or type(execution.get("cpu_threads")) is not int
+        or execution["cpu_threads"] < 1
+        or any(
+            execution.get(key) is not None and type(execution.get(key)) is not str
+            for key in ("cuda", "gpu")
+        )
+    ):
+        raise ValueError("saved prototype execution semantics differ from original-row replay")
     if (
         set(record) != set(expected_record)
         or any(

@@ -84,3 +84,55 @@ def test_batch_trace_accepts_original_and_reordered_json_metadata():
     )
     original = p.explain_generation(task, [15, 0, 15])
     assert p.explain_generation(reordered, [15, 0, 15]) == original
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        "missing",
+        "changed",
+        "integer",
+        "null",
+        "extra-semantic-key",
+        "missing-description",
+        "object",
+        "description-type",
+    ],
+)
+def test_batch_trace_binds_implementation_and_known_execution_schema(change: str):
+    task = emitted()
+    raw = json.loads(task.recipe_json)
+    if change == "missing":
+        del raw["execution"]["implementation"]
+    elif change == "changed":
+        raw["execution"]["implementation"] = "unrelated-generator-v999"
+    elif change == "integer":
+        raw["execution"]["implementation"] = 1
+    elif change == "null":
+        raw["execution"]["implementation"] = None
+    elif change == "extra-semantic-key":
+        raw["execution"]["randomization_protocol"] = "alternate"
+    elif change == "missing-description":
+        del raw["execution"]["device"]
+    elif change == "object":
+        raw["execution"] = []
+    else:
+        raw["execution"]["cpu_threads"] = True
+    with pytest.raises(ValueError, match="replay"):
+        p.explain_generation(replace(task, recipe_json=json.dumps(raw)), [15, 0, 15])
+
+
+def test_batch_trace_preserves_descriptive_historical_execution_values():
+    task = emitted()
+    raw = json.loads(task.recipe_json)
+    raw["execution"].update(
+        device="cuda",
+        python="historical-python",
+        numpy="historical-numpy",
+        torch="historical-torch",
+        cpu_threads=17,
+        cuda="historical-cuda",
+        gpu="historical-gpu",
+    )
+    historical = replace(task, recipe_json=json.dumps(raw))
+    assert p.explain_generation(historical, [15, 0, 15]) == p.explain_generation(task, [15, 0, 15])
