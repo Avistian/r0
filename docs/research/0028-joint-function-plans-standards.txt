@@ -1,0 +1,13 @@
+Standards review — source a6ab8c70902d9d474cea12e7cab2aadf67ca35f5
+
+Reviewed `git diff 731f6a44b309a75fc5c5f756168550eac48b372a...a6ab8c70902d9d474cea12e7cab2aadf67ca35f5` (225d519, 56724f7, a6ab8c7), including all changed source and tests. Preflight: /tmp/r0-28, matching HEAD, only untracked .venv. Read AGENTS.md, CODING_STANDARDS.md, src/r0/modules/README.md, docs/requirements.md and docs/agents/protocol-review.md; home-repo TypeScript course standards excluded. Tooling-enforced rules excluded.
+
+Documented-standard hard violations: none found. Sampling receives its explicit random state through JointSamplingContext; tests use the priors entry point. No fitting, temporal filtering, metrics, protected-file edits or completion claims were introduced in this diff.
+
+Heuristic findings (judgement calls, not hard failures):
+
+1. Possible Duplicated Code — joint_function_sampling.py:40–53,125–132 and joint_function_plans.py:122–129,139–157,175–185. The hunks repeat `k = min(input_width, 20) + 1` (with `self.input_width` in validation), quadratic/EM geometry, MLP `widths = (... *((width,) * (layers - 1)), ...)`, and start/end activation ordering. A geometry or ordering change requires synchronized edits. Consider one private, deterministic shape/stage description consumed by sampling and plan validation, while keeping source-derived test expectations independent.
+
+2. Possible Primitive Obsession — joint_function_requests.py:10 and joint_function_plans.py:139–141,175–183. `type FunctionParameters = tuple[tuple[str, float | bool], ...]` requires consumers to reconstruct a dict and interpret `int(values["layers"])`, `int(values["width"])`, and `values["start_activation"]`. Domain meaning and branch-specific field types are carried by runtime string contracts. Consider small internal branch parameter records or typed accessors while retaining ordered named pairs at the serialization/decision boundary. Existing validation mitigates this; this is a maintainability observation, not a demonstrated behavior defect.
+
+No other actionable baseline smells identified. Tests/checks NOT_RUN by this reviewer; root owns verification. Realization, fitting and graph implementation remain outside this slice. Total: 0 hard violations, 2 heuristic findings; the main concern is duplicated geometry/stage-order logic.

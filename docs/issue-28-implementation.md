@@ -3,11 +3,11 @@
 The [accepted specification](specs/0028-causal-network-generators.md) is the
 authoritative scope. This ledger tracks execution, not a smaller replacement goal.
 
-Latest: [frozen source functions](issue-28-frozen-functions.md) at `cbbaff2`
-pass 868 tests (one skipped). All eight numerical function records evaluate and
-round-trip; sampling/fitting/graph integration remain required.
-Earlier [joint matrices](issue-28-joint-matrices.md) connect all five matrix
-families to shared decisions. Full #28 acceptance remains pending.
+Latest: [joint function plans](issue-28-joint-function-plans.md) at `a6ab8c7`
+pass 882 tests (one skipped). All eight source families now share named decisions
+and bounded JSON plans. [Frozen evaluators](issue-28-frozen-functions.md) and
+[joint matrices](issue-28-joint-matrices.md) remain included. Realization, fitting,
+roots and graph integration remain required; full #28 acceptance is pending.
 
 ## Checkout and scope preservation
 
