@@ -28,10 +28,13 @@ def evaluate_network_innovation_reference(
         or inputs.ndim != 2
         or inputs.shape[1] != recipe.task.features
         or not inputs.is_floating_point()
-        or not torch.isfinite(inputs).all()
     ):
         raise ValueError("network reference requires finite observed input rows and recipe")
+    # Shape/dtype checks above are metadata-only. Even the finite check creates
+    # an O(rows * channels) boolean tensor, so admit the full query first.
     recipe.admit(evaluation_rows=inputs.shape[0])
+    if not torch.isfinite(inputs).all():
+        raise ValueError("network reference requires finite observed input rows and recipe")
     assert recipe.plan is not None
     noise_nodes: set[int] = set()
     index = 1
