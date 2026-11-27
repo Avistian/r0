@@ -215,3 +215,33 @@ def test_frozen_tree_preserves_representable_mean_of_extreme_leaves() -> None:
     )
     result = priors.evaluate_frozen_function(function, torch.zeros((1, 1), dtype=torch.float64))
     assert result.item() == 1e308
+
+
+def test_frozen_mlp_json_keeps_all_accepted_activation_parameters() -> None:
+    activation = priors.calibrate_source_activation(
+        priors.CausalActivation(
+            "reciprocal_abs_power",
+            (
+                ("input_scale", 2.0),
+                ("input_shift", 1.0),
+                ("output_scale", 3.0),
+                ("output_shift", 4.0),
+                ("exponent", 2.0),
+                ("epsilon", 0.5),
+            ),
+        ),
+        np.array([[-2.0], [2.0]]),
+        rng=np.random.default_rng(17),
+        scale=1.0,
+        calibration_id="independent-parameter-roundtrip-fit",
+    )
+    function = priors.FrozenMLPFunction(
+        (priors.FrozenLinearFunction(((1.0,),)),), (activation,), end_activation=True
+    )
+    restored = priors.frozen_function_from_dict(json.loads(json.dumps(asdict(function))))
+    assert restored == function
+    values = torch.tensor([[0.0], [1.0]], dtype=torch.float64)
+    torch.testing.assert_close(
+        priors.evaluate_frozen_function(restored, values),
+        priors.evaluate_frozen_function(function, values),
+    )

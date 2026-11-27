@@ -105,8 +105,10 @@ def _activation(data: Any) -> CalibratedActivation:
     if fields.get("calibration_version") != "independent-standard-activation-v1":
         raise ValueError("MLP requires frozen standard activation records")
     parameters = _array(fields.get("parameters", ()))
-    if len(parameters) > 1 or any(len(_array(pair)) != 2 for pair in parameters):
-        raise ValueError("MLP activation parameters require at most one two-element array")
+    # Authored calibrated activations also accept four affine modifiers and up
+    # to two primitive parameters; decoding must preserve every accepted record.
+    if len(parameters) > 6 or any(len(_array(pair)) != 2 for pair in parameters):
+        raise ValueError("MLP activation parameters require at most six two-element arrays")
     fields["parameters"] = tuple(tuple(pair) for pair in parameters)
     for name in (
         "input_mean",

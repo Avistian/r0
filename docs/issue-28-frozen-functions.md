@@ -46,6 +46,8 @@ rescale/shift, primitive, population standardization. Their records retain sampl
 identity/digest and shift-row indices. Supplying these records alone does not prove
 that they were fitted independently or on the actual preceding stage. Source
 sampling and the ancestral fitter must establish those bindings separately.
+Authored wrappers retain all supported primitive parameters and affine modifiers,
+up to six named parameters. This does not expand the future source selector's law.
 
 ## Admission and JSON
 
@@ -85,14 +87,19 @@ UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
 python3 scripts/run_check.py pytest tests/priors/test_frozen_functions.py
 ```
 
-Current focused result: **12 passed**. Development RED/GREEN and static-check logs
+Current focused result: **13 passed**. Development RED/GREEN and static-check logs
 are retained locally under `/tmp/r0-28-functions-*`; the false-logarithmic-tie RED
 remains part of the history. Independent review rejected initial source `690297b`:
 per-center magnitude scaling broke exact L1 ties (expected first-center output 15,
 observed 13). That failure is retained at `/tmp/r0-28-functions-spec-690297b/`.
 The repair uses exact power-of-two scaling. An additional author RED/GREEN verifies
 overflow-safe tree averaging. The initial full check was stopped after the review
-rejection; full checks and independent repair verification are pending.
+rejection. Review of repair `c58706e` passed the original 98-case tie sweep, then
+rejected an accepted MLP activation that could not round-trip through JSON. Its
+decoder now accepts all six supported authored activation parameters; the source
+selector remains separate. The second rejection is retained at
+`/tmp/r0-28-functions-spec-c58706e/`. Both interrupted full checks remain incomplete;
+full checks and independent repair verification are pending.
 CPU was exercised; CUDA execution is NOT_RUN.
 
 ## Remaining integration
