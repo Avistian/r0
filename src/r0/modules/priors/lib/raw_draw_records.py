@@ -86,8 +86,9 @@ def draw_arguments(
         raise ValueError("raw uniform bounds must be finite and ordered")
     if distribution == "student_t" and (not finite_number(args["df"]) or args["df"] <= 0):
         raise ValueError("raw Student-t degrees must be positive and finite")
-    for key in ("high", "count"):
-        if key in args and (type(args[key]) is not int or not 1 <= args[key] < 2**63):
+    if distribution in ("integers", "permutation", "choice"):
+        bound = args["high" if distribution == "integers" else "count"]
+        if type(bound) is not int or not 1 <= bound < 2**63:
             raise ValueError("raw discrete bounds must be positive bounded integers")
     if distribution == "permutation" and shape != (args["count"],):
         raise ValueError("raw permutation shape must match its count")

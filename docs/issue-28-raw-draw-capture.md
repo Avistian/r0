@@ -75,3 +75,21 @@ source-wide draw capture, complete graph provenance, browser/Colab/GPU behavior,
 measured resources, scale or scientific performance. Next integrate capture with
 remaining function/root materialization and fresh prefix populations, typed owner
 validation, immutable graph construction receipts and final multi-stream commit.
+
+
+## First independent rejection and repair
+
+Candidate `ccaf90637bc19a8e1173cc5fc77946a206b5e223` received **SPEC REJECT**:
+its general public recorder rejected legal noninteger or negative uniform upper
+bounds because it reused discrete integer-bound validation. The matrix call sites
+currently use other laws; no five-family materializer failure was established.
+The reviewer stopped at this first defect, so broader independent comparisons were
+not run. Immutable original evidence is retained at
+`/tmp/r0-28-raw-matrix-spec-ccaf906`, pending publication.
+
+The repair confines integer-bound checks to integers, permutations and choices.
+Four literal uniform cases cover real bounds and negative upper bounds, checking
+raw values, replay and next-RNG state against NumPy. The original failing author
+run is `/tmp/r0-28-graph-raw-repair-uniform-red.log`; repaired execution uses the
+focused command above. The repair still needs its own full check and independent
+review. This does not erase the original rejected candidate.
