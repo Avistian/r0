@@ -8,6 +8,12 @@
 <select id="network-matching-policy"><option value="recalibrate">Recalculate matching using the retained independent random state</option><option value="raw">Remove matching and keep raw network scores</option></select>
 <span class="muted">Recalculation uses the original calibration seed and row count with the edited root and architecture. Unchanged roots reproduce the original calibration inputs. It does not use displayed dataset rows. Both policies save a new authored edit; the original stays unchanged.</span></label>
 <button id="network-apply">Apply block to draft</button>
+<fieldset id="source-root-editor" hidden><legend>Frozen input root</legend>
+<p class="muted">Keep the sampled root to preserve its parameter and calibration receipts during architecture edits. To edit its law, explicitly create an authored root. The original archive retains all sampling records. Existing independent calibration must match the edited law; remove it to use raw coordinates. Batch normalization is not a frozen root option.</p>
+<label>Root edit policy<select id="source-root-edit-policy"><option value="retain">Retain frozen root and provenance</option><option value="authored">Create an authored root copy</option></select></label>
+<label>Authored root law and optional independent calibration<textarea id="source-root-json" rows="12" spellcheck="false" readonly></textarea></label>
+<pre id="source-root-provenance"></pre>
+<button id="source-root-edit-apply">Validate and apply root to draft</button></fieldset>
 <label>Complete authored network recipe<textarea id="network-recipe" rows="18" spellcheck="false"></textarea></label>
 <button id="network-save">Generate and save linked network edit</button>
 </div>

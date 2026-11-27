@@ -29,7 +29,10 @@ window.r0request = async (action, data) => {
         .replace("/* INTERVENTIONS */", (assets / "interventions.js").read_text())
         .replace("<!-- NETWORK CONTROLS -->", (assets / "network_controls.html").read_text())
         .replace("<!-- NETWORK WORKBENCH -->", (assets / "network_workbench.html").read_text())
-        .replace("/* NETWORKS */", (assets / "networks.js").read_text())
+        .replace(
+            "/* NETWORKS */",
+            (assets / "networks.js").read_text() + "\n" + (assets / "source_roots.js").read_text(),
+        )
         .replace("<!-- FITTED CONTROLS -->", (assets / "fitted_controls.html").read_text())
         .replace("/* WORKBENCH */", (assets / "workbench.js").read_text())
         .replace("/* NATIVE */", (assets / "native.js").read_text())
