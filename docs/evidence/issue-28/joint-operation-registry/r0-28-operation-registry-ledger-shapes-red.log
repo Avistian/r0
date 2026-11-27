@@ -1,0 +1,21 @@
+F
+=================================== FAILURES ===================================
+_________ test_registry_rejects_malformed_empty_ledger_events[events0] _________
+
+events = {}
+
+    @pytest.mark.parametrize("events", [{}, "", [0]])
+    def test_registry_rejects_malformed_empty_ledger_events(events: Any) -> None:
+        context = priors.JointSamplingContext(np.random.default_rng(1))
+        with context.transaction("event-free"):
+            pass
+        payload = json.loads(json.dumps(asdict(context.freeze_registry())))
+        payload["decisions"]["events"] = events
+>       with pytest.raises(ValueError, match="ledger|array|object"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/priors/test_joint_registry_ledger_shapes.py:22: Failed
+=========================== short test summary info ============================
+FAILED tests/priors/test_joint_registry_ledger_shapes.py::test_registry_rejects_malformed_empty_ledger_events[events0]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed in 1.05s

@@ -1,0 +1,7 @@
+Interpreter: /home/avist/Projects/r0/.venv/bin/python3
+r0 source: /tmp/r0-28-operation-registry/src/r0/__init__.py
+Expected package: /tmp/r0-28-operation-registry/src/r0
+[feat/issue-28-operation-registry 96d8711] fix(priors): reject malformed containers in joint registry ledgers
+ 3 files changed, 154 insertions(+)
+ create mode 100644 src/r0/modules/priors/lib/joint_ledger_shape.py
+ create mode 100644 tests/priors/test_joint_registry_ledger_shapes.py

@@ -1,0 +1,85 @@
+Publication static gates
+python3 scripts/run_check.py ruff format --check .
+589 files already formatted
+python3 scripts/run_check.py ruff check .
+All checks passed!
+python3 scripts/run_check.py pyright
+0 errors, 0 warnings, 0 informations
+python3 scripts/run_check.py lint-imports
+
+╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐
+╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │
+ ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗
+ ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝
+╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║
+╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝
+  └──▶║║                    ▲ 
+      ╚╝────────────────────┘
+
+
+---------
+Contracts
+---------
+
+Analyzed 211 files, 1342 dependencies.
+--------------------------------------
+
+Layers KEPT
+ADR 0002: the training path never sees real data KEPT
+Only the adapter imports relbench KEPT
+Comparison stays isolated from training and real-data adapters KEPT
+
+Contracts: 4 kept, 0 broken.
+python3 scripts/run_check.py python scripts/check_module_tests.py
+python3 scripts/run_check.py python scripts/check_file_tokens.py
+
+Index and source/test immutability gates
+{
+  "staged_files": 62,
+  "raw_log_whitespace_exclusions": [
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-adversarial.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-commit.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-counters-red.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-decoder-green.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-decoder-red.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-empty-green.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-empty-red.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-final-focused.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-final-statics.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-format-retry.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-format.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-full-check.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-integrate.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-ledger-shapes-commit.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-ledger-shapes-format.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-ledger-shapes-green.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-ledger-shapes-red.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-ledger-shapes-statics.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-lint-retry.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-lint.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-priors.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-public-program-format.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-public-program-lint.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-publication-replay.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-record-green.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-record-red.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-repair-integrate.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-repaired-full-check.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-statics-retry.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-statics-retry2.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-statics.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-streams-adversarial.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-streams-commit.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-streams-final-focused.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-streams-format.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-streams-green-retry.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-streams-green.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-streams-lint.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-streams-red.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-streams-statics-retry.log",
+    "docs/evidence/issue-28/joint-operation-registry/r0-28-operation-registry-streams-statics.log",
+    "docs/research/0028-joint-operation-registry-check-1110228.txt",
+    "docs/research/0028-joint-operation-registry-check-de1bead.txt"
+  ],
+  "src_tests_unchanged": true
+}

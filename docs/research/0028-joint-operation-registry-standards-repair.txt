@@ -1,0 +1,17 @@
+Standards repair-delta review: PASS_WITH_ADVISORY
+Checkout: /tmp/r0-28
+BASE: 11102283ec79503af75a3b16b133911e7fa686be
+HEAD before/after: de1bead86d51721fd84d84598b7bea2800ec8885
+Commit: de1bead86d51721fd84d84598b7bea2800ec8885 fix(priors): reject malformed containers in joint registry ledgers
+Diff: git diff 11102283ec79503af75a3b16b133911e7fa686be...HEAD
+Pre-status: ?? .venv
+Post-status: ?? .venv
+Tests: NOT_RUN; source-only review. Parent owns full checks. Checkout and .venv unchanged; no installation, cloud, secrets or publication.
+
+Scope: only joint_ledger_shape.py, joint_registry_decoding.py hook and test_joint_registry_ledger_shapes.py. Applied AGENTS.md, CODING_STANDARDS.md, src/r0/modules/README.md, docs/agents/protocol-review.md and applicable ADR guidance previously read; refreshed ADR0006, which remains a draft placeholder. Accepted #28 specification and requirements remain context, not whole-issue acceptance criteria for this repair delta. Home TypeScript standards excluded.
+
+Delta hard violations: 0 found. Shape validation stays private to priors; tests exercise its public decoder. The new pass follows existing metadata admission and precedes legacy reconstruction. It introduces no new random draws, dependencies, calibration changes or unsupported completion/evidence claims. No tooling-enforced findings included.
+
+Delta advisory judgement: possible Duplicated Code, joint_ledger_shape.py:23-29 repeats joint_registry_decoding.py:20-26. Quoted hunk: “if type(value) is not dict” followed by “if set(record) != {field.name for field in dataclass_fields(record_type)}”. Both implement strict dataclass-key validation with different error labels; the decoder additionally copies its result. Consider sharing the shape check internally, leaving the mutable copy at the decoder call site. This is a small, nonblocking maintainability concern, not a documented-standard breach or demonstrated behavioral fault. No other actionable baseline smell found.
+
+Original verdict REUSED, not rerun or superseded: 0 hard findings + 1 transaction-copy duplication heuristic, retained unchanged in /tmp/r0-28-operation-registry-standards-1110228.txt (SHA256 ffd81c88084ac21d3fce69e6fbad2b0c16516122cc84156d9bb72c485ce7e785). Delta adds 0 hard + 1 separate heuristic. Historical Spec rejection remains historical evidence; this Standards review neither erases it nor independently verifies runtime repair. Whole-graph manifest, typed-plan-tree budgets and fitting engine remain future work.

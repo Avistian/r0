@@ -1,0 +1,11 @@
+[feat/issue-28-generators 906f99b] feat(priors): retain complete joint operation ownership
+ Date: Fri Nov 27 10:07:37 2026 +0100
+ 5 files changed, 420 insertions(+), 3 deletions(-)
+ create mode 100644 src/r0/modules/priors/lib/joint_operation_registry.py
+ create mode 100644 src/r0/modules/priors/lib/joint_registry_decoding.py
+ create mode 100644 tests/priors/test_joint_operation_registry.py
+[feat/issue-28-generators 1110228] feat(priors): transact named choices and raw construction streams together
+ Date: Fri Nov 27 10:13:27 2026 +0100
+ 4 files changed, 329 insertions(+), 13 deletions(-)
+ create mode 100644 src/r0/modules/priors/lib/joint_streams.py
+ create mode 100644 tests/priors/test_joint_stream_transactions.py

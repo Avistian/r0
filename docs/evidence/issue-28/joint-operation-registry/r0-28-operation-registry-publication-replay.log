@@ -1,0 +1,50 @@
+[
+  {
+    "program": "schema_probe.py",
+    "root": "/tmp/r0-28",
+    "output": "schema-final",
+    "verdict": "PASS"
+  },
+  {
+    "program": "transaction_probe.py",
+    "root": "/tmp/r0-28",
+    "output": "transactions-final",
+    "verdict": "PASS"
+  },
+  {
+    "program": "ownership_probe.py",
+    "root": "/tmp/r0-28",
+    "output": "ownership-final",
+    "verdict": "PASS"
+  },
+  {
+    "program": "compatibility_probe.py",
+    "root": "/tmp/r0-28",
+    "output": "compatibility-final",
+    "verdict": "PASS"
+  },
+  {
+    "program": "compatibility_probe.py",
+    "root": "/tmp/r0-28-root-realization",
+    "output": "compatibility-baseline",
+    "verdict": "PASS"
+  },
+  {
+    "program": "final_probe.py",
+    "root": "/tmp/r0-28",
+    "output": "scalars-final",
+    "verdict": "PASS"
+  },
+  {
+    "program": "final_probe.py",
+    "root": "/tmp/r0-28-root-realization",
+    "output": "empty-baseline",
+    "verdict": "PASS"
+  },
+  {
+    "program": "compare.py",
+    "root": "/tmp/r0-28",
+    "output": "comparison-final",
+    "verdict": "PASS"
+  }
+]

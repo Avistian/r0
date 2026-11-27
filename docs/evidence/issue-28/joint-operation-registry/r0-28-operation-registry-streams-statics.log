@@ -1,0 +1,42 @@
+python3 scripts/run_check.py ruff format --check .
+571 files already formatted
+python3 scripts/run_check.py ruff check .
+PT012 `pytest.raises()` block should contain a single simple statement
+  --> tests/priors/test_joint_stream_transactions.py:58:5
+   |
+56 |       before = context.freeze_registry()
+57 |       state = _states(streams)
+58 | /     with (
+59 | |         pytest.raises(ValueError, match="later graph failure"),
+60 | |         context.transaction("graph") as graph,
+61 | |     ):  # noqa: PT012
+62 | |         root = _root(graph, "first")
+63 | |         assert len(root.outputs) == 4
+64 | |         assert _states(
+65 | |             [graph.stream(name) for name in ("construction", "calibration", "fit")]
+66 | |         ) != _states(streams[1:])
+67 | |         _root(graph, "second")
+68 | |         raise ValueError("later graph failure")
+   | |_______________________________________________^
+69 |       assert context.freeze_registry() == before
+70 |       assert _states(streams) == state
+   |
+
+PT012 `pytest.raises()` block should contain a single simple statement
+   --> tests/priors/test_joint_stream_transactions.py:115:5
+    |
+113 |       )
+114 |       before = context.freeze_registry()
+115 | /     with (
+116 | |         pytest.raises(ValueError, match="caller RNG changed"),
+117 | |         context.transaction("graph") as graph,
+118 | |     ):  # noqa: PT012
+119 | |         _root(graph, "root")
+120 | |         streams[changed].random()
+    | |_________________________________^
+121 |       controls[changed].random()
+122 |       assert _states(streams) == _states(controls)
+    |
+
+Found 2 errors.
+make: *** [Makefile:10: lint] Error 1

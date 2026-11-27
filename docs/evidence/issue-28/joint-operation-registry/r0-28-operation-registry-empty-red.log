@@ -1,0 +1,17 @@
+F
+=================================== FAILURES ===================================
+____ test_event_free_uniform_weight_operation_cannot_reuse_a_completed_path ____
+
+    def test_event_free_uniform_weight_operation_cannot_reuse_a_completed_path() -> None:
+        context = priors.JointSamplingContext(np.random.default_rng(28))
+        plan = priors.sample_joint_weights(context, "weights", width=2, family="uniform")
+        assert plan.operation == ("weights",)
+        assert context.freeze().events == ()
+>       with pytest.raises(ValueError, match="already completed"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/priors/test_joint_operation_registry.py:14: Failed
+=========================== short test summary info ============================
+FAILED tests/priors/test_joint_operation_registry.py::test_event_free_uniform_weight_operation_cannot_reuse_a_completed_path
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed in 1.09s

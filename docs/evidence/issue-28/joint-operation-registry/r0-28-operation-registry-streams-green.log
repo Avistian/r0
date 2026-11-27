@@ -1,0 +1,49 @@
+F
+=================================== FAILURES ===================================
+_ test_failed_graph_after_real_root_fit_rolls_back_named_registry_and_all_raw_streams[PCG64-local] _
+
+mode = 'local', engine = <class 'numpy.random._pcg64.PCG64'>
+
+    @pytest.mark.parametrize("mode", ["local", "global", "meta"])
+    @pytest.mark.parametrize(
+        "engine",
+        [np.random.PCG64, np.random.PCG64DXSM, np.random.MT19937, np.random.Philox, np.random.SFC64],
+    )
+    def test_failed_graph_after_real_root_fit_rolls_back_named_registry_and_all_raw_streams(
+        mode: str, engine: type[np.random.BitGenerator],
+    ) -> None:
+        streams = [np.random.Generator(engine(seed)) for seed in (110, 111, 112, 113)]
+        context = priors.JointSamplingContext(
+            streams[0], mode=mode,
+            streams=dict(zip(("construction", "calibration", "fit"), streams[1:], strict=True)),
+        )
+        before = context.freeze_registry()
+        state = _states(streams)
+        with pytest.raises(ValueError, match="later graph failure"), context.transaction("graph") as graph:  # noqa: PT012
+>           root = _root(graph, "first")
+                   ^^^^^^^^^^^^^^^^^^^^^
+
+tests/priors/test_joint_stream_transactions.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/priors/test_joint_stream_transactions.py:28: in _root
+    rng=context.stream("construction"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <r0.modules.priors.lib.joint_sampling.JointSamplingContext object at 0xff39aad58830>
+name = 'construction'
+
+    def stream(self, name: str) -> np.random.Generator:
+        """Return a staged auxiliary stream inside a live, idle operation handle."""
+        self._available()
+        if not self._path:
+            raise ValueError("joint streams are accessible only inside an operation")
+>       validate_name(name, "stream name")
+        ^^^^^^^^^^^^^
+E       NameError: name 'validate_name' is not defined
+
+src/r0/modules/priors/lib/joint_sampling.py:248: NameError
+=========================== short test summary info ============================
+FAILED tests/priors/test_joint_stream_transactions.py::test_failed_graph_after_real_root_fit_rolls_back_named_registry_and_all_raw_streams[PCG64-local]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed in 1.18s

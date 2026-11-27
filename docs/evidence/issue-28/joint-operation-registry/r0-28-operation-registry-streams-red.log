@@ -1,0 +1,26 @@
+F
+=================================== FAILURES ===================================
+_ test_failed_graph_after_real_root_fit_rolls_back_named_registry_and_all_raw_streams[PCG64-local] _
+
+mode = 'local', engine = <class 'numpy.random._pcg64.PCG64'>
+
+    @pytest.mark.parametrize("mode", ["local", "global", "meta"])
+    @pytest.mark.parametrize(
+        "engine",
+        [np.random.PCG64, np.random.PCG64DXSM, np.random.MT19937, np.random.Philox, np.random.SFC64],
+    )
+    def test_failed_graph_after_real_root_fit_rolls_back_named_registry_and_all_raw_streams(
+        mode: str, engine: type[np.random.BitGenerator],
+    ) -> None:
+        streams = [np.random.Generator(engine(seed)) for seed in (110, 111, 112, 113)]
+>       context = priors.JointSamplingContext(
+            streams[0], mode=mode,
+            streams=dict(zip(("construction", "calibration", "fit"), streams[1:], strict=True)),
+        )
+E       TypeError: JointSamplingContext.__init__() got an unexpected keyword argument 'streams'
+
+tests/priors/test_joint_stream_transactions.py:48: TypeError
+=========================== short test summary info ============================
+FAILED tests/priors/test_joint_stream_transactions.py::test_failed_graph_after_real_root_fit_rolls_back_named_registry_and_all_raw_streams[PCG64-local]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed in 1.18s

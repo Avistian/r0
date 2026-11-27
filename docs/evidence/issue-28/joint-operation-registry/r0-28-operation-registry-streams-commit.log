@@ -1,0 +1,7 @@
+Interpreter: /home/avist/Projects/r0/.venv/bin/python3
+r0 source: /tmp/r0-28-operation-registry/src/r0/__init__.py
+Expected package: /tmp/r0-28-operation-registry/src/r0
+[feat/issue-28-operation-registry ef75ba7] feat(priors): transact named choices and raw construction streams together
+ 4 files changed, 329 insertions(+), 13 deletions(-)
+ create mode 100644 src/r0/modules/priors/lib/joint_streams.py
+ create mode 100644 tests/priors/test_joint_stream_transactions.py

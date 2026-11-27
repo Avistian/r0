@@ -1,0 +1,72 @@
+E501 Line too long (113 > 100)
+  --> src/r0/modules/priors/lib/joint_operation_registry.py:14:101
+   |
+13 |     def __post_init__(self) -> None:
+14 |         if any(type(value) is not int or not 1 <= value < 2**63 for value in (self.operations, self.path_bytes)):
+   |                                                                                                     ^^^^^^^^^^^^^
+15 |             raise ValueError("joint registry limits must be positive bounded integers")
+   |
+
+E501 Line too long (101 > 100)
+  --> src/r0/modules/priors/lib/joint_operation_registry.py:97:101
+   |
+95 |                 span.event_start, span.event_stop, span.event_stop - span.event_start
+96 |             ):
+97 |                 raise ValueError("joint registry span must contain exactly its owned subtree events")
+   |                                                                                                     ^
+
+B008 Do not perform function call `CausalLimits` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> src/r0/modules/priors/lib/joint_registry_decoding.py:28:28
+   |
+26 |     data: dict[str, Any],
+27 |     *,
+28 |     limits: CausalLimits = CausalLimits(),
+   |                            ^^^^^^^^^^^^^^
+29 |     registry_limits: JointRegistryLimits = JointRegistryLimits(),
+30 | ) -> JointOperationRegistry:
+   |
+
+B008 Do not perform function call `JointRegistryLimits` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> src/r0/modules/priors/lib/joint_registry_decoding.py:29:44
+   |
+27 |     *,
+28 |     limits: CausalLimits = CausalLimits(),
+29 |     registry_limits: JointRegistryLimits = JointRegistryLimits(),
+   |                                            ^^^^^^^^^^^^^^^^^^^^^
+30 | ) -> JointOperationRegistry:
+31 |     """Payload limits cannot enlarge caller-owned byte/parameter/operation bounds."""
+   |
+
+E501 Line too long (101 > 100)
+  --> src/r0/modules/priors/lib/joint_registry_decoding.py:60:101
+   |
+58 |         decisions = joint_sampling_from_dict(fields["decisions"])
+59 |     except (KeyError, TypeError) as error:
+60 |         raise ValueError("joint registry decision ledger has missing or malformed fields") from error
+   |                                                                                                     ^
+61 |     return JointOperationRegistry(decisions, tuple(operations), owned_limits)
+   |
+
+B008 Do not perform function call `JointRegistryLimits` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> src/r0/modules/priors/lib/joint_sampling.py:45:48
+   |
+43 |         global_policy: str = "scalar-quantile-v1",
+44 |         limits: PreferenceLimits = _DEFAULT_LIMITS,
+45 |         registry_limits: JointRegistryLimits = JointRegistryLimits(),
+   |                                                ^^^^^^^^^^^^^^^^^^^^^
+46 |     ) -> None:
+47 |         if type(registry_limits) is not JointRegistryLimits:
+   |
+
+E501 Line too long (104 > 100)
+   --> src/r0/modules/priors/lib/joint_sampling.py:112:101
+    |
+110 |             yield staged
+111 |             staged.freeze()
+112 |             staged._operations[slot] = JointOperationSpan(path, opened.event_start, len(staged._events))
+    |                                                                                                     ^^^^
+113 |             if pickle.dumps(self._rng.bit_generator.state) != initial_state:
+114 |                 raise ValueError("caller RNG changed during the joint transaction")
+    |
+
+Found 8 errors (1 fixed, 7 remaining).
