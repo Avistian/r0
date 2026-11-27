@@ -1,0 +1,49 @@
+{
+  "source": "bb78d8174ebe322b7784027e425d16414525ede1",
+  "archive": "0028-source-matrix-development.zip",
+  "archive_sha256": "3792ca000024e870fd81c689e37c30bb9c27eef66e379060de72ee224d5aea96",
+  "entries": [
+    {
+      "path": "r0-28-source-matrix-red.log",
+      "bytes": 1467,
+      "sha256": "41e71e0c6cee93342df3d4327421cc940b6300727042ab43830da4242fa12326"
+    },
+    {
+      "path": "r0-28-source-matrix-green.log",
+      "bytes": 80,
+      "sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236"
+    },
+    {
+      "path": "r0-28-source-matrix-profile-red.log",
+      "bytes": 79687,
+      "sha256": "c5f1e7a59e59d9b6b340d866f4b10f14a5a1e903ba1ad5ff7ad113dd596221f4"
+    },
+    {
+      "path": "r0-28-source-matrix-profile-green.log",
+      "bytes": 80,
+      "sha256": "c6ce8518a2cc113cc5560b3731e234ed6d559e746221ae903ce01599dfe7e797"
+    },
+    {
+      "path": "r0-28-source-matrix-targeted.log",
+      "bytes": 80,
+      "sha256": "45e00f2cc162072e381af0198bc09a54daa73544fa9cd47b4ed25760a061c4aa"
+    },
+    {
+      "path": "r0-28-source-matrix-explorer.log",
+      "bytes": 7449,
+      "sha256": "78a50fc9b4998766d11b07deea2a7262d96e1b43f6f45672c01770e639ec8638"
+    },
+    {
+      "path": "original-worker-failures.jsonl",
+      "bytes": 94,
+      "sha256": "261e55b905e4bfd99c30a4cdf07ad9cd2b2b5e0fd7a8daed46d5a42d6a03df81"
+    },
+    {
+      "path": "complete-failed-backend-recipe.json",
+      "bytes": 303125,
+      "sha256": "616abb103538df976bd166d2ea3ba8a10596779d8cc0df2ab0683dba6ba00eb3",
+      "qualification": "same exact identity retained during final full-suite run; source unchanged"
+    }
+  ],
+  "qualification": "Development working-tree RED/GREEN history, not immutable snapshots of every intermediate source. Original unfiltered backend run:23 successes,1 generation exp overflow at seed28/task10, forward causal-source-plain-refreshed-matrices-v1, default8 features. The same identity is retained as an explicit failure assertion; no replacement. Full checked revision evidence is separate."
+}

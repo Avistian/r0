@@ -222,5 +222,20 @@ Plain profiles retain unwrapped primitives. All support forward, layered and
 redirection graphs through the shared saved backend path. They preserve explicit
 overflow failures and valid degenerate draws. See
 [source causal profile laws and qualifications](issue-28-source-causal-profiles.md).
-Matrix integration and remaining wrappers are still required; these profiles do
-not establish full source joint-prior reproduction or browser/Colab acceptance.
+Their matrix-integrated counterparts are described below. Remaining wrappers,
+full source joint-prior reproduction and browser/Colab acceptance remain required.
+
+## Joint source activation and matrix profiles
+
+The eight `causal-source-{standard,plain}{,-refreshed,-local,-global}-matrices-v1`
+profiles extend the same graph, width, placement and calibration settings with
+all five recorded matrix families. Transformed matrices and node stages share
+one source activation selector scope; matrix transformations always use its plain
+selector. Matrix numerical/categorical preferences retain their complete field
+bindings. Standard node wrappers fit independent ancestral samples through the
+materialized matrix equations, including their retained noise order. Public
+`with_source_matrices` also exposes uniform positive vectors and matrix-family,
+point-law and covariance-base restrictions. See
+[joint laws and verification state](issue-28-source-matrix-profiles.md).
+These remain declared r0 exploration profiles, with broader exogenous integration
+and other accepted #28 options still required.

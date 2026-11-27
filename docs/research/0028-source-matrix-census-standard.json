@@ -1,0 +1,198 @@
+{
+  "families": {
+    "forward": {
+      "attempted": 64,
+      "failed": 0,
+      "failures": [],
+      "flags": {
+        "disconnected_target": 35,
+        "inactive_relu": 7,
+        "saturated_activation": 9
+      },
+      "missing_complete_recipes": 0,
+      "noise_after_probabilities": {
+        "0.0": 23,
+        "0.5": 26,
+        "1.0": 15
+      },
+      "placements": {
+        "both": 21,
+        "input": 22,
+        "output": 21
+      },
+      "primitive_kinds": {
+        "abs": 17,
+        "argsort": 12,
+        "elu": 14,
+        "exp": 40,
+        "gaussian_bump": 38,
+        "hardtanh": 27,
+        "heaviside_positive": 19,
+        "identity": 26,
+        "integer_power": 2,
+        "interval_abs_le_1": 20,
+        "leaky_relu": 29,
+        "log_clip_abs": 23,
+        "log_sigmoid": 31,
+        "modulo": 31,
+        "rank": 23,
+        "reciprocal_abs_power": 9,
+        "relu": 28,
+        "relu6": 23,
+        "relu_power": 112,
+        "round": 10,
+        "selu": 7,
+        "sigmoid": 16,
+        "sign_positive": 26,
+        "signed_power": 130,
+        "silu": 14,
+        "sin": 40,
+        "softmax": 18,
+        "softplus": 17,
+        "square": 11,
+        "tanh": 15,
+        "tied_max": 16
+      },
+      "rescale_draws": 759,
+      "stage_bindings": 759,
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64
+    },
+    "layered": {
+      "attempted": 64,
+      "failed": 0,
+      "failures": [],
+      "flags": {
+        "disconnected_target": 38,
+        "inactive_relu": 7,
+        "saturated_activation": 10
+      },
+      "missing_complete_recipes": 0,
+      "noise_after_probabilities": {
+        "0.0": 19,
+        "0.5": 24,
+        "1.0": 21
+      },
+      "placements": {
+        "both": 19,
+        "input": 23,
+        "output": 22
+      },
+      "primitive_kinds": {
+        "abs": 17,
+        "argsort": 9,
+        "elu": 38,
+        "exp": 33,
+        "gaussian_bump": 18,
+        "hardtanh": 21,
+        "heaviside_positive": 30,
+        "identity": 11,
+        "integer_power": 3,
+        "interval_abs_le_1": 8,
+        "leaky_relu": 9,
+        "log_clip_abs": 10,
+        "log_sigmoid": 29,
+        "modulo": 26,
+        "rank": 39,
+        "reciprocal_abs_power": 5,
+        "relu": 14,
+        "relu6": 25,
+        "relu_power": 192,
+        "round": 15,
+        "selu": 19,
+        "sigmoid": 23,
+        "sign_positive": 21,
+        "signed_power": 138,
+        "silu": 50,
+        "sin": 8,
+        "softmax": 9,
+        "softplus": 8,
+        "square": 16,
+        "tanh": 41,
+        "tied_max": 14
+      },
+      "rescale_draws": 835,
+      "stage_bindings": 835,
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64
+    },
+    "redirection": {
+      "attempted": 64,
+      "failed": 0,
+      "failures": [],
+      "flags": {
+        "disconnected_target": 6,
+        "inactive_relu": 4,
+        "saturated_activation": 8,
+        "zero_target_dispersion": 2
+      },
+      "missing_complete_recipes": 0,
+      "noise_after_probabilities": {
+        "0.0": 26,
+        "0.5": 19,
+        "1.0": 19
+      },
+      "placements": {
+        "both": 27,
+        "input": 18,
+        "output": 19
+      },
+      "primitive_kinds": {
+        "abs": 20,
+        "argsort": 39,
+        "elu": 21,
+        "exp": 35,
+        "gaussian_bump": 15,
+        "hardtanh": 24,
+        "heaviside_positive": 45,
+        "identity": 10,
+        "integer_power": 7,
+        "interval_abs_le_1": 19,
+        "leaky_relu": 13,
+        "log_clip_abs": 35,
+        "log_sigmoid": 28,
+        "modulo": 11,
+        "rank": 25,
+        "reciprocal_abs_power": 11,
+        "relu": 47,
+        "relu6": 25,
+        "relu_power": 215,
+        "round": 30,
+        "selu": 60,
+        "sigmoid": 27,
+        "sign_positive": 25,
+        "signed_power": 267,
+        "silu": 42,
+        "sin": 24,
+        "softmax": 35,
+        "softplus": 32,
+        "square": 69,
+        "tanh": 46,
+        "tied_max": 25
+      },
+      "rescale_draws": 1172,
+      "stage_bindings": 1172,
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64
+    }
+  },
+  "filter": "none",
+  "head": "bb78d8174ebe322b7784027e425d16414525ede1",
+  "peak_rss": "NOT_MEASURED",
+  "profile": "causal-source-standard-matrices-v1",
+  "program_sha256": "ec8db3a065096d1abf48818ce0cb187943da0c07c4e089df4131cfe848a3ec83",
+  "seed": 28,
+  "timing": "NOT_MEASURED"
+}

@@ -1,0 +1,236 @@
+{
+  "families": {
+    "forward": {
+      "attempted": 64,
+      "failed": 4,
+      "failures": [
+        {
+          "error": "ValueError: nonfinite integer_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 3
+        },
+        {
+          "error": "ValueError: nonfinite exp activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 28
+        },
+        {
+          "error": "ValueError: nonfinite integer_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 48
+        },
+        {
+          "error": "ValueError: nonfinite relu_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 61
+        }
+      ],
+      "flags": {
+        "disconnected_target": 31,
+        "inactive_relu": 3,
+        "saturated_activation": 2
+      },
+      "missing_complete_recipes": 0,
+      "noise_after_probabilities": {
+        "0.0": 23,
+        "0.5": 24,
+        "1.0": 17
+      },
+      "placements": {
+        "both": 31,
+        "input": 13,
+        "output": 20
+      },
+      "primitive_kinds": {
+        "exp": 30,
+        "gaussian_bump": 124,
+        "hardtanh": 44,
+        "heaviside_positive": 34,
+        "identity": 31,
+        "integer_power": 83,
+        "interval_abs_le_1": 17,
+        "leaky_relu": 21,
+        "log_clip_abs": 17,
+        "log_sigmoid": 24,
+        "reciprocal_abs_power": 109,
+        "relu": 71,
+        "relu6": 46,
+        "relu_power": 110,
+        "round": 31,
+        "selu": 86,
+        "sigmoid": 25,
+        "signed_power": 110,
+        "silu": 72,
+        "softmax": 38,
+        "softplus": 40,
+        "tanh": 12,
+        "tied_max": 22
+      },
+      "rescale_draws": 0,
+      "stage_bindings": 1100,
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 60
+    },
+    "layered": {
+      "attempted": 64,
+      "failed": 4,
+      "failures": [
+        {
+          "error": "ValueError: nonfinite exp activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 29
+        },
+        {
+          "error": "ValueError: nonfinite integer_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 43
+        },
+        {
+          "error": "ValueError: nonfinite exp activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 44
+        },
+        {
+          "error": "ValueError: nonfinite integer_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 48
+        }
+      ],
+      "flags": {
+        "disconnected_target": 38,
+        "inactive_relu": 1
+      },
+      "missing_complete_recipes": 0,
+      "noise_after_probabilities": {
+        "0.0": 18,
+        "0.5": 30,
+        "1.0": 16
+      },
+      "placements": {
+        "both": 22,
+        "input": 18,
+        "output": 24
+      },
+      "primitive_kinds": {
+        "abs": 53,
+        "elu": 52,
+        "exp": 42,
+        "gaussian_bump": 17,
+        "hardtanh": 24,
+        "identity": 48,
+        "integer_power": 81,
+        "interval_abs_le_1": 62,
+        "leaky_relu": 61,
+        "log_sigmoid": 39,
+        "modulo": 3,
+        "rank": 24,
+        "reciprocal_abs_power": 86,
+        "relu": 38,
+        "relu_power": 68,
+        "round": 4,
+        "selu": 17,
+        "sigmoid": 42,
+        "sign_positive": 21,
+        "signed_power": 124,
+        "softmax": 12,
+        "softplus": 42,
+        "tanh": 57
+      },
+      "rescale_draws": 0,
+      "stage_bindings": 935,
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 60
+    },
+    "redirection": {
+      "attempted": 64,
+      "failed": 3,
+      "failures": [
+        {
+          "error": "ValueError: nonfinite exp activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 44
+        },
+        {
+          "error": "ValueError: nonfinite exp activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 49
+        },
+        {
+          "error": "ValueError: nonfinite integer_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 52
+        }
+      ],
+      "flags": {
+        "disconnected_target": 7,
+        "inactive_relu": 2,
+        "saturated_activation": 1,
+        "zero_target_dispersion": 2
+      },
+      "missing_complete_recipes": 0,
+      "noise_after_probabilities": {
+        "0.0": 24,
+        "0.5": 20,
+        "1.0": 20
+      },
+      "placements": {
+        "both": 24,
+        "input": 24,
+        "output": 16
+      },
+      "primitive_kinds": {
+        "abs": 38,
+        "argsort": 53,
+        "exp": 50,
+        "gaussian_bump": 27,
+        "hardtanh": 33,
+        "heaviside_positive": 36,
+        "identity": 104,
+        "integer_power": 107,
+        "interval_abs_le_1": 39,
+        "log_clip_abs": 72,
+        "log_sigmoid": 46,
+        "modulo": 53,
+        "reciprocal_abs_power": 92,
+        "relu": 40,
+        "relu6": 18,
+        "relu_power": 58,
+        "round": 30,
+        "selu": 54,
+        "sigmoid": 49,
+        "sign_positive": 23,
+        "signed_power": 112,
+        "silu": 8,
+        "sin": 61,
+        "softmax": 82,
+        "softplus": 11,
+        "square": 34,
+        "tanh": 31,
+        "tied_max": 17
+      },
+      "rescale_draws": 0,
+      "stage_bindings": 1221,
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 61
+    }
+  },
+  "filter": "none",
+  "head": "bb78d8174ebe322b7784027e425d16414525ede1",
+  "peak_rss": "NOT_MEASURED",
+  "profile": "causal-source-plain-global-matrices-v1",
+  "program_sha256": "ec8db3a065096d1abf48818ce0cb187943da0c07c4e089df4131cfe848a3ec83",
+  "seed": 28,
+  "timing": "NOT_MEASURED"
+}

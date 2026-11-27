@@ -1,0 +1,20 @@
+Standards review: bb78d8174ebe322b7784027e425d16414525ede1
+Base: b21f35309be965c35bb82800c6739f4f530a903b
+Diff: git diff b21f35309be965c35bb82800c6739f4f530a903b...HEAD
+Commit: bb78d81 feat(priors): integrate shared source activations and matrix priors #28
+
+Documented-standard violations: none identified in the reviewed diff. Read AGENTS.md, CODING_STANDARDS.md, src/r0/modules/README.md, docs/adr/0006-clean-room-implementation.md, docs/agents/protocol-review.md, docs/requirements.md, and the home-repository AGENTS.md. The home TypeScript/course reference was not imposed. Internal lib imports stay within priors; tests use its public entry point. No protected-file or dependency edits appear. The increment explicitly leaves whole-issue and environment acceptance pending.
+
+Judgment call — possible Duplicated Code (advisory): src/r0/modules/priors/lib/source_matrix_sampling.py:94–115 repeats the source-stage planning loop in source_causal_sampling.py:57–78. The added hunk includes:
+    rescales.numerical(rescale_request())
+    rescale = index
+    ...
+    activation_cost += 6 * width + 2
+    largest_activation = max(largest_activation, width)
+    ...
+    bindings.append(SourceStageBinding(node_index, stage, len(matrix_nodes) + index, rescale))
+The earlier sampler repeats those rescale, width, wrapper-storage and binding decisions, with a zero selection offset and parameter_cost name. Changes to standard-wrapper storage or binding semantics now require synchronized edits. Consider one internal stage-planning helper accepting the existing activation sampler and selection offset; retain each caller's distinct seed identity, matrix-first ordering and combined admission. This is a maintainability heuristic, not a correctness failure or documented-standard breach.
+
+Read-only review; no tests run by this reviewer. Parent owns execution evidence. Preflight and final HEAD matched the frozen commit; git status showed only the existing untracked .venv. Review covered the complete increment, with docs/issue-28-source-matrix-profiles.md and the accepted whole-issue specification read for context. It does not certify broader issue #28 completion.
+
+Totals: 0 documented violations; 1 advisory smell. Worst Standards concern: duplicated source-stage planning/accounting.

@@ -280,3 +280,26 @@ Successful raw census archives are LOCAL_ONLY with hashes; all headers and faile
 records are published. Matrix integration, remaining wrappers, wider graph/network/
 tree/GP and structural options, typed states, interventions and actual browser/Colab
 workbench delivery remain required. The full goal stays active.
+
+## Joint source activation and matrix checkpoint
+
+At `bb78d81`, eight joint profiles integrate source standard/plain node activations
+with all five matrix families across three graph families. One activation scope
+owns transformed-matrix and node choices. Complete matrix/stage bindings and
+independent ancestral calibration survive JSON loading, generation and saved
+backend replay. Matrix calibration follows the actual affine-then-noise equation.
+[Laws and evidence](issue-28-source-matrix-profiles.md).
+
+Full checks pass **738 tests, one skipped**. Independent scoped PASS covers 45
+numerical cases, 33 corruption/admission rejects, six plain policy variants, six
+saved task-type workflows, 24 profile/graph combinations and 16 joint global seeds.
+Twenty old profiles retain 61 byte-identical files. Original numerical-oracle and
+fixture stops, diagnoses and corrected full runs remain published. Standards finds
+no documented violations and one advisory duplicated-planning concern.
+
+The unfiltered census retains **1,509 valid / 1,536 attempted**, with 27 generation
+overflows and complete sampled recipes for every attempt. All headers and failed
+recipes are published; successful raw archives remain LOCAL_ONLY with hashes.
+Pooled recipes exercise 31 primitives and five matrix families. Remaining wrappers,
+broader exogenous/graph/network/tree/GP options, typed states, interventions and
+actual browser/Colab workbench delivery remain required. The full goal stays active.
