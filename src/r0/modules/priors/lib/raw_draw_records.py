@@ -76,6 +76,7 @@ def draw_arguments(
         "random": set(),
         "uniform": {"low", "high"},
         "student_t": {"df"},
+        "zipf": {"exponent"},
         "gamma": {"concentration"},
         "exponential": {"scale"},
         "integers": {"high"},
@@ -92,6 +93,8 @@ def draw_arguments(
         raise ValueError("raw uniform bounds must be finite and ordered")
     if distribution == "student_t" and (not finite_number(args["df"]) or args["df"] <= 0):
         raise ValueError("raw Student-t degrees must be positive and finite")
+    if distribution == "zipf" and (not finite_number(args["exponent"]) or args["exponent"] <= 1):
+        raise ValueError("raw Zipf exponent must be finite and greater than one")
     if distribution == "exponential" and (not finite_number(args["scale"]) or args["scale"] <= 0):
         raise ValueError("raw exponential scale must be finite and positive")
     if distribution == "gamma" and (
@@ -134,6 +137,8 @@ def numpy_draw(
         values = rng.uniform(args["low"], args["high"], size=shape)
     elif distribution == "student_t":
         values = rng.standard_t(args["df"], size=shape)
+    elif distribution == "zipf":
+        values = rng.zipf(args["exponent"], size=shape)
     elif distribution == "exponential":
         values = rng.exponential(args["scale"], size=shape)
     elif distribution == "gamma":
@@ -170,7 +175,7 @@ class RawDrawRecord:
         if self.version != "raw-draw-v1" or type(self.sequence) is not int or self.sequence < 0:
             raise ValueError("raw draw requires its version and nonnegative sequence")
         draw_arguments(self.distribution, self.shape, self.parameters)
-        integer = self.distribution in ("integers", "permutation", "choice")
+        integer = self.distribution in ("integers", "permutation", "choice", "zipf")
         if (
             self.dtype != ("<i8" if integer else "<f8")
             or type(self.values) is not tuple
@@ -182,6 +187,8 @@ class RawDrawRecord:
             for v in self.values
         ):
             raise ValueError("raw draw values must be finite and match their numeric type")
+        if self.distribution == "zipf" and any(value < 1 for value in self.values):
+            raise ValueError("raw Zipf samples must be positive integers")
         if self.generator not in ("PCG64", "PCG64DXSM", "Philox", "SFC64", "MT19937") or any(
             type(s) is not str or re.fullmatch(r"[0-9a-f]{64}", s) is None
             for s in (self.state_before, self.state_after)
