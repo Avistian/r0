@@ -6,7 +6,7 @@ import numpy as np
 
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.generator_snapshot import snapshot_generator
-from r0.modules.priors.lib.network_innovation_compile import compile_network_innovations
+from r0.modules.priors.lib.joint_function_admission import function_record_cost
 from r0.modules.priors.lib.network_innovation_plan import (
     NetworkInnovationPlan,
     NetworkInnovationStage,
@@ -50,21 +50,27 @@ def sample_innovation_record(
         request.importance_gates,
         request.profile,
     )
-    compile_network_innovations(source, probe)
+    # The compiled graph has extra noise/activation nodes, live buffers and
+    # ancestry certificates. Admit the complete shape, not only source blocks.
+    compiled = with_network_innovations(source, probe)
+    report = compiled.admit()
     count = 2 * sum(w for _, w in selected) + source.function.input_width
     raw = request.raw_limits
     # Scalar TNLU uses three draws. Charge full metadata, scalar records, half-normals,
     # and RNG snapshots before any statistics draw, then exact-check the final object.
-    extra = 32768 * count + 4 * raw.state_bytes
+    initial = snapshot_generator(rng, byte_limit=raw.state_bytes)
+    control_parameters, control_storage = function_record_cost(
+        (request, initial, initial), source.limits
+    )
+    extra = 32768 * count + 4 * raw.state_bytes + 4 * control_storage
     if (
         4 * count > raw.draws
         or 4 * count > raw.numbers
         or extra > raw.working_bytes
-        or extra > source.limits.working_bytes
-        or 512 * count > source.limits.parameters
+        or report["estimated_working_bytes"] + extra > source.limits.working_bytes
+        or report["parameters"] + control_parameters + 512 * count > source.limits.parameters
     ):
         raise ValueError("network innovation statistics admission exceeded before draws")
-    initial = snapshot_generator(rng, byte_limit=raw.state_bytes)
     ledger = RawDrawLedger(limits=raw)
     with ledger.transactions({"statistics": rng}) as (owned, capture):
         stream = owned["statistics"]
