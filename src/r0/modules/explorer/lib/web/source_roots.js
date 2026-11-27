@@ -27,7 +27,7 @@ $("source-root-apply").onclick=()=>act("Applying explicit root controls…",asyn
 });
 
 function showSourceRootEditor() {
-  const root=(networkDraft?.base || networkDraft)?.root;
+  const root=(networkDraft?.source || networkDraft?.base || networkDraft)?.root;
   const active=["source-root-base-v1","sampled-source-root-base-v1","prototype-root-base-v1"].includes(root?.version);
   $("source-root-editor").hidden=!active;
   if(!active) return;
@@ -46,13 +46,13 @@ $("source-root-edit-apply").onclick=()=>act("Validating frozen root draft…",as
   const root=JSON.parse(text);
   if(!["source-root-base-v1","prototype-root-base-v1"].includes(root.version)) throw new Error("Authored root edits require an explicit source law or frozen prototype bank; sampled receipts cannot be edited.");
   if(root.version==="prototype-root-base-v1" && root.bank?.version!=="frozen-prototype-root-v1") throw new Error("Prototype edits require an authored frozen bank, not altered sampling receipts.");
-  (candidate.base || candidate).root=root;
+  (candidate.source || candidate.base || candidate).root=root;
   const planText=networkNoiseMode ? $("network-noise-plan").value : null;
   const validated=await request(networkNoiseMode ? "network_noise_draft" : "network_draft", networkNoiseMode ? {recipe:candidate,innovation_plan:JSON.parse(planText),...limits()} : networkEditRequest(candidate));
   if((networkNoiseMode && $("network-noise-plan").value!==planText) || $("source-root-json").value!==text || $("network-recipe").value!==pretty(networkDraft)) throw new Error("Draft changed during validation; text retained. Apply again.");
   networkDraft=validated.recipe;
   if(networkNoiseMode) $("network-noise-compiled").textContent=pretty(validated.compiled);
   $("network-recipe").value=pretty(networkDraft);
-  $("source-root-provenance").textContent=pretty((networkDraft.base || networkDraft).root);
+  $("source-root-provenance").textContent=pretty((networkDraft.source || networkDraft.base || networkDraft).root);
   $("workbench-note").textContent="Validated authored root draft applied. Generate and save the linked edit; the original sampled root stays in the original archive.";
 });

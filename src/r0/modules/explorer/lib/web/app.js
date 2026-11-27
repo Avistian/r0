@@ -42,7 +42,7 @@ async function act(message, work) {
   }
 }
 
-function taskControls(recipe) { return recipe.recipe?.task || recipe.request?.task || recipe.task || recipe; }
+function taskControls(recipe) { return recipe.request?.source?.task || recipe.source?.task || recipe.recipe?.task || recipe.request?.task || recipe.task || recipe; }
 function parseRecipe() {
   return JSON.parse($("recipe").value, (key, value) => {
     if (key === "split" && typeof value === "number" && !Number.isSafeInteger(value)) throw new Error("Write large split identifiers as quoted decimal strings to preserve every digit.");
@@ -53,15 +53,20 @@ function fillControls(recipe) {
   const task = taskControls(recipe);
   const native=["native-causal-v1","sampled-native-graph-v1","native-vector-causal-v1","sampled-native-vector-graph-v1","converted-causal-v1","sampled-converted-graph-v1"].includes(recipe.version);
   $("difficulty-label").hidden=native;
-  for(const id of ["features","active","task-type","classes"]) $(id).disabled=native;
+  for(const id of ["features","active","task-type","classes"]) $(id).disabled=native || isPrototypeBatch(recipe);
   for (const [id, key] of Object.entries({rows: "rows", context: "context_rows", features: "features", active: "active_features", "task-type": "task_type", classes: "classes"})) $(id).value = task[key];
   $("difficulty").value = task.task_type === "regression" ? task.noise_ratio : task.separation;
   $("difficulty-label").firstChild.textContent = task.task_type === "regression" ? "Noise / signal" : "Class separation";
   $("recipe").value = pretty(recipe);
 }
 function updateRecipe(changed) {
-  const recipe = parseRecipe(), task = taskControls(recipe);
-  if (recipe.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1"].includes(recipe.version) || isStandaloneNetwork(recipe)) throw new Error("Frozen construction archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
+  let recipe = parseRecipe();
+  if (isPrototypeBatch(recipe)) {
+    if (!["rows","context","difficulty"].includes(changed)) throw new Error("Use the architecture editor to change batch network geometry.");
+    recipe=recipe.request || recipe;
+  }
+  const task = taskControls(recipe);
+  if (recipe.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1"].includes(recipe.version) || (isStandaloneNetwork(recipe) && !isPrototypeBatch(recipe))) throw new Error("Frozen construction archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
   const fields = {rows: "rows", context: "context_rows", features: "features", active: "active_features", classes: "classes"};
   if (fields[changed]) task[fields[changed]] = number(changed);
   if (changed === "difficulty") task[task.task_type === "regression" ? "noise_ratio" : "separation"] = number("difficulty");
@@ -87,9 +92,17 @@ function updateRecipe(changed) {
 function limits() { return {...explorationLimits(), device: $("device").value, max_seconds: number("seconds"), max_bytes: number("bytes") * 1024 ** 2}; }
 async function generate() {
   const stored=current?.view?.recipe?.recipe;
-  const frozen=stored && (stored.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1"].includes(stored.version) || isStandaloneNetwork(stored)) && $("recipe").value===pretty(stored);
+  const batch=stored?.version==="prototype-batch-network-realized-v1" && $("recipe").value===pretty(stored);
+  const frozen=stored && !isPrototypeBatch(stored) && (stored.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1"].includes(stored.version) || isStandaloneNetwork(stored)) && $("recipe").value===pretty(stored);
   const identity={seed:$("seed").value,task_id:$("task-id").value};
-  const payload=frozen ? {record_json:current.recipe_json,frozen_identity:identity} : {recipe:parseRecipe(),...identity};
+  const candidate=parseRecipe();
+  let taskOverride=false;
+  if(stored?.version==="prototype-batch-network-realized-v1" && candidate.version==="prototype-batch-network-request-v1") {
+    const original=JSON.parse(JSON.stringify(stored.request)), check=JSON.parse(JSON.stringify(candidate));
+    delete original.source.task;delete check.source.task;
+    taskOverride=pretty(original)===pretty(check);
+  }
+  const payload=taskOverride ? {record_json:current.recipe_json,population_identity:identity,population_task:taskControls(candidate)} : batch ? {record_json:current.recipe_json,population_identity:identity} : frozen ? {record_json:current.recipe_json,frozen_identity:identity} : {recipe:parseRecipe(),...identity};
   const result = await request("generate", {...payload,...limits()});
   show(result);
 }
@@ -195,7 +208,8 @@ function charts() {
 function show(result) {
   current = result; const view = result.view;
   $("empty").hidden = true; $("results").hidden = false;
-  $("family-title").textContent = view.recipe.recipe.version === "standalone-network-innovations-v1" ? "standalone network · internal innovations" : view.family;
+  $("next").textContent=isPrototypeBatch(view.recipe.recipe) ? "Next population" : "Next task";
+  $("family-title").textContent = isPrototypeBatch(view.recipe.recipe) ? "standalone network · batch prototype population" : view.recipe.recipe.version === "standalone-network-innovations-v1" ? "standalone network · internal innovations" : view.family;
   $("task-title").textContent = view.task_type === "regression" ? "Regression dataset" : `${view.classes.length}-class dataset`;
   $("metrics").replaceChildren();
   for (const [label, value] of [["TOTAL ROWS", view.total_rows], ["FEATURES", view.features.length], ["CONTEXT ROWS", view.split_counts.context], ["QUERY ROWS", view.split_counts.query]]) {

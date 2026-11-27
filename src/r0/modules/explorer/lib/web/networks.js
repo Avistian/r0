@@ -2,8 +2,9 @@
 let networkNoiseMode = false;
 let networkMatchingEdit = false;
 let networkDraft = null, networkBlockDrafts = new Map(), networkSelectedBlock = null;
-function isStandaloneNetwork(recipe) { return ["standalone-network-innovations-v1","standalone-network-v1","network-input-view-v1","network-input-view-v2"].includes(recipe?.version); }
-function networkArchitecture(recipe) { return recipe?.base?.network || recipe?.network; }
+function isPrototypeBatch(recipe) { return ["prototype-batch-network-request-v1","prototype-batch-network-realized-v1"].includes(recipe?.version); }
+function isStandaloneNetwork(recipe) { return isPrototypeBatch(recipe) || ["standalone-network-innovations-v1","standalone-network-v1","network-input-view-v1","network-input-view-v2"].includes(recipe?.version); }
+function networkArchitecture(recipe) { return recipe?.source?.network || recipe?.base?.network || recipe?.network; }
 function networkConstructionNote(example) {
   sourceRootConstructionNote(example);
   $("network-noise-controls-note").hidden = example.topology !== "network-innovations";

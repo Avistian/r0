@@ -2,7 +2,7 @@
 
 import json
 from dataclasses import asdict, replace
-from typing import Any
+from typing import Any, cast
 
 from r0.modules import priors
 from r0.modules.generation.lib.network_edit_matching import apply_matching_edit_policy
@@ -15,7 +15,31 @@ def validate_network_draft(data: dict[str, Any]) -> dict[str, Any]:
     if len(json.dumps(data, allow_nan=False).encode()) > maximum:
         raise ValueError("network draft exceeds its byte cap")
     limits = priors.CausalLimits(**data.get("causal_limits", {}))
-    recipe = priors.recipe_from_dict(data["recipe"], limits=limits)
+    raw = data["recipe"]
+    original = data.get("batch_source")
+    if original is not None:
+        verified = priors.recipe_from_dict(original, limits=limits)
+        if not isinstance(verified, priors.RealizedPrototypeBatchNetworkRecipe):
+            raise ValueError("batch edit source must be an original realized archive")
+        if type(raw) is not dict:
+            raise ValueError("batch edit draft must be an object")
+        raw = cast(dict[str, Any], raw)
+        source = raw.get("source")
+        retained = json.loads(json.dumps(asdict(verified.request.source)))["root"]
+        # Browser JSON loses integral float spelling. An unchanged sampled root
+        # is restored from the strictly replayed source; edited roots must use
+        # their explicit authored representation and pass the usual decoder.
+        if type(source) is dict and cast(dict[str, Any], source).get("root") == retained:
+            raw = {**raw, "source": {**cast(dict[str, Any], source), "root": retained}}
+    recipe = priors.recipe_from_dict(raw, limits=limits)
+    if isinstance(recipe, priors.RealizedPrototypeBatchNetworkRecipe):
+        recipe = recipe.request
+    if isinstance(recipe, priors.PrototypeBatchNetworkRecipe):
+        if data.get("validation") == "network-editor":
+            recipe = replace(recipe, source=replace(recipe.source, network=recipe.source.function))
+        elif not isinstance(recipe.source.network, priors.FrozenNetworkFunction):
+            raise ValueError("batch network edits require an authored frozen function")
+        return {"status": "VALIDATED", "recipe": asdict(recipe)}
     base = recipe.base if isinstance(recipe, priors.NetworkInputView) else recipe
     if data.get("validation") == "network-editor":
         if not isinstance(base, priors.NetworkRecipe):

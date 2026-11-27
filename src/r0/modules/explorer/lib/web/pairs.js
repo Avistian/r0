@@ -3,7 +3,7 @@ const pairNames = {noise: "Noise / signal", irrelevant: "Total feature count", s
 const pairFields = {noise: "noise_ratio", irrelevant: "features", sparsity: "active_features", separation: "separation"};
 function resetPair() {
   const regression = current.view.task_type === "regression";
-  const choices = current.view.family === "causal" ? [regression ? "noise" : "separation"] : [regression ? "noise" : "separation", "irrelevant", "sparsity"];
+  const choices = (current.view.family === "causal" || isPrototypeBatch(current.view.recipe.recipe)) ? [regression ? "noise" : "separation"] : [regression ? "noise" : "separation", "irrelevant", "sparsity"];
   $("pair-intervention").replaceChildren(...choices.filter(key => current.view.recipe.recipe.version !== "network-input-view-v2" || key !== "sparsity").map(key => new Option(pairNames[key], key)));
   $("pair-metric").replaceChildren(...(regression ? [["Observed target", "target"], ["Latent signal", "scores"], ["Residual noise", "noise"]] : [["Class probability", "probabilities"], ["Latent score", "scores"], ["Sampled label index", "target"]]).map(([label, value]) => new Option(label, value)));
   $("pair-estimate").checked = false;

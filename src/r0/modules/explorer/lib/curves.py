@@ -192,6 +192,8 @@ def inspect_network_curve_guarded(
             "not conditional mean or class probability"
         )
         if noisy
+        else "frozen network on observed batch coordinates; no root redraw or query normalization"
+        if record["recipe"].get("version") == "prototype-batch-network-realized-v1"
         else (
             "frozen latent network channels, including retained matching; not class probabilities"
         ),

@@ -18,6 +18,10 @@ def network_curve(data: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("network curve request exceeds byte cap")
     limits = priors.CausalLimits(**data["causal_limits"])
     recipe = priors.recipe_from_dict(data["recipe"], limits=limits)
+    if isinstance(recipe, priors.RealizedPrototypeBatchNetworkRecipe):
+        # Observed grid coordinates already are convex mixtures; do not redraw
+        # prototypes, row weights, or source normalization for response queries.
+        recipe = recipe.request.source
     if not isinstance(
         recipe, (priors.NetworkRecipe, priors.NetworkInputView, priors.NetworkInnovationRecipe)
     ):

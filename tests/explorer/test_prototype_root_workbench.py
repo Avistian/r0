@@ -69,7 +69,7 @@ def test_bank_construction_next_replay_trace_edit_and_reopen(mode: str, tmp_path
     assert session.request("view", {})["recipe_json"] == first["recipe_json"]
 
 
-def test_batch_reference_rejects_without_changing_current_archive(tmp_path: Path):
+def test_batch_reference_rejects_contradictory_independent_controls(tmp_path: Path):
     session = ExplorerSession(tmp_path)
     value = controls(session)
     first = session.request(
@@ -103,7 +103,10 @@ def test_prototype_source_normalization_and_internal_noise_compose(tmp_path: Pat
     assert replay["recipe_json"] == first["recipe_json"]
 
 
-def test_prototype_shared_local_notebook_callback(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+@pytest.mark.parametrize("batch", [False, True])
+def test_prototype_shared_local_notebook_callback(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, batch: bool
+):
     import sys
     from types import ModuleType
     from typing import Any
@@ -134,12 +137,18 @@ def test_prototype_shared_local_notebook_callback(tmp_path: Path, monkeypatch: p
         PREFIX + "dirichlet-concentration-r0 / ceil-r0"
     ]
     controls["source"]["source"]["task"].update(rows=16, context_rows=8)
+    if batch:
+        controls.update(
+            lifecycle="prototype-batch-reference-v1", reference_rows=None, bank_seed=None
+        )
     result = invoke(
         "construct", {"controls": controls, "construction_seed": "28", "seed": "7", "task_id": "9"}
     )["application/json"]
+    details = result["view"]["construction_details"]
     assert (
-        result["view"]["construction_details"]["source_root"]["kind"]
-        == "prototype-convex-mixture-root"
+        details["kind"] == "prototype-batch-network"
+        if batch
+        else details["source_root"]["kind"] == "prototype-convex-mixture-root"
     )
     assert invoke("export", {})["application/json"]["data"]
     opened = invoke("open", {"archive": result["archive"], "task_id": "9"})["application/json"]

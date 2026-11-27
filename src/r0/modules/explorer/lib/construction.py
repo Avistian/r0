@@ -214,3 +214,45 @@ def prepare_mechanism_editor(
     limits = caller_limits(data)
     prepared = guarded_network_editor(task, data, output_dir, limits=limits)
     return prepared if prepared is not None else mechanism_editor(task, limits=limits)
+
+
+def population_identity(record: dict[str, Any], data: dict[str, Any]) -> dict[str, Any]:
+    """Advance a batch population explicitly, without calling it frozen identity."""
+    if "population_identity" not in data:
+        if "population_task" in data:
+            raise ValueError("batch task changes require explicit population identity")
+        return record
+    identity = data["population_identity"]
+    raw = record.get("recipe")
+    if (
+        "record_json" not in data
+        or "frozen_identity" in data
+        or type(identity) is not dict
+        or set(cast(dict[str, Any], identity)) != {"seed", "task_id"}
+        or type(raw) is not dict
+        or cast(dict[str, Any], raw).get("version") != "prototype-batch-network-realized-v1"
+    ):
+        raise ValueError(
+            "population identity requires an original batch archive and seed/task keys"
+        )
+    changed = {**record, **cast(dict[str, Any], identity)}
+    if "population_task" in data:
+        task = data["population_task"]
+        request = cast(dict[str, Any], raw)["request"]
+        original_task = request["source"]["task"]
+        if type(task) is not dict or set(cast(dict[str, Any], task)) != set(original_task):
+            raise ValueError("batch task edit requires complete task fields")
+        task = cast(dict[str, Any], task)
+        allowed = {"rows", "context_rows", "noise_ratio", "separation"}
+        if any(task[key] != value for key, value in original_task.items() if key not in allowed):
+            raise ValueError("batch task edit cannot change architecture geometry or vocabulary")
+        changed["recipe"] = {**request, "source": {**request["source"], "task": task}}
+    return changed
+
+
+def guarded_archive_version(version: object) -> bool:
+    """Batch reconstruction and frozen replay both belong in the bounded worker."""
+    return frozen_archive_version(version) or version in (
+        "prototype-batch-network-request-v1",
+        "prototype-batch-network-realized-v1",
+    )

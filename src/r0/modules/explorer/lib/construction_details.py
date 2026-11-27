@@ -4,6 +4,24 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
+    if recipe.get("version") == "prototype-batch-network-realized-v1":
+        from r0.modules.explorer.lib.networks import network_details
+
+        return {
+            **network_details(recipe["request"]["source"]),
+            "kind": "prototype-batch-network",
+            "population_identity": {
+                "seed": recipe["seed"],
+                "task_id": recipe["task_id"],
+                "rows": recipe["request"]["source"]["task"]["rows"],
+            },
+            "population": recipe["population"],
+            "notice": "Explicit batch reference: changing seed, task identity or rows reconstructs "
+            "the bank and row weights. Replay retains this exact population. Count and "
+            "temperature conventions are named r0 reconstructions, not uniquely specified "
+            "paper laws. The bank is inspected here; edit the source/request to construct "
+            "a linked new population. Internal network innovations remain a required follow-on.",
+        }
     if recipe.get("version") == "standalone-network-innovations-v1":
         from r0.modules.explorer.lib.networks import network_details
 

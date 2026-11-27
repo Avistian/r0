@@ -4,7 +4,7 @@ import json
 import uuid
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import torch
 
@@ -61,11 +61,22 @@ def create_edit(
     limits: priors.CausalLimits,
 ) -> SavedEdit:
     record = json.loads(before.recipe_json)
+    draft = data["recipe"]
+    if (
+        record["recipe"].get("version") == "prototype-batch-network-realized-v1"
+        and isinstance(draft, dict)
+        and cast(dict[str, Any], draft).get("version") == "prototype-batch-network-request-v1"
+    ):
+        draft = cast(dict[str, Any], draft)
+        source = draft.get("source")
+        retained = record["recipe"]["request"]["source"]["root"]
+        if isinstance(source, dict) and cast(dict[str, Any], source).get("root") == retained:
+            draft = {**draft, "source": {**cast(dict[str, Any], source), "root": retained}}
     # Decoding can replay calibration and sampled custody. Pass the serialized
     # source to the worker, including the authored-edit policy it must enforce.
     request = dict(
         edit_policy="authored-mechanism-v1",
-        recipe=data["recipe"],
+        recipe=cast(dict[str, Any], draft),
         seed=record["seed"],
         start=record["task_id"],
         count=1,

@@ -10,7 +10,7 @@ from r0.modules import priors as p
 
 def construct_prototype_network(
     fields: dict[str, Any], *, seed: int, limits: p.CausalLimits
-) -> p.NetworkRecipe:
+) -> p.NetworkRecipe | p.PrototypeBatchNetworkRecipe:
     from r0.modules.generation.lib.construction import construct_graph
 
     if set(fields) != {
@@ -25,9 +25,12 @@ def construct_prototype_network(
         "bank_seed",
     }:
         raise ValueError("prototype construction requires explicit bank/lifecycle/weight controls")
-    if fields["lifecycle"] != "frozen-independent-prototype-bank-r0-v1":
+    batch = fields["lifecycle"] == "prototype-batch-reference-v1"
+    if not batch and fields["lifecycle"] != "frozen-independent-prototype-bank-r0-v1":
+        raise ValueError("unsupported prototype lifecycle")
+    if batch and (fields["reference_rows"] is not None or fields["bank_seed"] is not None):
         raise ValueError(
-            "batch-reference prototype workbench is pending; never converted to a frozen bank"
+            "batch reference uses task rows and identity; reference_rows/bank_seed must be null"
         )
     source_controls = cast(dict[str, Any], fields["source"])
     if type(source_controls) is not dict or source_controls.get("topology") not in (
@@ -42,22 +45,33 @@ def construct_prototype_network(
     bank_seed = fields["bank_seed"]
     if type(bank_seed) is str and bank_seed.isascii() and bank_seed.isdecimal():
         bank_seed = int(bank_seed)
-    if type(bank_seed) is not int or not 0 <= bank_seed < 2**63:
+    if not batch and (type(bank_seed) is not int or not 0 <= bank_seed < 2**63):
         raise ValueError("prototype bank seed must be an exact integer in [0,2**63)")
     weights = p.prototype_weight_law_from_dict(fields["weights"])
     source = construct_graph(source_controls, seed=seed, limits=limits)
     if type(source) is not p.NetworkRecipe or isinstance(source.root, p.PrototypeRootBase):
         raise ValueError("prototype construction requires a nonprototype root population")
+    if batch:
+        return p.PrototypeBatchNetworkRecipe(
+            source,
+            fields["rho"],
+            weights,
+            fields["count_rule"],
+            fields["max_prototypes"],
+            p.RawDrawLimits(**fields["raw_limits"]),
+        )
     plan = p.PrototypeRootPlan(
         source.root or p.JointRootBase("gaussian", source.function.input_width),
-        fields["reference_rows"],
+        cast(int, fields["reference_rows"]),
         fields["rho"],
         weights,
         fields["count_rule"],
         fields["max_prototypes"],
         p.RawDrawLimits(**fields["raw_limits"]),
     )
-    sampled = p.sample_prototype_root(plan, rng=np.random.default_rng(bank_seed), limits=limits)
+    sampled = p.sample_prototype_root(
+        plan, rng=np.random.default_rng(cast(int, bank_seed)), limits=limits
+    )
     recipe = replace(source, root=p.PrototypeRootBase(sampled))
     verified = p.recipe_from_dict(asdict(recipe), limits=limits)
     if not isinstance(verified, p.NetworkRecipe):

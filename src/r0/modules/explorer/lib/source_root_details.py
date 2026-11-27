@@ -16,7 +16,7 @@ def source_root_details(root: dict[str, Any] | None) -> dict[str, Any] | None:
             "notice": "Frozen independent bank; fresh per-row weights shared across coordinates. "
             "Integer count and beta mappings are named r0 reconstructions; probability temperature "
             "and Dirichlet modes are extensions. Conditional bounded-bank moments differ from "
-            "construction moments. Batch-reference workbench remains pending, never substituted.",
+            "construction moments. Batch reference uses a separate population-bound task recipe.",
         }
     if root is None or root.get("version") not in (
         "source-root-base-v1",

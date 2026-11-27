@@ -19,6 +19,7 @@ def validate_edit_request(request: RunRequest, policy: object) -> None:
             priors.NativeCausalRecipe,
             priors.NativeVectorRecipe,
             priors.NetworkRecipe,
+            priors.PrototypeBatchNetworkRecipe,
             priors.NetworkInputView,
             priors.ConvertedCausalRecipe,
         ),
@@ -26,7 +27,13 @@ def validate_edit_request(request: RunRequest, policy: object) -> None:
         raise ValueError(
             "mechanism edits require a frozen authored functional graph, native graph or network"
         )
-    base = recipe.base if isinstance(recipe, priors.NetworkInputView) else recipe
+    base = (
+        recipe.source
+        if isinstance(recipe, priors.PrototypeBatchNetworkRecipe)
+        else recipe.base
+        if isinstance(recipe, priors.NetworkInputView)
+        else recipe
+    )
     if isinstance(base, priors.NetworkRecipe) and not isinstance(
         base.network, priors.FrozenNetworkFunction
     ):

@@ -1,0 +1,64 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import assert from "node:assert/strict";
+import {openBrowser} from "./explorer_browser.mjs";
+
+const [port,url,out]=process.argv.slice(2),b=await openBrowser(Number(port),url,out);
+try {
+  const preset="Prototype root: dense / multinomial-trial-temperature-r0 / ceil-r0";
+  await b.evaluate(`$('construction-panel').open=true;$('construction-family').value=${JSON.stringify(preset)};$('construction-family').onchange();$('seed').value='18014398509481985';$('task-id').value='18014398509481987';{const c=JSON.parse($('construction-controls').value);c.source.source.task.rows=16;c.source.source.task.context_rows=8;$('construction-controls').value=JSON.stringify(c);}`);
+  await b.evaluate("$('prototype-lifecycle').value='prototype-batch-reference-v1';if($('prototype-lifecycle').onchange) $('prototype-lifecycle').onchange();$('prototype-rho').value='0.25';$('prototype-probabilities').value='[0.1,0.2,0.3,0.4]'");
+  await b.click("prototype-apply");await b.click("construct");
+  const raw=await b.evaluate("current.recipe_json"), recipe=JSON.parse(raw).recipe;
+  assert.equal(recipe.version,"prototype-batch-network-realized-v1");
+  assert.equal(recipe.population.root.prototypes.length,4);
+  assert.equal(await b.evaluate("$('prototype-reference').disabled && $('prototype-seed').disabled"),true);
+  assert.equal(await b.evaluate("$('next').textContent"),"Next population");
+  assert.equal(await b.evaluate("$('intervention-load').hidden"),true);
+  assert.deepEqual(await b.evaluate("Array.from($('pair-intervention').options).map(o=>o.value)"),["noise"]);
+  await b.screenshot("batch-controls.png");
+  await b.click("next");assert.equal(await b.evaluate("$('task-id').value"),"18014398509481988");
+  assert.notDeepEqual(JSON.parse(await b.evaluate("current.recipe_json")).recipe.population,recipe.population);
+  await b.evaluate(`$('replay-record').value=${JSON.stringify(raw)}`);await b.click("replay");
+  assert.equal(await b.evaluate("current.recipe_json"),raw);
+  await b.evaluate("$('rows').value='32';$('rows').onchange()");await b.waitFor("!busy");
+  let countRejected=false;try {await b.click("generate");}catch{countRejected=true;}assert.ok(countRejected);
+  assert.equal(await b.evaluate("current.recipe_json"),raw);
+  await b.evaluate("$('prototype-probabilities').value='[]'");await b.click("prototype-apply");await b.click("construct");
+  await b.evaluate("$('rows').value='32';$('rows').onchange()");await b.waitFor("!busy");await b.click("generate");
+  const larger=JSON.parse(await b.evaluate("current.recipe_json")).recipe;
+  assert.equal(larger.population.plan.reference_rows,32);assert.equal(larger.population.root.prototypes.length,8);
+  assert.deepEqual(larger.request.source.network,recipe.request.source.network);
+  await b.evaluate(`$('replay-record').value=${JSON.stringify(raw)}`);await b.click("replay");
+  await b.click("mechanism-load");
+  assert.equal(await b.evaluate("networkDraft.version"),"prototype-batch-network-request-v1");
+  const diagram=await b.evaluate("$('network-structure').innerHTML");
+  await b.evaluate("$('network-block-json').value='{}'");
+  let rejected=false;try {await b.click("network-apply");}catch{rejected=true;}assert.ok(rejected);
+  assert.equal(await b.evaluate("$('network-block-json').value"),"{}");assert.equal(await b.evaluate("$('network-structure').innerHTML"),diagram);
+  await b.evaluate("$('network-block-json').value=pretty(networkArchitecture(networkDraft).blocks[0]);$('network-block').value=String(networkArchitecture(networkDraft).blocks.length-1);selectNetworkBlock();{const v=JSON.parse($('network-block-json').value);v.experts[0].bias[0]+=.125;$('network-block-json').value=JSON.stringify(v);}");
+  await b.click("network-apply");await b.click("network-save");
+  assert.equal(await b.evaluate("current.edit.after.recipe.recipe.version"),"prototype-batch-network-realized-v1");
+  const after=await b.evaluate("current.edit.after.recipe.recipe");
+  assert.deepEqual(after.population,recipe.population);
+  assert.equal(await b.evaluate("current.recipe_json"),raw);
+  await b.click("edit-open");await b.click("edit-export");await b.downloaded("mechanism-edit.zip",1);
+  const trace=await b.evaluate("request('graph',{indices:[15,0,15],...limits()})");assert.deepEqual(trace.graph.rows,[15,0,15]);
+  const curve=await b.evaluate("request('curve',{feature:0,points:7,...limits()})");assert.equal(curve.curve.scores.length,7);
+  assert.ok(await b.evaluate("request('graph',{indices:[0],...limits(),max_seconds:.000001}).then(()=>false,()=>true)"));
+  assert.equal(await b.evaluate("current.recipe_json"),raw);
+  for(const mode of ["multinomial-probability-temperature-r0","dirichlet-concentration-r0"]) {
+    await b.evaluate(`$('prototype-weight-mode').value=${JSON.stringify(mode)};$('prototype-weight-mode').onchange()`);
+    await b.click("prototype-apply");await b.click("construct");
+    assert.equal(JSON.parse(await b.evaluate("current.recipe_json")).recipe.population.plan.weights.mode,mode);
+  }
+  await b.screenshot("batch-dirichlet.png");
+  await b.evaluate("{const c=JSON.parse($('construction-controls').value),s=c.source.source;s.task.task_type='multiclass';s.task.classes=3;s.task.noise_ratio=0;s.network_prior.widths[s.network_prior.widths.length-1]=3;s.network_prior.families=['gated'];$('construction-controls').value=pretty(c);}");
+  await b.click("construct");
+  assert.deepEqual(await b.evaluate("Array.from($('pair-intervention').options).map(o=>o.value)"),["separation"]);
+  await b.evaluate("$('channel').value='2';$('channel').onchange();$('curve-points').value='7'");await b.click("curve");
+  assert.equal(await b.evaluate("curve.scores[0].length"),3);
+  assert.ok((await b.evaluate("$('response-plot').textContent")).includes("2"));
+  await b.screenshot("batch-multiclass.png");assert.deepEqual(b.exceptions,[]);
+  await fs.writeFile(path.join(out,"receipt.json"),JSON.stringify({status:"PASS",raw,after,allWeightLaws:true,populationNext:true,rowCountReconstruction:true,traceRows:trace.graph.rows,exceptions:b.exceptions},null,2));
+} finally {b.close();}
