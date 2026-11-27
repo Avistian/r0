@@ -100,28 +100,42 @@ clamp/population/archive cases and four correlated-noise/emission cases. Sampled
 construction-budget repair `0930474` separately preserves explicit caller limits.
 Stochastic assignments and further component-level variants remain required.
 
+## Typed categorical converter library
+
+The [typed converter contract](issue-28-categorical-converters.md) retains named
+category captures separately from descendant representation. All entries below
+are PARTIAL: authored/sampled generation, replay and original-row traces have
+bounded independent acceptance; explorer/Colab and intervention workflows are
+separate candidates. Shared primitives do not establish complete I2 reproduction.
+
+| Inventory ID | Mode | State |
+| --- | --- | --- |
+| I2.category.01 | neighbor_id | PARTIAL; unchanged numerical state, typed capture. |
+| I2.category.02 | neighbor_disc | PARTIAL; retained center representation. |
+| I2.category.03 | neighbor_func | PARTIAL; admitted post-function representation. |
+| I2.category.04 | neighbor_int | PARTIAL; retained integer representation. |
+| I2.category.05 | softmax_id | PARTIAL; unchanged state, sampled typed capture. |
+| I2.category.06 | softmax_disc | PARTIAL; sampled embedding representation. |
+| I2.category.07 | softmax_int | PARTIAL; sampled integer representation. |
+
+Nested post-function admission and shared trace-header defects have separately
+reviewed repairs; original rejection evidence remains retained. Source selectors,
+every composition and unlisted category IDs are not closed by this table.
+
 ## Explicit next gaps
 
 **A lot of variety, including intentional extensions beyond the papers, remains
-required:** broad family catalogs, configurable parameter laws, meaningful
-combinations and across-seed structural/functional diversity. Preset counts and
-shared operators do not substitute for those requirements.
+required:** broad families, configurable laws, combinations and across-seed
+structural/functional diversity. Preset counts do not substitute for those requirements.
 
-Checkpoint `076bc13` contains seven standalone network families, heterogeneous
-native vectors, intervention workflows and five sampled innovation families.
-Its full suite passed 2,276 tests; independent applicability review passed. Network editor
-draft and response-curve rejections have separately reviewed repairs. The original
-failures remain retained. Feature-extension and sparsity task-only comparisons
-remain unsupported required breadth; architecture edits are distinct.
+Checkpoint `66a09ee` includes fitted parameter laws and the typed converter
+library alongside earlier networks, native vectors, interventions and innovations.
+Full check passed 2,322 tests, one skip and one warning. Later population lifecycles,
+sampled-lifecycle combinations, typed converter workflows and network input views
+remain separate candidates. Source-specific neural/noise/root profiles, XGBoost
+and all unimplemented inventory options remain required.
 
-Additional source-specific neural profiles, all categorical converter
-representations, fitted-tree populations/lifecycles and XGBoost remain required.
-Fitted parameter sampling and typed converter work proceed separately; no in-flight
-candidate closes those obligations. Generic innovation laws do not establish every
-paper's noise or root distribution.
-
-Hosted execution, measured supported maxima, throughput and full structural and
-functional diversity qualification remain unaccepted. Source `076bc13`
-passed 2,276 tests with one skip and one warning. Earlier `01a4a4c` and
-`31f6fd0` results remain historical; none qualifies later candidates. Unlisted inventory
+Nine bounded CPU cases have measurements; this does not establish maximal
+combinations, sustained throughput, hosted/GPU or scientific acceptance. Original
+rejections and earlier full-suite results remain historical evidence. Unlisted
 IDs remain NOT_AUDITED; no whole-issue completion percentage is inferred.

@@ -7,20 +7,18 @@ scientific acceptance or whole-issue completion.
 
 ## Latest verified publication checkpoint
 
-Source `076bc1369da7102ed10abc54df7ebc14760fdd91` passed full `make check`:
-2,276 passed, one skipped, one warning in 1,370.54 seconds; all static gates passed.
+Source `66a09ee61c9760009d5a1bb0a9291b5979f6bc9f` passed full `make check`:
+2,322 passed, one skipped, one warning in 1,144.64 seconds; all static gates passed.
 The warning is sklearn's high-class-count diagnostic in the observed-class-map
-fixture. This checkpoint combines native vectors, stage/logical-variable
-interventions, seven standalone network families and five innovation families with
-the earlier parent/fitted/native work. Scoped evidence and remaining gaps follow.
+fixture. This checkpoint adds fitted parameter laws, seven typed converter modes
+and bounded CPU measurements to the earlier vector/network/innovation work.
 
-The exact-head receipt and full output are retained locally in the frozen release
-worktree under `docs/evidence/issue-28-network-noise-release/`.
 The [atomic delivery map](issue-28-atomic-delivery.md) separates mapped behavior
-from unaudited requirements. Hosted/GPU, measured supported maxima and complete
+from unaudited requirements. Hosted/GPU, complete measured envelopes and full
 paper-option coverage remain open. Smoke/eval-smoke remain NOT_AVAILABLE because
-the training/evaluation CLI commands are absent. Later fitted-parameter, typed
-converter and resource-measurement candidates are outside this full-suite result.
+training/evaluation CLI commands are absent. Later population lifecycles,
+composed parameter/lifecycle sampling, typed-converter workflows and network
+input views are outside this full-suite result.
 
 ## Combined checkpoint scoped evidence
 
@@ -146,48 +144,37 @@ test imports; `eed4876` repairs those tests through public entrypoints. Root rev
 the exact test-only delta; original rejection remains retained. That historical core review did not cover later explorer, sampled-domain, vector
 or intervention integrations; see the current checkpoint descriptions above. See [native variables](native-causal-variables.md).
 
-## Current unpublished integration
+## Fitted-parameter and typed-converter checkpoint
 
-Candidate `076bc13` combines heterogeneous native vectors, stage and logical-
-variable interventions, the guarded explorer, seven standalone network families
-and sampled non-Gaussian innovations. Its full suite passed as recorded above. Predecessor
-`31f6fd0` passed 2,223 tests, one skip and one warning in 1,374.02 seconds;
-that result does not cover later vector-intervention, innovation or UI changes.
+Source `66a09ee` adds reviewed fitted parameter laws, the typed converter library
+and reproducible CPU measurements to the [vector/network checkpoint](issue-28-vector-network-checkpoint.md).
+Later population lifecycles, composed lifecycle sampling, typed converter explorer
+and intervention workflows, and network input views remain separate candidates.
 
-- Native vectors: original unused adapter controls were rejected; `cb088fb`
-  repairs admission. Independent arithmetic, replay, malformed archives and browser
-  checks cover that bounded component.
-- Vector interventions: `5cd1b7e` passed independent review of all 21 files,
-  14 clamp/population/archive cases, four correlated-noise/emission oracles and
-  ten malformed records. Integration `c174327` passed 40 focused checks.
-- Network/vector traces: `26352a2` repairs missing architecture steps at root and
-  internal nodes. Two public regressions failed before repair; 44 focused checks
-  and independent noisy-pipeline/arithmetic/trace-link probes passed afterward.
-- Innovations: `f4bd521` adds five law families with factors, truncation and
-  signal-dependent scales. Independent checks cover ten family/factor archives,
-  15 raw-factor matrices, six tamper rejections and four-engine rollback.
-  Root Chromium checked three families with stage interventions, repeated rows,
-  save/reopen/export and failure preservation; the final ZIP was replay-checked.
-- Construction budgets: `0930474` repairs sampled intervention pairs using reduced
-  runtime limits for complete construction archives. Both v1/v2 pipeline cases
-  failed first; 23 focused checks and ten combination/archive probes then passed.
-  Independent review checked four geometry/parent variants and 16 strict caller
-  limit rejections. Explicit caller limits remain authoritative.
-- Network explorer: original `4557a24` malformed drafts were rejected; `bb5da1`
-  repairs them. Further review rejected unsupported curves; `67f3906` repairs
-  frozen raw-network curves. Both repairs have independent bounded acceptance.
-  Root `44ad4ec` corrects unsupported feature-count pair advertising, with browser
-  checks and independent seven-family arithmetic. Feature-extension/sparsity task
-  comparisons remain required, unsupported breadth, distinct from architecture edits.
-  `076bc13` clarifies standalone intervention applicability while preserving
-  network mechanisms inside causal graphs; independent Chromium review passed,
-  including saved-pair reopening and nonlinear intervention arithmetic.
+- Fitted parameters: `fe66402` passed independent NumPy law/final-state checks,
+  reconstructed sklearn predictions, classifier-rule oracles, malformed record
+  rejection, rollback and Chromium workflows. The combined `343f3f1` passed
+  44 focused checks, four saved fitted-intervention cases and browser workflows.
+  Parameter-law fidelity is distinct from backend and lifecycle fidelity.
+- Typed converters: `c53d5ad` was rejected because nested neighbor_func geometry
+  escaped admission. Repair `1b7a11e` charges hidden dimensions, workspace and
+  row floors before evaluation, including sampled prefixes. Later workflow checks
+  found an incompatible trace header; `55613ac` restores the shared envelope.
+  Independent continuation passed all seven modes' arithmetic, raw replay,
+  calibration/ancestral fits, tamper/rollback and four authored/sampled trace cases.
+  Original failures remain retained. Explorer/intervention candidate C has its
+  own pending review and is outside this full-suite result.
+- [CPU measurements](issue-28-network-resource-measurements.md) cover nine fixed
+  cases, including 20,000 rows with eight features and 256 features with 16 rows.
+  All passed generation, archive round-trip and regeneration; independent review
+  verified a multipart archive. Process peak RSS includes imports and replay.
+  These are shared-host cases, not maximum-combination or bulk-throughput proof.
 
-The assembled UI passed 29 focused cases before the final applicability change.
-Parallel authorship, scoped independent checks and full-suite results remain
-distinct. Generated evidence is gitignored. Fitted source-parameter sampling and
-typed categorical converters are separate candidates; their full source lifecycles,
-workflow integration and all other inventory obligations remain required.
+Full source `66a09ee61c9760009d5a1bb0a9291b5979f6bc9f` passed 2,322 tests, one
+skip and one warning in 1,144.64 seconds. Static gates passed. Exact-head receipt
+and logs remain ignored in the release worktree under
+`docs/evidence/issue-28-fitted-converter-release/`. No later source is qualified
+by this result; no whole-issue completion follows.
 
 ## Remaining delivery obligations
 
