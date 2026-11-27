@@ -131,3 +131,42 @@ def test_sampled_archive_preserves_pipeline_noise_and_paired_task_controls(
     assert generated.source_task_id != changed_generated.source_task_id
     assert generated.task_type == task_type
     assert priors.explain_generation(generated, [2, 0])["rows"] == [2, 0]
+
+
+def test_shared_archive_and_inspection_accept_only_caller_authorized_larger_limits() -> None:
+    functions = priors.JointFunctionPrior(
+        functions="lin", matrix=priors.JointMatrixPrior(families=("gaussian",))
+    )
+    limits = priors.CausalLimits(parameters=1_000_001)
+    request = priors.JointGraphRequest(
+        task=priors.LinearRecipe(
+            rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+        ),
+        parents=((), (0,)),
+        widths=(1, 1),
+        observed=((0, 0),),
+        target=((1, 0),),
+        calibration_rows=4,
+        root_prior=priors.JointRootPrior(families=("gaussian",), function=functions),
+        function_prior=functions,
+        limits=limits,
+    )
+    graph = priors.sample_joint_graph(
+        request,
+        named_rng=np.random.default_rng(114),
+        raw_rng=np.random.default_rng(115),
+        calibration_rng=np.random.default_rng(116),
+        fit_rng=np.random.default_rng(117),
+    )
+    raw = json.loads(json.dumps(asdict(graph)))
+    assert priors.recipe_from_dict(raw, limits=limits) == graph
+    generated = priors.generate_task(graph, seed=19, task_id=7)
+    assert priors.explain_generation(generated, [7, 0, 7], limits=limits)["rows"] == [7, 0, 7]
+    pair = priors.generate_pair(
+        graph, intervention="noise", value=0.25, seed=19, task_id=7, limits=limits
+    )
+    assert all(json.loads(pair.card_json)["required_equalities"].values())
+    with pytest.raises(ValueError, match="declared limits exceed caller limits"):
+        priors.recipe_from_dict(raw)
+    with pytest.raises(ValueError, match="declared limits exceed caller limits"):
+        priors.explain_generation(generated, [0])

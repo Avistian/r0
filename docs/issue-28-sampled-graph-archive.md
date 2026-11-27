@@ -90,3 +90,39 @@ The earlier publication repair at `d56da97` completed `make check` with 1,705
 passes and one skip in 532.92 seconds:
 `/tmp/r0-28-graph-publication-check.log`. This verifies that earlier source,
 not the subsequent archive integration or identity repair.
+
+## Caller-owned exploration limits
+
+Continued spec review rejected `d3f545b` because shared reopening and inspection
+could not receive caller-owned limits, despite the specific sampled decoder
+supporting them. A tiny graph declaring `parameters=1_000_001` generated and
+reopened through the specific decoder, but failed through both shared entry
+points. The retained original probe and output are
+`/tmp/r0-28-graph-archive-spec-d3f545b/exploration_limits_probe.py` and `.log`.
+The earlier source-identity repair passed independent review before this
+separate finding; both historical rejections remain retained.
+
+The repair threads explicit limits through the shared functional-graph paths:
+
+```python
+limits = priors.CausalLimits(parameters=1_000_001)
+recipe = priors.recipe_from_dict(saved_recipe, limits=limits)
+trace = priors.explain_generation(task, [7, 0, 7], limits=limits)
+pair = priors.generate_pair(
+    recipe, intervention="noise", value=0.25, seed=19, task_id=7, limits=limits
+)
+comparison = priors.compare_pair(pair.before, pair.after, intervention="noise", limits=limits)
+```
+
+The caller must supply these limits; saved payloads cannot grant themselves
+larger budgets. Omitting the argument retains default caps. This parameter
+controls frozen functional/sampled graph decoding, rather than replacing the
+separate resource contracts of unrelated generator families.
+
+Public regression RED: `/tmp/r0-28-graph-limits-red.log` (one failure because
+`recipe_from_dict` lacked the argument). The repaired reopening/inspection test
+passed in `/tmp/r0-28-graph-limits-green.log` (one pass, 35 deselected). Expanded
+archive/pair/authored functional/generation compatibility checks passed all
+60 cases in 61.24 seconds, retained in `/tmp/r0-28-graph-limits-compatibility.log`. Static gates passed in
+`/tmp/r0-28-graph-limits-static-second.log`. No independent repair acceptance or
+final full-suite claim is made by this note.

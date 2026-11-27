@@ -7,6 +7,7 @@ from typing import Any
 import numpy as np
 import torch
 
+from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.exogenous import sample_exogenous
 from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_function
 from r0.modules.priors.lib.functional_analysis import functional_certificates
@@ -401,15 +402,21 @@ def generate_functional_causal(
 
 
 def functional_steps(
-    record: dict[str, Any], card: dict[str, Any], indices: Sequence[int], add: Callable[..., None]
+    record: dict[str, Any],
+    card: dict[str, Any],
+    indices: Sequence[int],
+    add: Callable[..., None],
+    *,
+    limits: CausalLimits | None = None,
 ) -> torch.Tensor:
+    limits = CausalLimits() if limits is None else limits
     raw_recipe = record["recipe"]
     if raw_recipe.get("version") == "sampled-functional-graph-v1":
         from r0.modules.priors.lib.sampled_graph_decoding import sampled_graph_from_dict
 
-        recipe = sampled_graph_from_dict(raw_recipe).runtime
+        recipe = sampled_graph_from_dict(raw_recipe, limits=limits).runtime
     else:
-        recipe = functional_recipe_from_dict(raw_recipe)
+        recipe = functional_recipe_from_dict(raw_recipe, limits=limits)
     values: list[torch.Tensor] = []
     functional_values(
         recipe,

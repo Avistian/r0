@@ -9,6 +9,7 @@ import torch
 
 from r0.modules.priors.lib.causal import causal_rng
 from r0.modules.priors.lib.causal_inspection import causal_steps
+from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng, functional_steps
 from r0.modules.priors.lib.graph_functions import analytic_steps, composite_steps, gp_steps
 from r0.modules.priors.lib.representatives import record_fingerprint
@@ -32,15 +33,19 @@ def explain_generation(
     *,
     component: int | None = None,
     column_start: int = 0,
+    limits: CausalLimits | None = None,
 ) -> dict[str, Any]:
     """Return selectable graph nodes for 1..16 original rows, without altering the task.
 
     Expand a composite's child with ``component``. Values show up to 32 columns
     starting at ``column_start`` (clamped for narrower nodes), with explicit indices
     and full shapes. Parameter lists show their first 32 items at each level; full
-    parameters remain in mechanism_json. GP nodes reconstruct the original joint
+    parameters remain in mechanism_json. For frozen functional graphs, pass caller-owned
+    limits to authorize exploration caps above the defaults. GP nodes reconstruct the original joint
     draw, not an interpolation or a newly sampled extension. All work runs on CPU.
     """
+    if limits is not None and type(limits) is not CausalLimits:
+        raise ValueError("inspection requires caller-owned causal limits")
     if not 1 <= len(indices) <= 16:
         raise ValueError("select 1..16 original rows")
     if any(type(i) is not int or not 0 <= i < len(task.inputs) for i in indices):
@@ -177,7 +182,7 @@ def explain_generation(
         "functional-causal-v2",
         "sampled-functional-graph-v1",
     ):
-        signal = functional_steps(record, card, indices, add)
+        signal = functional_steps(record, card, indices, add, limits=limits)
     elif card["version"] in ("causal-v1", "causal-v2"):
         signal = causal_steps(card, len(task.inputs), indices, add)
     elif card["version"] == "exact-gp-v1":
