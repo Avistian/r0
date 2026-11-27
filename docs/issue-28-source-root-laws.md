@@ -1,9 +1,10 @@
 # Source-specific root distributions
 
 This work covers the remaining P1.root.01–03 and P1.code.02–06 inventory options.
-Lossless integer Zipf records and a strict coordinate-law emitter are implemented.
-Root profile selection, frozen normalization, graph/network integration and
-explorer delivery are still pending; these prerequisites do not close those IDs.
+Lossless integer Zipf records, a strict coordinate-law emitter and frozen
+source-qualified profile selection are implemented. Frozen normalization,
+graph/network integration and explorer delivery remain separate work; these
+prerequisites do not close those IDs.
 
 ## Primary-source distinctions
 
@@ -124,6 +125,100 @@ Zipf moment order; finite calibration samples never upgrade a population moment
 certificate. Independent variance matching for network input views uses the same
 root law and frozen transform. Limits accompany graph and network evaluation.
 
-This is authored root integration. Source profile construction custody and replay
-must still be carried by an enclosing sampled artifact. Guarded explorer controls,
-full profile construction and saved-workflow verification remain pending.
+This descriptor is authored root integration. The separate sampled wrapper below
+carries source profile construction custody and replay. Guarded explorer controls
+remain a separate integration slice.
+
+
+## Frozen source-profile selection
+
+`SourceRootProfile` offers the pinned P1 `normal`, `uniform` and conditional
+`mixed` selector laws. `sample_source_root_profile` takes distinct `model_rng`
+and `selection_rng` generators and returns `SampledSourceRootProfile`. The
+model stream owns the full Gaussian parameter vectors; the selection stream
+owns one selection call. The resulting `.law` can be emitted without any
+normalization using `draw_source_root`. Both initial/final generator snapshots,
+raw draws, Gaussian parameters (including unused ones), and three mixed
+thresholds remain in the immutable record. Strict public decoders reconstruct
+and replay the whole envelope. NumPy probability laws and retained sequence
+are reproducible; Torch/Python/NumPy cross-library bitwise parity is not claimed.
+
+For P1 mixed selection, stored thresholds are `(unused Zipf, categorical,
+normal)` in source order. Conditional family probabilities are
+`1-normal`, `normal*(1-categorical)`, and `normal*categorical`; the Zipf threshold
+is deliberately not a third weight. The full presampled Gaussian vectors are
+retained even for a unit-uniform selection, matching the source constructor's
+otherwise unused draws. Category weights and Zipf exponents are frozen with
+one selected call. This is explicitly `frozen-selection-r0-v1`, not an assertion
+that the source keeps per-forward categorical/Zipf parameters fixed per model.
+Repeated emission does not resample these parameters. The
+`.source_normalization` metadata names source mixed-category sample-standardization
+and Zipf centering; those transforms are **not applied** here. Independent frozen
+calibration and generated-batch reference normalization remain distinct layers.
+
+`forced-r0` accepts one family per coordinate: standard Gaussian, presampled
+Gaussian, unit uniform, symmetric uniform, categorical, clipped sampled Zipf,
+and fixed-exponent unbounded Zipf. This explicit heterogeneous composition is
+an r0 extension, not the paper's underspecified multivariate distribution.
+There are no retries or silent repairs for nonfinite or zero-total weights.
+
+The [P2 initialization description](https://www.nature.com/articles/s41586-024-08328-6)
+selects normal versus symmetric uniform per root node. `p2-node-mixture-r0`
+selects once for the entire root vector, with an explicitly configurable
+`p2_normal_probability`. It currently uses unit normal scale and uniform
+half-width one. These fixed settings and the selection probability are a named
+reconstruction; varying source scale hyperparameters and shared-prototype
+coupling remain required follow-ons, not implicit features of this selector.
+
+Whole-profile admission bounds all conditional branches and maximum category
+count before any stochastic parameter draw. It includes both streams, raw
+records and replay snapshots; conditional branches can use less than that
+conservative budget. Public records preserve exact law and parameter custody
+without modifying existing source-root or legacy root record versions. The sampled
+wrapper below supplies graph/network integration; explorer workflows and explicit
+source-root replacement interventions remain separate required work.
+
+
+## Sampled graph-root provenance
+
+`sample_source_root_base(profile, modes=..., calibration_rows=..., calibration_rng=...)`
+wraps an accepted `SampledSourceRootProfile` in `SampledSourceRootBase`, version
+`sampled-source-root-base-v1`. The source selection record is retained verbatim,
+including unused model parameters, source labels, raw draws and both RNG streams.
+The inherited `.law` must equal the retained profile's selected law. This is a
+separate version from authored `SourceRootBase`; its bytes and version stay unchanged.
+
+Modes are explicit per coordinate: `identity`, `center`, `standardize`. All-identity
+uses zero calibration rows and no calibration RNG. Any nonidentity mode requires
+an independently supplied calibration RNG and positive calibration rows; sample
+standardization requires at least two. The complete initial/final calibration
+snapshots, raw values and frozen statistics are retained. Center uses the finite
+sample mean; standardize uses sample standard deviation with `ddof=1`. Exact
+constants, underflowed scales and nonfinite outcomes reject atomically without
+an epsilon, retry or caller RNG advance. Identity coordinates in a mixed fit
+still have their independent sample draws retained, with location zero/scale one.
+
+This lifecycle is an explicit **r0 independent frozen normalization adaptation**.
+It is not the pinned source's normalization of the current generated batch.
+`profile.source_normalization` continues to describe source behavior, separately
+from the chosen `.modes`. Fitting never takes query rows, generated task values or
+query labels. It does not certify unit population variance or upgrade an
+unbounded Zipf moment certificate. `draw_source_root_batch_reference` remains
+the separate source-batch reference API.
+
+Construction and strict public `sampled_source_root_base_from_dict` reopening
+admit profile metadata, both replay lifecycles, calibration geometry, raw records
+and simultaneous snapshot/workspace reserves before drawing or restoring state.
+The decoder replays the complete construction and compares every serialized field;
+changing a law, fit statistic, raw value, snapshot or source label rejects.
+Functional graph and network generation validate the retained profile and
+calibration again before root emission, then apply the frozen transform to fresh
+root draws. Graph admission also includes this replay work, including native and
+converted graphs that use the common functional-node adapter. Functional root
+nodes require v2, as for authored source roots. Original-row inspection and network
+variance matching use the same adapter; persisted task recipes retain the full
+sampled wrapper and can be reopened without discarding it to an authored law.
+
+The wrapper does not add a source-profile explorer, prototype-mixture law,
+source-scale hyperprior or source-root replacement intervention. Those remain
+separate required slices; accepting this record alone is not whole-issue acceptance.

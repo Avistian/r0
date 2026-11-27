@@ -1,5 +1,8 @@
 """Public source-root coordinate and emission contract."""
 
+from .sampled_source_root_base import SampledSourceRootBase, sample_source_root_base
+from .sampled_source_root_decoding import sampled_source_root_base_from_dict
+from .sampled_source_root_profile import SampledSourceRootProfile, sample_source_root_profile
 from .source_root_base import SourceRootBase, source_root_base_from_dict
 from .source_root_batch import (
     SourceRootBatchReference,
@@ -12,9 +15,17 @@ from .source_root_calibration import (
     source_root_calibration_from_dict,
 )
 from .source_root_laws import SourceRootCoordinate, SourceRootLaw, source_root_from_dict
+from .source_root_profile_decoding import (
+    sampled_source_root_profile_from_dict,
+    source_root_profile_from_dict,
+)
+from .source_root_profiles import SourceRootProfile
 from .source_root_sampling import draw_source_root
 
 __all__ = [
+    "SampledSourceRootBase",
+    "sample_source_root_base",
+    "sampled_source_root_base_from_dict",
     "SourceRootBase",
     "source_root_base_from_dict",
     "SourceRootBatchReference",
@@ -27,4 +38,9 @@ __all__ = [
     "SourceRootLaw",
     "source_root_from_dict",
     "draw_source_root",
+    "SourceRootProfile",
+    "SampledSourceRootProfile",
+    "sample_source_root_profile",
+    "source_root_profile_from_dict",
+    "sampled_source_root_profile_from_dict",
 ]

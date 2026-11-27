@@ -26,8 +26,14 @@ class SourceRootBase:
     version: str = "source-root-base-v1"
 
     def __post_init__(self) -> None:
-        if self.version != "source-root-base-v1" or type(self.law) is not SourceRootLaw:
+        if self.version != "source-root-base-v1":
             raise ValueError("invalid source root base version or law")
+        self.validate_law_and_calibration()
+
+    def validate_law_and_calibration(self) -> None:
+        """Shared inherited field contract, independent of the envelope version."""
+        if type(self.law) is not SourceRootLaw:
+            raise ValueError("invalid source root law")
         if self.calibration is not None and (
             type(self.calibration) is not SourceRootCalibration or self.calibration.law != self.law
         ):
@@ -65,7 +71,11 @@ def functional_root_values(
 ) -> NDArray[np.float64]:
     if type(base) is JointRootBase:
         return np.asarray(draw_root_base(base, rows, rng, capture=capture, owner=owner).values)
-    if type(base) is not SourceRootBase:
+    from r0.modules.priors.lib.sampled_source_root_base import SampledSourceRootBase
+
+    if type(base) is SampledSourceRootBase:
+        base.validate_replay(limits=limits)
+    elif type(base) is not SourceRootBase:
         raise ValueError("unsupported functional root descriptor")
     ledger = capture if capture is not None else RawDrawLedger()
     with ledger.transaction(rng) as (stream, staged):

@@ -13,6 +13,7 @@ from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.network_hyperprior_records import SampledHyperpriorNetwork
 from r0.modules.priors.lib.network_sampling_records import SampledNetwork
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.sampled_source_root_base import SampledSourceRootBase
 from r0.modules.priors.lib.source_root_base import SourceRootBase
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -45,7 +46,7 @@ class NetworkRecipe:
         if function.input_width != self.task.features or function.output_width != expected:
             raise ValueError("standalone network input/output widths differ from task controls")
         if self.root is not None and (
-            type(self.root) not in (JointRootBase, SourceRootBase)
+            type(self.root) not in (JointRootBase, SourceRootBase, SampledSourceRootBase)
             or self.root.width != function.input_width
         ):
             raise ValueError("standalone network root must match feature width")
@@ -67,7 +68,7 @@ class NetworkRecipe:
                     FrozenLinearFunction(identity),
                     self.root or JointRootBase("gaussian", width),
                     version="functional-causal-node-v2"
-                    if type(self.root) is SourceRootBase
+                    if isinstance(self.root, SourceRootBase)
                     else "functional-causal-node-v1",
                 ),
                 FunctionalCausalNode((0,), self.function),
@@ -142,7 +143,11 @@ def network_recipe_from_dict(data: object, *, limits: CausalLimits) -> NetworkRe
             if net.get("version") == "sampled-structural-network-v1"
             else decode_network(net)
         )
-        fields["root"] = root_base_from_dict(fields["root"]) if fields["root"] is not None else None
+        fields["root"] = (
+            root_base_from_dict(fields["root"], limits=declared)
+            if fields["root"] is not None
+            else None
+        )
         return NetworkRecipe(**fields)
     except (TypeError, KeyError, AttributeError, OverflowError, RecursionError) as error:
         raise ValueError("malformed standalone network archive") from error
