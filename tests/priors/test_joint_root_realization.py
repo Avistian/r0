@@ -1,6 +1,8 @@
 """Root bases retain independent calibration draws before the mandatory function."""
 
+import json
 import pickle
+from dataclasses import asdict
 
 import numpy as np
 import pytest
@@ -113,6 +115,10 @@ def test_joint_root_all_bases_and_functions_use_retained_base_calibration(
         fit_rng=np.random.default_rng(117),
         calibration_id="sampled-root-fit",
     )
+    restored = priors.joint_root_realization_from_dict(
+        json.loads(json.dumps(asdict(result))), decisions=context.freeze()
+    )
+    assert restored == result
     actual = priors.evaluate_frozen_function(
         result.function.function,
         torch.tensor(result.calibration.values, dtype=torch.float64),

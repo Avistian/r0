@@ -191,6 +191,9 @@ from r0.modules.priors.lib.joint_root_realization import (
 from r0.modules.priors.lib.joint_root_realization import (
     materialize_joint_root as materialize_joint_root,
 )
+from r0.modules.priors.lib.joint_root_realization_decoding import (
+    joint_root_realization_from_dict as joint_root_realization_from_dict,
+)
 from r0.modules.priors.lib.joint_sampling import JointSamplingContext as JointSamplingContext
 from r0.modules.priors.lib.joint_sampling_records import JointDecision as JointDecision
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord as JointSamplingRecord
