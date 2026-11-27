@@ -255,3 +255,14 @@ def test_discretization_quasi_distance_does_not_round_away_one_axis_difference()
     )
     result = priors.evaluate_frozen_function(function, torch.zeros((1, 2), dtype=torch.float64))
     assert result.item() == 1.0
+
+
+def test_discretization_preserves_exact_two_axis_quasi_distance_tie() -> None:
+    function = priors.FrozenDiscretizationFunction(
+        centers=((64.0, 0.0), (9.0, 25.0)),
+        linear=priors.FrozenLinearFunction(((1.0, 0.0),)),
+        p=0.5,
+    )
+    # Both distances are 64: 8 squared, and (3 + 5) squared.
+    result = priors.evaluate_frozen_function(function, torch.zeros((1, 2), dtype=torch.float64))
+    assert result.item() == 64.0

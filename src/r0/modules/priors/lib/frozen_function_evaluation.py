@@ -93,12 +93,23 @@ def _distance_parts(
     scaled = torch.ldexp(coordinates, relative_exponents)
     norm = (scaled**p).sum(dim=-1) ** (1 / p)
     mantissa, adjustment = torch.frexp(norm)
+    scaled_exponent = exponent + adjustment
+    # Preserve the direct equation's rounding when its powers and result are
+    # representable. Rescaling ordinary fractional powers can introduce false
+    # inequalities, e.g. sqrt(64) == sqrt(9) + sqrt(25).
+    powers = absolute**p
+    direct = powers.sum(dim=-1) ** (1 / p)
+    direct_valid = torch.isfinite(direct) & ~((powers == 0) & (absolute != 0)).any(dim=-1)
+    direct_mantissa, direct_exponent = torch.frexp(direct)
+    mantissa = torch.where(direct_valid, direct_mantissa, mantissa)
+    exponent = torch.where(direct_valid, direct_exponent, scaled_exponent)
     # A distance along one axis is its absolute coordinate for every p. Avoid
     # a needless pow/root round trip that can erase a one-ULP difference.
     one_axis = (absolute != 0).sum(dim=-1) <= 1
     mantissa = torch.where(one_axis, largest_mantissa, mantissa)
-    adjustment = torch.where(one_axis, 0, adjustment)
-    exponent = exponent + adjustment + overflow.squeeze(-1).to(exponent.dtype)
+    largest_exponent = torch.frexp(largest)[1]
+    exponent = torch.where(one_axis, largest_exponent, exponent)
+    exponent = exponent + overflow.squeeze(-1).to(exponent.dtype)
     return mantissa, exponent
 
 

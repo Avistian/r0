@@ -31,8 +31,10 @@ are not supported. Input and output nonfiniteness reject explicitly without retr
 | `FrozenMLPFunction` | 1..3 linears; shared hidden width 1..127 when present. Hidden activations plus optional start/end activations retain their actual stage order and calibrated constants. |
 
 Discretization permits one center, covering degenerate source count cases. Its
-distance comparison uses power-of-two scaled mantissa/exponent pairs so logarithmic rounding
-does not turn adjacent large represented distances into false ties. Opposite-sign
+distance comparison uses the direct power/sum/root equation when representable,
+with power-of-two scaling for overflow or underflow. It compares mantissa/exponent
+pairs so logarithmic rounding does not turn adjacent represented distances into
+false ties. Opposite-sign
 finite coordinates whose subtraction overflows are compared using half-scaled
 differences. One-axis distances retain the absolute difference directly, avoiding
 pow/root rounding of adjacent values. p below one is a quasi-distance. EM uses the corresponding logarithmic
@@ -88,7 +90,7 @@ UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
 python3 scripts/run_check.py pytest tests/priors/test_frozen_functions.py
 ```
 
-Current focused result: **14 passed**. Development RED/GREEN and static-check logs
+Current focused result: **15 passed**. Development RED/GREEN and static-check logs
 are retained locally under `/tmp/r0-28-functions-*`; the false-logarithmic-tie RED
 remains part of the history. Independent review rejected initial source `690297b`:
 per-center magnitude scaling broke exact L1 ties (expected first-center output 15,
@@ -100,7 +102,11 @@ rejected an accepted MLP activation that could not round-trip through JSON. Its
 decoder now accepts all six supported authored activation parameters; the source
 selector remains separate. The second rejection is retained at
 `/tmp/r0-28-functions-spec-c58706e/`. Both interrupted full checks remain incomplete;
-full checks and independent repair verification are pending.
+review of `ed5b67a` then found a two-axis p=0.5 tie: (64,0) and (9,25) both have
+distance 64, but scaling selected the second center. That rejection is retained
+at `/tmp/r0-28-functions-spec-ed5b67a/`. The direct-equation preference repairs
+this additional rounding error. Full checks and independent repair verification
+are pending.
 CPU was exercised; CUDA execution is NOT_RUN.
 
 ## Remaining integration
