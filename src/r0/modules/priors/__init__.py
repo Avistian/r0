@@ -369,6 +369,7 @@ from .lib.native_vector_records import NativeVectorRecipe as NativeVectorRecipe
 from .lib.native_vector_request import NativeVectorGraphRequest as NativeVectorGraphRequest
 from .lib.native_vector_sampling import sample_native_vector_graph as sample_native_vector_graph
 from .lib.network_api import *  # noqa: F403
+from .lib.network_observation_api import *  # noqa: F403
 from .lib.node_pipeline import CausalNodePipeline as CausalNodePipeline
 from .lib.node_pipeline import NumericalConverter as NumericalConverter
 from .lib.pairs import TaskPair as TaskPair
