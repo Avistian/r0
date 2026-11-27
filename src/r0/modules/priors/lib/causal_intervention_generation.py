@@ -136,10 +136,18 @@ def generate_causal_pair(
     recipe = CausalInterventionRecipe(base, interventions, mode, population)
     before = generate_task(base, seed=seed, task_id=task_id, device=device)
     after = generate_intervened(recipe, seed=seed, task_id=task_id, device=device)
+    # Sampled envelopes retain construction metadata outside the reduced runtime
+    # allowance. Replay must use their original construction budget; explicit
+    # caller limits on compare/load remain independently enforced by decoding.
+    limits = (
+        base.limits
+        if isinstance(base, (FunctionalCausalRecipe, NativeCausalRecipe, NativeVectorRecipe))
+        else base.request.limits
+    )
     return TaskPair(
         before,
         after,
-        encode(compare_causal_pair(before, after, limits=causal_runtime(base).limits)),
+        encode(compare_causal_pair(before, after, limits=limits)),
     )
 
 
