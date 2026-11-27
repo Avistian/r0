@@ -13,7 +13,6 @@ import numpy as np
 import pytest
 
 from r0.modules import priors as p
-from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
 
 
 def oracle(plan: p.RecursiveForestPlan, rng: np.random.Generator):
@@ -256,7 +255,7 @@ def test_decoder_caps_before_replay():
         p.RecursiveForestPlan(max_depth=1, estimators=1), rng=np.random.default_rng(13)
     )
     with (
-        patch.object(GeneratorSnapshot, "restore", side_effect=AssertionError("early replay")),
+        patch.object(type(sample.initial), "restore", side_effect=AssertionError("early replay")),
         pytest.raises(ValueError, match="limit"),
     ):
         p.sampled_recursive_forest_from_dict(asdict(sample), limits=p.CausalLimits(nodes=1))
@@ -335,7 +334,7 @@ def test_actual_geometry_rejects_before_snapshot_restore():
     )
     other = replace(sample.forests[0], input_width=3)
     with (
-        patch.object(GeneratorSnapshot, "restore", side_effect=AssertionError("early replay")),
+        patch.object(type(sample.initial), "restore", side_effect=AssertionError("early replay")),
         pytest.raises(ValueError, match="geometry"),
     ):
         replace(sample, forests=(other,))
