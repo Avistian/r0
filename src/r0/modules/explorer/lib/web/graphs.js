@@ -13,7 +13,7 @@ function resetGraph() {
 function graphRequest() {
   const parts = $("graph-rows").value.split(",").map(value => value.trim());
   if (parts.some(value => !/^\d+$/.test(value))) throw new Error("Enter comma-separated original row indices.");
-  return {indices: parts.map(Number), component: $("graph-component").value === "" ? null : number("graph-component"), column_start: number("graph-column")};
+  return {...limits(), indices: parts.map(Number), component: $("graph-component").value === "" ? null : number("graph-component"), column_start: number("graph-column")};
 }
 function graphStyle(node) {
   if (node.id === "inputs") return {color:"#3674c5",light:"#eef5ff",kind:"INPUTS",icon:"x"};

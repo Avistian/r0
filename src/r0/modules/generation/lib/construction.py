@@ -73,6 +73,10 @@ def construct_graph(
             calibration_rng=streams[2],
             fit_rng=streams[3],
         )
+    if topology == "feature-convolution":
+        from r0.modules.generation.lib.convolution_construction import construct_convolution
+
+        return construct_convolution(fields, seed=seed, limits=limits)
     if topology == "xgboost-fitted":
         from r0.modules.generation.lib.xgboost_construction import construct_xgboost
 
@@ -201,6 +205,7 @@ class GraphConstruction:
         if controls.get("topology") in (
             "fitted",
             "xgboost-fitted",
+            "feature-convolution",
             "sampled-fitted",
             "population-fitted",
             "sampled-population-fitted",

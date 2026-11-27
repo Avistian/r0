@@ -313,6 +313,11 @@ class ExplorerSession:
         )
         if observed is not None:
             return observed
+        from r0.modules.explorer.lib.convolutions import convolution_action
+
+        convolution = convolution_action(action, self.task, data, self.output_dir)
+        if convolution is not None:
+            return convolution
         if action == "intervention_controls":
             return intervention_controls(self.task)
         if action in ("intervene", "sample_intervention_policy"):

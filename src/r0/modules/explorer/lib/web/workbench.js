@@ -95,6 +95,7 @@ $("mechanism-load").onclick = () => act("Verifying mechanism archive…", async 
 $("mechanism-node").onchange=selectMechanismNode;
 $("mechanism-apply").onclick=()=>act("Updating mechanism draft…",async()=>{
   if(mechanismInfo.observation_selection){await applyObservationDraft();return;}
+  if(mechanismInfo.convolution){await applyConvolutionDraft();return;}
   const selected=mechanismDraft.nodes[Number($("mechanism-node").value)], node=mechanismEquation(selected);
   if(node.pipeline) node.pipeline=JSON.parse($("mechanism-pipeline").value);
   if(mechanismInfo.converted) selected.converters=JSON.parse($("mechanism-domain").value);

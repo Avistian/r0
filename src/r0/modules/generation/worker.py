@@ -26,6 +26,11 @@ def main() -> int:
 
         print(json.dumps(causal_job(raw_request, Path(data["out"])), sort_keys=True))
         return 0
+    if raw_request.get("validation") in ("convolution-editor", "convolution-draft"):
+        from r0.modules.generation.lib.convolution_editor import convolution_editor
+
+        print(json.dumps(convolution_editor(raw_request), allow_nan=False))
+        return 0
     if raw_request.get("validation") in ("observation-editor", "observation-draft"):
         from r0.modules.generation.lib.observation_construction import observation_editor
 

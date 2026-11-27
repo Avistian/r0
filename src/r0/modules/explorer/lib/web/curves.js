@@ -7,7 +7,7 @@ function clearCurve() {
   curve = null;
   $("response-plot").replaceChildren(); $("curve-values").textContent = ""; $("curve-json").hidden = true;
   const observed=isObservation(current?.view?.recipe?.recipe);
-  $("curve").hidden=false;
+  $("curve").hidden=false; $("curve").disabled=false; $("curve").dataset.unavailable="false";
   const noisy=isNoisyNetwork(), functional=isFunctionalReference(); $("network-reference-label").hidden=!(noisy || functional || observed);
   const gp = isGP(); $("gp-options").hidden = !gp;
   $("curve-title").textContent = gp ? "Conditional GP view" : "Response curve";
@@ -22,6 +22,7 @@ function clearCurve() {
     ? "Uses the full observed feature range. Additional draws use the seed above; changing the query points changes their joint draw."
     : "The curve uses the full observed feature range. Select a row and evaluate to see the response.";
   if(observed) {$("curve-title").textContent="Observation causal reference"; $("curve-description").textContent="Vary one selected observed channel, clamping every observed channel at both state and readout. Hidden roots stay at the selected original row; choose zero or original structural innovations. Target aliases propagate their parent clamps. These are raw target readouts, not conditional means, class probabilities or target-adapted scores."; $("curve-note").textContent="The full source and selection receipt remains attached to this original-row causal reference."; $("curve").textContent="Evaluate causal reference";}
+  if(isConvolutionRecipe(current?.view?.recipe?.recipe) && !functional){$("curve").disabled=true;$("curve").dataset.unavailable="true";$("curve-description").textContent="Typed convolution curves remain pending explicit category/capture reference semantics. Inspect original-row kernel stages or use causal interventions; no continuous response is substituted for native emissions.";}
 
 }
 function drawCurve() {

@@ -39,7 +39,7 @@ async function act(message, work) {
     $("status").textContent = error.message;
   } finally {
     busy = false;
-    document.querySelectorAll("button").forEach(button => button.disabled = false);
+    document.querySelectorAll("button").forEach(button => button.disabled = button.dataset.unavailable === "true");
   }
 }
 
@@ -67,7 +67,7 @@ function updateRecipe(changed) {
     recipe=recipe.request || recipe;
   }
   const task = taskControls(recipe);
-  if (recipe.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(recipe.version) || isObservation(recipe) || (isStandaloneNetwork(recipe) && !isPrototypeBatch(recipe))) throw new Error("Frozen construction archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
+  if (recipe.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(recipe.version) || isObservation(recipe) || isConvolutionRecipe(recipe) || (isStandaloneNetwork(recipe) && !isPrototypeBatch(recipe))) throw new Error("Frozen construction archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
   const fields = {rows: "rows", context: "context_rows", features: "features", active: "active_features", classes: "classes"};
   if (fields[changed]) task[fields[changed]] = number(changed);
   if (changed === "difficulty") task[task.task_type === "regression" ? "noise_ratio" : "separation"] = number("difficulty");
@@ -94,7 +94,7 @@ function limits() { return {...explorationLimits(), device: $("device").value, m
 async function generate() {
   const stored=current?.view?.recipe?.recipe;
   const batch=stored?.version==="prototype-batch-network-realized-v1" && $("recipe").value===pretty(stored);
-  const frozen=stored && !isPrototypeBatch(stored) && (stored.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(stored.version) || isStandaloneNetwork(stored) || isObservation(stored)) && $("recipe").value===pretty(stored);
+  const frozen=stored && !isPrototypeBatch(stored) && (stored.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(stored.version) || isStandaloneNetwork(stored) || isObservation(stored) || isConvolutionRecipe(stored)) && $("recipe").value===pretty(stored);
   const identity={seed:$("seed").value,task_id:$("task-id").value};
   const candidate=parseRecipe();
   let taskOverride=false;

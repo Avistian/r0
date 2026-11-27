@@ -7,6 +7,7 @@ from typing import Any, cast
 from r0.modules import priors
 from r0.modules.explorer.lib.composed_examples import composed_examples, fitted_examples
 from r0.modules.explorer.lib.converted import converted_editor, converted_examples
+from r0.modules.explorer.lib.convolution_examples import convolution_examples
 from r0.modules.explorer.lib.innovation_examples import innovation_examples
 from r0.modules.explorer.lib.native import (
     native_example,
@@ -83,6 +84,7 @@ def construction_examples() -> dict[str, Any]:
         **composed_examples(common, geometry, sampled_native_example()),
         **fitted_examples(),
         **xgboost_examples(),
+        **convolution_examples(),
         **network_examples(),
         **observation_examples(),
         **source_root_examples(),
@@ -206,6 +208,11 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
 def frozen_archive_version(version: object) -> bool:
     """Identify archive families whose task identity can advance without resampling."""
     return str(version).startswith("sampled-") or version in (
+        "functional-causal-v1",
+        "functional-causal-v2",
+        "native-causal-v1",
+        "native-vector-causal-v1",
+        "converted-causal-v1",
         "fitted-functional-causal-v1",
         "xgboost-fitted-functional-causal-v1",
         "standalone-network-v1",

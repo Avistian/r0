@@ -15,7 +15,9 @@ def inspect_graph(
     task: priors.TrainingTask, archive: str | None, output_dir: Path, data: dict[str, Any]
 ) -> dict[str, Any]:
     record = json.loads(task.recipe_json)
-    if record["recipe"].get("version") not in (
+    from r0.modules.explorer.lib.convolutions import contains_convolution
+
+    if not contains_convolution(record["recipe"]) and record["recipe"].get("version") not in (
         "prototype-batch-network-realized-v1",
         "network-observation-recipe-v1",
         "standalone-network-innovations-v1",
