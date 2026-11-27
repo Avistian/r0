@@ -1,0 +1,20 @@
+Interpreter: /home/avist/Projects/r0/.venv/bin/python3
+r0 source: /tmp/r0-28-graph-admission/src/r0/__init__.py
+Expected package: /tmp/r0-28-graph-admission/src/r0
+✖ ruff-lint failed:
+PT012 `pytest.raises()` block should contain a single simple statement
+  --> tests/priors/test_functional_admission.py:56:5
+   |
+54 |       # Observe the numerical-library allocation boundary without changing its result.
+55 |       monkeypatch.setattr(np, "asarray", observe)
+56 | /     with pytest.raises(ValueError, match="limit"):
+57 | |         if limit_owner == "caller":
+58 | |             priors.functional_recipe_from_dict(payload, limits=priors.CausalLimits(**cap))
+59 | |         else:
+60 | |             priors.recipe_from_dict(payload)
+   | |____________________________________________^
+61 |       assert allocated == []
+   |
+
+Found 1 error.
+

@@ -1,0 +1,127 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_______ test_covariance_graph_admission_precedes_array_allocation[cap0] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xf5a2f086e510>
+cap = {'node_channels': 1}
+
+    @pytest.mark.parametrize("cap", [{"node_channels": 1}, {"total_channels": 1}, {"working_bytes": 8192}])
+    def test_covariance_graph_admission_precedes_array_allocation(
+        monkeypatch: pytest.MonkeyPatch, cap: dict[str, int],
+    ) -> None:
+        base = priors.JointRootBase(
+            "covariance", 2, gaussian_factor=((1.0, 0.0), (0.0, 1.0)),
+            weights=priors.UniformWeightVector((0.5, 0.5)), factor=((0.5, 0.0), (0.0, 0.5)),
+            covariance_base="gaussian",
+        )
+        recipe = priors.FunctionalCausalRecipe(
+            priors.LinearRecipe(rows=16, features=1, signal_features=1, active_features=1, context_rows=8),
+            (priors.FunctionalCausalNode((), priors.FrozenLinearFunction(((1.0, 0.0), (0.0, 1.0))), root=base),),
+            ((0, 0),), ((0, 1),),
+        )
+        payload = json.loads(json.dumps(asdict(recipe)))
+        payload["limits"].update(cap)
+        allocated: list[tuple[int, ...]] = []
+        original = np.asarray
+    
+        def observe(*args: Any, **kwargs: Any) -> NDArray[Any]:
+            array = original(*args, **kwargs)
+            allocated.append(array.shape)
+            return array
+    
+        # Observe the numerical-library allocation boundary without changing its result.
+        monkeypatch.setattr(np, "asarray", observe)
+        with pytest.raises(ValueError, match="limit"):
+            priors.recipe_from_dict(payload)
+>       assert allocated == []
+E       assert [(2, 2), (2,)] == []
+E         
+E         Left contains 2 more items, first extra item: (2, 2)
+E         Use -v to get more diff
+
+tests/priors/test_functional_admission.py:42: AssertionError
+_______ test_covariance_graph_admission_precedes_array_allocation[cap1] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xf5a2f0332f30>
+cap = {'total_channels': 1}
+
+    @pytest.mark.parametrize("cap", [{"node_channels": 1}, {"total_channels": 1}, {"working_bytes": 8192}])
+    def test_covariance_graph_admission_precedes_array_allocation(
+        monkeypatch: pytest.MonkeyPatch, cap: dict[str, int],
+    ) -> None:
+        base = priors.JointRootBase(
+            "covariance", 2, gaussian_factor=((1.0, 0.0), (0.0, 1.0)),
+            weights=priors.UniformWeightVector((0.5, 0.5)), factor=((0.5, 0.0), (0.0, 0.5)),
+            covariance_base="gaussian",
+        )
+        recipe = priors.FunctionalCausalRecipe(
+            priors.LinearRecipe(rows=16, features=1, signal_features=1, active_features=1, context_rows=8),
+            (priors.FunctionalCausalNode((), priors.FrozenLinearFunction(((1.0, 0.0), (0.0, 1.0))), root=base),),
+            ((0, 0),), ((0, 1),),
+        )
+        payload = json.loads(json.dumps(asdict(recipe)))
+        payload["limits"].update(cap)
+        allocated: list[tuple[int, ...]] = []
+        original = np.asarray
+    
+        def observe(*args: Any, **kwargs: Any) -> NDArray[Any]:
+            array = original(*args, **kwargs)
+            allocated.append(array.shape)
+            return array
+    
+        # Observe the numerical-library allocation boundary without changing its result.
+        monkeypatch.setattr(np, "asarray", observe)
+        with pytest.raises(ValueError, match="limit"):
+            priors.recipe_from_dict(payload)
+>       assert allocated == []
+E       assert [(2, 2), (2,)] == []
+E         
+E         Left contains 2 more items, first extra item: (2, 2)
+E         Use -v to get more diff
+
+tests/priors/test_functional_admission.py:42: AssertionError
+_______ test_covariance_graph_admission_precedes_array_allocation[cap2] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xf5a2f0332300>
+cap = {'working_bytes': 8192}
+
+    @pytest.mark.parametrize("cap", [{"node_channels": 1}, {"total_channels": 1}, {"working_bytes": 8192}])
+    def test_covariance_graph_admission_precedes_array_allocation(
+        monkeypatch: pytest.MonkeyPatch, cap: dict[str, int],
+    ) -> None:
+        base = priors.JointRootBase(
+            "covariance", 2, gaussian_factor=((1.0, 0.0), (0.0, 1.0)),
+            weights=priors.UniformWeightVector((0.5, 0.5)), factor=((0.5, 0.0), (0.0, 0.5)),
+            covariance_base="gaussian",
+        )
+        recipe = priors.FunctionalCausalRecipe(
+            priors.LinearRecipe(rows=16, features=1, signal_features=1, active_features=1, context_rows=8),
+            (priors.FunctionalCausalNode((), priors.FrozenLinearFunction(((1.0, 0.0), (0.0, 1.0))), root=base),),
+            ((0, 0),), ((0, 1),),
+        )
+        payload = json.loads(json.dumps(asdict(recipe)))
+        payload["limits"].update(cap)
+        allocated: list[tuple[int, ...]] = []
+        original = np.asarray
+    
+        def observe(*args: Any, **kwargs: Any) -> NDArray[Any]:
+            array = original(*args, **kwargs)
+            allocated.append(array.shape)
+            return array
+    
+        # Observe the numerical-library allocation boundary without changing its result.
+        monkeypatch.setattr(np, "asarray", observe)
+        with pytest.raises(ValueError, match="limit"):
+            priors.recipe_from_dict(payload)
+>       assert allocated == []
+E       assert [(2, 2), (2,)] == []
+E         
+E         Left contains 2 more items, first extra item: (2, 2)
+E         Use -v to get more diff
+
+tests/priors/test_functional_admission.py:42: AssertionError
+=========================== short test summary info ============================
+FAILED tests/priors/test_functional_admission.py::test_covariance_graph_admission_precedes_array_allocation[cap0]
+FAILED tests/priors/test_functional_admission.py::test_covariance_graph_admission_precedes_array_allocation[cap1]
+FAILED tests/priors/test_functional_admission.py::test_covariance_graph_admission_precedes_array_allocation[cap2]
+3 failed in 1.04s

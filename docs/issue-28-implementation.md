@@ -3,11 +3,11 @@
 The [accepted specification](specs/0028-causal-network-generators.md) is the
 authoritative scope. This ledger tracks execution, not a smaller replacement goal.
 
-Latest: [operation ownership and joint stream transactions](issue-28-joint-operation-registry.md)
-at `de1bead` pass 1180 tests (one skipped) and independent component review. The
-original decoder REJECT and repair evidence remain retained. [Root construction](issue-28-joint-root-realization.md)
-and earlier checkpoints remain included. Raw manifests, graph integration and
-full #28 acceptance remain pending.
+Latest: [authored frozen-function graphs](issue-28-functional-graph-integration.md)
+at `6a70ecd` have independent bounded acceptance; equivalent checked source passes
+1215 tests (one skipped). Both historical REJECTs remain retained. Earlier
+[registry](issue-28-joint-operation-registry.md) and root checkpoints remain included.
+Sampled graphs, fresh calibration, raw manifests and full #28 acceptance remain open.
 
 ## Checkout and scope preservation
 

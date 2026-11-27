@@ -1,0 +1,14 @@
+Interpreter: /home/avist/Projects/r0/.venv/bin/python3
+r0 source: /tmp/r0-28-graph-integration/src/r0/__init__.py
+Expected package: /tmp/r0-28-graph-integration/src/r0
+[feat/issue-28-graph-integration 7993d9c] feat(priors): integrate authored frozen functions into causal graphs (#28)
+ 16 files changed, 1617 insertions(+), 46 deletions(-)
+ create mode 100644 docs/issue-28-functional-graph-integration.md
+ create mode 100644 docs/research/0028-joint-graph-integration.md
+ create mode 100644 src/r0/modules/priors/lib/functional_analysis.py
+ create mode 100644 src/r0/modules/priors/lib/functional_causal.py
+ create mode 100644 src/r0/modules/priors/lib/functional_causal_decoding.py
+ create mode 100644 src/r0/modules/priors/lib/functional_causal_evaluation.py
+ create mode 100644 src/r0/modules/priors/lib/signal_noise.py
+ create mode 100644 tests/explorer/test_functional_session.py
+ create mode 100644 tests/priors/test_functional_causal.py

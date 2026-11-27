@@ -1,0 +1,58 @@
+.....F                                                                   [100%]
+=================================== FAILURES ===================================
+________ test_one_node_limit_counts_graph_nodes_not_function_dimensions ________
+
+    def test_one_node_limit_counts_graph_nodes_not_function_dimensions() -> None:
+        from r0.modules import priors
+    
+        recipe = FunctionalCausalRecipe(
+            LinearRecipe(rows=16, features=1, signal_features=1, active_features=1, context_rows=8),
+            (FunctionalCausalNode((), priors.FrozenLinearFunction(((1.0,), (2.0,))),
+                                 root=JointRootBase("uniform", 1)),),
+            ((0, 0),), ((0, 1),), limits=priors.CausalLimits(nodes=1),
+        )
+>       decoded = recipe_from_dict(json.loads(json.dumps(asdict(recipe))))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/priors/test_functional_causal.py:234: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/r0/modules/priors/lib/generate.py:88: in recipe_from_dict
+    return functional_recipe_from_dict(fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/r0/modules/priors/lib/functional_causal_decoding.py:146: in functional_recipe_from_dict
+    node["function"] = frozen_function_from_dict(node["function"], limits=effective)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/r0/modules/priors/lib/frozen_function_decoding.py:130: in frozen_function_from_dict
+    admit_frozen_function(function, 1, limits)
+src/r0/modules/priors/lib/frozen_function_evaluation.py:220: in admit_frozen_function
+    return limits.admit_dimensions(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = CausalLimits(nodes=1, node_channels=1024, total_channels=8192, parameters=1000000, working_bytes=268435456)
+widths = (1, 2), parents = ((), ()), rows = 1, calibration_rows = 0
+features = 1, outputs = 2, extra_parameters = 2, extra_working_channels = 12
+row_floor = 0
+
+    def admit_dimensions(
+        self,
+        widths: tuple[int, ...],
+        parents: tuple[tuple[int, ...], ...],
+        *,
+        rows: int,
+        calibration_rows: int,
+        features: int,
+        outputs: int,
+        extra_parameters: int = 0,
+        extra_working_channels: int = 0,
+        row_floor: int = 0,
+    ) -> dict[str, int]:
+        """Admit validated DAG dimensions before allocating sampled parameter arrays."""
+        count, widest, total = len(widths), max(widths), sum(widths)
+        if count > self.nodes:
+>           raise ValueError("causal node count limit exceeded")
+E           ValueError: causal node count limit exceeded
+
+src/r0/modules/priors/lib/causal_limits.py:71: ValueError
+=========================== short test summary info ============================
+FAILED tests/priors/test_functional_causal.py::test_one_node_limit_counts_graph_nodes_not_function_dimensions
+1 failed, 5 passed in 1.57s

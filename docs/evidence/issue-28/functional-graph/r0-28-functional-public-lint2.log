@@ -1,0 +1,21 @@
+/tmp/r0-28-functional-public-programs/portable_programs/diagnostics_resources.py:70:5: PT018 Assertion should be broken down into multiple parts
+/tmp/r0-28-functional-public-programs/portable_programs/diagnostics_resources.py:77:9: PT017 Found assertion on exception `e` in `except` block, use `pytest.raises()` instead
+/tmp/r0-28-functional-public-programs/portable_programs/family_oracle.py:14:1: E731 Do not assign a `lambda` expression, use a `def`
+/tmp/r0-28-functional-public-programs/portable_programs/family_oracle.py:117:101: E501 Line too long (125 > 100)
+/tmp/r0-28-functional-public-programs/portable_programs/materialization_compatibility.py:49:17: B023 Function definition does not bind loop variable `plan`
+/tmp/r0-28-functional-public-programs/portable_programs/materialization_compatibility.py:50:17: B023 Function definition does not bind loop variable `decisions`
+/tmp/r0-28-functional-public-programs/portable_programs/materialization_compatibility.py:58:17: B023 Function definition does not bind loop variable `decisions`
+/tmp/r0-28-functional-public-programs/portable_programs/moments_ordering.py:52:9: PT017 Found assertion on exception `e` in `except` block, use `pytest.raises()` instead
+/tmp/r0-28-functional-public-programs/portable_programs/moments_ordering.py:77:60: B023 Function definition does not bind loop variable `f`
+/tmp/r0-28-functional-public-programs/portable_programs/moments_ordering.py:77:63: B023 Function definition does not bind loop variable `pipe`
+/tmp/r0-28-functional-public-programs/portable_programs/moments_ordering.py:148:5: E731 Do not assign a `lambda` expression, use a `def`
+/tmp/r0-28-functional-public-programs/portable_programs/moments_ordering.py:148:30: B023 Function definition does not bind loop variable `nodes`
+/tmp/r0-28-functional-public-programs/portable_programs/moments_ordering.py:163:101: E501 Line too long (113 > 100)
+/tmp/r0-28-functional-public-programs/portable_programs/root_compatibility.py:149:17: PT017 Found assertion on exception `e` in `except` block, use `pytest.raises()` instead
+/tmp/r0-28-functional-public-programs/portable_programs/root_compatibility.py:160:101: E501 Line too long (118 > 100)
+/tmp/r0-28-functional-public-programs/portable_programs/session_affine.py:114:71: B905 `zip()` without an explicit `strict=` parameter
+/tmp/r0-28-functional-public-programs/portable_programs/session_affine.py:165:101: E501 Line too long (101 > 100)
+/tmp/r0-28-functional-public-programs/replay.py:103:1: PT018 Assertion should be broken down into multiple parts
+/tmp/r0-28-functional-public-programs/replay.py:108:101: E501 Line too long (112 > 100)
+Found 19 errors.
+5 unsafe fixes available with `--fix --unsafe-fixes`.

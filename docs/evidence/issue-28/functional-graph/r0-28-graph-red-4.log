@@ -1,0 +1,24 @@
+....F                                                                    [100%]
+=================================== FAILURES ===================================
+__ test_functional_json_rejects_object_instead_of_activation_parameter_array ___
+
+    def test_functional_json_rejects_object_instead_of_activation_parameter_array() -> None:
+        import pytest
+        from r0.modules import priors
+    
+        recipe = FunctionalCausalRecipe(
+            LinearRecipe(rows=16, features=1, signal_features=1, active_features=1, context_rows=8),
+            (FunctionalCausalNode((), priors.FrozenLinearFunction(((1.0,), (2.0,))),
+                                 root=JointRootBase("uniform", 1),
+                                 pipeline=priors.CausalNodePipeline(2, stages=(priors.CausalActivation(),))),),
+            ((0, 0),), ((0, 1),),
+        )
+        payload = json.loads(json.dumps(asdict(recipe)))
+        payload["nodes"][0]["pipeline"]["stages"][0]["parameters"] = {}
+>       with pytest.raises(ValueError, match="array"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/priors/test_functional_causal.py:192: Failed
+=========================== short test summary info ============================
+FAILED tests/priors/test_functional_causal.py::test_functional_json_rejects_object_instead_of_activation_parameter_array
+1 failed, 4 passed in 1.64s

@@ -1,0 +1,23 @@
+........F                                                                [100%]
+=================================== FAILURES ===================================
+___________ test_constant_internal_function_is_retained_and_flagged ____________
+
+    def test_constant_internal_function_is_retained_and_flagged() -> None:
+        from r0.modules import priors
+    
+        recipe = FunctionalCausalRecipe(
+            LinearRecipe(rows=16, features=1, signal_features=1, active_features=1, context_rows=8),
+            (FunctionalCausalNode((), priors.FrozenLinearFunction(((1.0,), (2.0,))),
+                                 root=JointRootBase("uniform", 1)),
+             FunctionalCausalNode((0,), priors.FrozenLinearFunction(((0.0, 0.0),)))),
+            ((0, 0),), ((0, 1),),
+        )
+        task = generate_task(recipe, seed=1, task_id=2)
+        card = json.loads(task.mechanism_json)
+>       assert "constant_function_sample" in card["flags"]
+E       AssertionError: assert 'constant_function_sample' in []
+
+tests/priors/test_functional_causal.py:326: AssertionError
+=========================== short test summary info ============================
+FAILED tests/priors/test_functional_causal.py::test_constant_internal_function_is_retained_and_flagged
+1 failed, 8 passed in 1.59s

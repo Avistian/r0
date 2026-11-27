@@ -1,0 +1,10 @@
+python3 scripts/run_check.py ruff check .
+All checks passed!
+python3 scripts/run_check.py pyright
+/tmp/r0-28-graph-repair/src/r0/modules/priors/lib/functional_causal_evaluation.py
+  /tmp/r0-28-graph-repair/src/r0/modules/priors/lib/functional_causal_evaluation.py:34:5 - error: Type of "constant" is partially unknown
+    Type of "constant" is "list[Unknown]" (reportUnknownVariableType)
+  /tmp/r0-28-graph-repair/src/r0/modules/priors/lib/functional_causal_evaluation.py:34:16 - error: Type of "tolist" is partially unknown
+    Type of "tolist" is "() -> list[Unknown]" (reportUnknownMemberType)
+2 errors, 0 warnings, 0 informations
+make: *** [Makefile:11: typecheck] Error 1

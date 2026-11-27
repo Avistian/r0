@@ -1,0 +1,30 @@
+.........F                                                               [100%]
+=================================== FAILURES ===================================
+_________ test_mlp_and_pipeline_saturation_diagnostics_reach_task_card _________
+
+    def test_mlp_and_pipeline_saturation_diagnostics_reach_task_card() -> None:
+        from r0.modules import priors
+    
+        activation = priors.CalibratedActivation(
+            kind="tanh", input_mean=(0.0,), input_inverse_std=(1.0,), shift=(0.0,),
+            output_mean=(0.0,), output_inverse_std=(1.0,), shift_rows=(0,), calibration_rows=1,
+            calibration_id="authored-tanh", calibration_digest="0" * 64,
+        )
+        recipe = FunctionalCausalRecipe(
+            LinearRecipe(rows=16, features=1, signal_features=1, active_features=1, context_rows=8),
+            (FunctionalCausalNode((), FrozenTreeFunction(1, ((0,),), ((0.0,),), (((100.0,), (100.0,)),)),
+                                 root=JointRootBase("uniform", 1)),
+             FunctionalCausalNode((0,), priors.FrozenMLPFunction((priors.FrozenLinearFunction(((1.0,),)),),
+                                                              (activation,), end_activation=True)),
+             FunctionalCausalNode((0,), priors.FrozenLinearFunction(((1.0,),)),
+                                 pipeline=priors.CausalNodePipeline(1, stages=(priors.CausalActivation("sigmoid"),)))),
+            ((1, 0),), ((2, 0),),
+        )
+        card = json.loads(generate_task(recipe, seed=1, task_id=2).mechanism_json)
+>       assert "saturated_activation" in card["flags"]
+E       AssertionError: assert 'saturated_activation' in ['disconnected_target', 'zero_target_dispersion', 'constant_function_sample', 'constant_state_sample']
+
+tests/priors/test_functional_causal.py:352: AssertionError
+=========================== short test summary info ============================
+FAILED tests/priors/test_functional_causal.py::test_mlp_and_pipeline_saturation_diagnostics_reach_task_card
+1 failed, 9 passed in 1.48s

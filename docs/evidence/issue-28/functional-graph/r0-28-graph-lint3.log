@@ -1,0 +1,122 @@
+E501 Line too long (112 > 100)
+   --> src/r0/modules/priors/lib/functional_causal_evaluation.py:139:101
+    |
+137 |     scores = torch.stack([values[i][:, j] for i, j in recipe.target], dim=1)
+138 |     _, certificates = functional_certificates(recipe.nodes)
+139 |     target_sources = frozenset[tuple[int, int]]().union(*(certificates[i][j].sources for i, j in recipe.target))
+    |                                                                                                     ^^^^^^^^^^^^
+140 |     active = [
+141 |         column
+    |
+
+E501 Line too long (110 > 100)
+  --> tests/explorer/test_functional_session.py:29:101
+   |
+27 |                             classes={"regression": 0, "binary": 2, "multiclass": 3}[task_type]),
+28 |         (
+29 |             priors.FunctionalCausalNode((), priors.FrozenLinearFunction(((1.0, 0.0), (0.0, 1.0))), root=base),
+   |                                                                                                     ^^^^^^^^^^
+30 |             priors.FunctionalCausalNode((0,), priors.FrozenQuadraticFunction(
+31 |                 2, (0, 1), (
+   |
+
+E501 Line too long (106 > 100)
+  --> tests/explorer/test_functional_session.py:39:101
+   |
+37 |     )
+38 |     session = ExplorerSession(tmp_path / "original")
+39 |     result = session.request("generate", {"record": {"recipe": asdict(recipe), "seed": 28, "task_id": 0}})
+   |                                                                                                     ^^^^^^
+40 |     graph = session.request("graph", {"indices": [15, 1, 15]})["graph"]
+41 |     assert graph["signal_max_error"] == graph["target_max_error"] == 0
+   |
+
+E501 Line too long (102 > 100)
+   --> tests/priors/test_functional_causal.py:153:101
+    |
+151 |         FrozenTreeFunction(1, ((0,),), ((1.0,),), (((5.0,), (7.0,)),)),
+152 |         priors.FrozenRFFFunction(((math.pi / 2,),), (0.0,), ((2.0,),)),
+153 |         priors.FrozenDiscretizationFunction(((1.0,), (3.0,)), priors.FrozenLinearFunction(((2.0,),))),
+    |                                                                                                     ^^
+154 |         priors.FrozenEMFunction(((2.0,), (2.0,)), (1.0, 2.0), priors.FrozenLinearFunction(((1.0, 0.0),))),
+155 |         priors.FrozenProductFunction(priors.FrozenLinearFunction(((2.0,),)), priors.FrozenLinearFunction(((3.0,),))),
+    |
+
+E501 Line too long (106 > 100)
+   --> tests/priors/test_functional_causal.py:154:101
+    |
+152 |         priors.FrozenRFFFunction(((math.pi / 2,),), (0.0,), ((2.0,),)),
+153 |         priors.FrozenDiscretizationFunction(((1.0,), (3.0,)), priors.FrozenLinearFunction(((2.0,),))),
+154 |         priors.FrozenEMFunction(((2.0,), (2.0,)), (1.0, 2.0), priors.FrozenLinearFunction(((1.0, 0.0),))),
+    |                                                                                                     ^^^^^^
+155 |         priors.FrozenProductFunction(priors.FrozenLinearFunction(((2.0,),)), priors.FrozenLinearFunction(((3.0,),))),
+156 |         priors.FrozenMLPFunction((priors.FrozenLinearFunction(((2.0,),)), priors.FrozenLinearFunction(((3.0,),))),
+    |
+
+E501 Line too long (117 > 100)
+   --> tests/priors/test_functional_causal.py:155:101
+    |
+153 |         priors.FrozenDiscretizationFunction(((1.0,), (3.0,)), priors.FrozenLinearFunction(((2.0,),))),
+154 |         priors.FrozenEMFunction(((2.0,), (2.0,)), (1.0, 2.0), priors.FrozenLinearFunction(((1.0, 0.0),))),
+155 |         priors.FrozenProductFunction(priors.FrozenLinearFunction(((2.0,),)), priors.FrozenLinearFunction(((3.0,),))),
+    |                                                                                                     ^^^^^^^^^^^^^^^^^
+156 |         priors.FrozenMLPFunction((priors.FrozenLinearFunction(((2.0,),)), priors.FrozenLinearFunction(((3.0,),))),
+157 |                                 (priors.CalibratedActivation(
+    |
+
+E501 Line too long (114 > 100)
+   --> tests/priors/test_functional_causal.py:156:101
+    |
+154 |         priors.FrozenEMFunction(((2.0,), (2.0,)), (1.0, 2.0), priors.FrozenLinearFunction(((1.0, 0.0),))),
+155 |         priors.FrozenProductFunction(priors.FrozenLinearFunction(((2.0,),)), priors.FrozenLinearFunction(((3.0,),))),
+156 |         priors.FrozenMLPFunction((priors.FrozenLinearFunction(((2.0,),)), priors.FrozenLinearFunction(((3.0,),))),
+    |                                                                                                     ^^^^^^^^^^^^^^
+157 |                                 (priors.CalibratedActivation(
+158 |                                     kind="identity", input_mean=(0.0,), input_inverse_std=(1.0,), shift=(0.0,),
+    |
+
+E501 Line too long (111 > 100)
+   --> tests/priors/test_functional_causal.py:158:101
+    |
+156 |         priors.FrozenMLPFunction((priors.FrozenLinearFunction(((2.0,),)), priors.FrozenLinearFunction(((3.0,),))),
+157 |                                 (priors.CalibratedActivation(
+158 |                                     kind="identity", input_mean=(0.0,), input_inverse_std=(1.0,), shift=(0.0,),
+    |                                                                                                     ^^^^^^^^^^^
+159 |                                     output_mean=(0.0,), output_inverse_std=(1.0,), shift_rows=(0,),
+160 |                                     calibration_rows=1, calibration_id="literal-identity", calibration_digest="0" * 64,
+    |
+
+E501 Line too long (119 > 100)
+   --> tests/priors/test_functional_causal.py:160:101
+    |
+158 |                                     kind="identity", input_mean=(0.0,), input_inverse_std=(1.0,), shift=(0.0,),
+159 |                                     output_mean=(0.0,), output_inverse_std=(1.0,), shift_rows=(0,),
+160 |                                     calibration_rows=1, calibration_id="literal-identity", calibration_digest="0" * 64,
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+161 |                                 ),)),
+162 |     )
+    |
+
+E501 Line too long (101 > 100)
+   --> tests/priors/test_functional_causal.py:169:101
+    |
+167 |         tuple((i, 0) for i in range(1, 9)), ((9, 0),),
+168 |     )
+169 |     task = generate_task(recipe_from_dict(json.loads(json.dumps(asdict(recipe)))), seed=1, task_id=2)
+    |                                                                                                     ^
+170 |     expected = torch.tensor([[6, 4, 7, -2, 2, 2 / 3, 24, 12]] * 16, dtype=torch.float64)
+171 |     torch.testing.assert_close(task.inputs, expected)
+    |
+
+E501 Line too long (107 > 100)
+   --> tests/priors/test_functional_causal.py:189:101
+    |
+187 |         (FunctionalCausalNode((), priors.FrozenLinearFunction(((1.0,), (2.0,))),
+188 |                              root=JointRootBase("uniform", 1),
+189 |                              pipeline=priors.CausalNodePipeline(2, stages=(priors.CausalActivation(),))),),
+    |                                                                                                     ^^^^^^^
+190 |         ((0, 0),), ((0, 1),),
+191 |     )
+    |
+
+Found 14 errors (3 fixed, 11 remaining).

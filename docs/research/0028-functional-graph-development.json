@@ -1,0 +1,284 @@
+{
+  "source": "6a70ecd2289ff4e9c208a0d7f0d09acebe5ada53",
+  "archive": "0028-functional-graph-development.zip",
+  "bytes": 44296,
+  "sha256": "5b1882d6b8c7d533bbd03963a92de54a772a2968ce63b9e78982c2d0a5df663d",
+  "files": {
+    "r0-28-functional-public-lint.log": {
+      "bytes": 60255,
+      "sha256": "be273a873dea32c00c857884c9fd238146c9e83dbb7b2c6190b44640c6c917dd",
+      "mirrored": false
+    },
+    "r0-28-functional-public-lint2.log": {
+      "bytes": 2708,
+      "sha256": "4a28847c16822fd737464f558a499e60d4577e5b229917f87831c99c9a5f3f4a",
+      "mirrored": true
+    },
+    "r0-28-functional-public-lint3.log": {
+      "bytes": 1247,
+      "sha256": "cb447b345af7836d770a20b80b8aabdd30e24ee1083c8c744d0f7bf9cf6b76f8",
+      "mirrored": true
+    },
+    "r0-28-functional-public-lint4.log": {
+      "bytes": 156,
+      "sha256": "a46cc61b473adc7936cd40f2803a0b82fb583170328642535994a9e1fc372e69",
+      "mirrored": true
+    },
+    "r0-28-functional-public-lint5.log": {
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "mirrored": true
+    },
+    "r0-28-functional-public-replay.log": {
+      "bytes": 212,
+      "sha256": "d0aead1691ac57e6e5d3d437215915d7e5755be5dd13b7e5d690c987ff379b92",
+      "mirrored": true
+    },
+    "r0-28-graph-admission-caller-final.log": {
+      "bytes": 99,
+      "sha256": "d9f898c25e38fed4ec00805869b1966bcef55c0bf191f848ba8d7accd5147833",
+      "mirrored": true
+    },
+    "r0-28-graph-admission-caller-green.log": {
+      "bytes": 99,
+      "sha256": "83146a95bf64be71113f4c12a845015329edf544b1adf26777959093e77553b3",
+      "mirrored": true
+    },
+    "r0-28-graph-admission-caller-red.log": {
+      "bytes": 7339,
+      "sha256": "f77bed380a36906658b179c105a5356b82c847c0fcf553e4fdb3e3685be7e292",
+      "mirrored": true
+    },
+    "r0-28-graph-admission-commit.log": {
+      "bytes": 842,
+      "sha256": "92bf622e3e658ea2d57c8dcc9347f4190c69b3431642c7e3c107f0419e9c3ed3",
+      "mirrored": true
+    },
+    "r0-28-graph-admission-commit2.log": {
+      "bytes": 382,
+      "sha256": "fccfb4d48cdff665f87a3f41920d3ea652fb8de46b1c78a58df57933690d6845",
+      "mirrored": true
+    },
+    "r0-28-graph-admission-focused.log": {
+      "bytes": 180,
+      "sha256": "07435330e011f1b6f99171d1e8eef948145608411d59314751267137c9bef4b2",
+      "mirrored": true
+    },
+    "r0-28-graph-admission-full-check.log": {
+      "bytes": 3305,
+      "sha256": "e0da2bcb82751506ec47e80ae4fc2e4e323cd2f7c5af842d6419fd743d1b6640",
+      "mirrored": true
+    },
+    "r0-28-graph-admission-green.log": {
+      "bytes": 99,
+      "sha256": "a331dcde147873b4ba70ac41cb8fbef5ec1326ae984af20065fca3b0f1ce7b07",
+      "mirrored": true
+    },
+    "r0-28-graph-admission-lint.log": {
+      "bytes": 1977,
+      "sha256": "bef67530799f7936712669434f48c2d30aced7f454621cc10db7bcd8ed02ad65",
+      "mirrored": true
+    },
+    "r0-28-graph-admission-red.log": {
+      "bytes": 6114,
+      "sha256": "efef0c94fd126f4914eaa00e0e4bd801871870e0f4b4ad826831e8b9eb30d1df",
+      "mirrored": true
+    },
+    "r0-28-graph-admission-static.log": {
+      "bytes": 1309,
+      "sha256": "8c380728f81d30b3b64718512287420d5d01dc2f5b85b43f85ea7f8360bfafaf",
+      "mirrored": true
+    },
+    "r0-28-graph-all-functions.log": {
+      "bytes": 98,
+      "sha256": "30a14cb7903c3fc2fca7143fa38f0ce7f48642aa1ed83639f611d147f9dad5cc",
+      "mirrored": true
+    },
+    "r0-28-graph-commit.log": {
+      "bytes": 945,
+      "sha256": "e24a7e82a7952efa54f8e3a63d2f7b57de6b3d0d685208f87b6f69f33d158ac4",
+      "mirrored": true
+    },
+    "r0-28-graph-focused-final.log": {
+      "bytes": 98,
+      "sha256": "3bb409a224c95529691cdf283fce27a683360b3464206ac01fe26e147a129ae7",
+      "mirrored": true
+    },
+    "r0-28-graph-focused.log": {
+      "bytes": 1614,
+      "sha256": "dcf71cc938212c01e384761c37427af628d27ce71ed8c98f9b34e30f6a469513",
+      "mirrored": true
+    },
+    "r0-28-graph-full-check.log": {
+      "bytes": 3311,
+      "sha256": "7fa06981c8f491ac2c98ab8f716278708a4c09f8f70f3a2cf55655e12e4c0017",
+      "mirrored": true
+    },
+    "r0-28-graph-green-1.log": {
+      "bytes": 98,
+      "sha256": "e26d0fb4bfcf8119be91d7f72c31b12932a638789d2c1afb4c369d26a9a5393d",
+      "mirrored": true
+    },
+    "r0-28-graph-green-2.log": {
+      "bytes": 99,
+      "sha256": "41fd8b0eb7d567cb089ba41caf3f88efdaf48486f69ad9e104b7d06d7977ca2c",
+      "mirrored": true
+    },
+    "r0-28-graph-green-3.log": {
+      "bytes": 99,
+      "sha256": "2757ed065592f4cda6b9fd1611494be860b348a59e467f23fe434407605fe035",
+      "mirrored": true
+    },
+    "r0-28-graph-green-4.log": {
+      "bytes": 98,
+      "sha256": "37bbf2a910516aeb932e4c8ba8c41b7a81268a2cff53d778d26debbb18ef570f",
+      "mirrored": true
+    },
+    "r0-28-graph-green-5.log": {
+      "bytes": 100,
+      "sha256": "47e980a4d5b0d286323162c9eef2ce77c184eeb569d065d05ef172cdefbb4053",
+      "mirrored": true
+    },
+    "r0-28-graph-lint.log": {
+      "bytes": 15713,
+      "sha256": "6a96b0604b1a9af30bf61ecfeb49986a69ca95797f34cc12fcd2b303a601042f",
+      "mirrored": true
+    },
+    "r0-28-graph-lint2.log": {
+      "bytes": 39,
+      "sha256": "6f4e3c8cb6a43f32a8b47add0b65207f17bd814c84308623b3720ad789c0d769",
+      "mirrored": true
+    },
+    "r0-28-graph-lint3.log": {
+      "bytes": 7135,
+      "sha256": "858616c2fada38b07e339a402ccb2a9a44698b323c397ee92087b2e1b1aa2659",
+      "mirrored": true
+    },
+    "r0-28-graph-lint4.log": {
+      "bytes": 1686,
+      "sha256": "bfbee5e5ce9ec95413a60bf3efa569331cf2c52cecf8c31dc70e1886d0dc0a4c",
+      "mirrored": true
+    },
+    "r0-28-graph-red-1.log": {
+      "bytes": 986,
+      "sha256": "2356a2e5a66542ba11680666691b2b4637def8cba0a384bc1f5df3d7f2577f28",
+      "mirrored": true
+    },
+    "r0-28-graph-red-2.log": {
+      "bytes": 1455,
+      "sha256": "a0b2de8d1d05df052987a72716982d0fd8a311b9953100b8996d9dcd9a17d517",
+      "mirrored": true
+    },
+    "r0-28-graph-red-3.log": {
+      "bytes": 1581,
+      "sha256": "8665c48fa852cd7ed28ecc3ed9b37a20e53f97a03282ed9f0988353f7adc50e9",
+      "mirrored": true
+    },
+    "r0-28-graph-red-4.log": {
+      "bytes": 1358,
+      "sha256": "919d547c0366a9442b845001ad5a064ba1f371da503a423e8b8271814939c351",
+      "mirrored": true
+    },
+    "r0-28-graph-red-5.log": {
+      "bytes": 2998,
+      "sha256": "9baf2ae904b0c50722def2fab93e01b632f08d2739a450cc7c91d00446073074",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-commit.log": {
+      "bytes": 392,
+      "sha256": "689bc1035fbb656ac8a27c98d95d5308bb7864c1e1a72e68235f0f95ca070261",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-green-constant.log": {
+      "bytes": 98,
+      "sha256": "5e31c39dad277f7264b1e56d0a0af28cc15e8198d722c5d979f245b3f1bc07a2",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-green-legacy-order.log": {
+      "bytes": 99,
+      "sha256": "9ebbbe7ba2190d2d0a708612ca0db7dd5365c0a553125ca843137fa929e8d80c",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-green-order.log": {
+      "bytes": 99,
+      "sha256": "938942a784596b36c52382fc6ae09e44b8841ee5672ca66423cc843285059d16",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-green-readout.log": {
+      "bytes": 99,
+      "sha256": "4d9e4e3d98546834ba09d8d69a5f8e35bc9897fde82715b7d3caf8183b3258a3",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-green-saturation.log": {
+      "bytes": 99,
+      "sha256": "f3360fa34fafc027aaabc5803fc6fc0318bddecb92a454c1bc17851e77244f2a",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-lint.log": {
+      "bytes": 2982,
+      "sha256": "f6205cadccd2c7d9a9f0bcd558501db71fc9a1bf4227cdf620f1f1f0eb87f1fb",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-red-constant.log": {
+      "bytes": 1284,
+      "sha256": "ac7c4fce7d12e9e0ee2bd564bbceed0a4efc0e028c3ac182df06d5b4e9273c34",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-red-legacy-order.log": {
+      "bytes": 1440,
+      "sha256": "00a69cd007612a5a88859202c588ae1c32b11896c26dd1a5dd885ff7435d646b",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-red-order.log": {
+      "bytes": 1353,
+      "sha256": "22f058efe5a674d095a41f8194995246d59be89ac22aca4b40f1ec8eb73d5910",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-red-readout.log": {
+      "bytes": 2669,
+      "sha256": "e4e6e15cfd4eb6c478f49bb39f4a60a173c9a3ad31002b74aeccbab0dac734fd",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-red-saturation.log": {
+      "bytes": 2022,
+      "sha256": "7e784ad2e89fb8d108e79639d1146652d15f62e84d404b242d75a77ef2ead8d5",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-static.log": {
+      "bytes": 681,
+      "sha256": "3a0dd31d551dcaea4bcabfa2fb3ab357d002b4543ce68ca825968b879b1bb8fb",
+      "mirrored": true
+    },
+    "r0-28-graph-repair-static2.log": {
+      "bytes": 1230,
+      "sha256": "9cc22b5851d453fb243c8de7faac428d7582a8b75c761eb273b0a5ccea8195bc",
+      "mirrored": true
+    },
+    "r0-28-graph-repaired-full-check.log": {
+      "bytes": 3296,
+      "sha256": "f0c270c12c39f74225dd686d0ba8cb9a687c9ce7def420cc193bdefe93a93673",
+      "mirrored": true
+    },
+    "r0-28-graph-session.log": {
+      "bytes": 6019,
+      "sha256": "6825438c45156b6bd36bfe2a2d1c164d68fae950f32808097e5b985616683d09",
+      "mirrored": true
+    },
+    "r0-28-graph-static.log": {
+      "bytes": 1309,
+      "sha256": "55b657bccbf18b9d4ef0d558cb9b69b0736b16679dd1df76ab0ff76794618a65",
+      "mirrored": true
+    },
+    "r0-28-graph-types.log": {
+      "bytes": 1627,
+      "sha256": "5fa9ac07170b1265d9b81b6f896b10c635914a562e1a6359b8e3175bb8c5c00e",
+      "mirrored": true
+    },
+    "r0-28-graph-types2.log": {
+      "bytes": 37,
+      "sha256": "6d88a1b220adb7a3d62092b6e38431f0b3fe8babe9864fab90e5849766260332",
+      "mirrored": true
+    }
+  },
+  "qualification": "Author checks and development failures retained verbatim. Oversized text remains in ZIP only. Intermediate uncommitted source and temporary verifier lint-failure bytes are not all retained. Independent evidence is separate; next-feature target-calibration logs excluded."
+}

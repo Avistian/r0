@@ -1,0 +1,6 @@
+Interpreter: /home/avist/Projects/r0/.venv/bin/python3
+r0 source: /tmp/r0-28-graph-repair/src/r0/__init__.py
+Expected package: /tmp/r0-28-graph-repair/src/r0
+[feat/issue-28-graph-repair 31a841b] fix(priors): retain functional diagnostics and order causal inspection steps
+ 7 files changed, 239 insertions(+), 13 deletions(-)
+ create mode 100644 docs/research/0028-joint-graph-source-check.md

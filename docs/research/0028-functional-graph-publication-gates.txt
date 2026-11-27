@@ -1,0 +1,101 @@
+python3 scripts/run_check.py python scripts/check_checkout.py && python3 scripts/run_check.py python scripts/check_hooks.py
+Interpreter: /home/avist/Projects/r0/.venv/bin/python3
+r0 source: /tmp/r0-28/src/r0/__init__.py
+Expected package: /tmp/r0-28/src/r0
+Active commit hook: /tmp/r0-28/.githooks/pre-commit
+python3 scripts/run_check.py python scripts/check_tracked_files.py
+python3 scripts/run_check.py python scripts/check_artifact_sizes.py
+python3 scripts/run_check.py ruff format --check .
+611 files already formatted
+python3 scripts/run_check.py ruff check .
+All checks passed!
+python3 scripts/run_check.py pyright
+0 errors, 0 warnings, 0 informations
+python3 scripts/run_check.py lint-imports
+
+╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐
+╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │
+ ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗
+ ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝
+╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║
+╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝
+  └──▶║║                    ▲ 
+      ╚╝────────────────────┘
+
+
+---------
+Contracts
+---------
+
+Analyzed 216 files, 1406 dependencies.
+--------------------------------------
+
+Layers KEPT
+ADR 0002: the training path never sees real data KEPT
+Only the adapter imports relbench KEPT
+Comparison stays isolated from training and real-data adapters KEPT
+
+Contracts: 4 kept, 0 broken.
+python3 scripts/run_check.py python scripts/check_module_tests.py
+python3 scripts/run_check.py python scripts/check_file_tokens.py
+
+Product source and tests unchanged from 6a70ecd.
+Staged whitespace check passed excluding only these verbatim raw logs:
+docs/evidence/issue-28/functional-graph/r0-28-functional-public-lint2.log
+docs/evidence/issue-28/functional-graph/r0-28-functional-public-lint3.log
+docs/evidence/issue-28/functional-graph/r0-28-functional-public-lint4.log
+docs/evidence/issue-28/functional-graph/r0-28-functional-public-lint5.log
+docs/evidence/issue-28/functional-graph/r0-28-functional-public-replay.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-admission-caller-final.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-admission-caller-green.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-admission-caller-red.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-admission-commit.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-admission-commit2.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-admission-focused.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-admission-full-check.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-admission-green.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-admission-lint.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-admission-red.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-admission-static.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-all-functions.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-commit.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-focused-final.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-focused.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-full-check.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-green-1.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-green-2.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-green-3.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-green-4.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-green-5.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-lint.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-lint2.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-lint3.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-lint4.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-red-1.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-red-2.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-red-3.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-red-4.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-red-5.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-commit.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-green-constant.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-green-legacy-order.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-green-order.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-green-readout.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-green-saturation.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-lint.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-red-constant.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-red-legacy-order.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-red-order.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-red-readout.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-red-saturation.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-static.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repair-static2.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-repaired-full-check.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-session.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-static.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-types.log
+docs/evidence/issue-28/functional-graph/r0-28-graph-types2.log
+docs/research/0028-functional-graph-check-7993d9c.txt
+docs/research/0028-functional-graph-check-31a841b.txt
+docs/research/0028-functional-graph-check-ae815a6.txt
+Archive restored and all 992 manifest entries verified.

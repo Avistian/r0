@@ -1,0 +1,49 @@
+STANDARDS ADMISSION-DELTA REVIEW
+
+Scope: 31a841b8097b8156eb23fc78a43263cad887fe2d...ae815a6f44205b13ea39654ee36df5ce3099a14d only.
+
+New hard documented-standard violations: 0.
+New heuristic findings: 0.
+
+The root constructor's change is local to validation of its own recorded factors. It introduces neither global randomness nor cross-module private imports. The explicit-limits decoder is exported through the public priors entry point, and new tests call that entry point. Their NumPy allocation observer preserves the wrapped call's return value and uses pytest-scoped restoration; it does not replace production results with fabricated outcomes. Literal product expectations and one-ULP corruption checks are distinct from the allocation observation.
+
+The documentation preserves the independent admission SPEC REJECT for 31a841b and states that its green suite did not establish acceptance. It keeps further-repair verification pending and limits resource language to estimates rather than measured RSS or operating-system caps.
+
+The earlier checksum documentation finding was repaired in the preceding delta. The earlier optional decoder-duplication heuristic remains unchanged; this delta does not close or re-review it. Both earlier reports remain unchanged.
+
+No tests run, repository changes, setup, sync or installs by this reviewer. Preflight and final status: exact requested HEAD; only ?? .venv. This is standards confirmation for the stated delta only, not overall source, issue, scientific, resource, browser or Colab acceptance.
+
+IDENTITIES
+CWD: /tmp/r0-28-graph-admission
+BASE: 31a841b8097b8156eb23fc78a43263cad887fe2d
+HEAD: ae815a6f44205b13ea39654ee36df5ce3099a14d
+DIFF COMMAND: git diff 31a841b8097b8156eb23fc78a43263cad887fe2d...HEAD
+DIFF SHA256: d6de151e3fed3949f1ab385c8fe5527d510586b2f794aca4d83054fc45ed40b3
+COMMITS:
+ae815a6 fix(priors): validate root factors without pre-admission arrays
+
+SOURCE GIT BLOB IDS:
+abf6d5dfefd2dacc6c7fba66cadd3d1bbe83a61a  docs/issue-28-functional-graph-integration.md
+327746510589342c856899911d705024918bc9f9  src/r0/modules/priors/__init__.py
+ec0cc7e68f38dad41b13ff55602c3750009b1aa7  src/r0/modules/priors/lib/joint_root_base.py
+e1195e5f403be968fe95898508f3b48798e8104c  tests/priors/test_functional_admission.py
+409670ebb230a79675cb331307f0fc424edec430  AGENTS.md
+934ffc73d5a65e7878b75fd1989de64e39bdf937  CODING_STANDARDS.md
+1bd0b6e073b3e7a977ab081cf7bf56dc91349f9d  src/r0/modules/README.md
+3768169a47b88eacaf82169a8a9ab40eb8f0cad6  CONTEXT.md
+f15c376f661c9e0244b56721166dba6fb3b20477  docs/requirements.md
+f7020e2d69dec48aaf4b162a93f1f6c1cdb446f1  docs/agents/protocol-review.md
+9c9b69b9f4033bdb921d5a207e226495f23b8a35  README.md
+ad9e8830a1051d35cd749b2545afcf1e4b4a92aa  src/r0/modules/priors/lib/weight_vectors.py
+7b80f96f20c2710abc0b965d3cbd8fd572907861  docs/adr/0001-pytorch-cpu-first.md
+35dea270f4901c1a095c31be049b8b6852513d1a  docs/adr/0002-train-only-on-synthetic-relational-priors.md
+fdd9ac78b4478c768860a077bbcf9019ef3a312f  docs/adr/0003-evaluation-protocol-v0-is-frozen.md
+d70c21455180efa89f0de7cf767900e866dfa293  docs/adr/0004-guarded-agent-compute-lane.md
+ab9478962f6d4b1f179f265cf3a2c3450ffab7af  docs/adr/0005-nothing-from-the-future.md
+495579f650841d42c10299d3c7f0cc729443b9a0  docs/adr/0006-clean-room-implementation.md
+d261308db3a1eb07ad75e566b74810959848df0d  docs/adr/0007-data-licensing-and-storage.md
+1c1189cbd7778af69cf8a2169920b704893ba3b0  docs/adr/0008-model-scope-v0.md
+d85c8f367f20a785903713737df94e8189dfdf49  docs/adr/0009-results-are-committed-files.md
+c97c5760fe7ef7f173e878b1886077982fbff3df  docs/adr/0010-the-factory-lives-in-the-home-repo.md
+219423becba4763690070c5703c94015351cc07f  docs/adr/0011-tabpfn-v2-is-the-reference-never-a-teacher.md
+3bbde9636b219fc506286de495c25475196367ed  docs/adr/0012-prior-mixture-single-table-core-first.md
