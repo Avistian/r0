@@ -72,7 +72,11 @@ def converted_steps(
     )
     return {
         "family": "converted_causal",
-        "version": recipe.version,
-        "row_indices": list(indices),
+        "version": "generation-graph-v1",
+        "recipe_version": recipe.version,
+        "episode_id": task.episode_id,
+        "rows": list(indices),
+        "component": None,
+        "component_count": 0,
         "target_origin": "native-variable-v1",
     }
