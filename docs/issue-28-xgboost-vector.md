@@ -54,3 +54,37 @@ save/reopen with task IDs above 2^53. Nine fitted backend models (three objectiv
 three widths) also compare the public Torch evaluator to actual CPU backend
 predictions around split thresholds. CPU evidence is measured; GPU is NOT_RUN.
 Synthetic fitting provenance, backend dependency lock and UI remain pending.
+
+## Independent synthetic fitting and retained fit archive
+
+`XGBoostFitPlan` and `fit_xgboost` implement an explicitly named independent
+construction lifecycle. Three distinct injected NumPy streams draw standard-normal
+fit inputs, normal regression targets or uniform discrete labels, and one backend
+seed. All raw values, initial/final snapshots, exact CPU parameters and native model
+JSON are retained with the exported function. Backend failures roll back all three
+streams. Labels and inputs are synthetic only; this API accepts no external rows.
+
+Versioned controls cover dimensions, rows, rounds, depth, histogram bins, objective,
+learning rate, row/column subsampling, child-weight threshold and L1/L2/split-gain
+penalties. Admission charges the entire raw construction and a conservative
+histogram/record workspace before RNG copying or backend import. These bounds are
+not measured Cartesian-product capacity or bulk throughput.
+
+The pinned `xgboost-cpu==3.4.1` dependency is now declared and locked; the shared
+verification environment has not been synced. Tests use an isolated backend target.
+One-output regression/logistic fits explicitly export the backend's degenerate
+scalar storage into one-coordinate leaves; multiclass scalar forests remain a
+separate layout, not mislabeled as shared vector trees.
+
+`xgboost_fit_from_dict` requires complete nested fields, applies caller limits,
+replays raw RNG custody, and binds the exported function to its retained native
+model. Archive reading does not import or refit XGBoost. This verifies record
+consistency; it is not an independent refit proving that arbitrary externally
+supplied model bytes were trained on the supplied draws. The author tests perform
+actual independent backend refits for all five engines and all three objectives.
+
+Current fitting tests also cover missing nested fields, exact caller state, failed
+backend rollback and admission before backend import. Fit-provenance integration
+into generated graph task archives, source-specific population/support/batch
+lifecycles, categorical backend splits, exploration UI/Colab and independent
+acceptance remain pending. Prior completed checkpoints remain separate.

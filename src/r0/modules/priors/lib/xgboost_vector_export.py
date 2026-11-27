@@ -12,7 +12,7 @@ def export_xgboost_vector(raw: bytes | bytearray) -> FrozenXGBoostVector:
     """Read bounded native save_raw(JSON), never unpickle or load a backend model.
 
     This boundary supports numeric CPU hist vector leaves from 3.4.1. Categorical
-    splits and scalar-leaf layouts fail explicitly instead of silently changing
+    splits and multi-tree scalar-ensemble layouts fail explicitly instead of silently changing
     their routing or treating scalar forests as joint vector trees.
     """
     if type(raw) not in (bytes, bytearray) or len(raw) > 16_000_000:
@@ -59,7 +59,7 @@ def _tree(t: Any, input_width: int, width: int) -> XGBoostVectorTree:
     if (
         not 1 <= n <= 511
         or int(params["size_leaf_vector"]) != width
-        or width < 2
+        or width < 1
         or int(params["num_feature"]) != input_width
         or params["num_deleted"] != "0"
     ):
@@ -80,7 +80,7 @@ def _tree(t: Any, input_width: int, width: int) -> XGBoostVectorTree:
         raise ValueError("categorical backend routing requires a separate supported exporter")
     if any(type(v) is not int or v != 0 for v in t["split_type"]):
         raise ValueError("only numerical splits are supported")
-    leaves = _list(t["leaf_weights"])
+    leaves = _list(t["leaf_weights"]) if width > 1 else []
     if len(leaves) > n * width:
         raise ValueError("invalid vector leaf storage")
     features: list[int] = []
@@ -98,15 +98,19 @@ def _tree(t: Any, input_width: int, width: int) -> XGBoostVectorTree:
         default = t["default_left"][i]
         if type(f) is not int or type(default) is not int or default not in (0, 1):
             raise ValueError("invalid native feature or missing direction")
-        if leaf and not 0 <= r < len(leaves) // width:
+        if leaf and width > 1 and not 0 <= r < len(leaves) // width:
             raise ValueError("invalid vector leaf offset")
+        if leaf and width == 1 and r != -1:
+            raise ValueError("scalar backend leaves require absent children")
         features.append(-1 if leaf else f)
         thresholds.append(0.0 if leaf else float(np.float32(t["split_conditions"][i])))
         left.append(-1 if leaf else child_left)
         right.append(-1 if leaf else r)
         defaults.append(bool(default))
         values.append(
-            tuple(float(np.float32(v)) for v in leaves[r * width : (r + 1) * width])
+            (float(np.float32(t["split_conditions"][i])),)
+            if leaf and width == 1
+            else tuple(float(np.float32(v)) for v in leaves[r * width : (r + 1) * width])
             if leaf
             else (0.0,) * width
         )
