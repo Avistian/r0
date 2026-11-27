@@ -62,7 +62,12 @@ Task generation, exact recipe decode, before/after comparison and pair persisten
 semantic metadata verification and repeated-row inspection are library seams.
 The local explorer and shared callback now route typed policy drafts through the
 bounded pair worker. `typed_intervention_policy_request_from_dict` performs full
-metadata admission before replaying the retained original envelope. The typed
+metadata admission and complete outer request semantics before replaying the retained
+original envelope. A validation-only authored graph uses retained source laws,
+calibration, prototype banks, equation geometry, domains and converters. It never
+replaces the stored base; soft parameter paths are checked against the original
+full function metadata, including sampled convolution custody. The runtime
+constructor and this preflight share the same semantic validator. The typed
 profile exposes native logical variables, numerical state/readout locations,
 converter captures, declared category probabilities, all four parameter laws,
 reference lifecycles, population coupling and exact decimal stream identities.

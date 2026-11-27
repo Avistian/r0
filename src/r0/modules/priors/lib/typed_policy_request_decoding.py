@@ -34,8 +34,6 @@ def typed_intervention_policy_request_from_dict(
         )
         raw_limits = RawDrawLimits(**complete_record(request["raw_limits"], RawDrawLimits))
         admit_typed_record(request, effective)
-        recipe_from_dict(request["base"], limits=effective)
-        request["base"] = restore_typed_base(request["base"])
         request["limits"], request["raw_limits"] = declared, raw_limits
         for key in ("label_nodes", "eligibility", "locations", "parameter_laws"):
             if type(request[key]) not in (list, tuple):
@@ -59,6 +57,15 @@ def typed_intervention_policy_request_from_dict(
                 law[key] = tuple(law[key])
             laws.append(InterventionParameterLaw(**law))
         request["parameter_laws"] = tuple(laws)
+        from r0.modules.priors.lib.typed_policy_preview import typed_policy_base_preview
+        from r0.modules.priors.lib.typed_policy_validation import validate_typed_policy_values
+
+        preview, functions = typed_policy_base_preview(request["base"], effective)
+        validate_typed_policy_values(
+            {**request, "base": preview}, preview, function_records=functions
+        )
+        recipe_from_dict(request["base"], limits=effective)
+        request["base"] = restore_typed_base(request["base"])
         typed = TypedInterventionPolicyRequest(**request)
         admit_typed_policy(replace(typed, limits=effective))
         return typed
