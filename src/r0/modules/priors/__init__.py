@@ -92,10 +92,33 @@ from r0.modules.priors.lib.joint_converter_plans import (
 from r0.modules.priors.lib.joint_converter_plans import (
     sample_joint_converter as sample_joint_converter,
 )
+from r0.modules.priors.lib.joint_matrix_decoding import (
+    joint_matrix_realization_from_dict as joint_matrix_realization_from_dict,
+)
+from r0.modules.priors.lib.joint_matrix_plans import JointMatrixPlan as JointMatrixPlan
+from r0.modules.priors.lib.joint_matrix_plans import JointMatrixPrior as JointMatrixPrior
+from r0.modules.priors.lib.joint_matrix_plans import (
+    joint_matrix_plan_from_dict as joint_matrix_plan_from_dict,
+)
+from r0.modules.priors.lib.joint_matrix_plans import sample_joint_matrix as sample_joint_matrix
+from r0.modules.priors.lib.joint_matrix_realization import (
+    JointMatrixRealization as JointMatrixRealization,
+)
+from r0.modules.priors.lib.joint_matrix_realization import (
+    materialize_joint_matrix as materialize_joint_matrix,
+)
 from r0.modules.priors.lib.joint_plan_calibration import (
     fit_joint_activation as fit_joint_activation,
 )
 from r0.modules.priors.lib.joint_plan_calibration import fit_joint_converter as fit_joint_converter
+from r0.modules.priors.lib.joint_point_plans import JointPointPlan as JointPointPlan
+from r0.modules.priors.lib.joint_point_plans import (
+    joint_point_plan_from_dict as joint_point_plan_from_dict,
+)
+from r0.modules.priors.lib.joint_point_plans import sample_joint_points as sample_joint_points
+from r0.modules.priors.lib.joint_point_realization import (
+    materialize_joint_points as materialize_joint_points,
+)
 from r0.modules.priors.lib.joint_sampling import JointSamplingContext as JointSamplingContext
 from r0.modules.priors.lib.joint_sampling_records import JointDecision as JointDecision
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord as JointSamplingRecord
