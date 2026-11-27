@@ -73,11 +73,46 @@ from r0.modules.priors.lib.generation_graph import explain_generation as explain
 from r0.modules.priors.lib.gp_conditioning import condition_gp as condition_gp
 from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe as GroupedLinearRecipe
 from r0.modules.priors.lib.inputs import InputDistribution as InputDistribution
+from r0.modules.priors.lib.joint_activation_plans import JointActivationPlan as JointActivationPlan
+from r0.modules.priors.lib.joint_activation_plans import (
+    joint_activation_plan_from_dict as joint_activation_plan_from_dict,
+)
+from r0.modules.priors.lib.joint_activation_plans import (
+    sample_joint_activation as sample_joint_activation,
+)
+from r0.modules.priors.lib.joint_converter_plans import (
+    JointConverterPlan as JointConverterPlan,
+)
+from r0.modules.priors.lib.joint_converter_plans import (
+    JointNumericalConverterPrior as JointNumericalConverterPrior,
+)
+from r0.modules.priors.lib.joint_converter_plans import (
+    joint_converter_plan_from_dict as joint_converter_plan_from_dict,
+)
+from r0.modules.priors.lib.joint_converter_plans import (
+    sample_joint_converter as sample_joint_converter,
+)
+from r0.modules.priors.lib.joint_plan_calibration import (
+    fit_joint_activation as fit_joint_activation,
+)
+from r0.modules.priors.lib.joint_plan_calibration import fit_joint_converter as fit_joint_converter
 from r0.modules.priors.lib.joint_sampling import JointSamplingContext as JointSamplingContext
 from r0.modules.priors.lib.joint_sampling_records import JointDecision as JointDecision
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord as JointSamplingRecord
 from r0.modules.priors.lib.joint_sampling_records import (
     joint_sampling_from_dict as joint_sampling_from_dict,
+)
+from r0.modules.priors.lib.joint_weight_plans import (
+    JointWeightPlan as JointWeightPlan,
+)
+from r0.modules.priors.lib.joint_weight_plans import (
+    joint_weight_plan_from_dict as joint_weight_plan_from_dict,
+)
+from r0.modules.priors.lib.joint_weight_plans import (
+    materialize_joint_weights as materialize_joint_weights,
+)
+from r0.modules.priors.lib.joint_weight_plans import (
+    sample_joint_weights as sample_joint_weights,
 )
 from r0.modules.priors.lib.kernel_points import KernelPointCloud as KernelPointCloud
 from r0.modules.priors.lib.kernels import GibbsKernel as GibbsKernel

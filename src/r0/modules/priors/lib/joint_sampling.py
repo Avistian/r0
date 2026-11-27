@@ -63,6 +63,12 @@ class JointSamplingContext:
         if self._busy:
             raise ValueError("joint context has an active child transaction")
 
+    @property
+    def operation(self) -> tuple[str, ...]:
+        """Current owner path; the outer context has the empty path."""
+        self._available()
+        return self._path
+
     @contextmanager
     def transaction(self, name: str) -> Generator["JointSamplingContext"]:
         self._available()
