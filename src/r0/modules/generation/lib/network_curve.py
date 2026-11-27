@@ -19,7 +19,7 @@ def network_curve(data: dict[str, Any]) -> dict[str, Any]:
     limits = priors.CausalLimits(**data["causal_limits"])
     recipe = priors.recipe_from_dict(data["recipe"], limits=limits)
     if not isinstance(
-        recipe, (priors.NetworkRecipe, priors.NetworkInputView, priors.NetworkInnovationRecipe)
+        recipe, (priors.NetworkRecipe, priors.NetworkInputView, priors.FunctionalCausalRecipe)
     ):
         raise ValueError("response requires a standalone network recipe")
     anchor, feature, points, bounds = (
@@ -45,8 +45,8 @@ def network_curve(data: dict[str, Any]) -> dict[str, Any]:
     ):
         raise ValueError("invalid network response grid")
     # Admit the query geometry before allocating the repeated anchor/grid.
-    if isinstance(recipe, priors.NetworkInnovationRecipe):
-        recipe.admit(evaluation_rows=points)
+    if isinstance(recipe, priors.FunctionalCausalRecipe):
+        recipe.admit(evaluation_rows=recipe.task.rows + points)
     elif isinstance(recipe, priors.NetworkInputView):
         recipe.admit(rows=points)
     else:
@@ -72,6 +72,22 @@ def network_curve(data: dict[str, Any]) -> dict[str, Any]:
         scores = priors.evaluate_network_innovation_reference(recipe, x, innovations=innovations)
         reference.update(
             reference=mode, original_task_id=str(data["task_id"]), original_row=data["anchor_row"]
+        )
+    elif isinstance(recipe, priors.FunctionalCausalRecipe):
+        mode = data.get("reference", "original-row")
+        scores = priors.evaluate_functional_reference(
+            recipe,
+            x,
+            seed=data["seed"],
+            task_id=data["task_id"],
+            row=data["anchor_row"],
+            reference=mode,
+        )
+        reference.update(
+            reference=mode,
+            original_task_id=str(data["task_id"]),
+            original_row=data["anchor_row"],
+            clamp_location="state_and_readout",
         )
     else:
         scores = (

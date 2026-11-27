@@ -404,6 +404,9 @@ class ExplorerSession:
             return {"curve": _identity_numbers(curve, for_browser=True)}
         if action == "curve":
             if json.loads(self.task.recipe_json)["recipe"].get("version") in (
+                "functional-causal-v1",
+                "functional-causal-v2",
+                "xgboost-fitted-functional-causal-v1",
                 "standalone-network-v1",
                 "standalone-network-innovations-v1",
                 "network-input-view-v1",
