@@ -83,6 +83,8 @@ def admit_recursive_tasks(
     numbers: int,
     replay_work: int,
     limits: CausalLimits,
+    retain_node_stages: bool = False,
+    population_geometry: dict[int, tuple[int, int, int]] | None = None,
 ) -> None:
     """Conservative shared state, emission, traversal and replay reservation; no RNG access."""
     try:
@@ -102,6 +104,7 @@ def admit_recursive_tasks(
             encoded: list[int] = []
             values: list[int] = []
             geometry_work, floor, fan_in, root_width, root_total, pipeline_work = 0, 0, 0, 0, 0, 0
+            captured_channels = 0
             function_work = 0
             members: list[FrozenRecursiveForestFunction] = []
             roots: list[tuple[Any, int]] = []
@@ -114,6 +117,35 @@ def admit_recursive_tasks(
                 function = decode_admitted_function(
                     _authored(equation.get("function")), limits=effective
                 )
+                captured_channels += function.input_width + function.output_width
+                index = len(scores)
+                if population_geometry and index in population_geometry:
+                    expected_in, expected_out, classes = population_geometry[index]
+                    if (function.input_width, function.output_width) != (expected_in, expected_out):
+                        raise ValueError("population replacement geometry differs before replay")
+                    if classes:
+                        domains = _array(node.get("domains", ()))
+                        domain = (
+                            node.get("domain")
+                            if version == "native-causal-v1"
+                            else (
+                                domains[0]
+                                if version == "native-vector-causal-v1" and len(domains) == 1
+                                else None
+                            )
+                        )
+                        domain = _object(domain)
+                        if (
+                            domain.get("version") != "native-variable-domain-v1"
+                            or domain.get("kind") not in ("binary", "categorical")
+                            or domain.get("emission") != "argmax"
+                            or len(_array(domain.get("vocabulary"))) != classes
+                            or equation.get("pipeline") is not None
+                            or any(_array(equation.get("noise_scale", ())))
+                        ):
+                            raise ValueError(
+                                "population classifier requires direct native label emission"
+                            )
                 parents = _array(equation.get("parents"))
                 if any(type(p) is not int or not 0 <= p < len(encoded) for p in parents) or len(
                     set(parents)
@@ -234,6 +266,8 @@ def admit_recursive_tasks(
                 channels = sum(encoded) + 3 * sum(values) + total + len(raw_nodes)
                 sources = root_total + total + sum(values) + len(raw_nodes)
                 work += 256 * rows * channels + 256 * sum(encoded) * sources
+            if retain_node_stages:
+                work += 2048 * rows * captured_channels
             if work > effective.working_bytes or numbers + parameter_extra > effective.parameters:
                 raise ValueError(
                     "recursive whole-task geometry/emission/replay workspace "

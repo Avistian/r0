@@ -24,7 +24,10 @@ _EXECUTION_FIELDS = {
 
 
 def is_population_task_record(record: Any, card: Any) -> bool:
-    if type(card) is dict and cast(dict[str, Any], card).get("family") == "recursive_population":
+    if type(card) is dict and cast(dict[str, Any], card).get("family") in (
+        "recursive_population",
+        "recursive_population_graph",
+    ):
         return True
     if type(record) is not dict:
         return False
@@ -32,6 +35,8 @@ def is_population_task_record(record: Any, card: Any) -> bool:
     return type(recipe) is dict and cast(dict[str, Any], recipe).get("version") in (
         "recursive-population-v1",
         "recursive-population-intervention-v1",
+        "recursive-population-graph-v1",
+        "recursive-population-graph-intervention-v1",
     )
 
 
@@ -119,7 +124,11 @@ def validate_population_task(
         )
         or type(task.mechanism_json) is not str
         or encode(_json_record(task.mechanism_json)) != encode(_json_record(replay.mechanism_json))
-        or task.probabilities is not None
+        or (
+            task.probabilities is not None
+            if replay.probabilities is None
+            else not _same_tensor(task.probabilities, replay.probabilities)
+        )
         or any(
             not _same_tensor(getattr(task, key), getattr(replay, key))
             for key in ("inputs", "targets", "scores", "context_indices", "query_indices")

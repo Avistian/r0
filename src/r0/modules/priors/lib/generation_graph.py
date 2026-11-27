@@ -1,7 +1,7 @@
 """Reconstruct a bounded generation graph from saved parameters and random streams."""
 
 import json
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from typing import Any, cast
 
 import numpy as np
@@ -17,6 +17,7 @@ from r0.modules.priors.lib.native_inspection import native_steps
 from r0.modules.priors.lib.native_vector_inspection import native_vector_steps
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.signals import component_inputs, multiply_signals
+from r0.modules.priors.lib.target_adapter_inspection import target_steps
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -88,10 +89,20 @@ def explain_generation(
     from r0.modules.priors.lib.population_task_semantics import is_population_task_record
 
     if is_population_task_record(record, card):
+        from r0.modules.priors.lib.population_task_semantics import population_task_record
+
+        record = population_task_record(task)
         from r0.modules.priors.lib.recursive_population_inspection import recursive_population_steps
 
         if component is not None:
             raise ValueError("recursive populations do not have composite children")
+        if record["recipe"].get("version") in (
+            "recursive-population-graph-v1",
+            "recursive-population-graph-intervention-v1",
+        ):
+            from r0.modules.priors.lib.population_graph_inspection import population_graph_steps
+
+            return {**population_graph_steps(task, indices, add, limits=limits), "nodes": nodes}
         return {**recursive_population_steps(task, indices, add, limits=limits), "nodes": nodes}
     inputs = task.inputs.detach().cpu()[list(indices)].clone()
     if record["recipe"].get("version") in ("converted-causal-v1", "sampled-converted-graph-v1"):
@@ -334,7 +345,7 @@ def explain_generation(
         identity = (*namespace, record["seed"], record["task_id"], (stream,))
         return np.random.default_rng(int(record_fingerprint(identity), 16))
 
-    targets = _target_steps(controls, signal, indices, rng, add)
+    targets = target_steps(controls, signal, indices, rng, add)
     original_targets = task.targets.detach().cpu()[list(indices)]
     if not torch.allclose(targets, original_targets, rtol=1e-10, atol=1e-10):
         raise ValueError("reconstructed targets differ from saved values beyond 1e-10 tolerance")
@@ -361,70 +372,3 @@ def explain_generation(
         "signal_max_error": float((signal - expected).abs().max()),
         "target_max_error": float((targets - original_targets).abs().max()),
     }
-
-
-def _target_steps(
-    controls: dict[str, Any],
-    signal: torch.Tensor,
-    indices: Sequence[int],
-    rng: Callable[[str], np.random.Generator],
-    add: Callable[..., None],
-) -> torch.Tensor:
-    if controls["task_type"] == "regression":
-        noise = torch.tensor(rng("noise").normal(size=controls["rows"])[list(indices)])
-        add(
-            "noise",
-            "Replayed observation noise",
-            [],
-            "noise_ratio * original standard normal draw",
-            noise * controls["noise_ratio"],
-            {"noise_ratio": controls["noise_ratio"], "stream": "noise"},
-        )
-        targets = signal[:, 0] + controls["noise_ratio"] * noise
-        add(
-            "target",
-            "Regression target",
-            ["signal", "noise"],
-            "signal + observation noise",
-            targets,
-            {},
-        )
-        return targets
-    logits = controls["separation"] * signal + torch.tensor(
-        controls["class_offsets"] or [0.0] * signal.shape[1], dtype=torch.float64
-    )
-    add(
-        "logits",
-        "Class separation and offsets",
-        ["signal"],
-        "separation * signal + class_offsets",
-        logits,
-        {"separation": controls["separation"], "class_offsets": controls["class_offsets"]},
-    )
-    if controls["task_type"] == "binary":
-        positive = torch.sigmoid(logits[:, 0])
-        probabilities = torch.stack((1 - positive, positive), dim=1)
-        formula = "[1 - sigmoid(logit), sigmoid(logit)]"
-    else:
-        probabilities = torch.softmax(logits, dim=1)
-        formula = "softmax(logits)"
-    add("probabilities", "Class probabilities", ["logits"], formula, probabilities, {})
-    uniforms = torch.tensor(rng("labels").uniform(size=controls["rows"])[list(indices)])
-    add(
-        "labels",
-        "Replayed label draws",
-        [],
-        "original uniform(0,1) draws",
-        uniforms,
-        {"stream": "labels"},
-    )
-    targets = torch.sum(uniforms[:, None] >= probabilities.cumsum(dim=1)[:, :-1], dim=1)
-    add(
-        "target",
-        "Sampled class",
-        ["probabilities", "labels"],
-        "number of cumulative class probabilities <= uniform draw",
-        targets,
-        {},
-    )
-    return targets

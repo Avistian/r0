@@ -16,6 +16,7 @@ from r0.modules.priors.lib.converter_intervention import forced_emission
 from r0.modules.priors.lib.converter_intervention_execution import ConverterInterventionExecution
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
 from r0.modules.priors.lib.functional_node_evaluation import evaluate_functional_nodes
+from r0.modules.priors.lib.node_mechanisms import NodeMechanisms
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline, PipelineEvaluation
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
 from r0.modules.priors.lib.representatives import record_fingerprint
@@ -148,6 +149,7 @@ def evaluate_converted_nodes(
     add: Callable[..., None] | None = None,
     indices: Sequence[int] = (),
     execution: ConverterInterventionExecution | None = None,
+    mechanisms: NodeMechanisms | None = None,
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> ConvertedEvaluation:
     emissions: dict[tuple[int, str], CategoricalEmission] = {}
@@ -182,7 +184,20 @@ def evaluate_converted_nodes(
         pipeline_factory=factory,
         limits=limits,
         execution=execution,
+        mechanisms=mechanisms,
     )
+    if mechanisms:
+        for (index, name), emission in emissions.items():
+            mechanisms.record(
+                index,
+                **{
+                    f"capture:{name}:scores": emission.scores,
+                    f"capture:{name}:probability": emission.probabilities,
+                    f"capture:{name}:value": emission.categories,
+                },
+            )
+            if (index, name) in uniforms:
+                mechanisms.record(index, **{f"capture:{name}:uniform": uniforms[index, name]})
     return ConvertedEvaluation(tuple(states), tuple(readouts), emissions, uniforms)
 
 
@@ -195,6 +210,7 @@ def evaluate_converted(
     add: Callable[..., None] | None = None,
     indices: Sequence[int] = (),
     execution: ConverterInterventionExecution | None = None,
+    mechanisms: NodeMechanisms | None = None,
 ) -> ConvertedEvaluation:
     if type(recipe) is not ConvertedCausalRecipe or any(
         type(i) is not int or not 0 <= i < 2**63 for i in (seed, task_id)
@@ -218,5 +234,6 @@ def evaluate_converted(
         add=add,
         indices=indices,
         execution=execution,
+        mechanisms=mechanisms,
         limits=recipe.limits,
     )

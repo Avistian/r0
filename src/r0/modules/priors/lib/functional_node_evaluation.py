@@ -15,6 +15,7 @@ from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
 from r0.modules.priors.lib.kumo_product_inspection import kumo_product_steps
+from r0.modules.priors.lib.node_mechanisms import NodeMechanisms
 from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
 from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger
@@ -62,6 +63,7 @@ def evaluate_functional_nodes(
     execution: InterventionExecution | None = None,
     pipeline_factory: Callable[[int, FunctionalCausalNode], PipelineEvaluation] | None = None,
     population_partitions: tuple[tuple[int, ...], ...] = (),
+    mechanisms: NodeMechanisms | None = None,
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> list[torch.Tensor]:
     from r0.modules.priors.lib.population_exogenous import population_exogenous
@@ -78,6 +80,8 @@ def evaluate_functional_nodes(
         bypass = execution.bypass(index, node, rows, device) if execution else None
         if bypass is not None:
             state, readout = bypass
+            if mechanisms:
+                mechanisms.record(index, state=state, readout=readout)
             values.append(state)
             if readouts is not None:
                 readouts.append(readout)
@@ -117,7 +121,11 @@ def evaluate_functional_nodes(
         else:
             inputs = torch.cat([values[p] for p in node.parents], dim=1)
         function_diagnostics: list[dict[str, Any]] | None = [] if diagnostics is not None else None
-        output = evaluate_admitted_function(node.function, inputs, diagnostics=function_diagnostics)
+        output = (
+            mechanisms.evaluate(index, node.function, inputs, function_diagnostics)
+            if mechanisms
+            else evaluate_admitted_function(node.function, inputs, diagnostics=function_diagnostics)
+        )
         if diagnostics is not None:
             diagnostics.extend({"node": index, **entry} for entry in function_diagnostics or ())
         _constant_diagnostic(output, index, "function", diagnostics)
@@ -155,12 +163,27 @@ def evaluate_functional_nodes(
         )
         transformed = pipeline.before_noise(output) if pipeline else output
         state = transformed + scale * raw
+        pre_finish = state
         state, readout = pipeline.finish(state) if pipeline else (state, state)
+        if mechanisms:
+            mechanisms.record(index, post_finish=state, pipeline_readout=readout)
         if execution:
             execution.record(index, inputs=inputs, function=output, exogenous=raw, scale=scale)
             state, readout = execution.apply(index, node, state, readout)
         if not torch.isfinite(state).all() or not torch.isfinite(readout).all():
             raise ValueError("nonfinite functional causal value; task was not retried")
+        if mechanisms:
+            mechanisms.record(
+                index,
+                inputs=inputs,
+                function=output,
+                exogenous=raw,
+                scale=scale,
+                before_noise=transformed,
+                pre_finish=pre_finish,
+                state=state,
+                readout=readout,
+            )
         _constant_diagnostic(state, index, "state", diagnostics)
         values.append(state)
         if readouts is not None:
@@ -170,49 +193,55 @@ def evaluate_functional_nodes(
             from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
             from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 
-            if isinstance(node.function, FrozenRecursiveForestFunction):
-                parents = recursive_function_steps(
-                    node.function,
-                    inputs,
-                    prefix=f"recursive-{index}",
-                    parents=parents,
-                    indices=indices,
-                    add=add,
-                )
-                equation = node.function.output_semantics
-            if isinstance(node.function, FrozenNetworkFunction | FrozenNetworkBlockFunction):
-                from r0.modules.priors.lib.network_inspection import network_steps
+            overridden = mechanisms is not None and mechanisms.replaces(index)
+            if overridden:
+                assert mechanisms is not None
+                parents = mechanisms.steps(index, parents=parents, indices=indices, add=add)
+                equation = "row-owned population mechanism; original row binding"
+            else:
+                if isinstance(node.function, FrozenRecursiveForestFunction):
+                    parents = recursive_function_steps(
+                        node.function,
+                        inputs,
+                        prefix=f"recursive-{index}",
+                        parents=parents,
+                        indices=indices,
+                        add=add,
+                    )
+                    equation = node.function.output_semantics
+                if isinstance(node.function, FrozenNetworkFunction | FrozenNetworkBlockFunction):
+                    from r0.modules.priors.lib.network_inspection import network_steps
 
-                parents = network_steps(
-                    node.function,
-                    inputs,
-                    prefix=f"network-{index}",
-                    indices=indices,
-                    add=add,
-                    input_parents=parents,
-                )
-            if isinstance(node.function, FrozenParentFunction):
-                parents = parent_function_steps(
-                    node.function, inputs, node=index, parents=parents, indices=indices, add=add
-                )
-                equation = f"{node.function.aggregation}(ordered parent members)"
-            elif isinstance(node.function, FrozenKumoProductFunction):
-                parents = kumo_product_steps(
-                    node.function,
-                    inputs,
-                    prefix=f"kumo-product-{index}",
-                    parents=parents,
-                    indices=indices,
-                    add=add,
-                )
-                equation = "f_left(same input) * f_right(same input)"
+                    parents = network_steps(
+                        node.function,
+                        inputs,
+                        prefix=f"network-{index}",
+                        indices=indices,
+                        add=add,
+                        input_parents=parents,
+                    )
+                if isinstance(node.function, FrozenParentFunction):
+                    parents = parent_function_steps(
+                        node.function, inputs, node=index, parents=parents, indices=indices, add=add
+                    )
+                    equation = f"{node.function.aggregation}(ordered parent members)"
+                elif isinstance(node.function, FrozenKumoProductFunction):
+                    parents = kumo_product_steps(
+                        node.function,
+                        inputs,
+                        prefix=f"kumo-product-{index}",
+                        parents=parents,
+                        indices=indices,
+                        add=add,
+                    )
+                    equation = "f_left(same input) * f_right(same input)"
             add(
                 f"function-{index}",
-                f"Frozen function {index}",
+                f"Population mechanism {index}" if overridden else f"Frozen function {index}",
                 parents,
                 equation,
                 output[list(indices)],
-                asdict(node.function),
+                mechanisms.metadata(index) if overridden and mechanisms else asdict(node.function),
             )
             add(
                 f"exogenous-{index}",

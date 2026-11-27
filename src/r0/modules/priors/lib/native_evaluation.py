@@ -16,6 +16,7 @@ from r0.modules.priors.lib.native_causal import (
     NativeCausalNode,
     NativeCausalRecipe,
 )
+from r0.modules.priors.lib.node_mechanisms import NodeMechanisms
 from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
 from r0.modules.priors.lib.recursive_function_metadata import recursive_mechanism_metadata
@@ -50,6 +51,7 @@ def evaluate_native_graph(
     task_id: int,
     device: str = "cpu",
     execution: InterventionExecution | None = None,
+    mechanisms: NodeMechanisms | None = None,
 ) -> NativeEvaluation:
     """Discrete node values are int64; their descendants receive explicit one-hot state."""
     if type(recipe) is not NativeCausalRecipe:
@@ -69,6 +71,7 @@ def evaluate_native_graph(
         ),
         device,
         execution=execution,
+        mechanisms=mechanisms,
         limits=recipe.limits,
     )
 
@@ -82,6 +85,7 @@ def evaluate_native_nodes(
     capture: RawDrawLedger | None = None,
     owner: tuple[str, ...] = ("native",),
     execution: InterventionExecution | None = None,
+    mechanisms: NodeMechanisms | None = None,
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> NativeEvaluation:
     """Evaluate an already admitted prefix; callers own resource and certificate checks."""
@@ -104,6 +108,10 @@ def evaluate_native_nodes(
             states.append(encoded)
             scores.append(encoded)
             probabilities[index] = encoded
+            if mechanisms:
+                mechanisms.record(
+                    index, state=encoded, readout=category[:, None], probability=encoded
+                )
             assert execution is not None
             execution.bypassed.append(index)
             execution.record(
@@ -117,6 +125,8 @@ def evaluate_native_nodes(
         )
         if bypass is not None:
             state, _ = bypass
+            if mechanisms:
+                mechanisms.record(index, state=state, readout=state)
             states.append(state)
             values.append(state)
             scores.append(state)
@@ -138,7 +148,11 @@ def evaluate_native_nodes(
                 execution.record(index, root=inputs)
         else:
             inputs = torch.cat([states[p] for p in equation.parents], dim=1)
-        output = evaluate_admitted_function(equation.function, inputs)
+        output = (
+            mechanisms.evaluate(index, equation.function, inputs)
+            if mechanisms
+            else evaluate_admitted_function(equation.function, inputs)
+        )
         raw = torch.tensor(
             sample_exogenous(
                 equation.exogenous,
@@ -156,9 +170,13 @@ def evaluate_native_nodes(
             output, equation.noise_scale or (0.0,) * output.shape[1], equation.noise_response
         )
         pipeline = PipelineEvaluation(equation.pipeline, index, None) if equation.pipeline else None
-        state = (pipeline.before_noise(output) if pipeline else output) + scale * raw
+        transformed = pipeline.before_noise(output) if pipeline else output
+        state = transformed + scale * raw
+        pre_finish = state
         if pipeline:
             state, _ = pipeline.finish(state)
+        if mechanisms:
+            mechanisms.record(index, post_finish=state)
         if execution:
             execution.record(index, inputs=inputs, function=output, exogenous=raw, scale=scale)
             if domain.kind == "continuous":
@@ -166,9 +184,22 @@ def evaluate_native_nodes(
         if not torch.isfinite(state).all():
             raise ValueError("nonfinite native equation score; task was not retried")
         scores.append(state)
+        if mechanisms:
+            mechanisms.record(
+                index,
+                inputs=inputs,
+                function=output,
+                exogenous=raw,
+                scale=scale,
+                before_noise=transformed,
+                pre_finish=pre_finish,
+                scores=state,
+            )
         if domain.kind == "continuous":
             values.append(state)
             states.append(state)
+            if mechanisms:
+                mechanisms.record(index, state=state, readout=state)
             continue
         count = len(domain.vocabulary)
         emission_scores = state
@@ -211,6 +242,12 @@ def evaluate_native_nodes(
         probabilities.setdefault(index, encoded)
         values.append(category[:, None])
         states.append(encoded)
+        if mechanisms:
+            mechanisms.record(
+                index, state=encoded, readout=category[:, None], probability=probabilities[index]
+            )
+            if index in uniforms:
+                mechanisms.record(index, uniform=uniforms[index])
         if execution:
             execution.record(
                 index, state=encoded, readout=category[:, None], probability=probabilities[index]
@@ -227,9 +264,15 @@ def generate_native_causal(
     task_id: int,
     device: str = "cpu",
     execution: InterventionExecution | None = None,
+    mechanisms: NodeMechanisms | None = None,
 ) -> TrainingTask:
     result = evaluate_native_graph(
-        recipe, seed=seed, task_id=task_id, device=device, execution=execution
+        recipe,
+        seed=seed,
+        task_id=task_id,
+        device=device,
+        execution=execution,
+        mechanisms=mechanisms,
     )
     config = asdict(recipe)
     source = {
