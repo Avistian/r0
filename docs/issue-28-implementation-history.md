@@ -173,3 +173,57 @@ resource qualification remain required. The full goal is not complete.
 
 
 <!-- End of verbatim historical checkpoint entries. -->
+
+## Importance-weighted projection checkpoint
+
+At `e6d8faa`, authored uniform and polynomial/log-Gaussian importance vectors feed
+recorded row-normalized Gaussian projections. `causal-importance-v1` exposes this
+through all three topology families and shared save/reopen/replay. Stable centered
+arithmetic preserves decay under huge common perturbations and valid epsilon-zero
+directions after weight underflow. Family provenance rejects factorized/importance
+substitutions. [Definitions, source distinctions and evidence](issue-28-importance-weights.md).
+
+Repository checks pass **613 tests, 1 skipped**; source/test bytes match `fc0265b`
+where that check began. Independent scoped review passes 2,134 numerical checks,
+384 sampled recipes, four saved backend sessions and 315 exact old-profile outcomes
+(including two failures). Resource instrumentation precedes all 22 matched Gaussian
+allocations in its declared example. The author census retains **191 valid / 192
+attempted**, including the failed integer-power recipe. A disconnected-graph oracle
+mistake is retained as a harness error, not a product rejection. Standards found no
+hard violations; repeated profile registries remain a nonblocking heuristic.
+
+This supplies positive-vector/weighted-Gaussian options within W01/W03, not all
+weight priors. Shared source numerical preferences, kernel/transformed matrices,
+wrappers, masks, networks/trees, typed states, interventions and the full workbench
+remain required. CPU backend evidence does not establish browser/Colab/GPU or
+scientific acceptance. The full goal stays active.
+
+
+## Matrix families and kernel point checkpoint
+
+At `7eea0bd`, the constructor pipeline retains Gaussian, importance, positive-vector
+factorized, signed Laplace and flattened-activation matrices; explicit jitter and
+normalization stages; and covariance/Gaussian-mixture kernel point constructions.
+`causal-matrices-v1` samples all five families, while `causal-gaussian-matrices-v1`
+restricts the source family. Both share the existing generation, inspection and
+saved replay workflow. [Definitions and source distinctions](issue-28-matrix-families.md)
+retain the paper/code point variants and explicitly local sampling choices.
+
+Full checks pass **623 tests, 1 skipped**, all static gates passing. Independent
+review passes 224 numerical checks, 72 sampled recipes (71 successes, one retained
+square-overflow failure), six saved backend workflows, and 378 exact legacy outcomes
+(including two failures). Standards found no hard violations; duplicated component-
+probability normalization is a nonblocking heuristic. The corrected zero-coefficient
+oracle assumption remains a separate harness error, not a product rejection.
+
+Unfiltered author censuses retain **192/192 valid** mixed-profile tasks and
+**190/192 valid** Gaussian-only tasks. Both Gaussian-only failed recipes and the
+independent failed recipe are retained completely, with reconstruction hashes.
+Timing and peak RSS are NOT_MEASURED. Browser/Colab/GPU evidence remains outstanding.
+
+This advances I2 matrix options and their primitive point laws. Shared source
+numerical/categorical preferences, complete source activation weighting, wider
+graph/network/tree/GP mechanisms, typed states, interventions and the full workbench
+remain required. No whole-issue or complete source joint-prior acceptance is claimed.
+Earlier implementation entries were moved verbatim to the linked checkpoint history
+to keep files within the repository size limit. The full goal remains active.

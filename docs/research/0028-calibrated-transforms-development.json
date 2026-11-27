@@ -1,0 +1,84 @@
+{
+  "rejected_source": "bf3a4c535bb87bee5a4557a1e0c30f70a29fb82a",
+  "repaired_source": "be0c793a043585b96b1825e659a10fd1f5deb7d1",
+  "archive": "0028-calibrated-transforms-development.zip",
+  "archive_sha256": "08f1c18b37ca59cbf176182c339527dea1af48ad65a3757da594dbecc61e5543",
+  "entries": [
+    {
+      "path": "r0-28-wrapper-l2-red.log",
+      "bytes": 897,
+      "sha256": "4683b7c78d2932a0b02ab9d1a336bea71ece05dc907028600dd3a3fccb358c73"
+    },
+    {
+      "path": "r0-28-wrapper-l2-green.log",
+      "bytes": 80,
+      "sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d"
+    },
+    {
+      "path": "r0-28-wrapper-kumar-red.log",
+      "bytes": 918,
+      "sha256": "01c87b974a2a5351b7668b8e804f4ee8eb7538dbc64f219287d2c4269043018c"
+    },
+    {
+      "path": "r0-28-wrapper-kumar-green.log",
+      "bytes": 80,
+      "sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87"
+    },
+    {
+      "path": "r0-28-wrapper-tails-red.log",
+      "bytes": 1367,
+      "sha256": "0c8e81c6788545be9ee5ebb84d65fb5cb413c808d7680f1f54fa0092b3d02561"
+    },
+    {
+      "path": "r0-28-wrapper-tails-green.log",
+      "bytes": 80,
+      "sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236"
+    },
+    {
+      "path": "r0-28-wrapper-shapes-red.log",
+      "bytes": 1416,
+      "sha256": "4d40933194c44cef985adcb128a60bdba2ce367eb353c8c5cb9fb1cf318d0e6a"
+    },
+    {
+      "path": "r0-28-wrapper-shapes-green.log",
+      "bytes": 80,
+      "sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830"
+    },
+    {
+      "path": "r0-28-wrapper-targeted.log",
+      "bytes": 80,
+      "sha256": "eb27a136c18598aedc0e4f11e6893b614a04335a9faf3ec03433325d777e2663"
+    },
+    {
+      "path": "r0-28-wrapper-boundary-red.log",
+      "bytes": 1331,
+      "sha256": "93d165e74efd50a97bd107796fec635539c1f61a0098a131a788d3240d573aa7"
+    },
+    {
+      "path": "r0-28-wrapper-boundary-green.log",
+      "bytes": 80,
+      "sha256": "83a1593c5b5783693fe3006d1f6597bcb4f3a5968f23b59481ee09a0477f910a"
+    },
+    {
+      "path": "r0-28-wrapper-version-red.log",
+      "bytes": 3128,
+      "sha256": "a686eae3ae5ebd2b56d677ebb255a6769e8c9077857c8b976f3cd41293042a36"
+    },
+    {
+      "path": "r0-28-wrapper-repair-targeted.log",
+      "bytes": 80,
+      "sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131"
+    },
+    {
+      "path": "r0-28-wrapper-check-bf3a4c5-interrupted.log",
+      "bytes": 2081,
+      "sha256": "5ed80fe7edeb369c11a2254226e81cd724d972527d3cd85ea4d26060c38772f3"
+    },
+    {
+      "path": "r0-28-wrapper-final-static.log",
+      "bytes": 279,
+      "sha256": "267692730b119d372fa848b06bf73a4eaf27bcf9ae3ba43404cb3e0a8341e05a"
+    }
+  ],
+  "qualification": "Author working-tree RED/GREEN history; complete intermediate source snapshots NOT_RETAINED. Final tests reproduce current behavior. The original full check at bf3a4c5 was deliberately interrupted after the independent numerical REJECT and is NOT_PASS; its make exit was 2. Independent immutable rejection and repaired exact-source checks are separate evidence."
+}

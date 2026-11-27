@@ -59,6 +59,10 @@ from a caller-provided label alone. Callers own the independent stream and retai
 the sample when their evidence requires it. JSON loading validates the frozen
 record; it cannot reconstruct an arbitrary caller-supplied sample from its digest.
 Changing a valid authored constant constitutes a changed mechanism, not a refit.
+An authored L2 factor also does not certify finite population second moments
+for its caller's sample. Future sampled pipelines must check that requirement
+at the actual L2 input before fitting; the existing target-normalization moment
+gate is a separate check.
 
 `CalibratedTransform` is a specialized activation descriptor accepted at input or
 output stages of authored activated, stochastic and matrix causal nodes. Its
@@ -90,7 +94,8 @@ with upstream eager floating-point arithmetic**. For example, range `[0,1]`,
 to one can instead produce exactly one. Range `[0,1e308]` at the smallest positive
 binary64 input, `a=0.2,b=1`, gives about `5.48e-127`, rather than losing the input
 ratio to zero. The positive-shape extension also preserves subnormal exponent
-effects before later scaling. The upper boundary retains the error-free subtraction residual so a coordinate
+effects before later scaling. The upper boundary retains the error-free
+subtraction residual so a coordinate
 just inside the domain cannot become an endpoint through rounding. Numerical
 branch approximations omit terms below
 binary64 relative precision; independent high-precision evidence is required.
@@ -102,8 +107,87 @@ improve a distribution's moment order.
 
 ## Verification state
 
-Development RED/GREEN records cover missing APIs and two representable-tail
-failures corrected by the log-domain implementation. Twelve targeted cases pass,
-including six saved regression/binary/multiclass workflows. Full source checks and
-independent review are in progress. This does not complete converter integration,
-the broader source inventory, browser/Colab/GPU/scale evidence or the full issue.
+[Development evidence](research/0028-calibrated-transforms-development.json)
+retains missing-API REDs, two representable-tail failures, their GREEN logs,
+the initial twelve passing targeted tests including six saved task workflows,
+and subsequent boundary/decoder REDs and eight passing transform regressions.
+These are working-tree development logs, not immutable snapshots of every
+intermediate source. Reproduce current behavior from a checkout of the repaired
+source with:
+
+```sh
+UV_PROJECT_ENVIRONMENT=/path/to/existing/venv \
+python3 scripts/run_check.py pytest tests/priors/test_calibrated_transforms.py \
+  tests/explorer/test_transform_session.py
+```
+
+The [original standards review](research/0028-calibrated-transforms-standards-original.txt)
+identified missing retained evidence for the development checks and alias fixture.
+The linked archive preserves the available raw logs; the research note explicitly
+marks the original alias receipt NOT_RETAINED and links a fresh retained execution.
+The [narrow standards delta](research/0028-calibrated-transforms-standards-delta.txt)
+resolves both findings and verifies artifact custody. Its scope is the evidence
+delta, not source correctness or overall acceptance.
+
+## Independent numerical review and retained rejection
+
+The [original review](research/0028-calibrated-transforms-spec-reject.txt) rejects
+`bf3a4c535bb87bee5a4557a1e0c30f70a29fb82a`: subtraction rounded an interior point
+to the upper boundary. With calibration `[0, smallest binary64]`, `x=1e-30`,
+`a=smallest binary64`, `b=1e-308`, application returned `1.0`; the independent
+1,000-digit Decimal equation gives `1.419802591052941e-305`. The first run stopped
+at case 527 after 526 passes. The original and final frozen scripts reproduce
+that rejection. The interrupted full check on that source is explicitly NOT_PASS.
+
+The [repaired review](research/0028-calibrated-transforms-spec-review.txt) gives
+scoped PASS at `be0c793a043585b96b1825e659a10fd1f5deb7d1`:
+
+- **874 original numerical cases**, with unchanged equations, grid and tolerances,
+  plus **589 boundary/width cases** using 1,000-digit Decimal. These cover
+  epsilon neighborhoods, signed subnormals, extreme/constant ranges, tiny/huge
+  shapes, exact clamp diagnostics, L2 widths 1–1024 and frozen/chunked application.
+- **172 integration checks**, including 36 authored compositions across both
+  placements, activated/stochastic/matrix nodes and all three task types. Two
+  additional dimension-changing dual-transform compositions pass independently
+  calculated targets and original-row traces.
+- **Six local saved/reopen/replay workflows**, frozen JSON validation, malformed
+  records, exact/minus-one parameter and working-byte limits, row-count invariance
+  and heavy-tail target-moment certificates. These are backend evidence.
+- **168 unchanged legacy proposals** across 28 profiles, three topology families
+  and two task ids: 164 successes and four identical explicit failures. Complete
+  recipe, task, trace and status bytes match `ffc23fb`; no failure was replaced.
+
+The initial invalid-record harness expected ValueError/TypeError but received
+KeyError for an unknown calibration version. That fail-closed rejection was
+accounted for explicitly; the original stop remains retained. The repaired decoder
+now raises an intentional ValueError, covered by a separate regression. This
+harness stop and the real numerical defect remain separate historical events.
+
+[Raw evidence](research/0028-calibrated-transforms-spec-artifacts.json) preserves
+original stops, complete inputs/outputs, old and repaired runs, saved sessions,
+script/import hashes and custody. Six final programs under
+[`scripts/verify_calibrated_transforms/`](../scripts/verify_calibrated_transforms/)
+are byte-identical to executed copies; 96 imported modules were checked against
+the repaired Git source. [Reproduction instructions](research/0028-calibrated-transforms-reproduction.txt)
+identify the Python environment, stream/output controls and baseline comparison.
+No upstream evaluator is used as the numerical oracle.
+
+The archive uses ordered ZIP byte parts. Verify each part and the concatenated
+archive SHA-256 before extraction. Five byte-identical legacy captures are stored
+once with `duplicate-paths.json`; restore each `path` from its `copy_from`, then
+verify every original file against the archive's `manifest.json`. This avoids
+duplicating the same 46 MB payload while preserving every original byte and path.
+The local original evidence is unchanged. Git source exports and caches are
+excluded and reconstructable from pinned revisions.
+
+Full `make check` at the repaired source passes **752 tests, one skipped**, in
+373.95 seconds, with all static gates passing.
+[Exact output](research/0028-calibrated-transforms-check-be0c793.txt).
+The skip is the existing CUDA test on this CPU-only environment. Smoke/eval-smoke
+remain NOT_AVAILABLE because the train/eval CLI commands have not landed.
+Publication retains the checked source/test bytes and separately checks its
+added scripts, documentation and artifact-size limits.
+
+This component does not complete source sampling/shared a/b preferences,
+converter/pipeline integration, the broader source inventory,
+browser/Colab/GPU/scale evidence or the full issue.

@@ -95,11 +95,20 @@ and separately computed warped readout. Thus the two graph branches still differ
 for descendants, although the historical “raw readout” description is not an
 exact account of the integrated pinned code.
 
-An independent local alias fixture (existing `.venv`, no upstream execution) used
-state `[[2],[4]]`, a basic column view as the retained readout, and replacement
-state equal to one quarter of that view. After slice assignment, both state and
-readout were `[[0.5],[1.0]]`, and their `data_ptr` values matched. This verifies the
-alias premise, not a complete upstream reproduction or an r0 implementation.
+The original local alias fixture's exact program and execution receipt were
+NOT_RETAINED. A fresh [standalone program](../../scripts/verify_converter_alias.py)
+and [execution receipt](0028-converter-alias.json) now reproduce the premise in
+the existing environment, with script hash, Python/Torch versions and all three
+variants. State `[[2],[4]]`, a basic column view, and replacement equal to one
+quarter of that view yield historical-view state and readout `[[0.5],[1.0]]`
+with shared storage. Copying the raw readout or using corrected readout-only
+semantics produces the distinct values recorded in the receipt. This proves
+the alias premise only; no upstream or r0 generator executes in this fixture.
+
+```sh
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /path/to/existing/python \
+  scripts/verify_converter_alias.py /new/alias-receipt.json
+```
 
 Required naming/disposition proposal:
 

@@ -1,0 +1,88 @@
+{
+  "source": "be0c793a043585b96b1825e659a10fd1f5deb7d1",
+  "rejected_source": "bf3a4c535bb87bee5a4557a1e0c30f70a29fb82a",
+  "baseline": "ffc23fbf4871856fdaa96b7fac1f47c4c1f8afaf",
+  "archive_bytes": 7924366,
+  "archive_sha256": "128c05a5b39981b99a6ec6cfb14146805985eeea7999c6426132211d72a8adf6",
+  "logical_original_files": 352,
+  "parts": [
+    {
+      "path": "0028-calibrated-transforms-spec.zip.part01",
+      "bytes": 900000,
+      "sha256": "c17a5594cfb739c43c670c43e0184f85f64f975e38ff4b0272e094354935c043"
+    },
+    {
+      "path": "0028-calibrated-transforms-spec.zip.part02",
+      "bytes": 900000,
+      "sha256": "61d375654229e50cf0b1eec331a70f069adeed2cde0819bc7f49159ab9846cf6"
+    },
+    {
+      "path": "0028-calibrated-transforms-spec.zip.part03",
+      "bytes": 900000,
+      "sha256": "c14fc5ca7b766e689befa644771d59c8a144f39126edd2035ea2e38adbefa584"
+    },
+    {
+      "path": "0028-calibrated-transforms-spec.zip.part04",
+      "bytes": 900000,
+      "sha256": "a7367efdbdc3afff95fff4980b3812c3d3d7f695a224b9b210dc3f92d42f307e"
+    },
+    {
+      "path": "0028-calibrated-transforms-spec.zip.part05",
+      "bytes": 900000,
+      "sha256": "8672e2074f610f976d016be16792b4e298dde182b563a38b770584b0a5888dcc"
+    },
+    {
+      "path": "0028-calibrated-transforms-spec.zip.part06",
+      "bytes": 900000,
+      "sha256": "ae390469e2b557a6299626664cbe777204c2a4963ad1fa37ea956210620e10cb"
+    },
+    {
+      "path": "0028-calibrated-transforms-spec.zip.part07",
+      "bytes": 900000,
+      "sha256": "9fc593bf254b10c9fa98ed5cb1beb50b1c09406469ee13f11f768c5de868718e"
+    },
+    {
+      "path": "0028-calibrated-transforms-spec.zip.part08",
+      "bytes": 900000,
+      "sha256": "9bd178c3e427874459e90f30c7afeb3d382ddf59fec17d9ebe2be710c225d7ae"
+    },
+    {
+      "path": "0028-calibrated-transforms-spec.zip.part09",
+      "bytes": 724366,
+      "sha256": "feb0675eccf652da92554a9127fe3260823dc6e44bbd23a49ceac3e7304cd25c"
+    }
+  ],
+  "duplicate_paths": [
+    {
+      "path": "final-frozen/raw/legacy-base.json",
+      "copy_from": "raw/legacy-head.json",
+      "bytes": 46139750,
+      "sha256": "3ce283b561dbc081a772093772a79a548af1fe4bd9d1bded14eecdffb2cc2dae"
+    },
+    {
+      "path": "final-frozen/raw/legacy-head.json",
+      "copy_from": "raw/legacy-head.json",
+      "bytes": 46139750,
+      "sha256": "3ce283b561dbc081a772093772a79a548af1fe4bd9d1bded14eecdffb2cc2dae"
+    },
+    {
+      "path": "raw/legacy-base.json",
+      "copy_from": "raw/legacy-head.json",
+      "bytes": 46139750,
+      "sha256": "3ce283b561dbc081a772093772a79a548af1fe4bd9d1bded14eecdffb2cc2dae"
+    },
+    {
+      "path": "repaired-be0c793/raw/legacy-base.json",
+      "copy_from": "raw/legacy-head.json",
+      "bytes": 46139750,
+      "sha256": "3ce283b561dbc081a772093772a79a548af1fe4bd9d1bded14eecdffb2cc2dae"
+    },
+    {
+      "path": "repaired-be0c793/raw/legacy-head.json",
+      "copy_from": "raw/legacy-head.json",
+      "bytes": 46139750,
+      "sha256": "3ce283b561dbc081a772093772a79a548af1fe4bd9d1bded14eecdffb2cc2dae"
+    }
+  ],
+  "qualification": "Concatenate parts in listed order without separators and verify SHA256 before ZIP extraction. Five byte-identical legacy captures are represented once plus duplicate-paths.json. After extraction copy each copy_from to path and verify size/SHA256; manifest.json then verifies all original files. No original local evidence was modified. Excludes reconstructable Git source exports and caches. Historical REJECT and initial/final verifier programs are retained; final publication scripts match executed copies."
+}

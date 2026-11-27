@@ -116,64 +116,10 @@ repository wrapper and the explicitly selected interpreter/environment.
 
 ## Earlier checkpoints
 
-The original causal-core, topology, nonlinear, activation-preference, exogenous
-and factorized entries are preserved verbatim in the
+The original causal-core, topology, nonlinear, activation-preference, exogenous,
+factorized, importance-weighted and matrix-family entries are preserved verbatim in the
 [checkpoint history](issue-28-implementation-history.md), with their original
 findings and evidence links.
-
-## Importance-weighted projection checkpoint
-
-At `e6d8faa`, authored uniform and polynomial/log-Gaussian importance vectors feed
-recorded row-normalized Gaussian projections. `causal-importance-v1` exposes this
-through all three topology families and shared save/reopen/replay. Stable centered
-arithmetic preserves decay under huge common perturbations and valid epsilon-zero
-directions after weight underflow. Family provenance rejects factorized/importance
-substitutions. [Definitions, source distinctions and evidence](issue-28-importance-weights.md).
-
-Repository checks pass **613 tests, 1 skipped**; source/test bytes match `fc0265b`
-where that check began. Independent scoped review passes 2,134 numerical checks,
-384 sampled recipes, four saved backend sessions and 315 exact old-profile outcomes
-(including two failures). Resource instrumentation precedes all 22 matched Gaussian
-allocations in its declared example. The author census retains **191 valid / 192
-attempted**, including the failed integer-power recipe. A disconnected-graph oracle
-mistake is retained as a harness error, not a product rejection. Standards found no
-hard violations; repeated profile registries remain a nonblocking heuristic.
-
-This supplies positive-vector/weighted-Gaussian options within W01/W03, not all
-weight priors. Shared source numerical preferences, kernel/transformed matrices,
-wrappers, masks, networks/trees, typed states, interventions and the full workbench
-remain required. CPU backend evidence does not establish browser/Colab/GPU or
-scientific acceptance. The full goal stays active.
-
-
-## Matrix families and kernel point checkpoint
-
-At `7eea0bd`, the constructor pipeline retains Gaussian, importance, positive-vector
-factorized, signed Laplace and flattened-activation matrices; explicit jitter and
-normalization stages; and covariance/Gaussian-mixture kernel point constructions.
-`causal-matrices-v1` samples all five families, while `causal-gaussian-matrices-v1`
-restricts the source family. Both share the existing generation, inspection and
-saved replay workflow. [Definitions and source distinctions](issue-28-matrix-families.md)
-retain the paper/code point variants and explicitly local sampling choices.
-
-Full checks pass **623 tests, 1 skipped**, all static gates passing. Independent
-review passes 224 numerical checks, 72 sampled recipes (71 successes, one retained
-square-overflow failure), six saved backend workflows, and 378 exact legacy outcomes
-(including two failures). Standards found no hard violations; duplicated component-
-probability normalization is a nonblocking heuristic. The corrected zero-coefficient
-oracle assumption remains a separate harness error, not a product rejection.
-
-Unfiltered author censuses retain **192/192 valid** mixed-profile tasks and
-**190/192 valid** Gaussian-only tasks. Both Gaussian-only failed recipes and the
-independent failed recipe are retained completely, with reconstruction hashes.
-Timing and peak RSS are NOT_MEASURED. Browser/Colab/GPU evidence remains outstanding.
-
-This advances I2 matrix options and their primitive point laws. Shared source
-numerical/categorical preferences, complete source activation weighting, wider
-graph/network/tree/GP mechanisms, typed states, interventions and the full workbench
-remain required. No whole-issue or complete source joint-prior acceptance is claimed.
-Earlier implementation entries were moved verbatim to the linked checkpoint history
-to keep files within the repository size limit. The full goal remains active.
 
 ## Named numerical preference checkpoint
 
@@ -303,3 +249,36 @@ recipes are published; successful raw archives remain LOCAL_ONLY with hashes.
 Pooled recipes exercise 31 primitives and five matrix families. Remaining wrappers,
 broader exogenous/graph/network/tree/GP options, typed states, interventions and
 actual browser/Colab workbench delivery remain required. The full goal stays active.
+
+## Frozen L2 and Kumaraswamy authored-transform checkpoint
+
+At `be0c793`, immutable transforms retain node-wide L2 factors or per-channel
+Kumaraswamy ranges with scalar shapes, calibration identity and digest. Authored
+activated/stochastic/matrix nodes use them at input/output stages through JSON,
+generation, diagnostics, original-row traces and saved explorer workflows.
+Stable arithmetic preserves representable extreme results; domain-clamp flags
+remain distinct from out-of-calibration flags.
+[Laws, boundaries and evidence](issue-28-calibrated-transforms.md).
+
+Full checks pass **752 tests, one skipped**, all static gates. Initial `bf3a4c5`
+remains **REJECT**: rounding at an epsilon boundary returned one instead of the
+independent `1.419802591052941e-305`. The repair retains the subtraction residual.
+Its unchanged 874-case oracle and 589 additional boundary/width cases pass with
+1,000-digit Decimal references. Independent verification also passes 172
+integration checks, 36 authored compositions, two dimension-changing compositions
+and six local saved workflows. All 168 legacy proposals match byte-for-byte:
+164 successes and four unchanged explicit failures. Six executed verifier programs,
+96 imported-source hashes and original/repaired raw outcomes retain custody.
+
+Standards originally found two evidence-retention omissions. The narrow delta
+resolves both with raw development logs and a fresh retained alias-premise fixture;
+unavailable historical snapshots/receipt remain explicitly NOT_RETAINED. The
+source investigation preserves three distinct converter semantics: historical
+tuple intent, actual pinned graph alias behavior and corrected readout-only.
+Their graph integration remains required.
+
+Authored caller samples do not prove independence or population moments. Sampled
+pipelines must certify moments at the actual L2 input before independent fitting.
+Shared shape sampling, node pipelines/converters, broader source mechanisms,
+typed states, interventions and actual browser/Colab delivery remain required.
+No supported-size, GPU or scientific acceptance is claimed. The full goal stays active.

@@ -1,0 +1,27 @@
+# Evidence packaging and reproduction
+
+Publish final scripts byte-identically from `publication/`:
+
+- `numerical_oracle.py`
+- `endpoint_extension.py`
+- `integration.py`
+- `composition.py`
+- `legacy.py`
+- `custody.py`
+
+They are portable through `PYTHONPATH`, `EVIDENCE_DIR`, and `LEGACY_OUTPUT`; `custody.py` is imported by the five executable programs. The numerical oracle uses Python Decimal at precision1000 and the public `r0.modules.priors` APIs. It does not copy/import upstream source or call implementation-private mathematical helpers. `integration.py` and `composition.py` use the independent oracle functions retained alongside them.
+
+Include:
+
+- Root `raw/`: original numerical REJECT, exact initial numerical script, initial integration harness stop and exact script, initial raw inputs/results, initial compatibility captures, source diff and preflight/log evidence.
+- `final-frozen/`: historical bf3a4c5 REJECT report, exact final executed frozen scripts, raw outcomes/custody, six saved original/replay session pairs. The malformed-version decoder initially raised KeyError; the harness was corrected to count that as fail-closed invalid-record rejection. Original stop is preserved.
+- `repaired-be0c793/`: scoped report, all final numerical/integration/composition/legacy raw outcomes, six saved original/replay session pairs, repair diff, per-run custody and `postflight.json` (six final script hashes and96 imported-module hashes checked against Git).
+- Root `publication/`, this file, and `manifest.json`.
+
+Exclude reconstructable `base-source/` and `head-source/` trees, `.ruff_cache`, `__pycache__`, and incidental caches. Source trees were exported with `git archive` at the pinned commits, not modified checkouts. No cloud execution, dependency installation or secret access occurred.
+
+For a fresh reproduction create an empty output directory with a `raw/` child. Set `EVIDENCE_DIR` to it, `PYTHONPATH` to the frozen checkout's src, `PYTHONDONTWRITEBYTECODE=1`, `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`. Run the final copies of numerical_oracle.py, endpoint_extension.py, integration.py and composition.py with the existing project Python. For legacy.py set `LEGACY_OUTPUT` to a new JSON pathname; run once for baseline src and once for candidate src, then byte-compare outputs. Do not reuse existing directories: raw numerical checks append their records, and saved sessions are actual output artifacts.
+
+Execution environment: `/home/avist/Projects/r0/.venv/bin/python`; candidate PYTHONPATH `/tmp/r0-28/src`; candidate cwd `/tmp/r0-28`; source commit be0c793a043585b96b1825e659a10fd1f5deb7d1. Final scripts use the repaired declared Kumaraswamy working reserve16. Historical frozen integration used12, as documented at bf3a4c5; both final copies are retained. Other numerical equations/grids/tolerances remain unchanged.
+
+Preliminary formatting/import-order lint attempts were corrected before final custody runs. Ruff's first-party detection depends on cwd; the final publication scripts were checked from `/tmp/r0-28`. Preliminary legacy script bytes were not separately snapshotted; complete final-copy baseline/candidate captures, exact script hashes, raw records and statuses are retained. Initial numerical/integration stop scripts were separately preserved before changes.

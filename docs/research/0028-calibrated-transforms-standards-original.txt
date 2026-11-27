@@ -1,0 +1,15 @@
+Standards review — bf3a4c535bb87bee5a4557a1e0c30f70a29fb82a
+Base: ffc23fbf4871856fdaa96b7fac1f47c4c1f8afaf
+Scope: git diff ffc23fbf4871856fdaa96b7fac1f47c4c1f8afaf...HEAD; authored fitted-transform component only.
+
+Documented violations:
+
+1. P2 — docs/issue-28-calibrated-transforms.md:103-105 claims “Development RED/GREEN records cover missing APIs and two representable-tail failures” and twelve passing cases, but this frozen commit provides no linked historical RED procedures/source states, execution receipts or declared verification environment. The current test programs support future GREEN reproduction; they do not reproduce the historical failures. CODING_STANDARDS.md:26-32 requires identified inputs and an exact command or retained program in the declared environment, and requires unsupported portions to remain explicitly unverified; docs/agents/protocol-review.md:15-18 also requires revision/output and a procedure retained with the reviewed artifacts. Retain/link the executed evidence, or explicitly qualify historical RED evidence as NOT_RETAINED and separate it from reproducible current tests.
+
+2. P2 — docs/research/0028-wrapper-source-laws.md:98-102 reports an executed local alias fixture and matching data_ptr values, but retains only a prose description of the operation. It omits the executed program/command and concrete environment identity. This violates CODING_STANDARDS.md:26-32, especially “executable-check claims also need the executed procedure,” and docs/agents/protocol-review.md:15-18. Retain the small executed fixture and receipt, or label this paragraph as a deduction rather than executed verification. The stated mathematical alias conclusion is not rejected by this finding.
+
+Baseline heuristics: no actionable smells found. The activation subclass extension follows the existing descriptor design, and private helpers remain within the priors module. No tooling-enforced findings reported.
+
+Read-only preflight confirmed the frozen HEAD and initially only untracked .venv. No tests, source edits, checkouts, staging, commits, cloud calls or dependency changes performed. Later unrelated working-tree documentation edits were excluded by checking committed content. Full checks belong to the parent.
+
+Totals: 2 documented evidence-retention findings (P2); 0 smell findings. These findings concern the frozen artifact's reproduction paths, not whether the author actually executed the checks.
