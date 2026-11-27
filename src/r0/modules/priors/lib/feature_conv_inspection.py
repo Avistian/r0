@@ -7,10 +7,11 @@ import torch
 
 from r0.modules.priors.lib.feature_conv_evaluation import evaluate_admitted_feature_conv1d
 from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+from r0.modules.priors.lib.feature_conv_sampling_records import SampledFeatureConv1D
 
 
 def feature_conv_steps(
-    function: FrozenFeatureConv1D,
+    function: FrozenFeatureConv1D | SampledFeatureConv1D,
     inputs: torch.Tensor,
     *,
     prefix: str,
@@ -18,6 +19,13 @@ def feature_conv_steps(
     indices: Sequence[int],
     add: Callable[..., None],
 ) -> list[str]:
+    from r0.modules.priors.lib.feature_conv_construction_steps import convolution_construction_steps
+
+    parameter_ids: dict[int, str] = {}
+    if isinstance(function, SampledFeatureConv1D):
+        function.validate_replay()
+        parameter_ids = convolution_construction_steps(function, prefix=prefix, add=add)
+        function = function.function
     current = list(parents)
     incoming = list(parents)
     last_layer = -1
@@ -30,6 +38,8 @@ def feature_conv_steps(
         dependencies = (
             list(dict.fromkeys([*current, *incoming])) if stage == "residual" else current
         )
+        if index in parameter_ids and stage != "residual":
+            dependencies = [*dependencies, parameter_ids[index]]
         selected = values[list(indices)]
         if function.layout == "position-major":
             selected = selected.transpose(1, 2)

@@ -9,6 +9,7 @@ import torch
 from r0.modules.priors.lib.causal_activations import CausalActivation, activation_diagnostic
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+from r0.modules.priors.lib.feature_conv_sampling_records import SampledFeatureConv1D
 from r0.modules.priors.lib.fitted_tree_evaluation import evaluate_fitted_tree
 from r0.modules.priors.lib.fitted_tree_records import FrozenFittedTreeFunction
 from r0.modules.priors.lib.frozen_function_composites import (
@@ -51,6 +52,7 @@ type FrozenFunction = (
     | FrozenNetworkBlockFunction
     | FrozenNetworkFunction
     | FrozenFeatureConv1D
+    | SampledFeatureConv1D
 )
 
 _FUNCTION_TYPES = (
@@ -68,6 +70,7 @@ _FUNCTION_TYPES = (
     FrozenRecursiveForestFunction,
     FrozenNetworkFunction,
     FrozenFeatureConv1D,
+    SampledFeatureConv1D,
     FrozenNetworkBlockFunction,
 )
 _DEFAULT_LIMITS = CausalLimits()
@@ -76,6 +79,8 @@ _DEFAULT_LIMITS = CausalLimits()
 def function_geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, int]:
     if type(function) not in _FUNCTION_TYPES:
         raise ValueError("function geometry requires a frozen function record")
+    if type(function) is SampledFeatureConv1D:
+        return function_geometry(function.function)
     if type(function) is FrozenFeatureConv1D:
         from r0.modules.priors.lib.feature_conv_graph import convolution_geometry
 
@@ -235,6 +240,9 @@ def _mlp_activation(
 def _evaluate(
     function: FrozenFunction, inputs: torch.Tensor, diagnostics: list[dict[str, Any]] | None = None
 ) -> torch.Tensor:
+    if type(function) is SampledFeatureConv1D:
+        function.validate_replay()
+        return _evaluate(function.function, inputs, diagnostics)
     if type(function) is FrozenFeatureConv1D:
         from r0.modules.priors.lib.feature_conv_evaluation import evaluate_admitted_feature_conv1d
 
@@ -354,10 +362,10 @@ def admit_frozen_function(
         raise ValueError("function evaluation rows must be positive integers below 2**63")
     widths, working, floor = function_geometry(function)
     parameters, storage_adjustment = function.parameter_count, 0
-    if isinstance(function, FrozenFeatureConv1D) or (
+    if isinstance(function, (FrozenFeatureConv1D, SampledFeatureConv1D)) or (
         isinstance(function, FrozenParentFunction)
         and any(
-            isinstance(member, FrozenFeatureConv1D)
+            isinstance(member, (FrozenFeatureConv1D, SampledFeatureConv1D))
             for member in (*function.children, *((function.joint,) if function.joint else ()))
         )
     ):
@@ -378,6 +386,13 @@ def admit_frozen_function(
         extra_working_channels=working,
         row_floor=floor,
     )
+    from r0.modules.priors.lib.feature_conv_function_admission import convolution_replay_cost
+
+    replay_parameters, replay_work = convolution_replay_cost(function, limits)
+    report["parameters"] += replay_parameters
+    report["estimated_working_bytes"] += replay_work
+    if report["parameters"] > limits.parameters:
+        raise ValueError("sampled convolution aggregate parameter limit exceeded")
     report["estimated_working_bytes"] += storage_adjustment
     if report["estimated_working_bytes"] > limits.working_bytes:
         raise ValueError("convolution complete metadata and working storage exceed limits")

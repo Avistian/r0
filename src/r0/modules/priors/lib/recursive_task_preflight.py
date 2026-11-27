@@ -51,6 +51,11 @@ def _authored(value: Any) -> Any:
     """Only geometry is decoded here. Original receipts remain untouched for strict replay."""
     if type(value) is dict:
         raw = _object(value)
+        if raw.get("version") == "sampled-feature-conv1d-r0-v1":
+            function = _object(raw.get("function"))
+            if function.get("version") != "frozen-feature-conv1d-r0-v1":
+                raise ValueError("sampled convolution preview requires retained authored geometry")
+            return function
         if raw.get("version") == "frozen-recursive-forest-function-v1":
             source = _object(raw.get("source"))
             if source.get("version") == "sampled-recursive-forest-v1":

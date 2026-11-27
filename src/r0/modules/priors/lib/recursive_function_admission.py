@@ -14,6 +14,7 @@ def admit_recursive_payloads(
     numbers: int,
     limits: CausalLimits,
     graphs: list[dict[str, Any]],
+    convolutions: list[dict[str, Any]],
 ) -> None:
     from r0.modules.priors.lib.recursive_forest_decoding import recursive_forest_plan_from_dict
     from r0.modules.priors.lib.recursive_forest_plan import recursive_effective_limits
@@ -51,6 +52,14 @@ def admit_recursive_payloads(
             numbers += report["parameters"]
         except (KeyError, TypeError, AttributeError, OverflowError) as error:
             raise ValueError("malformed recursive sampled construction budget") from error
+    if convolutions:
+        from r0.modules.priors.lib.feature_conv_decoding import feature_conv1d_request_from_dict
+
+        for convolution in convolutions:
+            request = feature_conv1d_request_from_dict(convolution.get("request"), limits=limits)
+            report = request.admit(limits=limits)
+            work += report["estimated_working_bytes"]
+            numbers += report["parameters"]
     if graphs:
         from r0.modules.priors.lib.recursive_task_preflight import (
             RECURSIVE_TASK_VERSIONS,

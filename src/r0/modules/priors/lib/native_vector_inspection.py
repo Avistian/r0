@@ -10,6 +10,7 @@ import torch
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.feature_conv_inspection import feature_conv_steps
 from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+from r0.modules.priors.lib.feature_conv_sampling_records import SampledFeatureConv1D
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.native_vector_decoding import (
     native_vector_graph_from_dict,
@@ -65,7 +66,12 @@ def native_vector_steps(
             )
         if isinstance(
             node.equation.function,
-            (FrozenNetworkFunction, FrozenFeatureConv1D, FrozenRecursiveForestFunction),
+            (
+                FrozenNetworkFunction,
+                FrozenFeatureConv1D,
+                SampledFeatureConv1D,
+                FrozenRecursiveForestFunction,
+            ),
         ):
             if node.equation.root is not None:
                 network_inputs = torch.tensor(
@@ -88,7 +94,7 @@ def native_vector_steps(
                 )
             else:
                 network_inputs = torch.cat([values.states[p] for p in node.equation.parents], dim=1)
-            if isinstance(node.equation.function, FrozenFeatureConv1D):
+            if isinstance(node.equation.function, (FrozenFeatureConv1D, SampledFeatureConv1D)):
                 parents = feature_conv_steps(
                     node.equation.function,
                     network_inputs,

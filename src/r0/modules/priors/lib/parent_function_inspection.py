@@ -7,6 +7,7 @@ import torch
 
 from r0.modules.priors.lib.feature_conv_inspection import feature_conv_steps
 from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+from r0.modules.priors.lib.feature_conv_sampling_records import SampledFeatureConv1D
 from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_function
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
@@ -49,7 +50,7 @@ def parent_function_steps(
                 add=add,
                 input_parents=parents,
             )
-        if isinstance(function.joint, FrozenFeatureConv1D):
+        if isinstance(function.joint, (FrozenFeatureConv1D, SampledFeatureConv1D)):
             joint_parents = feature_conv_steps(
                 function.joint,
                 inputs,
@@ -101,7 +102,7 @@ def parent_function_steps(
                 add=add,
                 input_parents=[parents[index]],
             )
-        if isinstance(child, FrozenFeatureConv1D):
+        if isinstance(child, (FrozenFeatureConv1D, SampledFeatureConv1D)):
             child_parents = feature_conv_steps(
                 child,
                 inputs[:, offset:stop],

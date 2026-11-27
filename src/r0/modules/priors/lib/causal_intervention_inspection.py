@@ -110,8 +110,11 @@ def intervention_steps(
             if role == "function":
                 from r0.modules.priors.lib.feature_conv_inspection import feature_conv_steps
                 from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+                from r0.modules.priors.lib.feature_conv_sampling_records import SampledFeatureConv1D
 
-                if isinstance(effective_equation.function, FrozenFeatureConv1D):
+                if isinstance(
+                    effective_equation.function, (FrozenFeatureConv1D, SampledFeatureConv1D)
+                ):
                     parents = feature_conv_steps(
                         effective_equation.function,
                         execution.traces[i]["inputs"],

@@ -104,7 +104,10 @@ def function_certificates(
 ) -> list[ChannelCertificate]:
     from r0.modules.priors.lib.feature_conv_graph import convolution_certificates
     from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+    from r0.modules.priors.lib.feature_conv_sampling_records import SampledFeatureConv1D
 
+    if isinstance(function, SampledFeatureConv1D):
+        return function_certificates(function.function, inputs)
     if isinstance(function, FrozenFeatureConv1D):
         return convolution_certificates(function, inputs, _sum, _activation)
     if isinstance(function, FrozenNetworkFunction | FrozenNetworkBlockFunction):

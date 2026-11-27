@@ -192,8 +192,9 @@ def evaluate_functional_nodes(
                     input_parents=parents,
                 )
             from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+            from r0.modules.priors.lib.feature_conv_sampling_records import SampledFeatureConv1D
 
-            if isinstance(node.function, FrozenFeatureConv1D):
+            if isinstance(node.function, (FrozenFeatureConv1D, SampledFeatureConv1D)):
                 from r0.modules.priors.lib.feature_conv_inspection import feature_conv_steps
 
                 parents = feature_conv_steps(
