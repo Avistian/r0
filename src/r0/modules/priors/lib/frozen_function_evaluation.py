@@ -32,6 +32,8 @@ from r0.modules.priors.lib.network_evaluation import (
 )
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.weight_geometry import Matrix
+from r0.modules.priors.lib.xgboost_vector import FrozenXGBoostVector
+from r0.modules.priors.lib.xgboost_vector_graph import evaluate_xgboost_tensor
 
 type FrozenFunction = (
     FrozenLinearFunction
@@ -46,6 +48,7 @@ type FrozenFunction = (
     | FrozenParentFunction
     | FrozenFittedTreeFunction
     | FrozenNetworkBlockFunction
+    | FrozenXGBoostVector
     | FrozenNetworkFunction
 )
 
@@ -61,6 +64,7 @@ _FUNCTION_TYPES = (
     FrozenMLPFunction,
     FrozenParentFunction,
     FrozenFittedTreeFunction,
+    FrozenXGBoostVector,
     FrozenNetworkFunction,
     FrozenNetworkBlockFunction,
 )
@@ -96,6 +100,9 @@ def function_geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, i
             sum(work for _, work, _ in geometries) + 8 * len(members) * function.output_width,
             max(floor for _, _, floor in geometries),
         )
+    if type(function) is FrozenXGBoostVector:
+        nodes = max(len(t.features) for t in function.trees)
+        return widths, 16 * sum(widths) + 16 * nodes + nodes * function.output_width, 0
     if type(function) is FrozenFittedTreeFunction:
         nodes = max(len(t.features) for o in function.outputs for t in o.trees)
         return (
@@ -258,6 +265,8 @@ def _evaluate(
                 result = stacked.logsumexp(dim=1)
             else:
                 result = (stacked * inputs.new_tensor(function.weights)[None, :, None]).sum(dim=1)
+    elif type(function) is FrozenXGBoostVector:
+        result = evaluate_xgboost_tensor(function, inputs)
     elif type(function) is FrozenFittedTreeFunction:
         result = evaluate_fitted_tree(function, inputs)
     elif type(function) is FrozenLinearFunction:

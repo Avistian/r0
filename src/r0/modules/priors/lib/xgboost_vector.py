@@ -93,6 +93,12 @@ class FrozenXGBoostVector:
                 raise ValueError("vector tree dimensions differ from model")
 
     @property
+    def parameter_count(self) -> int:
+        return len(self.initial) + sum(
+            len(t.features) * (5 + self.output_width) for t in self.trees
+        )
+
+    @property
     def output_width(self) -> int:
         return len(self.initial)
 

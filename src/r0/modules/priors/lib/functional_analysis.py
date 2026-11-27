@@ -30,6 +30,7 @@ from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction, NetworkAffine
+from r0.modules.priors.lib.xgboost_vector import FrozenXGBoostVector
 
 if TYPE_CHECKING:
     from r0.modules.priors.lib.functional_causal import FunctionalCausalNode
@@ -168,6 +169,9 @@ def function_certificates(
             reduce(_product, column) if function.aggregation == "product" else _sum(list(column))
             for column in zip(*members, strict=True)
         ]
+    if type(function) is FrozenXGBoostVector:
+        sources = _sum([inputs[f] for t in function.trees for f in t.features if f >= 0]).sources
+        return [ChannelCertificate(sources) for _ in range(function.output_width)]
     if type(function) is FrozenFittedTreeFunction:
         sources = _sum(
             [inputs[f] for o in function.outputs for t in o.trees for f in t.features if f >= 0]

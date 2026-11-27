@@ -36,3 +36,21 @@ shared graph/evaluation integration, population lifecycle variants, public expor
 UI/Colab, wider backend cases, independent review and full integration checks.
 The numerical exporter is an internal native-model boundary, not the public
 untrusted recipe decoder. Full #28 completion is unchanged.
+
+## Shared frozen graph adapter
+
+The follow-on adapter registers the exact frozen vector model with the common
+function protocol, parent composition, archive decoder, bounded channel
+certificates and per-call aggregate admission. Torch evaluation uses float32
+strict-less routing and stage accumulation on the input device, then returns
+float64 channels. Shared graph inputs retain the existing finite-input contract;
+the lower-level numerical backend oracle separately verifies NaN default routes.
+Class objectives expose their probability vectors as explicit continuous outputs;
+they do not silently turn them into native categorical node outcomes.
+
+Public checks cover complete strict frozen records, caller limits, composed
+parents, functional/native/vector/converted generation, repeated-row traces and
+save/reopen with task IDs above 2^53. Nine fitted backend models (three objectives,
+three widths) also compare the public Torch evaluator to actual CPU backend
+predictions around split thresholds. CPU evidence is measured; GPU is NOT_RUN.
+Synthetic fitting provenance, backend dependency lock and UI remain pending.

@@ -26,10 +26,13 @@ from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
 from r0.modules.priors.lib.network_decoding import decode_block, decode_network
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
+from r0.modules.priors.lib.xgboost_vector import FrozenXGBoostVector
+from r0.modules.priors.lib.xgboost_vector_graph import decode_xgboost_vector
 
 _DEFAULT_LIMITS = CausalLimits()
 _REGISTRY = {
     "frozen-network-block-v1": FrozenNetworkBlockFunction,
+    "frozen-xgboost-vector-v1": FrozenXGBoostVector,
     "frozen-structural-network-v1": FrozenNetworkFunction,
     "frozen-fitted-tree-function-v1": FrozenFittedTreeFunction,
     "frozen-linear-function-v1": FrozenLinearFunction,
@@ -57,6 +60,7 @@ _KUMO = frozenset(
 )
 _CHEAP = frozenset(_REGISTRY) - {
     "frozen-network-block-v1",
+    "frozen-xgboost-vector-v1",
     "frozen-structural-network-v1",
     "frozen-kumo-product-function-v1",
     "frozen-parent-function-v1",
@@ -123,6 +127,8 @@ def _decode(data: Any, allowed: frozenset[str]) -> FrozenFunction:
         return FrozenNetworkBlockFunction(**fields)
     if record_type is FrozenNetworkFunction:
         return decode_network(fields)
+    if record_type is FrozenXGBoostVector:
+        return decode_xgboost_vector(fields)
     if record_type is FrozenFittedTreeFunction:
         return decode_fitted_tree(fields)
     if record_type is FrozenParentFunction:

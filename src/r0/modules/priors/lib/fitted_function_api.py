@@ -59,6 +59,9 @@ from r0.modules.priors.lib.frozen_function_primitives import (
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 
 __all__ = [
+    "FrozenXGBoostVector",
+    "XGBoostVectorTree",
+    "export_xgboost_vector",
     "FrozenKumoProductFunction",
     "inspect_fitted_tree_scores",
     "FittedFunctionalCausalRecipe",
@@ -94,3 +97,8 @@ from r0.modules.priors.lib.structural_network import FrozenNetworkFunction as Fr
 from r0.modules.priors.lib.structural_network import NetworkAffine as NetworkAffine
 from r0.modules.priors.lib.structural_network import NetworkBlock as NetworkBlock
 from r0.modules.priors.lib.structural_network import NetworkProjection as NetworkProjection
+from r0.modules.priors.lib.xgboost_vector import FrozenXGBoostVector as FrozenXGBoostVector
+from r0.modules.priors.lib.xgboost_vector import XGBoostVectorTree as XGBoostVectorTree
+from r0.modules.priors.lib.xgboost_vector_export import (
+    export_xgboost_vector as export_xgboost_vector,
+)
