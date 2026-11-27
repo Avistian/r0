@@ -18,6 +18,8 @@ from r0.modules.priors.lib.converter_intervention_inspection import (
     converted_trace_order,
     converted_trace_parents,
 )
+from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
+from r0.modules.priors.lib.intervention_parent_trace import intervention_parent_steps
 from r0.modules.priors.lib.native_causal import NativeCausalNode
 from r0.modules.priors.lib.native_vector_records import NativeVectorNode
 from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
@@ -123,6 +125,14 @@ def intervention_steps(
                         indices=indices,
                         add=add,
                     )
+            if role == "function" and isinstance(effective_equation.function, FrozenParentFunction):
+                parents = intervention_parent_steps(
+                    effective_equation.function,
+                    execution.traces[i]["inputs"],
+                    node=i,
+                    indices=indices,
+                    add=add,
+                )
             if role == "function" and isinstance(
                 effective_equation.function, FrozenRecursiveForestFunction
             ):
