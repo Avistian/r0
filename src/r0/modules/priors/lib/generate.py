@@ -29,6 +29,8 @@ from r0.modules.priors.lib.geometry_graph_decoding import geometry_graph_from_di
 from r0.modules.priors.lib.hyperprior_graph import HyperpriorGraph, generate_hyperprior_graph
 from r0.modules.priors.lib.inputs import InputDistribution
 from r0.modules.priors.lib.intervention_policy_records import SampledInterventionPolicy
+from r0.modules.priors.lib.joint_hyperprior_graph import JointHyperpriorGraph
+from r0.modules.priors.lib.joint_hyperprior_output import generate_joint_hyperprior_graph
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.matrix_preference_prior import CausalMatrixPrior
 from r0.modules.priors.lib.native_causal import NativeCausalRecipe
@@ -94,6 +96,7 @@ type Recipe = (
     | NetworkRecipe
     | NetworkObservationRecipe
     | HyperpriorGraph
+    | JointHyperpriorGraph
     | RecursivePopulationIntervention
     | RecursivePopulationRecipe
     | NetworkInputView
@@ -145,6 +148,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         )
 
         return network_observation_recipe_from_dict(fields, limits=limits)
+    if version == "sampled-joint-hyperprior-graph-v1":
+        from r0.modules.priors.lib.joint_hyperprior_decoding import joint_hyperprior_graph_from_dict
+
+        return joint_hyperprior_graph_from_dict(fields, limits=limits)
     if version == "sampled-hyperprior-graph-v1":
         from r0.modules.priors.lib.hyperprior_graph_decoding import hyperprior_graph_from_dict
 
@@ -314,6 +321,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, JointHyperpriorGraph):
+        return generate_joint_hyperprior_graph(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, HyperpriorGraph):
         return generate_hyperprior_graph(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkObservationRecipe):
