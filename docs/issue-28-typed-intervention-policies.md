@@ -47,7 +47,10 @@ silently substituted with a frozen equation view.
 Admission intersects nested runtime and outer caps and reserves whole-reference,
 comparison, raw and snapshot resources before sampling. The strict decoder first
 uses a deliberately conservative row-by-retained-parameter bound without restoring
-snapshots. Every eligible address is admitted before selecting a subset. These
+snapshots. Known outer snapshot and retained raw-spec costs are charged against
+the caller-intersected policy budget before any nested base decoder can restore
+construction streams. The base keeps its original declared caps; outer policy
+reservations do not rewrite or silently narrow retained base records. Every eligible address is admitted before selecting a subset. These
 bounds may refuse cases that a tighter planner could admit; there is no silent
 count reduction, budget widening or retry. Existing native-vector decoder rules
 that require declared caps to fit caller caps remain in force. Typed receipts have
