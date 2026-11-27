@@ -10,11 +10,13 @@ from numpy.typing import NDArray
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.compositions import CompositeRecipe
+from r0.modules.priors.lib.converted_causal_records import ConvertedCausalRecipe
 from r0.modules.priors.lib.generate import Recipe, generate_task, recipe_from_dict
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.native_causal import NativeCausalRecipe
 from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
 from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
@@ -42,7 +44,14 @@ def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> R
     """Construct one explicit change; preserve all other recipe controls."""
     if isinstance(
         recipe,
-        (NativeCausalRecipe, SampledNativeGraph, NativeVectorRecipe, SampledNativeVectorGraph),
+        (
+            NativeCausalRecipe,
+            SampledNativeGraph,
+            NativeVectorRecipe,
+            SampledNativeVectorGraph,
+            ConvertedCausalRecipe,
+            SampledConvertedGraph,
+        ),
     ):
         raise ValueError(
             "native graph pairs require domain/equation interventions, not adapter controls"

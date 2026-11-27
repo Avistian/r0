@@ -1,6 +1,7 @@
 """Conservative channel ancestry and population-moment certificates for frozen DAGs."""
 
 import math
+from collections.abc import Callable
 from dataclasses import dataclass
 from functools import reduce
 from typing import TYPE_CHECKING
@@ -250,7 +251,11 @@ def functional_certificates(
 
 
 def functional_node_certificates(
-    node: "FunctionalCausalNode", index: int, incoming: list[ChannelCertificate]
+    node: "FunctionalCausalNode",
+    index: int,
+    incoming: list[ChannelCertificate],
+    *,
+    convert: Callable[[list[ChannelCertificate]], list[ChannelCertificate]] | None = None,
 ) -> tuple[list[ChannelCertificate], list[ChannelCertificate]]:
     """Analyze one equation with caller-supplied parent state certificates."""
     width = node.function.output_width
@@ -294,6 +299,8 @@ def functional_node_certificates(
             captured[channel] = before[channel] if converter.captures_raw else warped
             if converter.changes_state:
                 before[channel] = warped
+    if convert is not None:
+        before = convert(before)
     noise: list[ChannelCertificate] = []
     response = node.noise_response
     for j, sources in enumerate(node.exogenous.channel_sources(width)):

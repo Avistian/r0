@@ -158,6 +158,7 @@ class PipelineEvaluation:
         self.captured: dict[int, torch.Tensor] = {}
         self.record_steps = record_steps
         self.steps: list[tuple[str, torch.Tensor]] = []
+        self.trace_dependencies: dict[str, list[str]] = {}
 
     def retain(self, name: str, value: torch.Tensor) -> None:
         if self.record_steps:

@@ -55,6 +55,7 @@ def evaluate_functional_nodes(
     capture: RawDrawLedger | None = None,
     owner: tuple[str, ...] = (),
     execution: InterventionExecution | None = None,
+    pipeline_factory: Callable[[int, FunctionalCausalNode], PipelineEvaluation] | None = None,
 ) -> list[torch.Tensor]:
     values: list[torch.Tensor] = []
     for index, node in enumerate(nodes):
@@ -111,9 +112,13 @@ def evaluate_functional_nodes(
             output, node.noise_scale or (0.0,) * node.function.output_width, node.noise_response
         )
         pipeline = (
-            PipelineEvaluation(node.pipeline, index, diagnostics, record_steps=add is not None)
-            if node.pipeline
-            else None
+            pipeline_factory(index, node)
+            if pipeline_factory is not None
+            else (
+                PipelineEvaluation(node.pipeline, index, diagnostics, record_steps=add is not None)
+                if node.pipeline
+                else None
+            )
         )
         transformed = pipeline.before_noise(output) if pipeline else output
         state = transformed + scale * raw
@@ -190,7 +195,7 @@ def evaluate_functional_nodes(
                     add(
                         key,
                         f"Pipeline {index}: {name}",
-                        previous,
+                        pipeline.trace_dependencies.get(name, previous),
                         "frozen pipeline stage before structural innovation and node importance",
                         value[list(indices)],
                         {"stage": name},

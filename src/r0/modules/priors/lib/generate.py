@@ -17,6 +17,10 @@ from r0.modules.priors.lib.compositions import (
     FunctionComponent,
     generate_composite,
 )
+from r0.modules.priors.lib.converted_causal_records import ConvertedCausalRecipe
+from r0.modules.priors.lib.converted_decoding import converted_recipe_from_dict
+from r0.modules.priors.lib.converted_graph_decoding import converted_graph_from_dict
+from r0.modules.priors.lib.converted_output import generate_converted
 from r0.modules.priors.lib.exact_gp import GaussianProcessRecipe
 from r0.modules.priors.lib.fourier import FourierRecipe
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
@@ -54,6 +58,8 @@ from r0.modules.priors.lib.parameter_preferences import parameter_preferences_fr
 from r0.modules.priors.lib.polynomial import PolynomialRecipe
 from r0.modules.priors.lib.preference_binding import PreferenceBinding
 from r0.modules.priors.lib.quadratic import QuadraticRecipe
+from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
+from r0.modules.priors.lib.sampled_converted_output import generate_sampled_converted
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
 from r0.modules.priors.lib.sampled_graph_decoding import sampled_graph_from_dict
@@ -76,6 +82,8 @@ type Recipe = (
     NetworkRecipe
     | CausalInterventionRecipe
     | BaseRecipe
+    | ConvertedCausalRecipe
+    | SampledConvertedGraph
     | CompositeRecipe
     | CausalRecipe
     | FunctionalCausalRecipe
@@ -131,6 +139,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
     version = fields.get("version", "linear-v1")
     if version == "standalone-network-v1":
         return network_recipe_from_dict(fields, limits=limits)
+    if version == "sampled-converted-graph-v1":
+        return converted_graph_from_dict(fields, limits=limits)
+    if version == "converted-causal-v1":
+        return converted_recipe_from_dict(fields, limits=limits)
     if version == "causal-intervention-v1":
         from r0.modules.priors.lib.causal_intervention_decoding import intervention_from_dict
 
@@ -297,6 +309,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, SampledConvertedGraph):
+        return generate_sampled_converted(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, ConvertedCausalRecipe):
+        return generate_converted(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkRecipe):
         return generate_network(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, CausalInterventionRecipe):

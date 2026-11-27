@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 
 import numpy as np
+import torch
 
 from r0.modules.priors.lib.calibrated_activations import (
     calibrate_standardization,
@@ -17,6 +18,7 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.functional_causal_evaluation import sample_functional_prefix
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
 from r0.modules.priors.lib.functional_prefix import FunctionalPrefix
+from r0.modules.priors.lib.joint_converter_plans import JointConverterPlan
 from r0.modules.priors.lib.joint_function_calibration import (
     FunctionCalibrationSample,
     function_calibration_digest,
@@ -97,7 +99,34 @@ def fit_node_pipeline(
         owner=(*plan.operation, "calibration"),
         capture=capture,
     )
-    value = population.states[-1]
+    return fit_pipeline_population(
+        plan,
+        decisions,
+        population.states[-1],
+        identity=identity,
+        streams=streams,
+        capture=capture,
+        limits=limits,
+        raw_start=start,
+    )
+
+
+def fit_pipeline_population(
+    plan: JointPipelinePlan,
+    decisions: JointSamplingRecord,
+    value: torch.Tensor,
+    *,
+    identity: str,
+    streams: dict[str, np.random.Generator],
+    capture: RawDrawLedger,
+    limits: CausalLimits,
+    raw_start: int,
+) -> JointPipelineRealization:
+    """Fit an already admitted independent prefix population; queries never call this."""
+    plan.validate(decisions)
+    if value.ndim != 2 or value.shape[1] != plan.width or not torch.isfinite(value).all():
+        raise ValueError("pipeline calibration requires finite admitted rows matching its width")
+    start = raw_start
     sample = frozen_matrix(value.numpy())
     calibration = FunctionCalibrationSample(sample, identity, function_calibration_digest(sample))
     stages = ()
@@ -130,8 +159,46 @@ def fit_node_pipeline(
             value.numpy(), calibration_id=identity + "-l2", limits=limits
         )
         value = l2.apply(value)
+    converters = fit_numerical_converters(
+        plan.converters, value, identity=identity, streams=streams, capture=capture, limits=limits
+    )
+    pipeline = CausalNodePipeline(
+        plan.width,
+        stages,
+        importance,
+        l2,
+        tuple(converters),
+        plan.importance,
+    )
+    if isinstance(plan, JointInnovationPipelinePlan):
+        assert plan.innovation is not None
+        noise = materialize_innovation(plan.innovation, streams["raw"], capture)
+        return JointInnovationPipelineRealization(
+            plan, calibration, weights, pipeline, start, len(capture.freeze()), noise=noise
+        )
+    return JointPipelineRealization(
+        plan,
+        calibration,
+        weights,
+        pipeline,
+        start,
+        len(capture.freeze()),
+    )
+
+
+def fit_numerical_converters(
+    plans: tuple[JointConverterPlan, ...],
+    value: torch.Tensor,
+    *,
+    identity: str,
+    streams: dict[str, np.random.Generator],
+    capture: RawDrawLedger,
+    limits: CausalLimits,
+) -> tuple[NumericalConverter, ...]:
+    """Fit declared numeric spans of one already admitted independent stage population."""
+    rows = len(value)
     converters: list[NumericalConverter] = []
-    for converter in plan.converters:
+    for converter in plans:
         channel = value[:, converter.channel : converter.channel + 1].numpy()
         transform: CausalActivation = CausalActivation()
         converter_id = identity + f"-converter-{converter.channel}"
@@ -163,25 +230,4 @@ def fit_node_pipeline(
                 calibration_id=converter_id,
             )
         converters.append(NumericalConverter(converter.channel, transform, converter.prior.variant))
-    pipeline = CausalNodePipeline(
-        plan.width,
-        stages,
-        importance,
-        l2,
-        tuple(converters),
-        plan.importance,
-    )
-    if isinstance(plan, JointInnovationPipelinePlan):
-        assert plan.innovation is not None
-        noise = materialize_innovation(plan.innovation, streams["raw"], capture)
-        return JointInnovationPipelineRealization(
-            plan, calibration, weights, pipeline, start, len(capture.freeze()), noise=noise
-        )
-    return JointPipelineRealization(
-        plan,
-        calibration,
-        weights,
-        pipeline,
-        start,
-        len(capture.freeze()),
-    )
+    return tuple(converters)

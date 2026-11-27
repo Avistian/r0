@@ -86,6 +86,13 @@ def explain_generation(
             }
         )
 
+    if record["recipe"].get("version") in ("converted-causal-v1", "sampled-converted-graph-v1"):
+        from r0.modules.priors.lib.converted_inspection import converted_steps
+
+        if component is not None:
+            raise ValueError("converted graphs do not have composite children")
+        return {**converted_steps(task, indices, add, limits=limits), "nodes": nodes}
+
     if record["recipe"].get("version") == "standalone-network-v1":
         from r0.modules.priors.lib.network_inspection import standalone_network_steps
 
