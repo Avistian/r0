@@ -1,9 +1,11 @@
 """Deterministic admitted function evaluation on the input tensor's device."""
 
 import math
+from typing import Any
 
 import torch
 
+from r0.modules.priors.lib.causal_activations import CausalActivation, activation_diagnostic
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.frozen_function_composites import (
     FrozenDiscretizationFunction,
@@ -147,7 +149,22 @@ def em_assignment_probabilities(
     return result
 
 
-def _evaluate(function: FrozenFunction, inputs: torch.Tensor) -> torch.Tensor:
+def _mlp_activation(
+    activation: CausalActivation,
+    value: torch.Tensor,
+    index: int,
+    diagnostics: list[dict[str, Any]] | None,
+) -> torch.Tensor:
+    if diagnostics is not None:
+        entry = activation_diagnostic(value, activation)
+        if entry is not None:
+            diagnostics.append({"stage": f"function-activation-{index}", **entry})
+    return activation.apply(value)
+
+
+def _evaluate(
+    function: FrozenFunction, inputs: torch.Tensor, diagnostics: list[dict[str, Any]] | None = None
+) -> torch.Tensor:
     if type(function) is FrozenLinearFunction:
         result = inputs @ inputs.new_tensor(function.matrix).T
     elif type(function) is FrozenQuadraticFunction:
@@ -187,12 +204,12 @@ def _evaluate(function: FrozenFunction, inputs: torch.Tensor) -> torch.Tensor:
     elif type(function) is FrozenMLPFunction:
         result, index = inputs, 0
         if function.start_activation:
-            result = function.activations[index].apply(result)
+            result = _mlp_activation(function.activations[index], result, index, diagnostics)
             index += 1
         for i, linear in enumerate(function.linears):
             result = _evaluate(linear, result)
             if i < len(function.linears) - 1 or function.end_activation:
-                result = function.activations[index].apply(result)
+                result = _mlp_activation(function.activations[index], result, index, diagnostics)
                 index += 1
     else:
         assert isinstance(function, FrozenEMFunction)
@@ -230,14 +247,19 @@ def admit_frozen_function(
     )
 
 
-def evaluate_admitted_function(function: FrozenFunction, inputs: torch.Tensor) -> torch.Tensor:
+def evaluate_admitted_function(
+    function: FrozenFunction,
+    inputs: torch.Tensor,
+    *,
+    diagnostics: list[dict[str, Any]] | None = None,
+) -> torch.Tensor:
     """Evaluate validated finite float64 rows after enclosing aggregate admission.
 
     Root fitting needs the same arithmetic while charging retained construction,
     calibration and evaluation buffers together. Public standalone calls must
     continue through evaluate_frozen_function and its own input/admission checks.
     """
-    return _evaluate(function, inputs)
+    return _evaluate(function, inputs, diagnostics)
 
 
 def evaluate_frozen_function(

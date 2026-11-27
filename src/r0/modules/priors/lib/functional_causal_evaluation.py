@@ -26,6 +26,27 @@ def functional_rng(seed: int, task_id: int, *keys: object) -> np.random.Generato
     )
 
 
+def _constant_diagnostic(
+    value: torch.Tensor, node: int, stage: str, diagnostics: list[dict[str, Any]] | None
+) -> None:
+    if diagnostics is None:
+        return
+    constant: list[int] = (
+        torch.all(value == value[0], dim=0).nonzero().flatten().detach().cpu().numpy().tolist()
+    )
+    if constant:
+        diagnostics.append(
+            {
+                "node": node,
+                "stage": stage,
+                "rows": len(value),
+                "constant_channels": constant,
+                "flags": [f"constant_{stage}_sample"],
+                "meaning": "constant in these emitted rows; not a population certificate",
+            }
+        )
+
+
 def functional_values(
     recipe: FunctionalCausalRecipe,
     rng: Callable[..., np.random.Generator],
@@ -34,6 +55,7 @@ def functional_values(
     add: Callable[..., None] | None = None,
     indices: Sequence[int] = (),
     readouts: list[torch.Tensor] | None = None,
+    diagnostics: list[dict[str, Any]] | None = None,
 ) -> list[torch.Tensor]:
     recipe.admit()
     values: list[torch.Tensor] = []
@@ -54,7 +76,11 @@ def functional_values(
                 )
         else:
             inputs = torch.cat([values[p] for p in node.parents], dim=1)
-        output = evaluate_admitted_function(node.function, inputs)
+        function_diagnostics: list[dict[str, Any]] | None = [] if diagnostics is not None else None
+        output = evaluate_admitted_function(node.function, inputs, diagnostics=function_diagnostics)
+        if diagnostics is not None:
+            diagnostics.extend({"node": index, **entry} for entry in function_diagnostics or ())
+        _constant_diagnostic(output, index, "function", diagnostics)
         raw = torch.tensor(
             sample_exogenous(
                 node.exogenous, recipe.task.rows, node.function.output_width, rng, index
@@ -65,12 +91,17 @@ def functional_values(
         scale = signal_noise_scale(
             output, node.noise_scale or (0.0,) * node.function.output_width, node.noise_response
         )
-        pipeline = PipelineEvaluation(node.pipeline, index, None) if node.pipeline else None
+        pipeline = (
+            PipelineEvaluation(node.pipeline, index, diagnostics, record_steps=add is not None)
+            if node.pipeline
+            else None
+        )
         transformed = pipeline.before_noise(output) if pipeline else output
         state = transformed + scale * raw
         state, readout = pipeline.finish(state) if pipeline else (state, state)
         if not torch.isfinite(state).all() or not torch.isfinite(readout).all():
             raise ValueError("nonfinite functional causal value; task was not retried")
+        _constant_diagnostic(state, index, "state", diagnostics)
         values.append(state)
         if readouts is not None:
             readouts.append(readout)
@@ -99,10 +130,31 @@ def functional_values(
                 scale[list(indices)],
                 asdict(node.noise_response),
             )
+            state_parents = [f"function-{index}", f"exogenous-{index}", f"noise-scale-{index}"]
+            readout_parents = [f"causal-{index}"]
+            if pipeline is not None:
+                previous = [f"function-{index}"]
+                for name, value in pipeline.steps:
+                    key = f"pipeline-{index}-{name}"
+                    add(
+                        key,
+                        f"Pipeline {index}: {name}",
+                        previous,
+                        "frozen pipeline stage before structural innovation and node importance",
+                        value[list(indices)],
+                        {"stage": name},
+                    )
+                    if name not in ("converter-state", "converted-readout"):
+                        previous = [key]
+                state_parents[0] = f"pipeline-{index}-converter-state"
+                count = len(pipeline.pipeline.converters)
+                readout_parents = ([f"pipeline-{index}-converted-readout"] if count else []) + (
+                    [f"causal-{index}"] if count < node.function.output_width else []
+                )
             add(
                 f"causal-{index}",
                 f"Causal state {index}",
-                [f"function-{index}", f"exogenous-{index}", f"noise-scale-{index}"],
+                state_parents,
                 "node_importance * (pipeline(function output) + scale * exogenous)",
                 state[list(indices)],
                 {"pipeline": asdict(node.pipeline) if node.pipeline else None},
@@ -110,7 +162,7 @@ def functional_values(
             add(
                 f"readout-{index}",
                 f"Readout {index}",
-                [f"causal-{index}"],
+                readout_parents,
                 "captured converter channels before innovation/importance; otherwise final state",
                 readout[list(indices)],
                 {},
@@ -132,7 +184,8 @@ def generate_functional_causal(
         return functional_rng(seed, task_id, *keys)
 
     values: list[torch.Tensor] = []
-    functional_values(recipe, rng, device, readouts=values)
+    diagnostics: list[dict[str, Any]] = []
+    functional_values(recipe, rng, device, readouts=values, diagnostics=diagnostics)
     inputs = torch.stack([values[i][:, j] for i, j in recipe.observed], dim=1)
     scores = torch.stack([values[i][:, j] for i, j in recipe.target], dim=1)
     _, certificates = functional_certificates(recipe.nodes)
@@ -147,6 +200,7 @@ def generate_functional_causal(
     flags = [] if active else ["disconnected_target"]
     if torch.all(scores == scores[0]).item():
         flags.append("zero_target_dispersion")
+    flags.extend(sorted({flag for entry in diagnostics for flag in entry["flags"]}))
     card = {
         "version": recipe.version,
         "family": "causal",
@@ -160,6 +214,7 @@ def generate_functional_causal(
             "conservative channel-level exogenous ancestry; potential dependence only"
         ),
         "flags": flags,
+        "node_diagnostics": diagnostics,
         "normalization": "none",
         "moment_contract": {
             "target_orders": [

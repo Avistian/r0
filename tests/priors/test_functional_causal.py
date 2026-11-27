@@ -93,6 +93,8 @@ def test_nonlinear_noise_response_uses_function_output_before_converter_and_impo
     raw = torch.tensor(nodes["exogenous-1"]["values"], dtype=torch.float64)
     torch.testing.assert_close(task.scores[[7, 1, 7]], 24.0 + 78.0 * raw)
     assert nodes["readout-1"]["values"] == [[8.0]] * 3
+    assert nodes["readout-1"]["parents"] == ["pipeline-1-converted-readout"]
+    assert nodes["pipeline-1-channel-importance"]["values"] == [[8.0]] * 3
     assert trace["signal_max_error"] == trace["target_max_error"] == 0
 
 
@@ -309,3 +311,114 @@ def test_aggregate_graph_limits_and_structural_contracts() -> None:
         replace(recipe, observed=((1, 0),))
     with pytest.raises(ValueError, match="root base width"):
         replace(root, root=JointRootBase("uniform", 2))
+
+
+def test_constant_internal_function_is_retained_and_flagged() -> None:
+    from r0.modules import priors
+
+    recipe = FunctionalCausalRecipe(
+        LinearRecipe(rows=16, features=1, signal_features=1, active_features=1, context_rows=8),
+        (
+            FunctionalCausalNode(
+                (), priors.FrozenLinearFunction(((1.0,), (2.0,))), root=JointRootBase("uniform", 1)
+            ),
+            FunctionalCausalNode((0,), priors.FrozenLinearFunction(((0.0, 0.0),))),
+        ),
+        ((0, 0),),
+        ((0, 1),),
+    )
+    task = generate_task(recipe, seed=1, task_id=2)
+    card = json.loads(task.mechanism_json)
+    assert "constant_function_sample" in card["flags"]
+    assert any(
+        d["node"] == 1 and d["stage"] == "function" and d["constant_channels"] == [0]
+        for d in card["node_diagnostics"]
+    )
+    trace = explain_generation(task, [0, 1, 2])
+    assert next(n for n in trace["nodes"] if n["id"] == "causal-1")["values"] == [[0.0]] * 3
+
+
+def test_mlp_and_pipeline_saturation_diagnostics_reach_task_card() -> None:
+    from r0.modules import priors
+
+    activation = priors.CalibratedActivation(
+        kind="tanh",
+        input_mean=(0.0,),
+        input_inverse_std=(1.0,),
+        shift=(0.0,),
+        output_mean=(0.0,),
+        output_inverse_std=(1.0,),
+        shift_rows=(0,),
+        calibration_rows=1,
+        calibration_id="authored-tanh",
+        calibration_digest="0" * 64,
+    )
+    recipe = FunctionalCausalRecipe(
+        LinearRecipe(rows=16, features=1, signal_features=1, active_features=1, context_rows=8),
+        (
+            FunctionalCausalNode(
+                (),
+                FrozenTreeFunction(1, ((0,),), ((0.0,),), (((100.0,), (100.0,)),)),
+                root=JointRootBase("uniform", 1),
+            ),
+            FunctionalCausalNode(
+                (0,),
+                priors.FrozenMLPFunction(
+                    (priors.FrozenLinearFunction(((1.0,),)),), (activation,), end_activation=True
+                ),
+            ),
+            FunctionalCausalNode(
+                (0,),
+                priors.FrozenLinearFunction(((1.0,),)),
+                pipeline=priors.CausalNodePipeline(1, stages=(priors.CausalActivation("sigmoid"),)),
+            ),
+        ),
+        ((1, 0),),
+        ((2, 0),),
+    )
+    card = json.loads(generate_task(recipe, seed=1, task_id=2).mechanism_json)
+    assert "saturated_activation" in card["flags"]
+    saturated = {
+        (d["node"], d["kind"])
+        for d in card["node_diagnostics"]
+        if "saturated_activation" in d["flags"]
+    }
+    assert saturated == {(1, "tanh"), (2, "sigmoid")}
+
+
+def test_functional_trace_is_parent_before_child_for_renderer() -> None:
+    from r0.modules import priors
+
+    recipe = FunctionalCausalRecipe(
+        LinearRecipe(rows=16, features=1, signal_features=1, active_features=1, context_rows=8),
+        (
+            FunctionalCausalNode(
+                (), priors.FrozenLinearFunction(((1.0,), (2.0,))), root=JointRootBase("uniform", 1)
+            ),
+        ),
+        ((0, 0),),
+        ((0, 1),),
+    )
+    trace = explain_generation(generate_task(recipe, seed=1, task_id=2), [0, 15])
+    seen: set[str] = set()
+    for node in trace["nodes"]:
+        assert set(node["parents"]) <= seen, node["id"]
+        seen.add(node["id"])
+
+
+def test_existing_causal_traces_also_place_readouts_before_observations() -> None:
+    from r0.modules import priors
+
+    for version in ("causal-v1", "causal-v2"):
+        recipe = priors.CausalRecipe(
+            LinearRecipe(rows=16, features=1, signal_features=1, active_features=1, context_rows=8),
+            (priors.CausalNode(bias=(0.0, 0.0), noise_scale=(1.0, 1.0)),),
+            ((0, 0),),
+            ((0, 1),),
+            version=version,
+        )
+        trace = explain_generation(generate_task(recipe, seed=1, task_id=2), [0, 15])
+        seen: set[str] = set()
+        for node in trace["nodes"]:
+            assert set(node["parents"]) <= seen, (version, node["id"])
+            seen.add(node["id"])

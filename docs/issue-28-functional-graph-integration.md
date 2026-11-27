@@ -18,7 +18,7 @@ For each node, in topological order:
 
 Generation and inspection use one evaluator and the `functional-causal-v1` keyed stream namespace. Observation noise/label draws and splitting remain shared task adapters. Inspection reproduces full original random draws before selecting original row indices, including repeated and out-of-order indices. No function is refitted during emission or inspection.
 
-Node functions and structural noise have finite-output checks. Invalid values raise without replacement draws or silent clipping. Constant and disconnected valid mechanisms remain present with diagnostic flags. The shared stable signal-noise scaling implementation preserves the affine evaluator's arithmetic.
+Node functions and structural noise have finite-output checks. Invalid values raise without replacement draws or silent clipping. Constant and disconnected valid mechanisms remain present with diagnostic flags. Node-level constant flags describe emitted samples, not certified population constancy. Internal MLP and pipeline activation diagnostics use the existing boundary thresholds and remain separate from acceptance. The shared stable signal-noise scaling implementation preserves the affine evaluator's arithmetic.
 
 ## Analysis and admission
 
@@ -34,6 +34,14 @@ Public tests in `tests/priors/test_functional_causal.py` include literal outputs
 
 `tests/explorer/test_functional_session.py` exercises the shared session's create/save/open/replay and selected-row inspection for four root bases across regression, binary and multiclass tasks. This is session-level evidence, not a browser or hosted Colab demonstration.
 
-Full repository checks and independent source review are pending at this draft checkpoint. Retained development logs are `/tmp/r0-28-graph-*.log`; they include both genuine failing cases and fixture/type/lint corrections. No GPU, throughput, RSS, browser or Colab claims are made.
+The original source checkpoint passed `make check`: 1200 passed, 1 skipped in 525.48 seconds, with all static gates. Its independent SPEC REJECT below remains valid; the green suite did not cover that defect. The repaired source still needs its own full check and independent review. Retained development logs are `/tmp/r0-28-graph-*.log`; they include both genuine failing cases and fixture/type/lint corrections. No GPU, throughput, RSS, browser or Colab claims are made.
 
 Next: finish calibration and sampled graph ownership integration; extend trace detail and workbench views; retain independent verification and resource evidence; then continue all remaining paper options, typed variables, interventions and delivery requirements. The full accepted specification remains active.
+
+## Review history
+
+Source checkpoint `7993d9c787d73192adf8b7332dc2965967371aca` received an independent **SPEC REJECT**: a constant internal function remained present but had no diagnostic flag. Retained reproducer, exact commands, raw outputs, recipe/card/trace and source pins are at `/tmp/r0-28-functional-graph-spec-7993d9c`; these remain historical rejection evidence. Other independent probes were not run after that first defect.
+
+The standards review reported one documentation violation (missing executable checksum procedure) and one optional decoder-duplication heuristic. The [checksum procedure](research/0028-joint-graph-source-check.md) now records the command and exact output; duplication is unchanged pending a proportionate future refactor.
+
+The repair adds constant function/state sample diagnostics, forwards internal MLP and pipeline activation diagnostics, emits pipeline inspection stages and separates captured readout dependencies from later structural innovation. It also places observations after their producing graph readouts so the browser renderer can consume the returned topological order. A failing public trace test demonstrated this ordering defect in both the new version and existing `causal-v1`/`causal-v2`; the repair covers all three. This is trace-structure evidence, not an actual browser demonstration. Fresh review and the repair's full repository check remain pending.
