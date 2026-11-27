@@ -63,6 +63,8 @@ from r0.modules.priors.lib.parameter_preferences import parameter_preferences_fr
 from r0.modules.priors.lib.polynomial import PolynomialRecipe
 from r0.modules.priors.lib.preference_binding import PreferenceBinding
 from r0.modules.priors.lib.quadratic import QuadraticRecipe
+from r0.modules.priors.lib.recursive_population_intervention import RecursivePopulationIntervention
+from r0.modules.priors.lib.recursive_population_records import RecursivePopulationRecipe
 from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
 from r0.modules.priors.lib.sampled_converted_output import generate_sampled_converted
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
@@ -84,7 +86,9 @@ from r0.modules.priors.lib.topology_graph_decoding import topology_graph_from_di
 from r0.modules.priors.lib.training_task import TrainingTask
 
 type Recipe = (
-    NetworkRecipe
+    RecursivePopulationIntervention
+    | RecursivePopulationRecipe
+    | NetworkRecipe
     | NetworkInputView
     | CausalInterventionRecipe
     | BaseRecipe
@@ -142,7 +146,26 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
     if not isinstance(data, dict):
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
+    if (
+        "parent_rows" in fields
+        and "observed_rows" in fields
+        and fields.get("version")
+        not in ("recursive-population-v1", "recursive-population-intervention-v1")
+    ):
+        raise ValueError("population archive requires its explicit version")
     version = fields.get("version", "linear-v1")
+    if version == "recursive-population-intervention-v1":
+        from r0.modules.priors.lib.recursive_population_decoding import (
+            recursive_population_intervention_from_dict,
+        )
+
+        return recursive_population_intervention_from_dict(fields, limits=limits)
+    if version == "recursive-population-v1":
+        from r0.modules.priors.lib.recursive_population_decoding import (
+            recursive_population_from_dict,
+        )
+
+        return recursive_population_from_dict(fields, limits=limits)
     if version == "network-input-view-v2":
         from r0.modules.priors.lib.matched_network_view import matched_view_from_dict
 
@@ -328,6 +351,16 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, RecursivePopulationIntervention):
+        from r0.modules.priors.lib.recursive_population_intervention import (
+            generate_population_intervention,
+        )
+
+        return generate_population_intervention(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, RecursivePopulationRecipe):
+        from r0.modules.priors.lib.recursive_population_output import generate_recursive_population
+
+        return generate_recursive_population(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, SampledConvertedGraph):
         return generate_sampled_converted(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, ConvertedCausalRecipe):

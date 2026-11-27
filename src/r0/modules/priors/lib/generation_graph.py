@@ -86,6 +86,15 @@ def explain_generation(
             }
         )
 
+    if record["recipe"].get("version") in (
+        "recursive-population-v1",
+        "recursive-population-intervention-v1",
+    ):
+        from r0.modules.priors.lib.recursive_population_inspection import recursive_population_steps
+
+        if component is not None:
+            raise ValueError("recursive populations do not have composite children")
+        return {**recursive_population_steps(task, indices, add, limits=limits), "nodes": nodes}
     if record["recipe"].get("version") in ("converted-causal-v1", "sampled-converted-graph-v1"):
         from r0.modules.priors.lib.converted_inspection import converted_steps
 
