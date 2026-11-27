@@ -1,0 +1,8 @@
+{
+  "verdict": "RESTORED_AND_VERIFIED",
+  "metadata": "/tmp/r0-28/docs/research/0028-frozen-functions-reject-artifacts.json",
+  "output": "/tmp/r0-28-functions-reject-recovered",
+  "source": "690297b3b0508f9d57af2e78ae190f94f263ad70",
+  "manifest_entries": 2574,
+  "archive_sha256": "25348429a8d237486e60ba6673909b2857bea1c28ab84db1032f87cd64071d3f"
+}

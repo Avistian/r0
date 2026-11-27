@@ -1,0 +1,29 @@
+{
+  "source": "cbbaff2cb4c8c6e485ad3814f79e84f3c1d68967",
+  "base": "cb7977a916ff6f11d95790b2de4dd591ab8d3f39",
+  "parts": [
+    {
+      "path": "0028-frozen-functions-spec.zip.part01",
+      "bytes": 900000,
+      "sha256": "3e01d4c2ba7e8a50e0a5e95fc75f0bccbee4aa4c804b2495e20d469d33e3fa68"
+    },
+    {
+      "path": "0028-frozen-functions-spec.zip.part02",
+      "bytes": 900000,
+      "sha256": "c5135607330047a1c9f2030d2abe0303790e55206c771bbf830059ffc2d9db5a"
+    },
+    {
+      "path": "0028-frozen-functions-spec.zip.part03",
+      "bytes": 419988,
+      "sha256": "62557cccd1d3c5964ab375d154e23d77618a39dd796eafd87e108c68eef2471f"
+    }
+  ],
+  "bytes": 2219988,
+  "sha256": "345afdae4fd9b42217f120604bb3a79e11480dfadada55de30409e2f601e29bc",
+  "manifest_sha256": "dc75c429aaa2cd6a1503561c2963cd6ab766d74798bae3058dc26ed5f166fca6",
+  "manifest_entries": 944,
+  "original_manifest_sha256": "4ae1bf34503f7bb6c4b123156229c0f628594bb93aba89c437b4826838171fba",
+  "original_manifest_entries": 482,
+  "fresh_replay_entries": 461,
+  "qualification": "Original PASS_COMPONENT evidence retained unchanged. All original manifest entries verified before packaging; publication manifest additionally covers original manifest.json and every fresh-replay file. Source/base exports reconstructed from exact Git archives; tarballs are reconstruction aids, not original retained archive files. Portable replay.sh creates a fresh directory using the declared existing environment. The successful extra replay is retained under fresh-replay, separate from first-run counts."
+}

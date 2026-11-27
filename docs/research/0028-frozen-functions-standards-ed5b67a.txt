@@ -1,0 +1,19 @@
+Standards verdict: PASS for the narrow repair delta only.
+Scope: c58706ec044568cc6b449a428c32d93c9b5ca7a1...ed5b67a406619f174335dece2ff382f0a6bf753e. No whole-component or whole-issue acceptance is implied.
+
+Documented-standard violations: 0. New baseline heuristics: 0.
+
+The decoder now permits six parameter pairs and still delegates their semantic validation to CalibratedActivation. The added explanation, "four affine modifiers and up to two primitive parameters," matches the existing CausalActivation domain rules. The documentation separates authored-record serialization from the future source selector's law, so the widened decoder is not presented as new sampling authority.
+
+The one-axis distance hunk preserves the absolute coordinate through its mantissa/exponent pair and explains its purpose: "Avoid a needless pow/root round trip that can erase a one-ULP difference." Both repairs stay within existing private helpers; public tests use the module entry point and explicit randomness.
+
+CODING_STANDARDS.md's retained-reproduction rule and docs/agents/protocol-review.md's completion-claim rule are satisfied for the claims reviewed. The document preserves both independent rejections, the 98-case repaired-tie result, and the second reproduction directory. That directory retains pinned source, fixtures, exact commands and outputs. The document keeps the interrupted full checks incomplete and independent repair verification pending; historical rejection is not erased by author regression passes. Broader sampling, provenance and graph work remain deferred.
+
+Independent focused replay at ed5b67a: 14 passed in 1.60s, including all-six-parameter MLP round-trip and one-axis quasi-distance regressions. Command:
+PYTHONDONTWRITEBYTECODE=1 UV_CACHE_DIR=/tmp/r0-28-uv-cache UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv python3 scripts/run_check.py pytest -p no:cacheprovider tests/priors/test_frozen_functions.py
+
+Full suite NOT_RUN by this reviewer. Historical failure receipts were inspected, not recreated. This review does not replace the independent numerical/spec oracle.
+
+Preflight: /tmp/r0-28; HEAD matched ed5b67a. Existing untracked .venv and two rejection-artifact files were left untouched; live agent slots inspected. No source/test edits or checkouts. Earlier standards reports are unchanged.
+
+Counts: 0 documented violations; 0 new advisory heuristics. Original dispatch-maintainability advisory remains outside this delta.

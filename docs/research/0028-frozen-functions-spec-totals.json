@@ -1,0 +1,19 @@
+{
+  "source": "cbbaff2cb4c8c6e485ad3814f79e84f3c1d68967",
+  "base": "cb7977a916ff6f11d95790b2de4dd591ab8d3f39",
+  "verdict": "PASS_COMPONENT",
+  "case_counts": {
+    "check_ties": 98,
+    "check_roundtrip": 1,
+    "check_equations": 142,
+    "reproduce_quasi_tie": 1,
+    "check_contracts": 157,
+    "check_admission": 291,
+    "check_legacy": 258
+  },
+  "total_final_cases": 948,
+  "prior_r0_paired_comparisons": 18,
+  "prior_r0_completed_executions": 36,
+  "numerical_harness_failures": 0,
+  "product_failures": 0
+}

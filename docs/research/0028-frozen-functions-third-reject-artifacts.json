@@ -1,0 +1,12 @@
+{
+  "source": "ed5b67a406619f174335dece2ff382f0a6bf753e",
+  "base": "cb7977a916ff6f11d95790b2de4dd591ab8d3f39",
+  "archive": "0028-frozen-functions-third-reject.zip",
+  "bytes": 117447,
+  "sha256": "e7c8225762ded674d96c5d2ea559d012732737dbdfa56228cd5c3c1cf6d57d23",
+  "manifest_sha256": "ec9f49460d4f59b517e6b2ddd68f770652f9a047262d7cf25f44ad8311ad416c",
+  "manifest_entries": 390,
+  "original_manifest_sha256": "9a995966afda721907d641dbf0046391996d9a96e852c0705d61e153cc971122",
+  "original_manifest_entries": 389,
+  "qualification": "Original REJECT retained unchanged. All original manifest entries verified before packaging; publication manifest additionally covers original manifest.json. Source/base exports reconstructed from exact Git archives; tarballs are reconstruction aids, not original retained archive files. Reproduction shell uses original absolute paths; for a fresh run use copied programs with their local source folder, preserving old evidence."
+}

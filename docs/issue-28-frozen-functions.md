@@ -105,9 +105,118 @@ selector remains separate. The second rejection is retained at
 review of `ed5b67a` then found a two-axis p=0.5 tie: (64,0) and (9,25) both have
 distance 64, but scaling selected the second center. That rejection is retained
 at `/tmp/r0-28-functions-spec-ed5b67a/`. The direct-equation preference repairs
-this additional rounding error. Full checks and independent repair verification
-are pending.
+this additional rounding error. Frozen source is
+`cbbaff2cb4c8c6e485ad3814f79e84f3c1d68967`, compared with base
+`cb7977a916ff6f11d95790b2de4dd591ab8d3f39`.
+Full `make check` passes **868 tests, one skipped**, with all static gates;
+pytest took 464.14 seconds. The command uses the same environment above with
+`make check` replacing the focused invocation.
+[Raw output](research/0028-frozen-functions-check-cbbaff2.txt) and
+[development archive](research/0028-frozen-functions-development.json) retain
+52 files, including intermediate RED/GREEN, tooling failures, both interrupted
+checks and all standards reviews. Intermediate development snapshots are not all
+retained and are not independent exact-revision proof. The archive's per-file
+lengths/hashes were checked after packaging. Independent review uses separate
+pinned source exports and retained procedures; its final report follows below.
+The [CLI help](research/0028-frozen-functions-cli-help.txt) still lacks train/eval:
+conditional `make smoke` and `make eval-smoke` are NOT_AVAILABLE.
+[Publication gates](research/0028-frozen-functions-publication-gates.txt) pass
+checkout/hooks, tracked-file/artifact limits, formatting, lint and file-token caps.
+Publication preserves the frozen source and tests. Raw check output retains its
+original whitespace.
 CPU was exercised; CUDA execution is NOT_RUN.
+
+## Independent component verification
+
+The final specification verdict is **PASS_COMPONENT** at `cbbaff2`, with
+**948 cases** across seven standalone programs:
+
+| Evidence | Cases |
+| --- | ---: |
+| Independent equations, compositions, state and replay | 142 |
+| Malformed JSON, geometry, input and explicit numerical rejection | 157 |
+| Exact/one-below limits and aggregate admission | 291 |
+| Cached-source transform comparisons with authored state | 258 |
+| Original L1 ties, MLP JSON and two-axis quasi-distance reproducers | 100 |
+
+The 142 equation cases each include JSON reconstruction, independent expected
+outputs, chunking, repeated evaluation after mutating returned tensors and input,
+record and global RNG preservation. All 25 cheap-child pairs and all 12 MLP
+depth/activation-flag combinations occur. Admission cases independently derive
+resource totals and check rejection before conversion/allocation. The 258 source
+comparisons execute cached transform bodies only, with no source sampling/fitting;
+their provenance is qualified, not freshly verified upstream.
+[Report and exact commands](research/0028-frozen-functions-spec-report.md),
+[totals](research/0028-frozen-functions-spec-totals.json).
+
+Separately, **18 prior-r0 comparisons** are byte-equal between base and source:
+three existing profiles, two graph families and three task types, with seed 649,
+16 rows, eight context rows and two features. Both revisions completed all 18
+cases. Public recipe decoding, generation, explanation and group save/verify/load
+preserve generated records and saved archive member hashes. This is bounded
+regression evidence, not a claim about every old profile. It is distinct from the
+cached upstream transform comparisons.
+
+The [initial standards review](research/0028-frozen-functions-standards-690297b.txt)
+found zero documented violations and one nonblocking repeated-dispatch advisory.
+Three subsequent repair deltas found no new violations or advisories; the
+[last delta](research/0028-frozen-functions-standards-cbbaff2.txt) preserves that
+scope distinction. Standards and numerical verdicts are separate.
+
+Ten exact, formatted and executed verification/custody programs are published in
+[scripts/verify_frozen_functions](../scripts/verify_frozen_functions).
+[Archive metadata](research/0028-frozen-functions-spec-artifacts.json) pins all
+482 original file identities, the original manifest itself and 461 files from
+the successful fresh replay. Source/base exports are reconstructed from Git.
+Recovery verified all **944 publication-manifest entries**;
+[receipt](research/0028-frozen-functions-spec-recovery.json).
+
+```sh
+python3 scripts/recover_joint_sampling.py \
+  docs/research/0028-frozen-functions-spec-artifacts.json \
+  /tmp/frozen-functions-verified --repo "$PWD"
+bash /tmp/frozen-functions-verified/replay.sh
+```
+
+Recovery checks bytes; the replay driver creates a new directory and reruns the
+behavioral programs using the declared existing environment. It preserves the
+restored evidence. The retained fresh replay is additional execution evidence,
+not additional coverage in the 948/18 counts. A packaging attempt exceeded the
+single-file artifact cap; its output remains in the author archive and the final
+archive is split into three bounded parts.
+
+## Retained rejected revisions
+
+The three independent rejections remain separate from subsequent repairs:
+
+| Source | Defect | Retained package | Verified original file identities |
+| --- | --- | --- | --- |
+| `690297b` | L1 first-center tie | [Metadata](research/0028-frozen-functions-reject-artifacts.json), [recovery](research/0028-frozen-functions-reject-recovery.json) | 2,573 |
+| `c58706e` | Accepted MLP activation rejected by JSON | [Metadata](research/0028-frozen-functions-second-reject-artifacts.json), [recovery](research/0028-frozen-functions-second-reject-recovery.json) | 368 |
+| `ed5b67a` | Two-axis quasi-distance tie | [Metadata](research/0028-frozen-functions-third-reject-artifacts.json), [recovery](research/0028-frozen-functions-third-reject-recovery.json) | 389 |
+
+Each archive retains the original review, fixtures, programs, logs and manifest.
+Pinned Git objects reconstruct source/base exports; every original manifest entry
+was verified before packaging and after recovery. The publication manifest also
+checks the original `manifest.json` itself, so its entry count is one larger.
+Recovery verifies artifacts; it is not a new behavioral execution.
+
+```sh
+python3 scripts/recover_joint_sampling.py \
+  docs/research/0028-frozen-functions-reject-artifacts.json \
+  /tmp/frozen-functions-rejection --repo "$PWD"
+```
+
+Use a new destination and the corresponding metadata for the other two packages.
+The retained shell commands name original absolute paths: preserve those outputs.
+For a fresh reproduction, copy the programs and reconstruct the specified source
+into a new working directory with the same relative layout; set `PYTHONPATH` to
+that directory's `source/src`, then execute the copied Python programs there.
+The original failures are expected on their rejected source revisions.
+The third package also retains separately labeled verifier mistakes: insufficient
+Decimal precision in a preliminary oracle, lint corrections, summary wording and
+an accidentally formatted cache copy restored to its original hash. These do not
+replace the product rejection or count as product failures.
 
 ## Remaining integration
 

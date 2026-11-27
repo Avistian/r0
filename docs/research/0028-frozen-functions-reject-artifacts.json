@@ -1,0 +1,12 @@
+{
+  "source": "690297b3b0508f9d57af2e78ae190f94f263ad70",
+  "base": "cb7977a916ff6f11d95790b2de4dd591ab8d3f39",
+  "archive": "0028-frozen-functions-reject.zip",
+  "bytes": 277903,
+  "sha256": "25348429a8d237486e60ba6673909b2857bea1c28ab84db1032f87cd64071d3f",
+  "manifest_sha256": "3c13eacaa87afaaa074a4a693a95612d5dbc4d56935ff219fbd5eed1555d827e",
+  "manifest_entries": 2574,
+  "original_manifest_sha256": "13ab4eac0121f4d7adb0e9c7d17f9509685914ec856f924539f87853c394275c",
+  "original_manifest_entries": 2573,
+  "qualification": "Original REJECT retained unchanged. All 2573 original manifest entries verified before packaging; publication manifest additionally covers original manifest.json. Source/base exports reconstructed from exact Git archives; tarballs are reconstruction aids, not original retained archive files. Reproduction shell uses original absolute paths; for a fresh run use copied programs with their local source folder, preserving old evidence."
+}

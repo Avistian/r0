@@ -1,0 +1,17 @@
+Standards verdict: PASS for the narrow repair delta only.
+Scope: ed5b67a406619f174335dece2ff382f0a6bf753e...cbbaff2cb4c8c6e485ad3814f79e84f3c1d68967. No whole-component or whole-issue acceptance is implied.
+
+Documented-standard violations: 0. New baseline heuristics: 0.
+
+The private distance helper now prefers direct power/sum/root arithmetic when its result is finite and nonzero-coordinate powers have not underflowed to zero; otherwise it retains the scaled path. The one-axis shortcut remains. The changed hunk explains the reason: "Rescaling ordinary fractional powers can introduce false inequalities, e.g. sqrt(64) == sqrt(9) + sqrt(25)." This is localized numerical behavior, with no public module boundary, random-state, source-sampling or calibration changes. The added public-interface regression records an independent literal derivation: both quasi-distances are 64.
+
+Against CODING_STANDARDS.md's retained-reproduction rule and docs/agents/protocol-review.md's completion-claim rule, the documentation preserves the third independent rejection at ed5b67a, names its fixture and retained evidence directory, and describes the repair without upgrading broader evidence. The retained directory contains pinned sources, the integer-radical oracle, exact commands, failure output and receipts. Full checks and independent repair verification remain pending in the committed document; CUDA remains NOT_RUN. Earlier rejections remain visible.
+
+Independent focused replay at cbbaff2: 15 passed in 1.58s, including the newly added two-axis p=0.5 first-center tie regression. Command:
+PYTHONDONTWRITEBYTECODE=1 UV_CACHE_DIR=/tmp/r0-28-uv-cache UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv python3 scripts/run_check.py pytest -p no:cacheprovider tests/priors/test_frozen_functions.py
+
+Full suite NOT_RUN by this reviewer. Historical failure evidence was inspected, not independently recreated. This standards review does not replace the separate numerical/spec oracle or establish universal tie correctness.
+
+Preflight: /tmp/r0-28; HEAD matched cbbaff2; live agent slots inspected. Existing untracked environment and rejection/review artifacts were left untouched. No source/test edits or checkouts; all earlier standards reports remain unchanged.
+
+Counts: 0 documented violations; 0 new advisory heuristics. Original dispatch-maintainability advisory remains outside this delta.

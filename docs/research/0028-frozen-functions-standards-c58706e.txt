@@ -1,0 +1,17 @@
+Standards verdict: PASS for the narrow repair delta only.
+Scope: 690297b3b0508f9d57af2e78ae190f94f263ad70...c58706ec044568cc6b449a428c32d93c9b5ca7a1. This is not a new whole-component or whole-issue acceptance.
+
+Documented-standard violations: 0. New baseline heuristics: 0.
+
+The distance repair replaces per-center maximum division with power-of-two scaling and retains the reason beside the arithmetic: "which can give unequal rounded norms to exact ties such as (15,0)/(13,2)." The tree repair adds a narrowly triggered finite-mean fallback. Both changes remain within the existing private numerical evaluator; no new module boundary, random-state, calibration or data-source changes appear.
+
+Against CODING_STANDARDS.md's retained-reproduction rule and docs/agents/protocol-review.md's completion-claim rule, the documentation correctly preserves the initial spec rejection, its expected 15 / observed 13 counterexample, and its retained evidence directory. That directory contains source snapshots, reproduction code/command, and failure output. The repair is described separately from the historical failure. Full checks, independent repair verification and CUDA remain explicitly pending or NOT_RUN in the committed document, rather than being inferred from the focused tests.
+
+Independently replayed the retained public tests at c58706e: 12 passed in 1.40s, including the literal first-center L1 tie and 1e308 finite-tree-mean regressions. Exact command:
+PYTHONDONTWRITEBYTECODE=1 UV_CACHE_DIR=/tmp/r0-28-uv-cache UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv python3 scripts/run_check.py pytest -p no:cacheprovider tests/priors/test_frozen_functions.py
+
+Full make check was NOT_RUN by this reviewer. Historical RED was inspected, not independently recreated. This standards review does not replace the separate numerical/spec oracle.
+
+Preflight: /tmp/r0-28; HEAD matched c58706e; only untracked .venv; live agent slots inspected. Original standards report is unchanged. No source/test edits or checkout changes.
+
+Counts: 0 documented violations; 0 new advisory heuristics. The original dispatch-maintainability advisory remains unchanged outside this narrow delta.
