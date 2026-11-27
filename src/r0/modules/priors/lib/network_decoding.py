@@ -66,24 +66,13 @@ def decode_sampled_network(data: Any, limits: CausalLimits):
     from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
     from r0.modules.priors.lib.network_sampling import sample_network
     from r0.modules.priors.lib.network_sampling_records import (
-        NetworkSamplingRequest,
         SampledNetwork,
     )
-    from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
     from r0.modules.priors.lib.sampled_graph_decoding import construction_matches
 
     admit_function_metadata(data, limits)
     fields = record(data, SampledNetwork)
-    req = record(fields["request"], NetworkSamplingRequest)
-    declared = CausalLimits(**record(req["limits"], CausalLimits))
-    if any(getattr(declared, f.name) > getattr(limits, f.name) for f in dataclass_fields(limits)):
-        raise ValueError("network declared limits exceed caller limits")
-    req["limits"] = declared
-    req["raw_limits"] = RawDrawLimits(**record(req["raw_limits"], RawDrawLimits))
-    for name in ("widths", "families", "weight_laws"):
-        req[name] = array(req[name])
-    req["activations"] = tuple(activation(a) for a in array(req["activations"]))
-    request = NetworkSamplingRequest(**req)
+    request = decode_network_request(fields["request"], limits)
     initial = array(fields["initial"])
     if len(initial) != 2:
         raise ValueError("network requires two initial streams")
@@ -97,3 +86,19 @@ def decode_sampled_network(data: Any, limits: CausalLimits):
     if not construction_matches(result, data):
         raise ValueError("network archive differs from complete replay")
     return result
+
+
+def decode_network_request(data: Any, limits: CausalLimits):
+    from r0.modules.priors.lib.network_sampling_records import NetworkSamplingRequest
+    from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
+
+    req = record(data, NetworkSamplingRequest)
+    declared = CausalLimits(**record(req["limits"], CausalLimits))
+    if any(getattr(declared, f.name) > getattr(limits, f.name) for f in dataclass_fields(limits)):
+        raise ValueError("network declared limits exceed caller limits")
+    req["limits"] = declared
+    req["raw_limits"] = RawDrawLimits(**record(req["raw_limits"], RawDrawLimits))
+    for name in ("widths", "families", "weight_laws"):
+        req[name] = array(req[name])
+    req["activations"] = tuple(activation(a) for a in array(req["activations"]))
+    return NetworkSamplingRequest(**req)
