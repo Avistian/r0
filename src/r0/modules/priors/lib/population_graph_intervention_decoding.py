@@ -9,6 +9,7 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.fitted_tree_decoding import fitted_array
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.population_graph_change_preview import population_change_preview
+from r0.modules.priors.lib.population_graph_semantic_preflight import preflight_population_change
 from r0.modules.priors.lib.recursive_forest_decoding import sampled_recursive_forest_from_dict
 from r0.modules.priors.lib.recursive_population_decoding import (
     complete_population_record,
@@ -71,7 +72,8 @@ def population_graph_intervention_from_dict(
             retain_node_stages=True,
             population_geometry=geometry,
         )
-        # All four graph families now passed pure geometry before either receipt decoder.
+        preflight_population_change(raw, baseline, change, limits=effective)
+        # Geometry and outer semantics pass before either receipt decoder.
         base = recursive_population_graph_from_dict(baseline, limits=nested)
         decoded_change = intervention_from_dict(
             {**change, "base": {**change["base"], "limits": asdict(effective)}}, limits=effective

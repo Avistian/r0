@@ -24,3 +24,13 @@ Dynamic target calibration for row-owned mechanisms remains required and explici
 
 
 Shared `compare_causal_pair`, `save_causal_pair` and `load_causal_pair` now validate population-DAG comparisons against the complete retained original and counterfactual records. Both matched and fresh-population pairs preserve their full forests, original row inputs and task semantics through paired ZIP groups. Existing guarded open/inspect/export actions operate on these saved comparisons; workbench construction/catalog integration remains a separate required follow-on. Caller limits pre-admit the complete two-population record before nested construction snapshots are restored.
+
+## Outer intervention admission repair
+
+Independent whole-DAG review of `4487ae523e1d2b0ac3f7511396b5bfadd98b28c0` stopped with REJECT: changing only the outer comparison mode to an invalid value restored six nested construction snapshots before rejecting. Its historical evidence remains unchanged in the frozen pair worktree. Earlier narrow paired-archive acceptance does not supersede this defect.
+
+The decoder now validates the complete outer comparison schema, versions, identity, intervention semantics, receipt bindings and retained input geometry before baseline replay. A temporary authored view of retained sampled roots and functions passes through the existing intervention constructors and graph compatibility validators. This view is discarded: the original sampled construction records are decoded and replayed afterward, retaining their paths, distributions and custody. Parameter and workspace admission still accounts for the original complete archive before constructing the semantic view.
+
+Repair evidence is retained under ignored `docs/evidence/issue-28-population-dag-preflight/`. The original public invalid-mode probe now requires zero snapshot restores, with a valid control. The initial 21-case public RED run exposed 18 failures; the repaired checks also cover additional malformed receipt, identity, nonfinite-input and unknown-field cases. A sampled prototype root with sampled recursive source and soft replacement verifies preservation of the original records. Separate valid-artifact comparisons cover four graph families, five RNG engines and matched/fresh populations, including JSON replay, tensors and repeated-row traces.
+
+These are bounded repair checks. Independent repair acceptance and continuation of the stopped broad DAG review remain separate gates; no whole-issue acceptance or full-suite result is claimed.
