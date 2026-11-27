@@ -26,6 +26,11 @@ after = MatchedNetworkInputView(
 
 The supplied RNG is owned by this construction and advances atomically only on success. The fit API accepts no query inputs, episode labels or task seed. Callers must supply a separately owned calibration RNG. The paired-comparison layer can derive this RNG from original archive identity, both masks and a protocol tag; it must not derive it from episode/query identities. The public fit API accepts 2–4096 calibration rows and an original `NetworkRecipe`, not an already calibrated view. Further matching of calibrated views requires a separate protocol and remains unsupported here.
 
+Explicit caller limits on `generate_pair` are checked against the original recipe
+before pair construction can fit a matching population, and against the changed
+recipe before generating either side. These checks retain the original stored
+limits and archive identity; they do not rewrite the source recipe to fit a budget.
+
 The record retains the unchanged original recipe, both masks, root population, both raw score tables, moments, RNG snapshots, exact raw variates and a population/score digest. Root covariance and ball transformations happen before either mask, and both masks use precisely the same population. Restoring the record replays the root draws and both frozen functions and verifies every retained result. No backend fitting occurs. Zero or nonfinite dispersion in either mask, overflow, invalid masks and exceeded limits fail without retries or fallback scales. Aggregate preallocation includes nested function workspace and row floors, retained population/scores, duplicated source metadata and raw custody.
 
 The new `network-input-view-v2` archive binds the calibration to the original base and after mask. The original network and `network-input-view-v1` records remain unchanged. Generation and `evaluate_signal` apply the frozen affine transform; changing episode rows, seed or task identity does not refit it. The mechanism labels estimated matching explicitly.

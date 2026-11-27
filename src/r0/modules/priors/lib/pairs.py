@@ -112,6 +112,11 @@ def generate_pair(
     limits: CausalLimits | None = None,
 ) -> TaskPair:
     """Generate two coupled variants; neither failures nor changed properties are hidden."""
+    if limits is not None:
+        # Validate without replacing the original record: some decoders tighten
+        # stored limits, which must not change the source archive's identity.
+        # In particular, matching may fit a new population inside paired_recipe.
+        recipe_from_dict(asdict(recipe), limits=limits)
     _variance_control(recipe, intervention, allow_estimated_variance)
     changed = paired_recipe(
         recipe,
@@ -119,6 +124,8 @@ def generate_pair(
         value=value,
         allow_estimated_variance=allow_estimated_variance,
     )
+    if limits is not None:
+        recipe_from_dict(asdict(changed), limits=limits)
     before = generate_task(recipe, seed=seed, task_id=task_id, device=device)
     after = generate_task(changed, seed=seed, task_id=task_id, device=device)
     return TaskPair(
