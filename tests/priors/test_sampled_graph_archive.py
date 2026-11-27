@@ -2,7 +2,7 @@
 
 import json
 from copy import deepcopy
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from typing import cast
 
 import numpy as np
@@ -43,6 +43,12 @@ def test_sampled_graph_round_trips_through_shared_recipe_decoder(family: str, ro
     assert restored == graph
     assert restored.replay() == graph
     emitted = priors.generate_task(restored, seed=19, task_id=7)
+    resplit = restored.with_task(replace(restored.task, context_rows=4, split=1))
+    another_episode = priors.generate_task(resplit, seed=19, task_id=7)
+    assert emitted.source_task_id == another_episode.source_task_id
+    assert emitted.episode_id != another_episode.episode_id
+    np.testing.assert_array_equal(emitted.inputs.numpy(), another_episode.inputs.numpy())
+    np.testing.assert_array_equal(emitted.targets.numpy(), another_episode.targets.numpy())
     card = json.loads(emitted.mechanism_json)
     assert card["sampling_provenance"] == "retained-four-stream-construction-v1"
     assert card["construction"] == "sampled-frozen-functions-v1"
@@ -121,5 +127,7 @@ def test_sampled_archive_preserves_pipeline_noise_and_paired_task_controls(
         pair = priors.generate_pair(restored, intervention="noise", value=0.25, seed=19, task_id=7)
         assert all(json.loads(pair.card_json)["required_equalities"].values())
     generated = priors.generate_task(restored, seed=19, task_id=7)
+    changed_generated = priors.generate_task(changed, seed=19, task_id=7)
+    assert generated.source_task_id != changed_generated.source_task_id
     assert generated.task_type == task_type
     assert priors.explain_generation(generated, [2, 0])["rows"] == [2, 0]

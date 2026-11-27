@@ -62,3 +62,31 @@ UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv make check
 
 Memory admission remains conservative estimation rather than measured RSS.
 GPU, browser, Colab and scientific evidence are not supplied by these tests.
+
+## Source identity finding and repair candidate
+
+Independent spec review rejected `6579ade`: changing only `context_rows` and
+`split` through `graph.with_task()` left mechanisms, raw draws and all emitted
+values unchanged, but changed `source_task_id`. The full archive duplicates task
+controls under `request.task` and `runtime.task`; the shared completion function
+previously excluded split controls only from a top-level task. The original
+counterexample is retained at
+`/tmp/r0-28-graph-archive-spec-6579ade/source_identity_probe.py` and `.log`.
+
+The repair supplies a separate source fingerprint configuration excluding only
+`context_rows` and `split` at both nested task locations. The replay archive keeps
+the original fields. Source identity therefore distinguishes independently
+sampled sources from additional episodes of the same source; episode identity
+still includes partition controls. The regression first failed at
+`/tmp/r0-28-graph-identity-red.log` (one case, 34 deselected). Repaired checks passed all 35 cases in 63.09 seconds, retained in
+`/tmp/r0-28-graph-identity-green.log`. A separate three-case check
+confirms genuine observation-noise or classification-separation changes still
+change source identity: `/tmp/r0-28-graph-identity-controls.log` (3 passed,
+37 deselected, 1.60 seconds). The deselected pair tests were not executed by
+that filtered invocation. Independent review of this repair remains pending;
+the historical REJECT is retained.
+
+The earlier publication repair at `d56da97` completed `make check` with 1,705
+passes and one skip in 532.92 seconds:
+`/tmp/r0-28-graph-publication-check.log`. This verifies that earlier source,
+not the subsequent archive integration or identity repair.

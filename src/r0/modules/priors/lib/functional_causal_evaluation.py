@@ -373,15 +373,30 @@ def generate_functional_causal(
         card["version"] = construction.version
         card["construction"] = "sampled-frozen-functions-v1"
         card["sampling_provenance"] = "retained-four-stream-construction-v1"
+    config = asdict(construction if construction is not None else recipe)
+    source_config: dict[str, object] | None = None
+    if construction is not None:
+        # Episode partition controls appear twice inside the retained envelope.
+        # Keep both in the replay archive, exclude only these fields from source
+        # identity just as complete_task does for an authored top-level task.
+        source_controls = {
+            k: v for k, v in asdict(recipe.task).items() if k not in ("context_rows", "split")
+        }
+        source_config = {
+            **config,
+            "request": {**config["request"], "task": source_controls},
+            "runtime": {**config["runtime"], "task": source_controls},
+        }
     return complete_task(
         recipe.task,
-        asdict(construction if construction is not None else recipe),
+        config,
         card,
         inputs,
         scores,
         seed=seed,
         task_id=task_id,
         rng=rng,
+        source_config=source_config,
     )
 
 
