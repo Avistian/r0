@@ -152,6 +152,12 @@ from r0.modules.priors.lib.joint_point_plans import sample_joint_points as sampl
 from r0.modules.priors.lib.joint_point_realization import (
     materialize_joint_points as materialize_joint_points,
 )
+from r0.modules.priors.lib.joint_root_decoding import (
+    joint_root_plan_from_dict as joint_root_plan_from_dict,
+)
+from r0.modules.priors.lib.joint_root_plans import JointRootPlan as JointRootPlan
+from r0.modules.priors.lib.joint_root_plans import JointRootPrior as JointRootPrior
+from r0.modules.priors.lib.joint_root_plans import sample_joint_root as sample_joint_root
 from r0.modules.priors.lib.joint_sampling import JointSamplingContext as JointSamplingContext
 from r0.modules.priors.lib.joint_sampling_records import JointDecision as JointDecision
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord as JointSamplingRecord

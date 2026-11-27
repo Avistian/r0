@@ -71,7 +71,9 @@ def _structure(value: Any, record_type: type[Any]) -> None:
             _structure(fields[name], schema)
 
 
-def _prior(data: dict[str, Any]) -> JointFunctionPrior:
+def decode_function_prior(data: dict[str, Any]) -> JointFunctionPrior:
+    """Reconstruct prior metadata after the enclosing decoder's raw admission."""
+    _structure(data, JointFunctionPrior)
     fields = dict(data)
     matrix = dict(fields.get("matrix", {}))
     for name, cap in (("families", 5), ("simple_families", 4)):
@@ -88,7 +90,7 @@ def _decode(
     if fields.get("version") != "joint-function-plan-v1":
         raise ValueError("unsupported joint function plan version")
     fields["operation"] = tuple(_array(fields["operation"], 16))
-    fields["prior"] = _prior(fields.get("prior", {}))
+    fields["prior"] = decode_function_prior(fields.get("prior", {}))
     parameters = _array(fields.get("parameters", ()), 4)
     if any(len(_array(pair, 2)) != 2 for pair in parameters):
         raise ValueError("function parameter pairs must be two-element arrays")
