@@ -1,24 +1,36 @@
 """Export the pinned backend's numeric vector trees without estimator retention."""
 
 import json
+import math
 from typing import Any, cast
 
 import numpy as np
 
+from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.xgboost_vector import FrozenXGBoostVector, XGBoostVectorTree
 
+_DEFAULT_LIMITS = CausalLimits()
 
-def export_xgboost_vector(raw: bytes | bytearray) -> FrozenXGBoostVector:
+
+def export_xgboost_vector(
+    raw: bytes | bytearray, *, limits: CausalLimits = _DEFAULT_LIMITS
+) -> FrozenXGBoostVector:
     """Read bounded native save_raw(JSON), never unpickle or load a backend model.
 
     This boundary supports numeric CPU hist vector leaves from 3.4.1. Categorical
     splits and multi-tree scalar-ensemble layouts fail explicitly instead of silently changing
     their routing or treating scalar forests as joint vector trees.
     """
-    if type(raw) not in (bytes, bytearray) or len(raw) > 16_000_000:
+    if type(limits) is not CausalLimits:
+        raise ValueError("XGBoost export requires frozen caller limits")
+    if type(raw) not in (bytes, bytearray) or len(raw) > min(
+        16_000_000, limits.working_bytes // 12
+    ):
         raise ValueError("XGBoost export must be bounded native JSON bytes")
     try:
         data: Any = json.loads(raw)
+        admit_function_metadata(data, limits)
         if data["version"] != [3, 4, 1]:
             raise ValueError("XGBoost export requires pinned backend 3.4.1")
         learner = data["learner"]
@@ -40,7 +52,10 @@ def export_xgboost_vector(raw: bytes | bytearray) -> FrozenXGBoostVector:
         base = _list(json.loads(params["base_score"]))
         if not 1 <= len(base) <= 100:
             raise ValueError("invalid vector base score width")
-        initial = np.asarray(base, dtype=np.float32)
+        admit_function_metadata(base, limits)
+        # Validate scalar shape/types before NumPy can interpret a nested array.
+        scalars = [_native_number(value) for value in base]
+        initial = np.asarray(scalars, dtype=np.float32)
         if initial.ndim != 1 or not 1 <= len(initial) <= 100:
             raise ValueError("invalid vector base score")
         if objective == "binary:logistic":
@@ -103,14 +118,18 @@ def _tree(t: Any, input_width: int, width: int) -> XGBoostVectorTree:
         if leaf and width == 1 and r != -1:
             raise ValueError("scalar backend leaves require absent children")
         features.append(-1 if leaf else f)
-        thresholds.append(0.0 if leaf else float(np.float32(t["split_conditions"][i])))
+        thresholds.append(
+            0.0 if leaf else float(np.float32(_native_number(t["split_conditions"][i])))
+        )
         left.append(-1 if leaf else child_left)
         right.append(-1 if leaf else r)
         defaults.append(bool(default))
         values.append(
-            (float(np.float32(t["split_conditions"][i])),)
+            (float(np.float32(_native_number(t["split_conditions"][i]))),)
             if leaf and width == 1
-            else tuple(float(np.float32(v)) for v in leaves[r * width : (r + 1) * width])
+            else tuple(
+                float(np.float32(_native_number(v))) for v in leaves[r * width : (r + 1) * width]
+            )
             if leaf
             else (0.0,) * width
         )
@@ -128,3 +147,13 @@ def _list(value: object) -> list[Any]:
     if type(value) is not list:
         raise ValueError("native array must be a JSON list")
     return cast(list[Any], value)
+
+
+def _native_number(value: Any) -> float:
+    if (
+        type(value) not in (int, float)
+        or not -3.4028234663852886e38 <= value <= 3.4028234663852886e38
+        or not math.isfinite(value)
+    ):
+        raise ValueError("native XGBoost numerical fields require finite float32 scalars")
+    return float(value)

@@ -95,7 +95,7 @@ class XGBoostFit:
             self.plan.backend_parameters(seed)
         ):
             raise ValueError("XGBoost fit backend controls differ from frozen plan")
-        actual = export_xgboost_vector(self.model_json.encode("ascii"))
+        actual = export_xgboost_vector(self.model_json.encode("ascii"), limits=active)
         if canonical_xgboost_record(asdict(actual)) != canonical_xgboost_record(
             asdict(self.function)
         ):
@@ -160,7 +160,7 @@ def fit_xgboost(
             parameters, backend.DMatrix(draws[0], label=draws[1]), num_boost_round=plan.estimators
         )
         model_json = bytes(model.save_raw(raw_format="json")).decode("ascii")
-        function = export_xgboost_vector(model_json.encode("ascii"))
+        function = export_xgboost_vector(model_json.encode("ascii"), limits=limits)
         result = XGBoostFit(
             plan,
             function,
