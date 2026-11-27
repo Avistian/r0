@@ -9,12 +9,18 @@ import torch
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
+from r0.modules.priors.lib.joint_root_base import draw_root_base
 from r0.modules.priors.lib.native_vector_decoding import (
     native_vector_graph_from_dict,
     native_vector_recipe_from_dict,
 )
-from r0.modules.priors.lib.native_vector_evaluation import evaluate_native_vector_graph
+from r0.modules.priors.lib.native_vector_evaluation import (
+    evaluate_native_vector_graph,
+    native_vector_rng,
+)
+from r0.modules.priors.lib.network_inspection import network_steps
 from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
+from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -52,6 +58,35 @@ def native_vector_steps(
                 parents=parents,
                 indices=indices,
                 add=add,
+            )
+        if isinstance(node.equation.function, FrozenNetworkFunction):
+            if node.equation.root is not None:
+                network_inputs = torch.tensor(
+                    draw_root_base(
+                        node.equation.root,
+                        recipe.task.rows,
+                        native_vector_rng(record["seed"], record["task_id"], "root", index),
+                    ).values,
+                    dtype=torch.float64,
+                )
+                parents = [f"root-{index}"]
+                add(
+                    parents[0],
+                    f"Original vector root input {index}",
+                    [],
+                    "frozen joint root base",
+                    network_inputs[selected],
+                    asdict(node.equation.root),
+                )
+            else:
+                network_inputs = torch.cat([values.states[p] for p in node.equation.parents], dim=1)
+            parents = network_steps(
+                node.equation.function,
+                network_inputs,
+                prefix=f"network-{index}",
+                indices=indices,
+                add=add,
+                input_parents=parents,
             )
         add(
             f"function-{index}",
