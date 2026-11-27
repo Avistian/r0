@@ -37,11 +37,27 @@ def _cdf(log_ratio: torch.Tensor, a: float, b: float) -> torch.Tensor:
     return transformed
 
 
+def _upper_difference(value: torch.Tensor, high: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    difference = value - high
+    error = torch.zeros_like(difference)
+    near = (difference > 0) & (difference <= 2e-30)
+    if torch.any(near):
+        left, right = value[near], high.expand_as(value)[near]
+        rounded = difference[near]
+        # Error-free TwoDiff on the finite near-boundary operands. Retain the
+        # discarded part when x-high rounds to epsilon but is not exactly it.
+        virtual = left - rounded
+        error[near] = (left - (rounded + virtual)) + (virtual - right)
+    return difference, error
+
+
 def domain_masks(
     value: torch.Tensor, minimum: tuple[float, ...], maximum: tuple[float, ...]
 ) -> tuple[torch.Tensor, torch.Tensor]:
     low, high = value.new_tensor(minimum), value.new_tensor(maximum)
-    return value < low, (value > high) & ((value - high) > 1e-30)
+    difference, error = _upper_difference(value, high)
+    upper = (difference > 1e-30) | ((difference == 1e-30) & (error > 0))
+    return value < low, upper
 
 
 def kumaraswamy_warp(
@@ -58,7 +74,8 @@ def kumaraswamy_warp(
     """
     low, high = value.new_tensor(minimum), value.new_tensor(maximum)
     lower = value <= low
-    upper = (value > high) & ((value - high) >= 1e-30)
+    difference, error = _upper_difference(value, high)
+    upper = (difference > 1e-30) | ((difference == 1e-30) & (error >= 0))
     inside = ~lower & ~upper
     result = torch.where(upper, torch.ones_like(value), torch.zeros_like(value))
     if not torch.any(inside):
@@ -72,6 +89,8 @@ def kumaraswamy_warp(
         _log_difference(hi[nonnegative], x[nonnegative]),
         x.new_full((int(nonnegative.sum()),), math.log(1e-30)),
     )
-    log_complement[~nonnegative] = (1e-30 - (x[~nonnegative] - hi[~nonnegative])).log()
+    log_complement[~nonnegative] = (
+        (1e-30 - difference[inside][~nonnegative]) - error[inside][~nonnegative]
+    ).log()
     result[inside] = _cdf(log_complement - log_num, a, b)
     return result

@@ -126,6 +126,41 @@ def test_authored_positive_shapes_preserve_subnormal_exponent_effects() -> None:
     assert actual == pytest.approx(expected, rel=1e-12, abs=0)
 
 
+def test_upper_domain_boundary_preserves_the_subtraction_residual() -> None:
+    smallest = float.fromhex("0x0.0000000000001p-1022")
+    warp = priors.calibrate_kumaraswamy(
+        np.array([[0.0], [smallest]]),
+        a=smallest,
+        b=1e-308,
+        calibration_id="independent-review-upper-boundary",
+    )
+    # Independent 1000-digit Decimal oracle rejected bf3a4c5: x-high rounds
+    # to epsilon, but its negative residual leaves this point inside the domain.
+    actual = float(warp.apply(torch.tensor([[1e-30]], dtype=torch.float64))[0, 0])
+    assert actual == pytest.approx(1.419802591052941e-305, rel=1e-12, abs=0)
+
+
+def test_unknown_transform_version_is_rejected_by_the_public_decoder() -> None:
+    warp = priors.calibrate_l2_normalization(np.ones((2, 2)), calibration_id="independent-version")
+    recipe = priors.CausalRecipe(
+        task=priors.LinearRecipe(
+            rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+        ),
+        nodes=(
+            priors.ActivatedCausalNode(
+                bias=(0.0, 0.0), noise_scale=(1.0, 1.0), output_activation=warp
+            ),
+        ),
+        observed=((0, 0),),
+        target=((0, 1),),
+        version="causal-v2",
+    )
+    record = json.loads(json.dumps(asdict(recipe)))
+    record["nodes"][0]["output_activation"]["calibration_version"] = "unsupported"
+    with pytest.raises(ValueError, match="calibration version"):
+        priors.recipe_from_dict(record)
+
+
 def test_l2_avoids_squared_norm_overflow_and_admits_fitted_metadata() -> None:
     transform = priors.calibrate_l2_normalization(
         np.full((2, 2), 1e308),

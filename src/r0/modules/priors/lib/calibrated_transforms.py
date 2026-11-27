@@ -74,7 +74,7 @@ class CalibratedTransform(CausalActivation):
 
     @property
     def working_extra_channels(self) -> int:
-        return (12 if self.kind == "kumaraswamy" else 4) * self.channels
+        return (16 if self.kind == "kumaraswamy" else 4) * self.channels
 
     def validate_width(self, width: int) -> None:
         if width != self.channels:
@@ -219,7 +219,7 @@ def calibrate_kumaraswamy(
         calibration_id,
         limits,
         parameters=5 + 2 * width,
-        working_channels_per_feature=12,
+        working_channels_per_feature=16,
     )
     return CalibratedTransform(
         kind="kumaraswamy",

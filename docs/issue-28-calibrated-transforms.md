@@ -68,7 +68,7 @@ primitive/calibration records. No existing profile law or record gains new field
 
 Retained numeric parameter cost is three for L2 (factor, channel count and row
 count), and `2*channels+5` for Kumaraswamy (two ranges, `a/b`, retained factor and
-counts). Evaluation adds four or twelve working channels per input channel to
+counts). Evaluation adds four or sixteen working channels per input channel to
 the conservative causal array estimate. Fitting separately admits its calibration
 rows. These estimates are not measured process RSS or hard OS enforcement.
 
@@ -90,7 +90,9 @@ with upstream eager floating-point arithmetic**. For example, range `[0,1]`,
 to one can instead produce exactly one. Range `[0,1e308]` at the smallest positive
 binary64 input, `a=0.2,b=1`, gives about `5.48e-127`, rather than losing the input
 ratio to zero. The positive-shape extension also preserves subnormal exponent
-effects before later scaling. Numerical branch approximations omit terms below
+effects before later scaling. The upper boundary retains the error-free subtraction residual so a coordinate
+just inside the domain cannot become an endpoint through rounding. Numerical
+branch approximations omit terms below
 binary64 relative precision; independent high-precision evidence is required.
 
 The moment checker recognizes the range warp as bounded. Heavy-tailed noise

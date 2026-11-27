@@ -222,6 +222,8 @@ def activation_from_dict(data: dict[str, Any]) -> CausalActivation:
         return CalibratedTransform(**fields)
     if "calibration_version" not in fields:
         return CausalActivation(**fields)
+    if fields["calibration_version"] != "independent-standard-activation-v1":
+        raise ValueError("unsupported activation calibration version")
     for key in (
         "input_mean",
         "input_inverse_std",
