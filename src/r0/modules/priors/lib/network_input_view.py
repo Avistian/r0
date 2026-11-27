@@ -1,16 +1,19 @@
 """Versioned input masks and extra observed columns around an unchanged network."""
 
-import json
 from dataclasses import asdict, dataclass, replace
 from typing import Any
 
 import torch
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
-from r0.modules.priors.lib.frozen_function_evaluation import evaluate_frozen_function
-from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
+from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_function
+from r0.modules.priors.lib.functional_causal_evaluation import (
+    evaluate_functional_prefix,
+    functional_rng,
+)
+from r0.modules.priors.lib.functional_prefix import FunctionalPrefix
 from r0.modules.priors.lib.linear import LinearRecipe
-from r0.modules.priors.lib.network_recipe import NetworkRecipe, generate_network
+from r0.modules.priors.lib.network_recipe import NetworkRecipe
 from r0.modules.priors.lib.task_output import complete_task
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -74,7 +77,12 @@ class NetworkInputView:
         return {**report, "estimated_working_bytes": report["estimated_working_bytes"] + extra}
 
 
-def view_signal(view: NetworkInputView, inputs: torch.Tensor) -> torch.Tensor:
+def view_signal(
+    view: NetworkInputView,
+    inputs: torch.Tensor,
+    *,
+    diagnostics: list[dict[str, Any]] | None = None,
+) -> torch.Tensor:
     view.admit(rows=len(inputs))
     if (
         inputs.ndim != 2
@@ -87,25 +95,38 @@ def view_signal(view: NetworkInputView, inputs: torch.Tensor) -> torch.Tensor:
     mask = torch.zeros(width, dtype=torch.bool, device=inputs.device)
     mask[list(view.active_inputs)] = True
     argument = torch.where(mask, inputs[:, :width], 0.0)
-    return evaluate_frozen_function(view.base.function, argument, limits=view.limits)
+    return evaluate_admitted_function(view.base.function, argument, diagnostics=diagnostics)
 
 
 def generate_network_view(
     view: NetworkInputView, *, seed: int, task_id: int, device: str = "cpu"
 ) -> TrainingTask:
     view.admit()
-    baseline = generate_network(view.runtime_base, seed=seed, task_id=task_id, device=device)
+    if any(type(v) is not int or not 0 <= v < 2**63 for v in (seed, task_id)):
+        raise ValueError("seed and task_id must be integers in [0, 2**63)")
+    roots = evaluate_functional_prefix(
+        FunctionalPrefix(view.runtime_base.runtime.nodes[:1], view.task.rows, view.limits),
+        rng=lambda *keys: functional_rng(seed, task_id, *keys),
+        device=device,
+    )
     width = view.base.function.input_width
-    columns = [baseline.inputs]
+    columns = [roots.readouts[0]]
     for index in range(width, view.task.features):
         values = functional_rng(seed, task_id, "network-extra-column-v1", index).standard_normal(
             view.task.rows
         )
         columns.append(torch.tensor(values[:, None], dtype=torch.float64, device=device))
     inputs = torch.cat(columns, dim=1)
-    scores = view_signal(view, inputs)
-    card = json.loads(baseline.mechanism_json)
-    card.update(
+    diagnostics: list[dict[str, Any]] = []
+    scores = view_signal(view, inputs, diagnostics=diagnostics)
+    flags = sorted({flag for entry in diagnostics for flag in entry["flags"]})
+    if bool(torch.all(scores == scores[0])):
+        flags.append("zero_target_dispersion")
+    card = dict(
+        family="standalone_network",
+        architecture="unchanged network block DAG behind an explicit input view",
+        flags=flags,
+        node_diagnostics=diagnostics,
         version=view.version,
         active=list(view.active_inputs),
         active_definition="explicit network input mask; potential dependence only",

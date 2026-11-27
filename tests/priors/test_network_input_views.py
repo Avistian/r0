@@ -64,3 +64,17 @@ def test_view_rejects_unused_counts_and_bad_masks() -> None:
             p.NetworkInputView(original, original.task, active)
     with pytest.raises(ValueError, match="network.*view"):
         p.NetworkInputView(original, original.task, (0,))
+
+
+def test_masked_network_does_not_evaluate_overwritten_input_contributions() -> None:
+    original = base("gaussian")
+    function = p.FrozenNetworkFunction(
+        2, (p.NetworkBlock((0,), (p.NetworkAffine(((1e308, 0.0),), (0.5,)),)),)
+    )
+    original = replace(original, network=function)
+    with pytest.raises(ValueError, match="nonfinite"):
+        p.generate_task(original, seed=28, task_id=3)
+    view = p.NetworkInputView(original, replace(original.task, active_features=1), (1,))
+    masked = p.generate_task(view, seed=28, task_id=3)
+    assert torch.all(masked.scores == 0.5)
+    assert "zero_target_dispersion" in json.loads(masked.mechanism_json)["flags"]
