@@ -115,7 +115,7 @@ separate candidates. Shared primitives do not establish complete I2 reproduction
 | I2.category.03 | neighbor_func | PARTIAL; admitted post-function representation. |
 | I2.category.04 | neighbor_int | PARTIAL; retained integer representation. |
 | I2.category.05 | softmax_id | PARTIAL; unchanged state, sampled typed capture. |
-| I2.category.06 | softmax_disc | PARTIAL; sampled center representation. |
+| I2.category.06 | softmax_disc | PARTIAL; sampled embedding representation. |
 | I2.category.07 | softmax_int | PARTIAL; sampled integer representation. |
 
 Nested post-function admission and shared trace-header defects have separately
