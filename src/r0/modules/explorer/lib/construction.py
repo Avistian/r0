@@ -104,7 +104,7 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
             recipe.recipe if isinstance(recipe, priors.SampledConvertedGraph) else recipe,
             recipe.version,
         )
-    if isinstance(recipe, priors.NetworkRecipe):
+    if isinstance(recipe, (priors.NetworkRecipe, priors.NetworkInputView)):
         return network_editor(recipe)
     runtime = (
         recipe.recipe
@@ -191,4 +191,5 @@ def frozen_archive_version(version: object) -> bool:
         "fitted-functional-causal-v1",
         "standalone-network-v1",
         "population-fitted-functional-causal-v1",
+        "network-input-view-v1",
     )

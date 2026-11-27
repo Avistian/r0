@@ -9,8 +9,8 @@ try {
   await b.click("construct");
   const original=await b.evaluate("current.recipe_json");
   const choices=await b.evaluate("Array.from($('pair-intervention').options,o=>o.value)");
-  assert.deepEqual(choices,[classification?"separation":"noise"]);
-  assert.ok(await b.evaluate("$('pair-policy-note').textContent.includes('network editor')"));
+  assert.deepEqual(choices,[classification?"separation":"noise","irrelevant","sparsity"]);
+  assert.ok(await b.evaluate("$('pair-policy-note').textContent.includes('saved network')"));
   await b.evaluate(`$('pair-value').value='${classification?0:.5}'`);
   await b.click("pair-create");
   assert.equal(await b.evaluate("current.recipe_json"),original);

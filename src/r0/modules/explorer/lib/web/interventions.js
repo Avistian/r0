@@ -2,7 +2,7 @@
 let interventionInfo=null, interventionTrace=null;
 function resetIntervention() {
   interventionInfo=null; interventionTrace=null;
-  const standalone=current?.view?.recipe?.recipe?.version==="standalone-network-v1";
+  const standalone=isStandaloneNetwork(current?.view?.recipe?.recipe);
   $("intervention-load").hidden=standalone;
   $("intervention-notice").textContent=standalone
     ? "Causal interventions require an explicit causal graph. This standalone network supports architecture edits and task-property comparisons. Network mechanisms inside causal graphs support interventions."

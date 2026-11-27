@@ -1,6 +1,7 @@
 "use strict";
 let networkDraft = null, networkBlockDrafts = new Map(), networkSelectedBlock = null;
-function isStandaloneNetwork(recipe) { return recipe?.version === "standalone-network-v1"; }
+function isStandaloneNetwork(recipe) { return ["standalone-network-v1","network-input-view-v1"].includes(recipe?.version); }
+function networkArchitecture(recipe) { return recipe?.base?.network || recipe?.network; }
 function networkConstructionNote(example) {
   $("network-controls-note").hidden = !["network", "network-authored"].includes(example.topology);
 }
@@ -20,12 +21,12 @@ function showNetworkEditor(info) {
   $("workbench-content").hidden = true;
   $("network-workbench-content").hidden = false;
   $("workbench-note").textContent = info.notice;
-  $("network-block").replaceChildren(...networkDraft.network.blocks.map((block,i)=>new Option(`Block ${i+1} · ${block.experts[0].bias.length} units · ${block.experts.length} expert(s)`,i)));
+  $("network-block").replaceChildren(...networkArchitecture(networkDraft).blocks.map((block,i)=>new Option(`Block ${i+1} · ${block.experts[0].bias.length} units · ${block.experts.length} expert(s)`,i)));
   $("network-recipe").value = pretty(networkDraft);
   selectNetworkBlock();
 }
 function networkStructure() {
-  const fn = networkDraft.network, widths = [fn.input_width,...fn.blocks.map(b=>b.experts[0].bias.length)];
+  const fn = networkArchitecture(networkDraft), widths = [fn.input_width,...fn.blocks.map(b=>b.experts[0].bias.length)];
   const width = Math.max(640,widths.length*190), height=250, selected=Number($("network-block").value)+1;
   const svg=element("svg",{viewBox:`0 0 ${width} ${height}`,role:"img","aria-label":"Standalone frozen network architecture with projected skip paths"});
   const ancestors = new Set([selected]);
@@ -53,7 +54,7 @@ function networkStructure() {
 }
 function selectNetworkBlock() {
   if (networkSelectedBlock !== null) networkBlockDrafts.set(networkSelectedBlock,$("network-block-json").value);
-  const index=Number($("network-block").value), block=networkDraft.network.blocks[index];
+  const index=Number($("network-block").value), block=networkArchitecture(networkDraft).blocks[index];
   networkSelectedBlock=index;
   $("network-block-json").value=networkBlockDrafts.get(index) ?? pretty(block);
   const masks=block.experts.map((e,i)=>({expert:i,weight_shape:[e.matrix.length,e.matrix[0].length],zero_weights:e.matrix.flat().filter(v=>v===0).length,masked_edges:e.mask.length?e.mask.flat().filter(v=>!v).length:0,total_edges:e.matrix.length*e.matrix[0].length,placement:e.placement,activation:e.activation.kind}));
@@ -62,7 +63,7 @@ function selectNetworkBlock() {
   networkDraftStatus();
 }
 function networkDraftStatus() {
-  const accepted=networkDraft?.network.blocks[Number($("network-block").value)];
+  const accepted=networkArchitecture(networkDraft)?.blocks[Number($("network-block").value)];
   $("network-draft-status").textContent=$("network-block-json").value===pretty(accepted) ? "Block text matches the accepted draft." : "Unapplied block text retained; it has not been accepted. The diagram and details show the last validated architecture. Apply to validate this text.";
 }
 $("network-block-json").oninput=networkDraftStatus;
@@ -74,13 +75,13 @@ $("network-apply").onclick=()=>act("Validating network architecture draft…",as
   networkDraftStatus();
   if ($("network-recipe").value!==pretty(networkDraft)) throw new Error("Complete recipe has unapplied edits. Save that recipe or restore it before applying a block; both drafts are retained.");
   const candidate=JSON.parse(JSON.stringify(networkDraft));
-  candidate.network.blocks[index]=JSON.parse(text);
+  networkArchitecture(candidate).blocks[index]=JSON.parse(text);
   const validated=await request("network_draft",{recipe:candidate,...limits()});
   if ($("network-block-json").value!==text || Number($("network-block").value)!==index || $("network-recipe").value!==pretty(networkDraft)) throw new Error("Draft changed during validation; edits retained. Apply again.");
   networkDraft=validated.recipe;
   networkBlockDrafts.delete(index); networkSelectedBlock=null;
   $("network-recipe").value=pretty(networkDraft);
-  $("network-block").replaceChildren(...networkDraft.network.blocks.map((block,i)=>new Option(`Block ${i+1} · ${block.experts[0].bias.length} units · ${block.experts.length} expert(s)`,i)));
+  $("network-block").replaceChildren(...networkArchitecture(networkDraft).blocks.map((block,i)=>new Option(`Block ${i+1} · ${block.experts[0].bias.length} units · ${block.experts.length} expert(s)`,i)));
   $("network-block").value=String(index);
   selectNetworkBlock();
   $("workbench-note").textContent="Validated architecture draft applied. Generate the linked edit to save it. Unapplied block text is retained while selecting other blocks.";

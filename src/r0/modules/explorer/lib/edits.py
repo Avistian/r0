@@ -71,13 +71,15 @@ def create_edit(
             priors.NativeVectorRecipe,
             priors.NetworkRecipe,
             priors.ConvertedCausalRecipe,
+            priors.NetworkInputView,
         ),
     ):
         raise ValueError(
             "mechanism edits require a frozen authored functional graph, native graph or network"
         )
-    if isinstance(recipe, priors.NetworkRecipe) and not isinstance(
-        recipe.network, priors.FrozenNetworkFunction
+    base = recipe.base if isinstance(recipe, priors.NetworkInputView) else recipe
+    if isinstance(base, priors.NetworkRecipe) and not isinstance(
+        base.network, priors.FrozenNetworkFunction
     ):
         raise ValueError(
             "network edits require an authored frozen function, not sampled construction"

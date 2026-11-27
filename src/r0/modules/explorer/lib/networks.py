@@ -82,8 +82,12 @@ def network_examples() -> dict[str, Any]:
     return examples
 
 
-def network_editor(recipe: priors.NetworkRecipe) -> dict[str, Any]:
-    editable = replace(recipe, network=recipe.function)
+def network_editor(recipe: priors.NetworkRecipe | priors.NetworkInputView) -> dict[str, Any]:
+    base = recipe.base if isinstance(recipe, priors.NetworkInputView) else recipe
+    authored = replace(base, network=base.function)
+    editable = (
+        replace(recipe, base=authored) if isinstance(recipe, priors.NetworkInputView) else authored
+    )
     return {
         "kind": "mechanism-edit",
         "network": True,
@@ -99,17 +103,27 @@ def network_editor(recipe: priors.NetworkRecipe) -> dict[str, Any]:
                 "gated": b.gate is not None,
                 "skip_sources": [s.source for s in b.skips],
             }
-            for i, b in enumerate(recipe.function.blocks)
+            for i, b in enumerate(base.function.blocks)
         ],
     }
 
 
 def network_details(recipe: dict[str, Any]) -> dict[str, Any]:
-    network = recipe["network"]
+    view = recipe if recipe.get("version") == "network-input-view-v1" else None
+    network = (view["base"] if view else recipe)["network"]
     sampled = network.get("version") == "sampled-structural-network-v1"
     function = network["function"] if sampled else network
     return {
         "kind": "standalone-network",
+        "input_view": None
+        if view is None
+        else {
+            "active_inputs": view["active_inputs"],
+            "observed_features": view["task"]["features"],
+            "fill": 0.0,
+            "position": "after original joint root",
+            "variance": "uncontrolled; no normalization",
+        },
         "notice": NOTICE,
         "sampled": sampled,
         "request": network.get("request"),

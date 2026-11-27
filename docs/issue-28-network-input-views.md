@@ -31,7 +31,7 @@ includes original generation and simultaneously retained masked-view buffers.
 Initial public checks cover unchanged original draws, scores, targets and splits
 for Gaussian/uniform/ball roots, common appended columns, exact archive decode
 and generation, a literal masked affine oracle, and malformed mask/count rejection.
-They do not qualify the still-pending comparison or explorer workflows.
+Those foundation checks are separate from the comparison and explorer evidence below.
 
 
 ## Raw comparisons and original-row traces
@@ -59,3 +59,23 @@ checked independently of view metadata. Original-row traces show observed
 coordinates, the explicit zero mask, every network stage and target adaptation,
 with repeated row ordering preserved. These are input comparisons, not causal
 interventions on a sampled graph.
+
+
+## Local explorer workflows for raw input views
+
+The local workbench exposes total-feature and active-input comparisons alongside
+noise or class separation. Raw sparsity explicitly reports uncontrolled variance.
+Extra columns retain common draws, and the original architecture stays fixed.
+
+Replayed input views keep frozen identity controls, construction provenance,
+original-row traces, guarded response curves and linked authored architecture
+edits. Editing a block preserves the observed width and explicit input mask;
+sampled construction evidence remains in the original archive. Standalone input
+views show the same causal-intervention applicability notice as ordinary networks.
+
+Browser verification exercises both raw comparison controls, saved pair reopening,
+frozen Next, view replay, validated block editing and export interaction. Public
+session checks additionally verify a nonprefix mask survives an edit and its
+scores equal the independent affine oracle. The estimated matching view has a
+separate lifecycle and requires its own integration; this slice does not qualify
+hosted Colab or GPU execution.

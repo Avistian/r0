@@ -15,8 +15,9 @@ def validate_network_draft(data: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("network draft exceeds its byte cap")
     limits = priors.CausalLimits(**data.get("causal_limits", {}))
     recipe = priors.recipe_from_dict(data["recipe"], limits=limits)
-    if not isinstance(recipe, priors.NetworkRecipe) or not isinstance(
-        recipe.network, priors.FrozenNetworkFunction
+    base = recipe.base if isinstance(recipe, priors.NetworkInputView) else recipe
+    if not isinstance(base, priors.NetworkRecipe) or not isinstance(
+        base.network, priors.FrozenNetworkFunction
     ):
         raise ValueError("network drafts require an authored frozen network recipe")
     return {"status": "VALIDATED", "recipe": asdict(recipe)}

@@ -1,0 +1,34 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import assert from "node:assert/strict";
+import {openBrowser} from "./explorer_browser.mjs";
+const [port,url,out]=process.argv.slice(2), b=await openBrowser(Number(port),url,out);
+try {
+ await b.evaluate("$('construction-panel').open=true;$('construction-family').value='Standalone network: dense';$('construction-family').onchange();{const c=JSON.parse($('construction-controls').value);c.task.rows=16;c.task.context_rows=8;$('construction-controls').value=JSON.stringify(c);}");
+ await b.click("construct");
+ assert.deepEqual(await b.evaluate("Array.from($('pair-intervention').options,o=>o.value)"),["noise","irrelevant","sparsity"]);
+ await b.evaluate("$('pair-intervention').value='irrelevant';pairControls();$('pair-value').value='5'");
+ await b.click("pair-create");
+ const after=await b.evaluate("current.pair.after.recipe_json");
+ await b.click("pair-open");
+ await b.evaluate("$('pair-intervention').value='sparsity';pairControls();$('pair-value').value='1'");
+ assert.equal(await b.evaluate("$('pair-estimate-label').hidden"),true);
+ await b.click("pair-create");
+ assert.ok(await b.evaluate("$('pair-variance').textContent.includes('uncontrolled')"));
+ await b.evaluate(`$('replay-record').value=${JSON.stringify(after)}`);
+ await b.click("replay");
+ assert.equal(await b.evaluate("$('intervention-load').hidden"),true);
+ await b.click("next");
+ assert.deepEqual(JSON.parse(await b.evaluate("current.recipe_json")).recipe,JSON.parse(after).recipe);
+ await b.click("mechanism-load");
+ assert.equal(await b.evaluate("networkDraft.task.features"),5);
+ await b.evaluate("{const block=JSON.parse($('network-block-json').value);block.experts[0].bias[0]+=1;$('network-block-json').value=JSON.stringify(block);}");
+ await b.click("network-apply");
+ await b.click("network-save");
+ assert.equal(await b.evaluate("current.edit.after.recipe.recipe.task.features"),5);
+ assert.deepEqual(await b.evaluate("current.edit.after.recipe.recipe.active_inputs"),[0,1]);
+ await b.click("export");
+ await b.screenshot("network-input-view.png");
+ assert.deepEqual(b.exceptions,[]);
+ await fs.writeFile(path.join(out,"receipt.json"),JSON.stringify({status:"PASS",pairModes:["irrelevant","sparsity"],frozenNext:true,linkedEdit:true,observedFeatures:5,exceptions:b.exceptions},null,2));
+} finally {b.close();}
