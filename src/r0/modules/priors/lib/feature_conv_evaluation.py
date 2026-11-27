@@ -80,6 +80,14 @@ def evaluate_feature_conv1d(
         or not bool(torch.isfinite(inputs).all())
     ):
         raise ValueError("convolution requires finite float64 inputs with declared flattened width")
+    return evaluate_admitted_feature_conv1d(function, inputs)
+
+
+@torch.no_grad()
+def evaluate_admitted_feature_conv1d(
+    function: FrozenFeatureConv1D, inputs: torch.Tensor
+) -> torch.Tensor:
+    """Shared arithmetic after enclosing metadata, geometry and tensor admission."""
     x = (
         inputs.reshape(inputs.shape[0], function.input_channels, function.input_length)
         if function.layout == "channel-major"

@@ -5,6 +5,7 @@ from typing import Any, cast
 
 from r0.modules.priors.lib.calibrated_activations import CalibratedActivation
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
 from r0.modules.priors.lib.fitted_tree_decoding import decode_fitted_tree
 from r0.modules.priors.lib.fitted_tree_records import FrozenFittedTreeFunction
 from r0.modules.priors.lib.frozen_function_composites import (
@@ -29,6 +30,7 @@ from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 
 _DEFAULT_LIMITS = CausalLimits()
 _REGISTRY = {
+    "frozen-feature-conv1d-r0-v1": FrozenFeatureConv1D,
     "frozen-network-block-v1": FrozenNetworkBlockFunction,
     "frozen-structural-network-v1": FrozenNetworkFunction,
     "frozen-fitted-tree-function-v1": FrozenFittedTreeFunction,
@@ -56,6 +58,7 @@ _KUMO = frozenset(
     )
 )
 _CHEAP = frozenset(_REGISTRY) - {
+    "frozen-feature-conv1d-r0-v1",
     "frozen-network-block-v1",
     "frozen-structural-network-v1",
     "frozen-kumo-product-function-v1",
@@ -117,6 +120,10 @@ def _decode(data: Any, allowed: frozenset[str]) -> FrozenFunction:
         raise ValueError("unsupported or recursively disallowed frozen function version")
     record_type = _REGISTRY[version]
     fields = _record(raw, record_type)
+    if record_type is FrozenFeatureConv1D:
+        from r0.modules.priors.lib.feature_conv_decoding import decode_feature_conv1d
+
+        return decode_feature_conv1d(fields)
     if record_type is FrozenNetworkBlockFunction:
         fields["incoming_widths"] = tuple(_array(fields["incoming_widths"]))
         fields["block"] = decode_block(fields["block"])

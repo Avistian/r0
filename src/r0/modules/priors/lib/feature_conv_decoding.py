@@ -77,6 +77,16 @@ def feature_conv1d_from_dict(
             ):
                 raise ValueError("convolution archive differs from exact complete raw replay")
             return result
+        function = decode_feature_conv1d(data)
+        admit_feature_conv1d(function, 16, limits=limits)
+        return function
+    except (KeyError, TypeError, AttributeError, OverflowError, RecursionError) as error:
+        raise ValueError("malformed feature convolution archive") from error
+
+
+def decode_feature_conv1d(data: Any) -> FrozenFeatureConv1D:
+    """Decode authored kernels after caller metadata admission, without allocating tensors."""
+    try:
         fields = record(data, FrozenFeatureConv1D)
         layers: list[FeatureConv1DLayer] = []
         for value in array(fields["layers"]):
@@ -89,8 +99,6 @@ def feature_conv1d_from_dict(
             layer["activation"] = activation(layer["activation"])
             layers.append(FeatureConv1DLayer(**layer))
         fields["layers"] = tuple(layers)
-        function = FrozenFeatureConv1D(**fields)
-        admit_feature_conv1d(function, 16, limits=limits)
-        return function
+        return FrozenFeatureConv1D(**fields)
     except (KeyError, TypeError, AttributeError, OverflowError, RecursionError) as error:
         raise ValueError("malformed feature convolution archive") from error

@@ -8,6 +8,7 @@ import torch
 
 from r0.modules.priors.lib.causal_activations import CausalActivation, activation_diagnostic
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
 from r0.modules.priors.lib.fitted_tree_evaluation import evaluate_fitted_tree
 from r0.modules.priors.lib.fitted_tree_records import FrozenFittedTreeFunction
 from r0.modules.priors.lib.frozen_function_composites import (
@@ -47,6 +48,7 @@ type FrozenFunction = (
     | FrozenFittedTreeFunction
     | FrozenNetworkBlockFunction
     | FrozenNetworkFunction
+    | FrozenFeatureConv1D
 )
 
 _FUNCTION_TYPES = (
@@ -62,6 +64,7 @@ _FUNCTION_TYPES = (
     FrozenParentFunction,
     FrozenFittedTreeFunction,
     FrozenNetworkFunction,
+    FrozenFeatureConv1D,
     FrozenNetworkBlockFunction,
 )
 _DEFAULT_LIMITS = CausalLimits()
@@ -70,6 +73,10 @@ _DEFAULT_LIMITS = CausalLimits()
 def function_geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, int]:
     if type(function) not in _FUNCTION_TYPES:
         raise ValueError("function geometry requires a frozen function record")
+    if type(function) is FrozenFeatureConv1D:
+        from r0.modules.priors.lib.feature_conv_graph import convolution_geometry
+
+        return convolution_geometry(function)
     if type(function) is FrozenNetworkBlockFunction:
         b = function.block
         widths = (
@@ -219,6 +226,10 @@ def _mlp_activation(
 def _evaluate(
     function: FrozenFunction, inputs: torch.Tensor, diagnostics: list[dict[str, Any]] | None = None
 ) -> torch.Tensor:
+    if type(function) is FrozenFeatureConv1D:
+        from r0.modules.priors.lib.feature_conv_evaluation import evaluate_admitted_feature_conv1d
+
+        return evaluate_admitted_feature_conv1d(function, inputs)
     if type(function) is FrozenNetworkBlockFunction:
         return evaluate_network_block(
             function.block,

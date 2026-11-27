@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 
 from r0.modules.priors.lib.activation_sampling import finite_number
+from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
 from r0.modules.priors.lib.fitted_tree_records import FrozenFittedTreeFunction
 from r0.modules.priors.lib.frozen_function_composites import (
     FrozenDiscretizationFunction,
@@ -31,6 +32,7 @@ type ParentMember = (
     | FrozenMLPFunction
     | FrozenFittedTreeFunction
     | FrozenNetworkFunction
+    | FrozenFeatureConv1D
 )
 _MEMBER_TYPES = (
     FrozenLinearFunction,
@@ -44,6 +46,7 @@ _MEMBER_TYPES = (
     FrozenMLPFunction,
     FrozenFittedTreeFunction,
     FrozenNetworkFunction,
+    FrozenFeatureConv1D,
 )
 
 
