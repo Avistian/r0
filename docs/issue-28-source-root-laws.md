@@ -77,3 +77,19 @@ all raw numbers, and the ledger's snapshot allowance. It shares the exact
 per-record cost with capture. Admission is read-only, not a reservation: later
 capture still checks its live remaining capacity. Invalid ownership rejects
 before output allocation; finite-output failures still roll back atomically.
+## Independent calibration lifecycle
+
+SourceRootCalibration freezes per-coordinate identity, centering or sample-standard
+scaling (ddof=1) from separately drawn calibration rows. Query application uses
+only those stored locations/scales: appending query rows cannot change an existing
+row's result. Constants, underflowed/nonfinite scales and nonfinite transformed
+values reject without epsilon or retry, with caller RNG/raw ledger rollback.
+The caller can retain calibration draws through RawDrawLedger, including original
+integer Zipf draws before clipping. The strict serialized transform is an authored
+record; it does not itself authenticate calibration provenance. A later sampling
+envelope must bind the raw records and stream snapshots to this transform.
+
+This explicit r0 independent-calibration lifecycle differs from pinned P1 code's
+batch-reference normalization. Batch-reference generation, profile parameter
+selection, a replay-validating calibration envelope, and joint-root/network/UI
+integration remain required. Neither lifecycle may silently replace the other.
