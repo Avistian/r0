@@ -1,5 +1,6 @@
 """Public frozen prototype convex-mixture roots and explicit batch-reference records."""
 
+from .prototype_root_base import PrototypeRootBase, prototype_root_base_from_dict
 from .prototype_root_construction import (
     PrototypeBatchReference,
     SampledPrototypeRoot,
@@ -18,6 +19,8 @@ from .prototype_root_records import FrozenPrototypeRoot, PrototypeRootPlan
 from .prototype_weight_law import PrototypeWeightLaw
 
 __all__ = [
+    "PrototypeRootBase",
+    "prototype_root_base_from_dict",
     "PrototypeWeightLaw",
     "FrozenPrototypeRoot",
     "PrototypeRootPlan",

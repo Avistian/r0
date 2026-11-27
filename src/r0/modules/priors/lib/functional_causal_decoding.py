@@ -26,6 +26,10 @@ from r0.modules.priors.lib.node_pipeline import (
     CausalNodePipeline,
     NumericalConverter,
 )
+from r0.modules.priors.lib.prototype_root_base import (
+    PrototypeRootBase,
+    prototype_root_base_from_dict,
+)
 from r0.modules.priors.lib.source_root_base import SourceRootBase, source_root_base_from_dict
 from r0.modules.priors.lib.weight_vectors import (
     PolynomialWeightVector,
@@ -101,9 +105,11 @@ def functional_pipeline(value: Any) -> CausalNodePipeline:
 
 def functional_root(
     value: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
-) -> JointRootBase | SourceRootBase:
+) -> JointRootBase | SourceRootBase | PrototypeRootBase:
     if type(value) is dict:
         raw_root = cast(dict[str, Any], value)
+        if raw_root.get("version") == "prototype-root-base-v1":
+            return prototype_root_base_from_dict(raw_root, limits=limits)
         if raw_root.get("version") == "sampled-source-root-base-v1":
             from r0.modules.priors.lib.sampled_source_root_decoding import (
                 sampled_source_root_base_from_dict,

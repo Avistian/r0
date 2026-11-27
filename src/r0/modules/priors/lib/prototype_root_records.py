@@ -8,6 +8,7 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.joint_root_base import JointRootBase
 from r0.modules.priors.lib.prototype_weight_law import PrototypeWeightLaw
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
+from r0.modules.priors.lib.sampled_source_root_base import SampledSourceRootBase
 from r0.modules.priors.lib.source_root_base import SourceRootBase
 from r0.modules.priors.lib.weight_geometry import Matrix, matrix_shape
 
@@ -64,7 +65,7 @@ class PrototypeRootPlan:
     def __post_init__(self) -> None:
         if (
             self.version != "prototype-root-plan-v1"
-            or type(self.base) not in (JointRootBase, SourceRootBase)
+            or type(self.base) not in (JointRootBase, SourceRootBase, SampledSourceRootBase)
             or type(self.reference_rows) is not int
             or not 1 <= self.reference_rows < 2**31
             or not finite_number(self.rho)
@@ -94,7 +95,7 @@ class PrototypeRootPlan:
     @property
     def construction_moment_order(self) -> float:
         """Bound before conditioning on a finite sampled bank, distinct from its support."""
-        return self.base.moment_order if type(self.base) is SourceRootBase else math.inf
+        return self.base.moment_order if isinstance(self.base, SourceRootBase) else math.inf
 
 
 def admit_prototype_work(

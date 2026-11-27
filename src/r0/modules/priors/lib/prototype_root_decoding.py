@@ -51,12 +51,12 @@ def prototype_root_plan_from_dict(
         admit_function_metadata(data, limits)
         values = prototype_object(data, PrototypeRootPlan)
         base = values["base"]
-        if (
-            type(base) is dict
-            and cast(dict[str, Any], base).get("version") != "source-root-base-v1"
+        if type(base) is dict and cast(dict[str, Any], base).get("version") not in (
+            "source-root-base-v1",
+            "sampled-source-root-base-v1",
         ):
             prototype_object(cast(dict[str, Any], base), JointRootBase)
-        values["base"] = functional_root(base)
+        values["base"] = functional_root(base, limits=limits)
         values["weights"] = prototype_weight_law_from_dict(values["weights"])
         values["raw_limits"] = RawDrawLimits(
             **prototype_object(values["raw_limits"], RawDrawLimits)

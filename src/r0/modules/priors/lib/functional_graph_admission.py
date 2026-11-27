@@ -5,6 +5,7 @@ from r0.modules.priors.lib.frozen_function_evaluation import function_geometry
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
 from r0.modules.priors.lib.joint_function_admission import function_record_cost
+from r0.modules.priors.lib.prototype_root_base import PrototypeRootBase
 from r0.modules.priors.lib.sampled_source_root_admission import admit_sampled_source_root
 from r0.modules.priors.lib.sampled_source_root_base import SampledSourceRootBase
 
@@ -97,6 +98,10 @@ def admit_functional_graph(
     # Include every root, conservatively retaining all metadata while replay runs.
     for node in nodes:
         root = node.root
+        if type(root) is PrototypeRootBase:
+            extra_parameters, extra_working = root.admit(rows, limits)
+            parameters += extra_parameters
+            working += extra_working
         if type(root) is SampledSourceRootBase:
             report = admit_sampled_source_root(
                 root.profile.profile,

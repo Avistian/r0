@@ -1,7 +1,9 @@
 """Versioned independent root laws for functional graph inputs."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, fields
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from numpy.typing import NDArray
@@ -15,6 +17,9 @@ from r0.modules.priors.lib.source_root_calibration import (
 )
 from r0.modules.priors.lib.source_root_laws import SourceRootLaw, source_root_from_dict
 from r0.modules.priors.lib.source_root_sampling import draw_source_root
+
+if TYPE_CHECKING:
+    from r0.modules.priors.lib.prototype_root_base import PrototypeRootBase
 
 _DEFAULT_LIMITS = CausalLimits()
 
@@ -61,7 +66,7 @@ def source_root_base_from_dict(data: dict[str, Any]) -> SourceRootBase:
 
 
 def functional_root_values(
-    base: JointRootBase | SourceRootBase,
+    base: JointRootBase | SourceRootBase | PrototypeRootBase,
     rows: int,
     rng: np.random.Generator,
     *,
@@ -69,6 +74,19 @@ def functional_root_values(
     owner: tuple[str, ...] = ("functional-root",),
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> NDArray[np.float64]:
+    from r0.modules.priors.lib.prototype_root_base import PrototypeRootBase
+    from r0.modules.priors.lib.prototype_root_construction import SampledPrototypeRoot
+    from r0.modules.priors.lib.prototype_root_emission import draw_prototype_root
+
+    if type(base) is PrototypeRootBase:
+        base.admit(rows, limits)
+        if isinstance(base.bank, SampledPrototypeRoot):
+            base.bank.validate_replay(limits=limits)
+        return np.asarray(
+            draw_prototype_root(
+                base.frozen, rows=rows, rng=rng, capture=capture, owner=owner, limits=limits
+            ).values
+        )
     if type(base) is JointRootBase:
         return np.asarray(draw_root_base(base, rows, rng, capture=capture, owner=owner).values)
     from r0.modules.priors.lib.sampled_source_root_base import SampledSourceRootBase

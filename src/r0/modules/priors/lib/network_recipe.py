@@ -12,6 +12,7 @@ from r0.modules.priors.lib.joint_root_base import JointRootBase
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.network_hyperprior_records import SampledHyperpriorNetwork
 from r0.modules.priors.lib.network_sampling_records import SampledNetwork
+from r0.modules.priors.lib.prototype_root_base import PrototypeRootBase
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.sampled_source_root_base import SampledSourceRootBase
 from r0.modules.priors.lib.source_root_base import SourceRootBase
@@ -23,7 +24,7 @@ from r0.modules.priors.lib.training_task import TrainingTask
 class NetworkRecipe:
     task: LinearRecipe
     network: FrozenNetworkFunction | SampledNetwork
-    root: JointRootBase | SourceRootBase | None = None
+    root: JointRootBase | SourceRootBase | PrototypeRootBase | None = None
     limits: CausalLimits = CausalLimits()
     version: str = "standalone-network-v1"
 
@@ -46,7 +47,8 @@ class NetworkRecipe:
         if function.input_width != self.task.features or function.output_width != expected:
             raise ValueError("standalone network input/output widths differ from task controls")
         if self.root is not None and (
-            type(self.root) not in (JointRootBase, SourceRootBase, SampledSourceRootBase)
+            type(self.root)
+            not in (JointRootBase, SourceRootBase, SampledSourceRootBase, PrototypeRootBase)
             or self.root.width != function.input_width
         ):
             raise ValueError("standalone network root must match feature width")
@@ -68,7 +70,7 @@ class NetworkRecipe:
                     FrozenLinearFunction(identity),
                     self.root or JointRootBase("gaussian", width),
                     version="functional-causal-node-v2"
-                    if isinstance(self.root, SourceRootBase)
+                    if isinstance(self.root, (SourceRootBase, PrototypeRootBase))
                     else "functional-causal-node-v1",
                 ),
                 FunctionalCausalNode((0,), self.function),

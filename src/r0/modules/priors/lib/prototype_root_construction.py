@@ -18,6 +18,8 @@ from r0.modules.priors.lib.prototype_root_records import (
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger
 from r0.modules.priors.lib.raw_draw_records import RawDrawRecord
 from r0.modules.priors.lib.raw_draw_spec import RawDrawSpec
+from r0.modules.priors.lib.sampled_source_root_admission import admit_sampled_source_root
+from r0.modules.priors.lib.sampled_source_root_base import SampledSourceRootBase
 from r0.modules.priors.lib.source_root_base import functional_root_values
 
 _DEFAULT_LIMITS = CausalLimits()
@@ -69,6 +71,18 @@ def admit_prototype_plan(plan: PrototypeRootPlan, limits: CausalLimits, *, batch
     if type(plan) is not PrototypeRootPlan or type(limits) is not CausalLimits:
         raise ValueError("prototype construction requires frozen plan and limits")
     parameters, storage = function_record_cost(plan, limits)
+    if isinstance(plan.base, SampledSourceRootBase):
+        base = plan.base
+        report = admit_sampled_source_root(
+            base.profile.profile,
+            base.law,
+            base.modes,
+            base.calibration_rows,
+            limits,
+            base.raw_limits,
+        )
+        parameters += report["parameters"]
+        storage += report["estimated_working_bytes"]
     admit_prototype_work(
         plan.count,
         plan.base.width,

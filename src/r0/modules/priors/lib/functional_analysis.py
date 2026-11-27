@@ -258,10 +258,18 @@ def functional_node_certificates(
     convert: Callable[[list[ChannelCertificate]], list[ChannelCertificate]] | None = None,
 ) -> tuple[list[ChannelCertificate], list[ChannelCertificate]]:
     """Analyze one equation with caller-supplied parent state certificates."""
+    from r0.modules.priors.lib.prototype_root_base import PrototypeRootBase
     from r0.modules.priors.lib.source_root_base import SourceRootBase
 
     width = node.function.output_width
-    if isinstance(node.root, SourceRootBase):
+    if isinstance(node.root, PrototypeRootBase):
+        incoming = [
+            ChannelCertificate(
+                frozenset() if constant else frozenset(((index, width),)), math.inf, True
+            )
+            for constant in node.root.frozen.constant_channels
+        ]
+    elif isinstance(node.root, SourceRootBase):
         incoming = []
         for j, coordinate in enumerate(node.root.law.coordinates):
             constant = coordinate.family == "gaussian" and coordinate.scale == 0
