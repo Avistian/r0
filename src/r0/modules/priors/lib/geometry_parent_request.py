@@ -4,7 +4,10 @@ from dataclasses import dataclass, replace
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.geometry_graph_request import GeometryGraphRequest
-from r0.modules.priors.lib.joint_pipeline_plans import JointPipelinePrior
+from r0.modules.priors.lib.joint_pipeline_plans import (
+    JointInnovationPipelinePrior,
+    JointPipelinePrior,
+)
 from r0.modules.priors.lib.joint_width_plans import JointWidthPlan
 from r0.modules.priors.lib.parent_composition_plans import ParentCompositionPrior
 
@@ -20,7 +23,10 @@ class GeometryParentRequest(GeometryGraphRequest):
         if (
             type(self.composition) is not ParentCompositionPrior
             or self.pipeline_prior is not None
-            and (type(self.pipeline_prior) is not JointPipelinePrior or self.noise_scale != 0)
+            and (
+                type(self.pipeline_prior) not in (JointPipelinePrior, JointInnovationPipelinePrior)
+                or self.noise_scale != 0
+            )
         ):
             raise ValueError("parent geometry requires its composition and optional pipeline prior")
 
@@ -32,6 +38,11 @@ class GeometryParentRequest(GeometryGraphRequest):
         if widths is None:
             raise ValueError("parent pipeline admission requires retained widths")
         numbers = 8 * (self.calibration_rows + 64) * sum(widths.widths)
+        if isinstance(self.pipeline_prior, JointInnovationPipelinePrior):
+            # Reserve factors and retained ancestor innovation buffers, including the
+            # minimum rejection-sampling batch, before any materialization starts.
+            numbers += 8 * sum(w * w for w in widths.widths)
+            numbers += 8 * max(self.calibration_rows, 256) * sum(widths.widths)
         storage = 128 * numbers + 16384 * len(widths.widths)
         if numbers >= limits.parameters or storage >= limits.working_bytes:
             raise ValueError("aggregate parent pipeline construction limit exceeded")

@@ -42,6 +42,19 @@ def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
             "domains": [[d["kind"] for d in n["domains"]] for n in runtime["nodes"]],
             "composition": recipe.get("request", {}).get("composition"),
         }
+    pipelines = recipe.get("pipelines", [])
+    if any(p.get("version") == "r0-innovation-pipeline-realization-v2" for p in pipelines):
+        return {
+            "kind": "r0-innovation-pipelines",
+            "notice": (
+                "Explicit r0 innovation laws; not the source Gaussian-only profile. "
+                "Response scales use the pre-pipeline function output. Innovations enter "
+                "after converter capture and before node importance. Independent fit "
+                "populations use final ancestor states; query rows never fit laws."
+            ),
+            "composition": recipe.get("request", {}).get("composition"),
+            "innovations": [p["noise"] for p in pipelines],
+        }
     composition = recipe.get("composition", recipe.get("request", {}).get("composition"))
     if composition is None:
         return None

@@ -20,6 +20,7 @@ from r0.modules.priors.lib.joint_pipeline_plans import JointPipelinePlan
 from r0.modules.priors.lib.joint_pipeline_realization import (
     JointPipelineRealization,
     fit_node_pipeline,
+    pipeline_noise,
 )
 from r0.modules.priors.lib.joint_root_plans import JointRootPlan
 from r0.modules.priors.lib.joint_root_realization import (
@@ -219,10 +220,13 @@ def materialize_joint_graph(
                     ),
                 )
                 pipeline_records.append(fitted)
+                final_noise = pipeline_noise(fitted)
                 nodes[-1] = replace(
                     nodes[-1],
                     pipeline=fitted.pipeline,
-                    noise_scale=(fitted.plan.sigma,) * node.width,
+                    noise_scale=final_noise.scales,
+                    exogenous=final_noise.exogenous,
+                    noise_response=final_noise.response,
                 )
             realizations.append(realization)
         if pipeline_plans:

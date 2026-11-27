@@ -83,8 +83,7 @@ def construct_graph(
         pipeline = fields.pop("pipeline_prior", None)
         request_type = priors.GeometryGraphRequest
         if pipeline is not None:
-            converter = priors.JointNumericalConverterPrior(**pipeline.pop("converter"))
-            fields["pipeline_prior"] = priors.JointPipelinePrior(converter=converter, **pipeline)
+            fields["pipeline_prior"] = priors.pipeline_prior_from_dict(pipeline)
             request_type = priors.GeometryPipelineRequest
         if composition is not None:
             request_type = priors.GeometryParentRequest

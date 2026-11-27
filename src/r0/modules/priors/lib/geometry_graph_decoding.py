@@ -12,8 +12,7 @@ from r0.modules.priors.lib.geometry_graph_sampling import sample_geometry_graph
 from r0.modules.priors.lib.geometry_parent_request import GeometryParentRequest
 from r0.modules.priors.lib.geometry_pipeline_request import GeometryPipelineRequest
 from r0.modules.priors.lib.geometry_topology import decode_geometry_topology
-from r0.modules.priors.lib.joint_converter_plans import JointNumericalConverterPrior
-from r0.modules.priors.lib.joint_pipeline_plans import JointPipelinePrior
+from r0.modules.priors.lib.joint_pipeline_decoding import pipeline_prior_from_dict
 from r0.modules.priors.lib.joint_root_plans import JointRootPrior
 from r0.modules.priors.lib.joint_width_plans import JointWidthPrior
 from r0.modules.priors.lib.linear import LinearRecipe
@@ -47,11 +46,7 @@ def decode_geometry_graph_request(data: Any, limits: CausalLimits) -> GeometryGr
             **functional_record(raw["composition"], ParentCompositionPrior)
         )
     if pipeline or parent and raw.get("pipeline_prior") is not None:
-        prior = functional_record(raw["pipeline_prior"], JointPipelinePrior)
-        prior["converter"] = JointNumericalConverterPrior(
-            **functional_record(prior["converter"], JointNumericalConverterPrior)
-        )
-        raw["pipeline_prior"] = JointPipelinePrior(**prior)
+        raw["pipeline_prior"] = pipeline_prior_from_dict(raw["pipeline_prior"])
     declared = CausalLimits(**functional_record(raw["limits"], CausalLimits))
     if any(getattr(declared, f.name) > getattr(limits, f.name) for f in fields(CausalLimits)):
         raise ValueError("geometry graph declared limits exceed caller limits")

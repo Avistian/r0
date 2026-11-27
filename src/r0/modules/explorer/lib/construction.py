@@ -5,6 +5,7 @@ from typing import Any, cast
 
 from r0.modules import priors
 from r0.modules.explorer.lib.composed_examples import composed_examples, fitted_examples
+from r0.modules.explorer.lib.innovation_examples import innovation_examples
 from r0.modules.explorer.lib.native import (
     native_example,
     native_vector_example,
@@ -69,6 +70,7 @@ def construction_examples() -> dict[str, Any]:
         "Native mixed graph (sampled domains)": sampled_native_example(),
         "Native heterogeneous vector graph": native_vector_example(),
         "Native vector parent composition": native_vector_example(parent=True),
+        **innovation_examples(geometry),
         **composed_examples(common, geometry, sampled_native_example()),
         **fitted_examples(),
         **{

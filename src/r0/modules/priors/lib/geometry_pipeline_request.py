@@ -4,7 +4,10 @@ from dataclasses import dataclass, replace
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.geometry_graph_request import GeometryGraphRequest
-from r0.modules.priors.lib.joint_pipeline_plans import JointPipelinePrior
+from r0.modules.priors.lib.joint_pipeline_plans import (
+    JointInnovationPipelinePrior,
+    JointPipelinePrior,
+)
 from r0.modules.priors.lib.joint_width_plans import JointWidthPlan
 
 
@@ -17,7 +20,7 @@ class GeometryPipelineRequest(GeometryGraphRequest):
         GeometryGraphRequest.__post_init__(self)
         if (
             self.version != "geometry-pipeline-request-v1"
-            or type(self.pipeline_prior) is not JointPipelinePrior
+            or type(self.pipeline_prior) not in (JointPipelinePrior, JointInnovationPipelinePrior)
             or self.noise_scale != 0
         ):
             raise ValueError("sampled pipelines require their prior and no authored noise scale")
@@ -32,6 +35,11 @@ class GeometryPipelineRequest(GeometryGraphRequest):
         # conservative accounting bounds, not measured RSS. Raw draws share the
         # remaining graph ledger; no per-stage raw allowance is reset.
         numbers = 8 * (self.calibration_rows + 64) * sum(widths.widths)
+        if isinstance(self.pipeline_prior, JointInnovationPipelinePrior):
+            # Reserve factors and retained ancestor innovation buffers, including the
+            # minimum rejection-sampling batch, before any materialization starts.
+            numbers += 8 * sum(w * w for w in widths.widths)
+            numbers += 8 * max(self.calibration_rows, 256) * sum(widths.widths)
         storage = 128 * numbers + 16384 * len(widths.widths)
         if numbers >= limits.parameters or storage >= limits.working_bytes:
             raise ValueError("aggregate sampled pipeline construction limit exceeded")

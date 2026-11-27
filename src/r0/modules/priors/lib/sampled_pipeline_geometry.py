@@ -3,9 +3,13 @@
 from dataclasses import dataclass, replace
 
 from r0.modules.priors.lib.geometry_pipeline_request import GeometryPipelineRequest
-from r0.modules.priors.lib.joint_graph_request import JointGraphNoise, JointGraphRequest
+from r0.modules.priors.lib.joint_graph_request import JointGraphRequest
 from r0.modules.priors.lib.joint_pipeline_plans import JointPipelinePrior
-from r0.modules.priors.lib.joint_pipeline_realization import JointPipelineRealization
+from r0.modules.priors.lib.joint_pipeline_realization import (
+    JointInnovationPipelineRealization,
+    JointPipelineRealization,
+    pipeline_noise,
+)
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
 
 
@@ -23,7 +27,7 @@ class SampledPipelineGeometry(SampledGeometryGraph):
         return replace(
             original,
             authored_pipelines=tuple(p.pipeline for p in self.pipelines),
-            noise=tuple(JointGraphNoise((p.plan.sigma,) * p.plan.width) for p in self.pipelines),
+            noise=tuple(pipeline_noise(p) for p in self.pipelines),
         )
 
 
@@ -35,7 +39,10 @@ def pipeline_operations(
     if (
         type(pipelines) is not tuple
         or len(pipelines) != len(self.graph.plan.nodes)
-        or any(type(p) is not JointPipelineRealization for p in pipelines)
+        or any(
+            type(p) not in (JointPipelineRealization, JointInnovationPipelineRealization)
+            for p in pipelines
+        )
     ):
         raise ValueError("sampled pipeline envelope requires one realization per node")
     result: list[tuple[str, ...]] = []
@@ -47,7 +54,12 @@ def pipeline_operations(
             planned.operation != (f"pipeline:{i}",)
             or planned.width != self.widths.widths[i]
             or planned.prior != prior
-            or fitted.version != "independent-node-pipeline-realization-v1"
+            or fitted.version
+            != (
+                "r0-innovation-pipeline-realization-v2"
+                if type(fitted) is JointInnovationPipelineRealization
+                else "independent-node-pipeline-realization-v1"
+            )
             or fitted.pipeline != self.runtime.nodes[i].pipeline
             or fitted.pipeline.node_importance != planned.importance
             or fitted.calibration.identity != f"pipeline-node-{i}-fit"

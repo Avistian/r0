@@ -8,6 +8,11 @@ from r0.modules.priors.lib.joint_converter_plans import (
     JointNumericalConverterPrior,
     sample_joint_converter,
 )
+from r0.modules.priors.lib.joint_innovation_plans import (
+    JointInnovationPlan,
+    JointInnovationPrior,
+    sample_joint_innovation,
+)
 from r0.modules.priors.lib.joint_plan_bindings import numerical_binding, operation_events
 from r0.modules.priors.lib.joint_plan_ownership import JointPlanOwner, plan_owners
 from r0.modules.priors.lib.joint_sampling import JointSamplingContext
@@ -29,7 +34,12 @@ class JointPipelinePrior:
 
     def __post_init__(self) -> None:
         if (
-            self.version != "independent-node-pipeline-prior-v1"
+            self.version
+            != (
+                "r0-innovation-pipeline-prior-v2"
+                if type(self) is JointInnovationPipelinePrior
+                else "independent-node-pipeline-prior-v1"
+            )
             or any(
                 type(v) is not bool
                 for v in (
@@ -45,6 +55,17 @@ class JointPipelinePrior:
             or type(self.converter) is not JointNumericalConverterPrior
         ):
             raise ValueError("pipeline prior requires supported frozen controls")
+
+
+@dataclass(frozen=True, slots=True)
+class JointInnovationPipelinePrior(JointPipelinePrior):
+    innovation: JointInnovationPrior = JointInnovationPrior()
+    version: str = "r0-innovation-pipeline-prior-v2"
+
+    def __post_init__(self) -> None:
+        JointPipelinePrior.__post_init__(self)
+        if type(self.innovation) is not JointInnovationPrior or self.gaussian_noise:
+            raise ValueError("v2 innovation pipeline replaces the legacy Gaussian sigma switch")
 
 
 def pipeline_scalar_request(role: str) -> NumericalParameter:
@@ -69,10 +90,15 @@ class JointPipelinePlan:
     def __post_init__(self) -> None:
         validate_path(self.operation)
         if (
-            self.version != "independent-node-pipeline-plan-v1"
+            self.version
+            != (
+                "r0-innovation-pipeline-plan-v2"
+                if type(self) is JointInnovationPipelinePlan
+                else "independent-node-pipeline-plan-v1"
+            )
             or type(self.width) is not int
             or not 1 <= self.width < 2**63
-            or type(self.prior) is not JointPipelinePrior
+            or type(self.prior) not in (JointPipelinePrior, JointInnovationPipelinePrior)
             or (self.weights is not None and type(self.weights) is not JointWeightPlan)
             or type(self.converters) is not tuple
             or any(type(c) is not JointConverterPlan for c in self.converters)
@@ -111,9 +137,15 @@ class JointPipelinePlan:
             result.extend(plan_owners(self.weights, ("weights",)))
         for i, converter in enumerate(self.converters):
             result.extend(plan_owners(converter, ("converters", i)))
+        if isinstance(self, JointInnovationPipelinePlan):
+            assert self.innovation is not None
+            result.append(JointPlanOwner(self.innovation.operation, "innovation", ("innovation",)))
         return tuple(result)
 
     def validate(self, decisions: JointSamplingRecord) -> None:
+        if isinstance(self, JointInnovationPipelinePlan):
+            assert self.innovation is not None
+            self.innovation.validate(decisions)
         own = tuple(
             e for e in operation_events(decisions, self.operation) if e.operation == self.operation
         )
@@ -134,6 +166,23 @@ class JointPipelinePlan:
         paths = {owner.operation for owner in self.owners()}
         if any(e.operation not in paths for e in operation_events(decisions, self.operation)):
             raise ValueError("pipeline has foreign decision owners")
+
+
+@dataclass(frozen=True, slots=True)
+class JointInnovationPipelinePlan(JointPipelinePlan):
+    innovation: JointInnovationPlan | None = None
+    version: str = "r0-innovation-pipeline-plan-v2"
+
+    def __post_init__(self) -> None:
+        JointPipelinePlan.__post_init__(self)
+        if (
+            type(self.prior) is not JointInnovationPipelinePrior
+            or type(self.innovation) is not JointInnovationPlan
+            or self.innovation.width != self.width
+            or self.innovation.prior != self.prior.innovation
+            or self.innovation.operation != (*self.operation, "innovation")
+        ):
+            raise ValueError("pipeline innovation binding differs")
 
 
 def sample_joint_pipeline(
@@ -176,8 +225,14 @@ def sample_joint_pipeline(
             if prior.node_importance
             else 1.0
         )
-        result = JointPipelinePlan(
-            operation.operation, width, prior, weights, converters, sigma, importance
+        args = (operation.operation, width, prior, weights, converters, sigma, importance)
+        result = (
+            JointInnovationPipelinePlan(
+                *args,
+                innovation=sample_joint_innovation(operation, width=width, prior=prior.innovation),
+            )
+            if isinstance(prior, JointInnovationPipelinePrior)
+            else JointPipelinePlan(*args)
         )
         result.validate(operation.freeze())
         return result

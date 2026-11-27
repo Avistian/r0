@@ -21,7 +21,12 @@ from r0.modules.priors.lib.joint_function_calibration import (
     FunctionCalibrationSample,
     function_calibration_digest,
 )
-from r0.modules.priors.lib.joint_pipeline_plans import JointPipelinePlan
+from r0.modules.priors.lib.joint_graph_request import JointGraphNoise
+from r0.modules.priors.lib.joint_innovation_realization import materialize_innovation
+from r0.modules.priors.lib.joint_pipeline_plans import (
+    JointInnovationPipelinePlan,
+    JointPipelinePlan,
+)
 from r0.modules.priors.lib.joint_point_realization import frozen_matrix
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
 from r0.modules.priors.lib.joint_weight_plans import materialize_joint_weights
@@ -39,6 +44,31 @@ class JointPipelineRealization:
     raw_start: int
     raw_stop: int
     version: str = "independent-node-pipeline-realization-v1"
+
+
+@dataclass(frozen=True, slots=True)
+class JointInnovationPipelineRealization(JointPipelineRealization):
+    noise: JointGraphNoise = JointGraphNoise()
+    version: str = "r0-innovation-pipeline-realization-v2"
+
+
+def pipeline_noise(realization: JointPipelineRealization) -> JointGraphNoise:
+    if isinstance(realization, JointInnovationPipelineRealization):
+        plan = realization.plan
+        if not isinstance(plan, JointInnovationPipelinePlan) or plan.innovation is None:
+            raise ValueError("innovation realization requires its retained plan")
+        noise, law = realization.noise, plan.innovation
+        if (
+            noise.scales != law.scales
+            or noise.response != law.response
+            or noise.exogenous.inputs != law.inputs
+            or noise.exogenous.geometry != ("ball" if law.family == "ball" else "independent")
+            or bool(noise.exogenous.factor) != (law.factor == "gaussian")
+        ):
+            raise ValueError("realized innovation differs from planned law")
+        noise.exogenous.validate_width(plan.width)
+        return noise
+    return JointGraphNoise((realization.plan.sigma,) * realization.plan.width)
 
 
 def fit_node_pipeline(
@@ -141,6 +171,12 @@ def fit_node_pipeline(
         tuple(converters),
         plan.importance,
     )
+    if isinstance(plan, JointInnovationPipelinePlan):
+        assert plan.innovation is not None
+        noise = materialize_innovation(plan.innovation, streams["raw"], capture)
+        return JointInnovationPipelineRealization(
+            plan, calibration, weights, pipeline, start, len(capture.freeze()), noise=noise
+        )
     return JointPipelineRealization(
         plan,
         calibration,
