@@ -53,12 +53,12 @@ python3 scripts/run_check.py pytest -q tests/priors/test_joint_observation_plans
   tests/priors/test_joint_width_plans.py
 ```
 
-`/tmp/r0-28-observation-plans-red.log` retains missing-API failures. The first
+`docs/evidence/issue-28-geometry/r0-28-observation-plans-red.log` retains missing-API failures. The first
 implementation run rejected canonical integer records because its dtype check
 used `int64` instead of the ledger's `<i8`; that failure is retained in
-`/tmp/r0-28-observation-plans-green.log`. The repaired five-engine/all-node/subset
+`docs/evidence/issue-28-geometry/r0-28-observation-plans-green.log`. The repaired five-engine/all-node/subset
 checks, replay-state tampering, raw budget rollback, and width checks passed:
-15 cases in `/tmp/r0-28-observation-plans-engines.log`.
+15 cases in `docs/evidence/issue-28-geometry/r0-28-observation-plans-engines.log`.
 
 Independent review, full-suite checking of this component, integrated generation,
 scientific distribution checks, browser/Colab work and portable evidence publication

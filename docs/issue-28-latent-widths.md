@@ -49,9 +49,9 @@ python3 scripts/run_check.py pytest -q tests/priors/test_joint_width_plans.py
 ```
 
 The initial missing-API failures are retained in
-`/tmp/r0-28-latent-widths-red.log`. Four focused cases passed in
-`/tmp/r0-28-latent-widths-oracle.log`: global named sharing, an independent scalar
+`docs/evidence/issue-28-geometry/r0-28-latent-widths-red.log`. Four focused cases passed in
+`docs/evidence/issue-28-geometry/r0-28-latent-widths-oracle.log`: global named sharing, an independent scalar
 local log-uniform oracle, and early/late budget rollback. Static checks passed
-in `/tmp/r0-28-latent-widths-static.log`. Full-suite and independent review of this
+in `docs/evidence/issue-28-geometry/r0-28-latent-widths-static.log`. Full-suite and independent review of this
 width component remain pending. These checks do not measure runtime memory or
 scientific diversity, and do not establish integrated delivery of I2.graph.04.

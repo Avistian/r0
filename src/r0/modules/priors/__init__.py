@@ -328,6 +328,8 @@ from .lib.joint_api import (
 from .lib.joint_api import (
     JointWidthPrior as JointWidthPrior,
 )
+from .lib.joint_api import ObservationChannelLayout as ObservationChannelLayout
+from .lib.joint_api import allocate_observation_channels as allocate_observation_channels
 from .lib.joint_api import (
     fit_joint_activation as fit_joint_activation,
 )

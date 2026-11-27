@@ -161,3 +161,9 @@ from r0.modules.priors.lib.joint_weight_plans import (
 from r0.modules.priors.lib.joint_width_plans import JointWidthPlan as JointWidthPlan
 from r0.modules.priors.lib.joint_width_plans import JointWidthPrior as JointWidthPrior
 from r0.modules.priors.lib.joint_width_plans import sample_joint_widths as sample_joint_widths
+from r0.modules.priors.lib.observation_channel_layout import (
+    ObservationChannelLayout as ObservationChannelLayout,
+)
+from r0.modules.priors.lib.observation_channel_layout import (
+    allocate_observation_channels as allocate_observation_channels,
+)
