@@ -227,7 +227,7 @@ class ExplorerSession:
                     or set(cast(dict[str, Any], identity)) != {"seed", "task_id"}
                     or not (
                         str(version).startswith("sampled-")
-                        or version == "fitted-functional-causal-v1"
+                        or version in ("fitted-functional-causal-v1", "standalone-network-v1")
                     )
                 ):
                     raise ValueError(
@@ -242,7 +242,8 @@ class ExplorerSession:
                 and "sampling" not in data
                 and (
                     str(record["recipe"].get("version", "")).startswith("sampled-")
-                    or record["recipe"].get("version") == "fitted-functional-causal-v1"
+                    or record["recipe"].get("version")
+                    in ("fitted-functional-causal-v1", "standalone-network-v1")
                 )
             ):
                 request = {

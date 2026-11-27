@@ -65,9 +65,22 @@ def create_edit(
     recipe = priors.recipe_from_dict(data["recipe"], limits=limits)
     if not isinstance(
         recipe,
-        (priors.FunctionalCausalRecipe, priors.NativeCausalRecipe, priors.NativeVectorRecipe),
+        (
+            priors.FunctionalCausalRecipe,
+            priors.NativeCausalRecipe,
+            priors.NativeVectorRecipe,
+            priors.NetworkRecipe,
+        ),
     ):
-        raise ValueError("mechanism edits require a frozen authored functional or native graph")
+        raise ValueError(
+            "mechanism edits require a frozen authored functional graph, native graph or network"
+        )
+    if isinstance(recipe, priors.NetworkRecipe) and not isinstance(
+        recipe.network, priors.FrozenNetworkFunction
+    ):
+        raise ValueError(
+            "network edits require an authored frozen function, not sampled construction"
+        )
     request = RunRequest(
         recipe=recipe,
         seed=record["seed"],

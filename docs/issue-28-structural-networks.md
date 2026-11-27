@@ -121,6 +121,7 @@ training_task = priors.generate_task(recipe, seed=17, task_id=3)
 ```
 
 CPU arithmetic, source mask rules, malformed replay, rollback and legacy-byte
-comparisons are covered by the scoped verification. Dedicated local/Colab controls,
-GPU agreement, maximum-workload/resource measurements and scientific comparisons
-remain pending. No library slice alone closes #28.
+comparisons are covered by the scoped verification. The shared explorer now exposes
+these architectures; see [network workbench](issue-28-network-workbench.md). Hosted
+Colab, GPU agreement, maximum-workload/resource measurements and scientific
+comparisons remain pending. No individual slice alone closes #28.

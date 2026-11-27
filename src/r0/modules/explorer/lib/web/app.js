@@ -61,7 +61,7 @@ function fillControls(recipe) {
 }
 function updateRecipe(changed) {
   const recipe = parseRecipe(), task = taskControls(recipe);
-  if (recipe.version?.startsWith("sampled-") || recipe.version === "fitted-functional-causal-v1") throw new Error("Frozen construction archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
+  if (recipe.version?.startsWith("sampled-") || recipe.version === "fitted-functional-causal-v1" || isStandaloneNetwork(recipe)) throw new Error("Frozen construction archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
   const fields = {rows: "rows", context: "context_rows", features: "features", active: "active_features", classes: "classes"};
   if (fields[changed]) task[fields[changed]] = number(changed);
   if (changed === "difficulty") task[task.task_type === "regression" ? "noise_ratio" : "separation"] = number("difficulty");
@@ -87,7 +87,7 @@ function updateRecipe(changed) {
 function limits() { return {...explorationLimits(), device: $("device").value, max_seconds: number("seconds"), max_bytes: number("bytes") * 1024 ** 2}; }
 async function generate() {
   const stored=current?.view?.recipe?.recipe;
-  const frozen=stored && (stored.version?.startsWith("sampled-") || stored.version==="fitted-functional-causal-v1") && $("recipe").value===pretty(stored);
+  const frozen=stored && (stored.version?.startsWith("sampled-") || stored.version==="fitted-functional-causal-v1" || isStandaloneNetwork(stored)) && $("recipe").value===pretty(stored);
   const identity={seed:$("seed").value,task_id:$("task-id").value};
   const payload=frozen ? {record_json:current.recipe_json,frozen_identity:identity} : {recipe:parseRecipe(),...identity};
   const result = await request("generate", {...payload,...limits()});

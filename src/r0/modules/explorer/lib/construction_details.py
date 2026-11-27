@@ -4,6 +4,10 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
+    if recipe.get("version") == "standalone-network-v1":
+        from r0.modules.explorer.lib.networks import network_details
+
+        return network_details(recipe)
     if recipe.get("version") == "fitted-functional-causal-v1":
         return {
             "kind": "independent-fitted-trees",

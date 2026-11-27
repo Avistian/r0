@@ -7,6 +7,7 @@ function explorationLimits() {
 }
 function resetWorkbench() {
   mechanismDraft = null; mechanismInfo = null;
+  resetNetworkWorkbench();
   $("workbench-content").hidden = true;
   $("workbench-note").textContent = "The original dataset remains active while you create a linked mechanism edit.";
   $("edit-results").hidden = !current?.edit;
@@ -63,10 +64,12 @@ function selectMechanismNode() {
   $("mechanism-node-info").textContent = pretty({...mechanismInfo.nodes[index], geometry:mechanismInfo.geometry, note:"Green highlights the selected node and its ancestors. Hidden channels are not selected as observed features or targets. Values and equations are available in the generation-process drill-down below."});
   causalStructure();
 }
-$("construction-family").onchange = () => {const example=constructionExamples[$("construction-family").value]; fillInnovationControls(example); $("construction-controls").value=pretty(example); $("construction-seed").disabled=example.topology==="native"; $("sampled-native-controls-note").hidden=!["sampled-native","sampled-native-vector"].includes(example.topology); $("parent-controls-note").hidden=!example.composition; $("fitted-controls-note").hidden=example.topology!=="fitted";};
-$("construct").onclick = () => act("Constructing, generating and saving graph…", async () => show(await request("construct", {controls:JSON.parse($("construction-controls").value), construction_seed:$("construction-seed").value, seed:$("seed").value, task_id:$("task-id").value, ...limits()})));
+$("construction-family").onchange = () => {const example=constructionExamples[$("construction-family").value]; fillInnovationControls(example); $("construction-controls").value=pretty(example); $("construction-seed").disabled=["native","network-authored"].includes(example.topology); $("sampled-native-controls-note").hidden=!["sampled-native","sampled-native-vector"].includes(example.topology); $("parent-controls-note").hidden=!example.composition; $("fitted-controls-note").hidden=example.topology!=="fitted"; networkConstructionNote(example);};
+$("construct").onclick = () => act("Constructing, generating and saving mechanism…", async () => show(await request("construct", {controls:JSON.parse($("construction-controls").value), construction_seed:$("construction-seed").value, seed:$("seed").value, task_id:$("task-id").value, ...limits()})));
 $("mechanism-load").onclick = () => act("Verifying mechanism archive…", async () => {
-  mechanismInfo = await request("mechanism"); mechanismDraft = mechanismInfo.editable_recipe;
+  mechanismInfo = await request("mechanism");
+  if (mechanismInfo.network) {showNetworkEditor(mechanismInfo); return;}
+  mechanismDraft = mechanismInfo.editable_recipe;
   $("workbench-content").hidden = false; $("workbench-note").textContent = mechanismInfo.notice;
   $("mechanism-node").replaceChildren(...mechanismInfo.nodes.map(n=>new Option(`Node ${n.index} · ${n.function}`,n.index)));
   $("mechanism-recipe").value=pretty(mechanismDraft); $("mechanism-observed").value=pretty(mechanismDraft.observed); $("mechanism-target").value=pretty(mechanismDraft.target);

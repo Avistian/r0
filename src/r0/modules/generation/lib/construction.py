@@ -9,6 +9,7 @@ import numpy as np
 from r0.modules import priors
 from r0.modules.generation.lib.fitted_construction import construct_fitted
 from r0.modules.generation.lib.native_construction import construct_native
+from r0.modules.generation.lib.network_construction import construct_network
 
 
 def _tuples(value: Any) -> Any:
@@ -27,6 +28,10 @@ def construct_graph(
         raise ValueError("construction seed must be an integer in [0, 2**63)")
     fields = _tuples(controls)
     topology = fields.pop("topology")
+    if topology in ("network", "network-authored"):
+        return construct_network(
+            fields, seed=seed, limits=limits, authored=topology == "network-authored"
+        )
     if topology == "fitted":
         return construct_fitted(fields, seed=seed, limits=limits)
     if topology == "sampled-native-vector":

@@ -11,6 +11,7 @@ from r0.modules.explorer.lib.native import (
     native_vector_example,
     sampled_native_example,
 )
+from r0.modules.explorer.lib.networks import network_editor, network_examples
 
 
 def caller_limits(data: dict[str, Any]) -> priors.CausalLimits:
@@ -73,6 +74,7 @@ def construction_examples() -> dict[str, Any]:
         **innovation_examples(geometry),
         **composed_examples(common, geometry, sampled_native_example()),
         **fitted_examples(),
+        **network_examples(),
         **{
             f"Numerical pipeline: {variant}": {
                 **geometry,
@@ -95,6 +97,8 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
 
     raw = json.loads(task.recipe_json)["recipe"]
     recipe = priors.recipe_from_dict(raw, limits=limits)
+    if isinstance(recipe, priors.NetworkRecipe):
+        return network_editor(recipe)
     runtime = (
         recipe.recipe
         if isinstance(recipe, (priors.SampledNativeGraph, priors.SampledNativeVectorGraph))
