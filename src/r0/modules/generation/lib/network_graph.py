@@ -21,6 +21,7 @@ def network_graph(data: dict[str, Any]) -> dict[str, Any]:
             continue
         if task.episode_id != data["episode_id"] or record["recipe"].get("version") not in (
             "prototype-batch-network-realized-v1",
+            "network-observation-recipe-v1",
             "standalone-network-innovations-v1",
             "standalone-network-v1",
             "network-input-view-v1",

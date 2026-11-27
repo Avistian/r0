@@ -35,10 +35,12 @@ from r0.modules.priors.lib.source_root_base import SourceRootBase
 from r0.modules.priors.lib.stage_intervention import StageIntervention
 
 if TYPE_CHECKING:
+    from r0.modules.priors.lib.network_observation_recipe import NetworkObservationRecipe
     from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
 
 type CausalBase = (
     FunctionalCausalRecipe
+    | NetworkObservationRecipe
     | ConvertedCausalRecipe
     | SampledConvertedGraph
     | NativeCausalRecipe
@@ -116,8 +118,11 @@ class SoftIntervention:
 def causal_runtime(
     base: object,
 ) -> FunctionalCausalRecipe | NativeCausalRecipe | NativeVectorRecipe | ConvertedCausalRecipe:
+    from r0.modules.priors.lib.network_observation_recipe import NetworkObservationRecipe
     from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
 
+    if isinstance(base, NetworkObservationRecipe):
+        return base.runtime
     if isinstance(
         base,
         (FunctionalCausalRecipe, NativeCausalRecipe, NativeVectorRecipe, ConvertedCausalRecipe),
@@ -289,8 +294,15 @@ class CausalInterventionRecipe:
             else (n.function.input_width + 10 * n.function.output_width)
             for n in original.nodes
         )
+        from r0.modules.priors.lib.network_observation_recipe import NetworkObservationRecipe
+
+        original_budget = (
+            self.base.admit()
+            if isinstance(self.base, NetworkObservationRecipe)
+            else original.admit()
+        )
         working = (
-            original.admit()["estimated_working_bytes"]
+            original_budget["estimated_working_bytes"]
             + effective.admit()["estimated_working_bytes"]
             + 4 * storage
             + 32 * original.task.rows * channels

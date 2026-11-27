@@ -81,7 +81,7 @@ function drawInterventionTrace() {
   $("intervention-trace-json").textContent=pretty({side,rows:graph.rows,...stage});
 }
 $("intervention-load").onclick=()=>act("Preparing intervention controls…",async()=>{
-  interventionInfo=await request("intervention_controls");
+  interventionInfo=await request("intervention_controls", {...limits()});
   $("intervention-controls").hidden=false;$("intervention-notice").textContent=interventionInfo.notice;
   $("intervention-node").replaceChildren(...interventionInfo.nodes.map(n=>new Option(`Node ${n.index} · ${n.domains ? "joint vector" : (n.domain?.kind || "numerical")}`,n.index)));
   $("intervention-json").value="[]";selectInterventionNode();

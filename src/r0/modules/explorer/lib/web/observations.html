@@ -1,0 +1,10 @@
+<fieldset id="observation-controls" hidden><legend>Source-qualified network observations</legend>
+<p class="muted">Select propagated hidden or final channels. The P1 paper profile uses within-layer feature windows with explicitly named r0 sampling laws. The pinned 778f0d0 profile excludes the first affine output, permits cross-layer windows and retains possible feature/target overlap. Uniform unrestricted selection is a separately chosen alternative. These are selection policies, not complete paper reproductions.</p>
+<label>Selection policy<select id="observation-profile"><option value="p1-paper-block-r0-v1">P1 paper + explicit r0 reconstruction</option><option value="p1-778f0d0-v1">P1 pinned code 778f0d0</option></select></label>
+<label>Feature selection<select id="observation-selection"><option value="block">Adjacent block</option><option value="unrestricted">Unrestricted (explicit alternative)</option></select></label>
+<label>Targets<select id="observation-target"><option value="internal">Internal channels</option><option value="final">Final layer suffix</option></select></label>
+<label>Feature order<select id="observation-order"><option value="preserved">Preserve catalog order</option><option value="permuted">Sample a permutation</option></select></label>
+<label>Independent selection seed<input id="observation-seed" type="text" inputmode="numeric" value="17"></label>
+<button id="observation-apply">Apply selection policy to draft</button>
+<p class="muted">Currently requires equal-width sequential single-expert layers without gates or skips. Dense, individual sparse and block sparse sources are supported, including their sampled weights, activation/dropout laws, internal noise/importance, coordinate roots and prototype banks. Source and task adapter controls are editable in the JSON below. Preserve source output width even when the observation target uses fewer channels. Variable widths, residual/skip/gated and irregular selection policies remain required extensions; invalid architectures reject without resampling or substitution.</p>
+</fieldset>
