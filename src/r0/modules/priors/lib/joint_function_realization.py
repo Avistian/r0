@@ -1,7 +1,5 @@
 """Atomic raw matrix function constructions bound to their frozen equations."""
 
-import copy
-import pickle
 from dataclasses import dataclass
 
 import numpy as np
@@ -46,6 +44,12 @@ from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
 from r0.modules.priors.lib.joint_tree_realization import (
     JointTreeFunctionRealization,
     materialize_joint_tree,
+)
+from r0.modules.priors.lib.raw_draw_capture import (
+    RawDrawLedger,
+    raw_transaction,
+    raw_transactions,
+    recorded_draw,
 )
 
 _DEFAULT_LIMITS = CausalLimits()
@@ -172,6 +176,7 @@ def materialize_joint_function(
     calibration: NDArray[np.float64] | None = None,
     calibration_id: str = "",
     limits: CausalLimits = _DEFAULT_LIMITS,
+    capture: RawDrawLedger | None = None,
 ) -> (
     JointMatrixFunctionRealization
     | JointRFFFunctionRealization
@@ -200,6 +205,7 @@ def materialize_joint_function(
             calibration=calibration,
             calibration_id=calibration_id,
             limits=limits,
+            capture=capture,
         )
     if plan.family == "prod":
         return _materialize_product(
@@ -210,6 +216,7 @@ def materialize_joint_function(
             calibration=calibration,
             calibration_id=calibration_id,
             limits=limits,
+            capture=capture,
         )
     if plan.family == "em":
         return materialize_joint_em(
@@ -220,6 +227,7 @@ def materialize_joint_function(
             calibration=calibration,
             calibration_id=calibration_id,
             limits=limits,
+            capture=capture,
         )
     if plan.family == "disc":
         return materialize_joint_discretization(
@@ -230,6 +238,7 @@ def materialize_joint_function(
             calibration=calibration,
             calibration_id=calibration_id,
             limits=limits,
+            capture=capture,
         )
     if plan.family == "tree":
         return materialize_joint_tree(
@@ -240,28 +249,41 @@ def materialize_joint_function(
             calibration=calibration,
             calibration_id=calibration_id,
             limits=limits,
+            capture=capture,
         )
     if plan.family == "gp":
-        return materialize_joint_rff(plan, decisions, rng=rng, limits=limits)
+        return materialize_joint_rff(plan, decisions, rng=rng, limits=limits, capture=capture)
     admit_matrix_function(plan, decisions, limits)
-    staged = copy.deepcopy(rng)
-    permutation = (
-        tuple(int(i) for i in staged.permutation(plan.input_width))
-        if plan.family == "quad" and plan.input_width > 20
-        else ()
-    )
-    matrix = materialize_joint_matrix(plan.matrices[0], decisions, rng=staged, limits=limits)
-    matrices = matrix.materialize()
-    function: FrozenLinearFunction | FrozenQuadraticFunction
-    if plan.family == "lin":
-        function = FrozenLinearFunction(matrices[0])
-    else:
-        indices = permutation[:20] if permutation else tuple(range(plan.input_width))
-        function = FrozenQuadraticFunction(plan.input_width, indices, matrices)
-    result = JointMatrixFunctionRealization(plan, matrix, function, permutation)
-    result.validate(decisions)
-    rng.bit_generator.state = staged.bit_generator.state
-    return result
+    with raw_transaction(rng, capture) as (staged, capture):
+        permutation = (
+            tuple(
+                int(i)
+                for i in recorded_draw(
+                    staged,
+                    capture,
+                    owner=plan.operation,
+                    role="quadratic-permutation",
+                    distribution="permutation",
+                    shape=(plan.input_width,),
+                    parameters=(("count", plan.input_width),),
+                )
+            )
+            if plan.family == "quad" and plan.input_width > 20
+            else ()
+        )
+        matrix = materialize_joint_matrix(
+            plan.matrices[0], decisions, rng=staged, limits=limits, capture=capture
+        )
+        matrices = matrix.materialize()
+        function: FrozenLinearFunction | FrozenQuadraticFunction
+        if plan.family == "lin":
+            function = FrozenLinearFunction(matrices[0])
+        else:
+            indices = permutation[:20] if permutation else tuple(range(plan.input_width))
+            function = FrozenQuadraticFunction(plan.input_width, indices, matrices)
+        result = JointMatrixFunctionRealization(plan, matrix, function, permutation)
+        result.validate(decisions)
+        return result
 
 
 def _materialize_product(
@@ -273,6 +295,7 @@ def _materialize_product(
     calibration: NDArray[np.float64] | None,
     calibration_id: str,
     limits: CausalLimits,
+    capture: RawDrawLedger | None = None,
 ) -> JointProductFunctionRealization:
     fitted = any(child.family in ("tree", "disc") for child in plan.children)
     if (fitted and fit_rng is None) or (
@@ -283,45 +306,40 @@ def _materialize_product(
     admit_product_function(plan, decisions, limits)
     sample = freeze_function_calibration(plan, calibration, calibration_id) if fitted else None
     shared = np.asarray(sample.sample, dtype=np.float64) if sample is not None else None
-    raw_before = pickle.dumps(rng.bit_generator.state)
-    fit_before = pickle.dumps(fit_rng.bit_generator.state) if fit_rng is not None else None
-    raw, fit = copy.deepcopy(rng), copy.deepcopy(fit_rng)
-    children: list[CheapJointFunctionRealization] = []
-    for child_plan in plan.children:
-        child = materialize_joint_function(
-            child_plan,
-            decisions,
-            rng=raw,
-            fit_rng=fit,
-            calibration=shared,
-            calibration_id=calibration_id,
-            limits=limits,
+    with raw_transactions(
+        {"raw": rng, **({"fit": fit_rng} if fit_rng is not None else {})}, capture
+    ) as (streams, capture):
+        raw, fit = streams["raw"], streams.get("fit")
+        children: list[CheapJointFunctionRealization] = []
+        for child_plan in plan.children:
+            child = materialize_joint_function(
+                child_plan,
+                decisions,
+                rng=raw,
+                fit_rng=fit,
+                calibration=shared,
+                calibration_id=calibration_id,
+                limits=limits,
+                capture=capture,
+            )
+            if not isinstance(
+                child,
+                (
+                    JointMatrixFunctionRealization,
+                    JointRFFFunctionRealization,
+                    JointTreeFunctionRealization,
+                    JointDiscretizationFunctionRealization,
+                ),
+            ):
+                raise ValueError("product construction requires cheap child realizations")
+            children.append(child)
+        left, right = children
+        result = JointProductFunctionRealization(
+            plan,
+            left,
+            right,
+            FrozenProductFunction(left.function, right.function),
+            sample,
         )
-        if not isinstance(
-            child,
-            (
-                JointMatrixFunctionRealization,
-                JointRFFFunctionRealization,
-                JointTreeFunctionRealization,
-                JointDiscretizationFunctionRealization,
-            ),
-        ):
-            raise ValueError("product construction requires cheap child realizations")
-        children.append(child)
-    left, right = children
-    result = JointProductFunctionRealization(
-        plan,
-        left,
-        right,
-        FrozenProductFunction(left.function, right.function),
-        sample,
-    )
-    result.validate(decisions)
-    if pickle.dumps(rng.bit_generator.state) != raw_before or (
-        fit_rng is not None and pickle.dumps(fit_rng.bit_generator.state) != fit_before
-    ):
-        raise ValueError("caller RNG changed during product construction")
-    rng.bit_generator.state = raw.bit_generator.state
-    if fit_rng is not None and fit is not None:
-        fit_rng.bit_generator.state = fit.bit_generator.state
-    return result
+        result.validate(decisions)
+        return result

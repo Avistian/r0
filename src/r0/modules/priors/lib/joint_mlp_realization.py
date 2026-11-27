@@ -1,9 +1,7 @@
 """Ordered MLP fits with retained stage inputs, constants and construction ancestry."""
 
-import copy
 import hashlib
 import json
-import pickle
 from dataclasses import dataclass
 
 import numpy as np
@@ -33,6 +31,7 @@ from r0.modules.priors.lib.joint_matrix_realization import (
 )
 from r0.modules.priors.lib.joint_point_realization import frozen_matrix
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions, recorded_draw
 from r0.modules.priors.lib.weight_geometry import Matrix, matrix_shape
 
 
@@ -135,6 +134,7 @@ def materialize_joint_mlp(
     calibration: NDArray[np.float64] | None,
     calibration_id: str,
     limits: CausalLimits,
+    capture: RawDrawLedger | None = None,
 ) -> JointMLPFunctionRealization:
     if (plan.activations and fit_rng is None) or (
         fit_rng is not None
@@ -143,60 +143,76 @@ def materialize_joint_mlp(
         raise ValueError("MLP fitting requires a separate injected fit RNG")
     admit_mlp_function(plan, decisions, limits)
     sample = freeze_function_calibration(plan, calibration, calibration_id)
-    raw_before = pickle.dumps(rng.bit_generator.state)
-    fit_before = pickle.dumps(fit_rng.bit_generator.state) if fit_rng is not None else None
-    raw, fit = copy.deepcopy(rng), copy.deepcopy(fit_rng)
-    value = torch.tensor(sample.sample, dtype=torch.float64)
-    matrices: list[JointMatrixRealization] = []
-    linears: list[FrozenLinearFunction] = []
-    activations: list[CalibratedActivation] = []
-    inputs: list[FunctionCalibrationSample] = []
-    for child in plan.ordered_children:
-        if isinstance(child, JointMatrixPlan):
-            matrix = materialize_joint_matrix(child, decisions, rng=raw, limits=limits)
-            linear = FrozenLinearFunction(matrix.materialize()[0])
-            value = value @ value.new_tensor(linear.matrix).T
-            if not torch.isfinite(value).all():
-                raise ValueError("nonfinite MLP linear stage output; construction was not retried")
-            matrices.append(matrix)
-            linears.append(linear)
-        else:
-            assert isinstance(child, JointActivationPlan)
-            assert child.scale is not None
-            assert fit is not None
-            retained = mlp_stage_sample(plan, sample, len(inputs), value)
-            activation = calibrate_source_activation(
-                child.activation,
-                value.numpy(),
-                rng=fit,
-                scale=child.scale,
-                calibration_id=retained.identity,
-                limits=limits,
-            )
-            value = activation.apply(value)
-            inputs.append(retained)
-            activations.append(activation)
-    parameters = dict(plan.parameters)
-    function = FrozenMLPFunction(
-        tuple(linears),
-        tuple(activations),
-        bool(parameters["start_activation"]),
-        bool(parameters["end_activation"]),
-    )
-    result = JointMLPFunctionRealization(
-        plan,
-        sample,
-        tuple(matrices),
-        tuple(inputs),
-        frozen_matrix(value.numpy()),
-        function,
-    )
-    result.validate(decisions)
-    if pickle.dumps(rng.bit_generator.state) != raw_before or (
-        fit_rng is not None and pickle.dumps(fit_rng.bit_generator.state) != fit_before
-    ):
-        raise ValueError("caller RNG changed during MLP construction")
-    rng.bit_generator.state = raw.bit_generator.state
-    if fit_rng is not None and fit is not None:
-        fit_rng.bit_generator.state = fit.bit_generator.state
-    return result
+    with raw_transactions(
+        {"raw": rng, **({"fit": fit_rng} if fit_rng is not None else {})}, capture
+    ) as (streams, capture):
+        raw, fit = streams["raw"], streams.get("fit")
+        value = torch.tensor(sample.sample, dtype=torch.float64)
+        matrices: list[JointMatrixRealization] = []
+        linears: list[FrozenLinearFunction] = []
+        activations: list[CalibratedActivation] = []
+        inputs: list[FunctionCalibrationSample] = []
+        for child in plan.ordered_children:
+            if isinstance(child, JointMatrixPlan):
+                matrix = materialize_joint_matrix(
+                    child, decisions, rng=raw, limits=limits, capture=capture
+                )
+                linear = FrozenLinearFunction(matrix.materialize()[0])
+                value = value @ value.new_tensor(linear.matrix).T
+                if not torch.isfinite(value).all():
+                    raise ValueError(
+                        "nonfinite MLP linear stage output; construction was not retried"
+                    )
+                matrices.append(matrix)
+                linears.append(linear)
+            else:
+                assert isinstance(child, JointActivationPlan)
+                assert child.scale is not None
+                assert fit is not None
+                retained = mlp_stage_sample(plan, sample, len(inputs), value)
+                if capture is None:
+                    activation = calibrate_source_activation(
+                        child.activation,
+                        value.numpy(),
+                        rng=fit,
+                        scale=child.scale,
+                        calibration_id=retained.identity,
+                        limits=limits,
+                    )
+                else:
+                    rows = recorded_draw(
+                        fit,
+                        capture,
+                        owner=child.operation,
+                        role="activation-shift-rows",
+                        distribution="integers",
+                        shape=(value.shape[1],),
+                        parameters=(("high", value.shape[0]),),
+                    )
+                    activation = reconstruct_source_activation(
+                        child.activation,
+                        value.numpy(),
+                        shift_rows=tuple(map(int, rows)),
+                        scale=child.scale,
+                        calibration_id=retained.identity,
+                    )
+                value = activation.apply(value)
+                inputs.append(retained)
+                activations.append(activation)
+        parameters = dict(plan.parameters)
+        function = FrozenMLPFunction(
+            tuple(linears),
+            tuple(activations),
+            bool(parameters["start_activation"]),
+            bool(parameters["end_activation"]),
+        )
+        result = JointMLPFunctionRealization(
+            plan,
+            sample,
+            tuple(matrices),
+            tuple(inputs),
+            frozen_matrix(value.numpy()),
+            function,
+        )
+        result.validate(decisions)
+        return result

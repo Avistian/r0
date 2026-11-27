@@ -1,7 +1,5 @@
 """Source oblivious-tree fits with retained calibration, selections and leaves."""
 
-import copy
-import pickle
 from dataclasses import dataclass
 
 import numpy as np
@@ -18,6 +16,7 @@ from r0.modules.priors.lib.joint_function_calibration import (
 from r0.modules.priors.lib.joint_function_plans import JointFunctionPlan
 from r0.modules.priors.lib.joint_point_realization import frozen_matrix
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions, recorded_draw
 from r0.modules.priors.lib.weight_geometry import Matrix, matrix_shape
 
 type IndexTable = tuple[tuple[int, ...], ...]
@@ -122,39 +121,62 @@ def materialize_joint_tree(
     calibration: NDArray[np.float64] | None,
     calibration_id: str,
     limits: CausalLimits,
+    capture: RawDrawLedger | None = None,
 ) -> JointTreeFunctionRealization:
     if type(fit_rng) is not np.random.Generator or fit_rng.bit_generator is rng.bit_generator:
         raise ValueError("tree fitting requires a separate injected fit RNG")
     admit_tree_function(plan, decisions, limits)
     sample = freeze_function_calibration(plan, calibration, calibration_id)
-    raw_before = pickle.dumps(rng.bit_generator.state)
-    fit_before = pickle.dumps(fit_rng.bit_generator.state)
-    raw, fit = copy.deepcopy(rng), copy.deepcopy(fit_rng)
-    weights = tree_feature_weights(sample.sample)
-    probabilities = np.asarray(weights, dtype=np.float64)
-    probabilities = probabilities / probabilities.max()
-    probabilities = probabilities / probabilities.sum()
-    parameters = dict(plan.parameters)
-    trees, depth = int(parameters["trees"]), int(parameters["depth"])
-    features = tuple(
-        tuple(int(v) for v in row)
-        for row in fit.choice(plan.input_width, size=(trees, depth), replace=True, p=probabilities)
-    )
-    rows = tuple(
-        tuple(int(v) for v in row)
-        for row in fit.integers(plan.calibration_rows, size=(trees, depth))
-    )
-    leaves = tuple(
-        frozen_matrix(table) for table in raw.normal(size=(trees, 2**depth, plan.output_width))
-    )
-    equation = tree_equation(plan, sample, features, rows, leaves)
-    result = JointTreeFunctionRealization(plan, sample, weights, features, rows, leaves, equation)
-    result.validate(decisions)
-    if (
-        pickle.dumps(rng.bit_generator.state) != raw_before
-        or pickle.dumps(fit_rng.bit_generator.state) != fit_before
-    ):
-        raise ValueError("caller RNG changed during tree construction")
-    rng.bit_generator.state = raw.bit_generator.state
-    fit_rng.bit_generator.state = fit.bit_generator.state
-    return result
+    with raw_transactions({"raw": rng, "fit": fit_rng}, capture) as (streams, capture):
+        raw, fit = streams["raw"], streams["fit"]
+        weights = tree_feature_weights(sample.sample)
+        probabilities = np.asarray(weights, dtype=np.float64)
+        probabilities = probabilities / probabilities.max()
+        probabilities = probabilities / probabilities.sum()
+        parameters = dict(plan.parameters)
+        trees, depth = int(parameters["trees"]), int(parameters["depth"])
+        features = tuple(
+            tuple(int(v) for v in row)
+            for row in recorded_draw(
+                fit,
+                capture,
+                owner=plan.operation,
+                role="tree-features",
+                distribution="choice",
+                shape=(trees, depth),
+                parameters=(
+                    ("count", plan.input_width),
+                    ("probabilities", tuple(map(float, probabilities))),
+                ),
+            )
+        )
+        rows = tuple(
+            tuple(int(v) for v in row)
+            for row in recorded_draw(
+                fit,
+                capture,
+                owner=plan.operation,
+                role="tree-threshold-rows",
+                distribution="integers",
+                shape=(trees, depth),
+                parameters=(("high", plan.calibration_rows),),
+            )
+        )
+        leaves = tuple(
+            frozen_matrix(table)
+            for table in recorded_draw(
+                raw,
+                capture,
+                owner=plan.operation,
+                role="tree-leaves",
+                distribution="normal",
+                shape=(trees, 2**depth, plan.output_width),
+                parameters=(),
+            )
+        )
+        equation = tree_equation(plan, sample, features, rows, leaves)
+        result = JointTreeFunctionRealization(
+            plan, sample, weights, features, rows, leaves, equation
+        )
+        result.validate(decisions)
+        return result

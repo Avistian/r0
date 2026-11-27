@@ -1,7 +1,5 @@
 """Retained calibration selection and linear targets for source discretization."""
 
-import copy
-import pickle
 from dataclasses import dataclass
 
 import numpy as np
@@ -23,6 +21,7 @@ from r0.modules.priors.lib.joint_matrix_realization import (
 )
 from r0.modules.priors.lib.joint_point_realization import frozen_matrix
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions, recorded_draw
 from r0.modules.priors.lib.weight_geometry import Matrix, matrix_shape
 
 
@@ -105,41 +104,49 @@ def materialize_joint_discretization(
     calibration: NDArray[np.float64] | None,
     calibration_id: str,
     limits: CausalLimits,
+    capture: RawDrawLedger | None = None,
 ) -> JointDiscretizationFunctionRealization:
     if type(fit_rng) is not np.random.Generator or fit_rng.bit_generator is rng.bit_generator:
         raise ValueError("discretization fitting requires a separate injected fit RNG")
     admit_discretization_function(plan, decisions, limits)
     sample = freeze_function_calibration(plan, calibration, calibration_id)
-    raw_before, fit_before = (
-        pickle.dumps(rng.bit_generator.state),
-        pickle.dumps(fit_rng.bit_generator.state),
-    )
-    raw, fit = copy.deepcopy(rng), copy.deepcopy(fit_rng)
-    permutation = (
-        tuple(map(int, fit.permutation(plan.calibration_rows))) if plan.calibration_rows > 1 else ()
-    )
-    selected = permutation[: plan.center_count] if plan.calibration_rows > 1 else (0,)
-    centers = tuple(sample.sample[index] for index in selected)
-    matrix = materialize_joint_matrix(plan.matrices[0], decisions, rng=raw, limits=limits)
-    function = FrozenDiscretizationFunction(
-        centers,
-        FrozenLinearFunction(matrix.materialize()[0]),
-        float(dict(plan.parameters)["distance_p"]),
-    )
-    result = JointDiscretizationFunctionRealization(
-        plan,
-        sample,
-        permutation,
-        matrix,
-        discretization_targets(function),
-        function,
-    )
-    result.validate(decisions)
-    if (
-        pickle.dumps(rng.bit_generator.state) != raw_before
-        or pickle.dumps(fit_rng.bit_generator.state) != fit_before
-    ):
-        raise ValueError("caller RNG changed during discretization construction")
-    rng.bit_generator.state = raw.bit_generator.state
-    fit_rng.bit_generator.state = fit.bit_generator.state
-    return result
+    with raw_transactions({"raw": rng, "fit": fit_rng}, capture) as (streams, capture):
+        raw, fit = streams["raw"], streams["fit"]
+        permutation = (
+            tuple(
+                map(
+                    int,
+                    recorded_draw(
+                        fit,
+                        capture,
+                        owner=plan.operation,
+                        role="center-permutation",
+                        distribution="permutation",
+                        shape=(plan.calibration_rows,),
+                        parameters=(("count", plan.calibration_rows),),
+                    ),
+                )
+            )
+            if plan.calibration_rows > 1
+            else ()
+        )
+        selected = permutation[: plan.center_count] if plan.calibration_rows > 1 else (0,)
+        centers = tuple(sample.sample[index] for index in selected)
+        matrix = materialize_joint_matrix(
+            plan.matrices[0], decisions, rng=raw, limits=limits, capture=capture
+        )
+        function = FrozenDiscretizationFunction(
+            centers,
+            FrozenLinearFunction(matrix.materialize()[0]),
+            float(dict(plan.parameters)["distance_p"]),
+        )
+        result = JointDiscretizationFunctionRealization(
+            plan,
+            sample,
+            permutation,
+            matrix,
+            discretization_targets(function),
+            function,
+        )
+        result.validate(decisions)
+        return result
