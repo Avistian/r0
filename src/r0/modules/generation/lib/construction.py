@@ -56,7 +56,13 @@ def construct_graph(
         else:
             geometry_prior = priors.MotifGraphPrior(**fields.pop("topology_prior"))
         widths = priors.JointWidthPrior(**fields.pop("width_prior"))
-        geometry = priors.GeometryGraphRequest(
+        pipeline = fields.pop("pipeline_prior", None)
+        request_type = priors.GeometryGraphRequest
+        if pipeline is not None:
+            converter = priors.JointNumericalConverterPrior(**pipeline.pop("converter"))
+            fields["pipeline_prior"] = priors.JointPipelinePrior(converter=converter, **pipeline)
+            request_type = priors.GeometryPipelineRequest
+        geometry = request_type(
             task=task,
             topology=geometry_prior,
             width_prior=widths,

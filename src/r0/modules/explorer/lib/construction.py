@@ -1,6 +1,6 @@
 """Workbench controls adapt to public sampled-graph construction APIs."""
 
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from typing import Any, cast
 
 from r0.modules import priors
@@ -61,6 +61,20 @@ def construction_examples() -> dict[str, Any]:
             "topology_prior": asdict(priors.MotifGraphPrior(depth=1)),
         },
         "Native mixed graph (authored)": native_example(),
+        **{
+            f"Numerical pipeline: {variant}": {
+                **geometry,
+                "topology": "geometry",
+                "nodes": 3,
+                "offset": 0.0,
+                "pipeline_prior": asdict(
+                    priors.JointPipelinePrior(
+                        converter=replace(priors.JointNumericalConverterPrior(), variant=variant)
+                    )
+                ),
+            }
+            for variant in ("historical-tuple", "historical-graph", "readout-only")
+        },
     }
 
 

@@ -13,8 +13,9 @@ from r0.modules import priors
 
 request = priors.GeometryPipelineRequest(
     topology=priors.AttachmentGraphPrior(nodes=3),
-    task=priors.LinearRecipe(rows=32, context_rows=16, features=2,
-                             signal_features=2, active_features=2),
+    task=priors.LinearRecipe(
+        rows=32, context_rows=16, features=2, signal_features=2, active_features=2
+    ),
     calibration_rows=16,
     pipeline_prior=priors.JointPipelinePrior(
         channel_importance=True,

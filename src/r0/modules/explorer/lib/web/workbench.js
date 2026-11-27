@@ -53,6 +53,8 @@ function causalStructure() {
 }
 function selectMechanismNode() {
   const index = Number($("mechanism-node").value), node = mechanismEquation(mechanismDraft.nodes[index]);
+  $("mechanism-pipeline-label").hidden=!node.pipeline;
+  if(node.pipeline) $("mechanism-pipeline").value=pretty(node.pipeline);
   $("mechanism-domain-label").hidden=!mechanismInfo.native;
   if(mechanismInfo.native) $("mechanism-domain").value=pretty(mechanismDraft.nodes[index].domain);
   $("mechanism-parents").value = pretty(node.parents);
@@ -73,6 +75,7 @@ $("mechanism-load").onclick = () => act("Verifying mechanism archive…", async 
 $("mechanism-node").onchange=selectMechanismNode;
 $("mechanism-apply").onclick=()=>act("Updating mechanism draft…",async()=>{
   const selected=mechanismDraft.nodes[Number($("mechanism-node").value)], node=mechanismEquation(selected);
+  if(node.pipeline) node.pipeline=JSON.parse($("mechanism-pipeline").value);
   if(mechanismInfo.native) selected.domain=JSON.parse($("mechanism-domain").value);
   node.parents=JSON.parse($("mechanism-parents").value); node.noise_scale=JSON.parse($("mechanism-noise").value); node.function=JSON.parse($("mechanism-function").value);
   $("mechanism-recipe").value=pretty(mechanismDraft); $("workbench-note").textContent="Draft changed. Generate the edit to validate dimensions and save a linked comparison.";

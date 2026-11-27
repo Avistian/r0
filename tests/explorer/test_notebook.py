@@ -14,6 +14,7 @@ from r0.modules.explorer import show_colab_explorer
     "example",
     [
         "Native mixed graph (authored)",
+        "Numerical pipeline: readout-only",
         "Explicit causal graph",
         "Attachment geometry (r0 extension)",
         "Motif geometry (r0 adaptation)",
