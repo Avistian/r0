@@ -1,0 +1,104 @@
+{
+  "source": "c997bc2dc98db7611d7aa78552ee95467093301e",
+  "baseline": "6ba0bc2813b777749c9944d93b404ef0348168c3",
+  "archive_bytes": 15529463,
+  "archive_sha256": "9977bdccaa14cc29c9bde5c03acf669e8dabe6c63745ece7708f8857c83f7bf5",
+  "parts": [
+    {
+      "path": "0028-root-converter-spec.zip.part01",
+      "bytes": 900000,
+      "sha256": "1571e45e2645d1039ff1e2971ab6da7166dfbff5b6379a21e3000657d5f7177b"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part02",
+      "bytes": 900000,
+      "sha256": "f68f7842c4754e2f19f16274f3df14eb715727bede111f1fa73626d640e6c641"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part03",
+      "bytes": 900000,
+      "sha256": "b66428f69c74ee35b40aed47a084ddbfc89b98577ef7990795aef61b2cf75729"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part04",
+      "bytes": 900000,
+      "sha256": "0c32b16205d33343f8379a118d56e4b2681633995da67e5bf9feaf8f3ed590bf"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part05",
+      "bytes": 900000,
+      "sha256": "8a2f43b92e445a7f311d60594c2c1c6601ae1dcf91c20627f544805c7f1564c8"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part06",
+      "bytes": 900000,
+      "sha256": "87c7d31c2dbf231bd0bc44225d24e50f8c95213382c98e330acf1a398c7a89db"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part07",
+      "bytes": 900000,
+      "sha256": "e36e55bf09c5a5b51c0c54b6902301a05dab5ebfce362c44af17fef546066449"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part08",
+      "bytes": 900000,
+      "sha256": "c97f164401dbe071d61b796dc6b03dfdcbb71f648f3386ef62d6838bc6f18866"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part09",
+      "bytes": 900000,
+      "sha256": "64e66e8e25d0bc55e987e1586bdb8faa219fece6fff8b1a7e555c38a23925f37"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part10",
+      "bytes": 900000,
+      "sha256": "b47afb9b919b40976d623cbab669b94b863cf1ef5ffe953ff73fb6badcee5d2e"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part11",
+      "bytes": 900000,
+      "sha256": "f05703675cbd0d1f6f5163536d3b8fcecd05db3968683f5131792456c25d6960"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part12",
+      "bytes": 900000,
+      "sha256": "0cc6baaa1b8f2f7e90a8a782cb3ba718dcc17ba3915706b2d36238085badae10"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part13",
+      "bytes": 900000,
+      "sha256": "247b0002875eeff4e34ab008129c13dabd3fcee646987c4a3b8d8bd3062724fd"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part14",
+      "bytes": 900000,
+      "sha256": "0506574751c31030c0e30d8237a5a1b1cbc2309c3760fbd4f2c20eb03ba33028"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part15",
+      "bytes": 900000,
+      "sha256": "f4205ec802ad989c156fd063ec5b44206b2d6d5ca0f7bde2c732da4880e77b58"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part16",
+      "bytes": 900000,
+      "sha256": "d76f8a90ab9c686f9696be9163c3156a9e3052109c05894f3df5d0f2c484ea1b"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part17",
+      "bytes": 900000,
+      "sha256": "dacebe8c96516ca2c979f3605ebc787a9ae4c93dde1655894ce2ab27f74c2f1b"
+    },
+    {
+      "path": "0028-root-converter-spec.zip.part18",
+      "bytes": 229463,
+      "sha256": "c147e0b46907c2f02be797d5cf24262fa4b054127049e22904e0b12fc2ddd623"
+    }
+  ],
+  "logical_retained_files": 680,
+  "duplicate_files": 365,
+  "excluded_source_files": 158,
+  "original_manifest_sha256": "b50eb9fc765e558907649380cc708b027edd1931a7d494a9df82b6ee508f345d",
+  "publication_manifest_sha256": "60ac6f012a4fc874f99b9ffbc6b6e25889b0c9cda4e3007270f2ce7f79ad6d12",
+  "qualification": "Join ordered parts without separators and verify part/archive SHA256 before extraction. Restore copies using duplicate-paths.json. excluded-source.json binds baseline/src plus baseline-source.tar, reconstructable with git archive at the pinned baseline. MANIFEST.json retains original frozen evidence; publication/MANIFEST.json retains independently re-executed published scripts after six import-separator blank lines. Restore baseline source before verifying the complete original manifest. Eight published scripts match publication/executed-programs. Earlier verifier attempts and publication formatting issue remain retained."
+}

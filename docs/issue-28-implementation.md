@@ -118,38 +118,10 @@ repository wrapper and the explicitly selected interpreter/environment.
 ## Earlier checkpoints
 
 The original causal-core, topology, nonlinear, activation-preference, exogenous,
-factorized, importance-weighted, matrix-family and named numerical-preference
-entries are preserved verbatim in the
+factorized, importance-weighted, matrix-family, named numerical-preference and
+shared categorical/matrix-preference entries are preserved verbatim in the
 [checkpoint history](issue-28-implementation-history.md), with their original
 findings and evidence links.
-
-## Shared categorical and matrix preference checkpoint
-
-At `639dd2a`, categorical local/global/meta sampling retains named weights, fresh
-or shared distributions, exact mass selection and complete decoding provenance.
-All five matrix families bind controlled fields to retained numerical/categorical
-draws with full parameter accounting. Four profiles expose shared, refreshed,
-local and global matrix preferences through all three topology families and saved
-replay. [Laws, admission, source distinctions and evidence](issue-28-shared-matrix-preferences.md).
-
-Full checks pass **649 tests, one skipped**, including static gates. Independent
-verification passes **167 bounded probes** and **504 exact legacy outcomes**,
-including four failures on both old and new revisions. An initial SCOPED_REJECT
-found loss of a valid positive subnormal category through an unnecessary probability
-view requirement. The repaired construction and decoder preserve the exact mass;
-independent integer and Decimal oracles pass. The rejection, RED/GREEN, final
-receipt and original harness errors remain inspectable. Standards' missing
-publication-path finding is resolved; request-factory duplication is nonblocking.
-
-The unfiltered author census retains **764 valid / 768 attempted** across the four
-profiles, with four complete overflow failures and all five matrix families.
-All **768 recipe identities** reproduce after the repair; this qualifies the prior
-census recipes, not fresh task generation. Backend evidence remains separate from
-browser/Colab/GPU and scientific acceptance. Smoke/eval-smoke are NOT_AVAILABLE.
-Complete source activation selection/calibration, wider graph/network/tree/GP and
-root/noise/weight variants, typed states, interventions and the full workbench remain
-required. The full goal stays active.
-
 
 ## Source activation selection and authored calibration checkpoint
 
@@ -292,3 +264,28 @@ source root-law and independent sampled-pipeline integration remain required.
 Shared shape/weight preferences, activation converters, source standardization,
 source profiles, all wider mechanisms and actual browser/Colab/GPU/scale evidence
 remain in scope. The full #28 goal stays active.
+
+
+## Independent root input and activation-converter checkpoint
+
+Source `c997bc2` adds a separately keyed root input before activation/pipeline,
+with independent later structural noise and signal-dependent response. Gaussian,
+uniform, Student-t, mixture, truncated, ball and factored laws compose through the
+existing frozen record. One-channel fitted standard activations now support all
+three converter variants; readout/state moments and ancestry follow each branch.
+[Contract, source adaptations and evidence](issue-28-root-input-converters.md).
+
+Full checks pass **797 tests, one skipped**, all static gates. Independent scoped
+review passes 306 checks, including 209 numerical comparisons (maximum absolute
+error 8.88e-16), 17 expected rejections and nine saved variant/task-type workflows.
+Exact resource admission matches 21 parameters / 162,432 estimated bytes; one-below
+limits reject. All 168 legacy proposals remain byte-identical, including four
+retained numerical failures. Eight exact executed programs and 260 imported-source
+receipts bind the evidence. Standards has zero hard findings and one nonblocking
+decoder-duplication advisory. Initial verifier setup errors remain in the archive.
+
+This advances authored `I2.converter.03` / `.03.graph` and the separate root-input
+stage. Source RandomPoints functions, covariance/mixture parameter sampling,
+standalone Standardize, independent ancestral fitting, shared choices and full
+source profiles/census remain required. No browser/Colab, GPU, scale or scientific
+acceptance is claimed. The full #28 goal remains active.

@@ -1,0 +1,68 @@
+{
+  "status": "DEVELOPMENT_HISTORY_NOT_EXACT_REVISION_ACCEPTANCE",
+  "note": "Raw exploratory RED/GREEN and diagnostic logs. Intermediate source/test snapshots were not retained; setup and tuple/list assertion mistakes are retained and distinguished from product defects. Final committed source is checked separately.",
+  "archive": "0028-root-converter-development.zip",
+  "sha256": "32daf12f18e632fa0603b847b6d406d00ca8ed150c6b0fa8369a1e259ba0c3c3",
+  "files": [
+    {
+      "path": "r0-28-activation-converter-green.log",
+      "bytes": 98,
+      "sha256": "9008032a770b9c7f86522f31958150c2866d1c6c1dc42d9dcb5ab32dadd2725c"
+    },
+    {
+      "path": "r0-28-activation-converter-red.log",
+      "bytes": 10013,
+      "sha256": "21746271ddd78a6d9f85201bbc45f110118a9f40bdf4874aab835b5fea74289c"
+    },
+    {
+      "path": "r0-28-root-act-final-focused.log",
+      "bytes": 99,
+      "sha256": "2c65add5920771aa4935a9753ed0d60941e1ccc2b7ea6c2391e794dc10530f7d"
+    },
+    {
+      "path": "r0-28-root-act-invariants-fixed.log",
+      "bytes": 99,
+      "sha256": "f669d513628f633361643568f43f5e29fab13ba69980029a16525aab2382f074"
+    },
+    {
+      "path": "r0-28-root-act-invariants.log",
+      "bytes": 3454,
+      "sha256": "fe01c9cf92c39badd5ec8b8104b82a78d37d0680a993ae7d02815331540e89e1"
+    },
+    {
+      "path": "r0-28-root-act-types.log",
+      "bytes": 37,
+      "sha256": "6d88a1b220adb7a3d62092b6e38431f0b3fe8babe9864fab90e5849766260332"
+    },
+    {
+      "path": "r0-28-root-act-workflows.log",
+      "bytes": 2454,
+      "sha256": "72f0d1ec8093a8d799591e1de31f758da91b81b1dcb879fc47d0ce7c4688ca01"
+    },
+    {
+      "path": "r0-28-root-input-green.log",
+      "bytes": 98,
+      "sha256": "18f46c04e14671be81e081e7cd3910b913bc643549561cc325d37b98e03206e1"
+    },
+    {
+      "path": "r0-28-root-input-red.log",
+      "bytes": 942,
+      "sha256": "c449c49884a62e461229e47d63ad0ada36979661587ab5e760a1ecfc9eb19109"
+    },
+    {
+      "path": "r0-28-root-moments-green.log",
+      "bytes": 98,
+      "sha256": "0c9e22a14dbcca29d40702b6964bedced2fba003bc20f2b92a2ada03299ddbe9"
+    },
+    {
+      "path": "r0-28-root-moments-red.log",
+      "bytes": 3428,
+      "sha256": "d86c2b2863726b369972667864325b232950b278ccb48066f1a82f3d2ba6ae44"
+    },
+    {
+      "path": "r0-28-root-scale-trace-red.log",
+      "bytes": 2460,
+      "sha256": "11e5459adb62fdabb5b31bb5d2f3b6bf98a02773cea34442e622cefe1c179f82"
+    }
+  ]
+}

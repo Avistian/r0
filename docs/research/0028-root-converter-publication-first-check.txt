@@ -1,0 +1,169 @@
+python3 scripts/run_check.py python scripts/check_checkout.py && python3 scripts/run_check.py python scripts/check_hooks.py
+Interpreter: /home/avist/Projects/r0/.venv/bin/python3
+r0 source: /tmp/r0-28/src/r0/__init__.py
+Expected package: /tmp/r0-28/src/r0
+Active commit hook: /tmp/r0-28/.githooks/pre-commit
+python3 scripts/run_check.py python scripts/check_tracked_files.py
+python3 scripts/run_check.py python scripts/check_artifact_sizes.py
+python3 scripts/run_check.py ruff format --check .
+440 files already formatted
+python3 scripts/run_check.py ruff check .
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/verify_root_converters/ancestry_cases.py:1:1
+   |
+ 1 | / import json
+ 2 | | from dataclasses import replace
+ 3 | |
+ 4 | | import numpy as np
+ 5 | | from common import (
+ 6 | |     close,
+ 7 | |     draw,
+ 8 | |     fitted,
+ 9 | |     ok,
+10 | |     plain,
+11 | |     save,
+12 | |     task_settings,
+13 | | )
+14 | | from r0.modules import priors as p
+   | |__________________________________^
+help: Organize imports
+   |
+13 | )
+14 +
+15 | from r0.modules import priors as p
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/verify_root_converters/common.py:5:1
+   |
+ 3 |   os.environ.setdefault("OMP_NUM_THREADS", "1")
+ 4 |   os.environ.setdefault("MKL_NUM_THREADS", "1")
+ 5 | / import hashlib
+ 6 | | import json
+ 7 | | import platform
+ 8 | | import subprocess
+ 9 | | import sys
+10 | | from dataclasses import asdict
+11 | | from pathlib import Path
+12 | |
+13 | | import numpy as np
+14 | | import torch
+15 | | from r0.modules import priors as p
+   | |__________________________________^
+16 |
+17 |   OUT = Path(
+   |
+help: Organize imports
+   |
+14 | import torch
+15 +
+16 | from r0.modules import priors as p
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/verify_root_converters/contract_cases.py:1:1
+   |
+ 1 | / import json
+ 2 | | from dataclasses import asdict, replace
+ 3 | |
+ 4 | | import numpy as np
+ 5 | | from common import (
+ 6 | |     close,
+ 7 | |     fitted,
+ 8 | |     ok,
+ 9 | |     plain,
+10 | |     reject,
+11 | |     save,
+12 | |     task_settings,
+13 | | )
+14 | | from r0.modules import priors as p
+   | |__________________________________^
+help: Organize imports
+   |
+13 | )
+14 +
+15 | from r0.modules import priors as p
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/verify_root_converters/legacy_capture.py:5:1
+   |
+ 3 |   os.environ["OMP_NUM_THREADS"] = "1"
+ 4 |   os.environ["MKL_NUM_THREADS"] = "1"
+ 5 | / import hashlib
+ 6 | | import json
+ 7 | | import platform
+ 8 | | import sys
+ 9 | | from dataclasses import asdict
+10 | | from pathlib import Path
+11 | |
+12 | | import torch
+13 | | from r0.modules import priors as p
+   | |__________________________________^
+14 |
+15 |   torch.set_num_threads(1)
+   |
+help: Organize imports
+   |
+12 | import torch
+13 +
+14 | from r0.modules import priors as p
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/verify_root_converters/pipeline_cases.py:1:1
+   |
+ 1 | / from dataclasses import asdict
+ 2 | |
+ 3 | | import numpy as np
+ 4 | | from common import (
+ 5 | |     OUT,
+ 6 | |     close,
+ 7 | |     draw,
+ 8 | |     fitted,
+ 9 | |     ok,
+10 | |     save,
+11 | |     task_settings,
+12 | |     trace,
+13 | | )
+14 | | from r0.modules import priors as p
+15 | | from r0.modules.explorer import ExplorerSession
+   | |_______________________________________________^
+help: Organize imports
+   |
+13 | )
+14 +
+15 | from r0.modules import priors as p
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/verify_root_converters/root_cases.py:1:1
+   |
+ 1 | / import json
+ 2 | | import subprocess
+ 3 | | from dataclasses import asdict, replace
+ 4 | |
+ 5 | | import numpy as np
+ 6 | | from common import (
+ 7 | |     HEAD,
+ 8 | |     REPO,
+ 9 | |     close,
+10 | |     custody,
+11 | |     draw,
+12 | |     ok,
+13 | |     plain,
+14 | |     save,
+15 | |     trace,
+16 | | )
+17 | | from r0.modules import priors as p
+   | |__________________________________^
+help: Organize imports
+   |
+16 | )
+17 +
+18 | from r0.modules import priors as p
+   |
+
+Found 6 errors.
+[*] 6 fixable with `--fix`.
+make: *** [Makefile:10: lint] Error 1

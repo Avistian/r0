@@ -1,0 +1,21 @@
+Execution used the actual published scripts in /tmp/r0-28/scripts/verify_root_converters; source HEAD remained c997bc2dc98db7611d7aa78552ee95467093301e. No installation or environment mutation occurred. Use new destination directories for replay.
+
+Repository-path style checks:
+/home/avist/Projects/r0/.venv/bin/ruff check --config /tmp/r0-28/pyproject.toml /tmp/r0-28/scripts/verify_root_converters
+/home/avist/Projects/r0/.venv/bin/ruff format --check --config /tmp/r0-28/pyproject.toml /tmp/r0-28/scripts/verify_root_converters
+
+Numerical verification:
+PYTHONDONTWRITEBYTECODE=1 ROOT_CONVERTER_REPO=/tmp/r0-28 ROOT_CONVERTER_EVIDENCE=/tmp/root-converter-spec-c997bc2-publication/final PYTHONPATH=/tmp/r0-28/src /home/avist/Projects/r0/.venv/bin/python3 /tmp/r0-28/scripts/verify_root_converters/verify.py
+
+Baseline legacy capture (reuses frozen local Git archive read-only):
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/tmp/root-converter-spec-c997bc2/baseline/src /home/avist/Projects/r0/.venv/bin/python3 /tmp/r0-28/scripts/verify_root_converters/legacy_capture.py /tmp/root-converter-spec-c997bc2-publication/final-legacy-baseline
+
+Candidate legacy capture:
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/tmp/r0-28/src /home/avist/Projects/r0/.venv/bin/python3 /tmp/r0-28/scripts/verify_root_converters/legacy_capture.py /tmp/root-converter-spec-c997bc2-publication/final-legacy-head
+
+Byte/source custody audit:
+ROOT_CONVERTER_PACKAGE=/tmp/root-converter-spec-c997bc2-publication ROOT_CONVERTER_REPO=/tmp/r0-28 PYTHONDONTWRITEBYTECODE=1 /home/avist/Projects/r0/.venv/bin/python3 /tmp/r0-28/scripts/verify_root_converters/audit.py
+
+The source archive can be reconstructed locally with git archive 6ba0bc2813b777749c9944d93b404ef0348168c3 src. Original baseline archive SHA256: ae92c22c2aa8c7a93be2bad63260e31a00073ac2a87c4f2434fdc184faf7974c.
+
+MANIFEST.json is the final overall supplement manifest; it excludes itself and __pycache__ paths. Earlier per-run and package manifests are execution-time snapshots. Exact published script snapshots are under executed-programs; these are copies retained after executing the repository paths, with their hashes verified against execution custody. The original /tmp/root-converter-spec-c997bc2 package remains unchanged.

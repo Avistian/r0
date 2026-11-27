@@ -87,8 +87,84 @@ source Standardize, complete source profiles and their census remain outstanding
 Actual browser/Colab interaction, GPU execution, throughput and scientific
 comparison are not established by this component's API checks.
 
-## Verification status
+## Option-level coverage
 
-The source and public-workflow checks, independent numerical review, full suite,
-and retained evidence are recorded below when completed. This section currently
-marks component acceptance **PENDING**; it makes no unrun verification claim.
+The authored activation surface advances `I2.converter.03` and
+`I2.converter.03.graph`, together with the explicit corrected readout-only variant.
+The root input stage supplies compositions needed for `I2.root.01`–`.07` and the
+accepted broader root-law family. Source random-covariance/function sampling and
+`I2.root.08`–`.11` mixture parameter laws remain separate requirements: the existing
+two-mode input mixture is not the source Gaussian-mixture catalog. The inventory
+remains 583 source/extension/disposition records plus 140 specification anchors;
+these are traceability entries, not counts of completed algorithms.
+
+## Verification at the frozen source
+
+Source commit: `c997bc2dc98db7611d7aa78552ee95467093301e`.
+Baseline: `6ba0bc2813b777749c9944d93b404ef0348168c3`.
+The full `make check` passes **797 tests, one skipped**, all static gates, in
+427.52 seconds. [Raw output](research/0028-root-converter-check-c997bc2.txt).
+The nine newly added saved workflows cover every converter variant and task type;
+the existing nine pipeline workflows also remain green. The existing CUDA skip
+is retained. The [CLI help](research/0028-root-converter-cli-help.txt) still exposes
+no train/eval commands, so smoke/eval-smoke are NOT_AVAILABLE.
+
+```sh
+UV_CACHE_DIR=/tmp/r0-28-uv-cache \
+UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv make check
+```
+
+[Development history](research/0028-root-converter-development.json) preserves
+raw RED/GREEN and exploratory failures, including fixture/assertion mistakes.
+Intermediate snapshots were not retained; those logs are development history,
+not exact-revision acceptance evidence. The committed tests and full check above
+provide the reproducible author check.
+
+## Standards
+
+Independent review finds **zero hard violations** and one nonblocking heuristic:
+the root-law and innovation-law decoder blocks duplicate their conversion shape.
+[Unedited report](research/0028-root-converter-standards.txt). The advisory remains
+visible; it is not a numerical or contract rejection.
+
+## Spec
+
+Independent component review finds **no actionable defects**: 306 checks pass,
+including 209 numerical comparisons at predeclared rtol=atol=2e-11, maximum absolute
+error 8.88e-16, and 17 expected contract rejections. Seven root laws under both noise
+placements are reconstructed using independent NumPy equations and the documented
+stream identity. Standard activation fitting, all converter branches, moments,
+ancestry, frozen controls, and nine saved/reopened/replayed workflows are covered.
+Exact stream replay is not statistical proof of independence or upstream RNG parity.
+[Unedited report](research/0028-root-converter-spec-review.txt),
+[totals](research/0028-root-converter-spec-totals.json).
+
+Independent resource arithmetic matches **21 parameters / 162,432 estimated bytes**,
+including the 256-row truncated-draw floor. Exact limits admit; either limit one
+lower rejects. This remains an array estimate, not an RSS measurement.
+
+All **168 legacy proposals** match the baseline byte for byte: 164 successes and
+four identical retained numerical failures. The canonical record SHA256 is
+`03a5e4bd1334a6d0721b342491a8bcf124bd5bc4998c41395265608cbcd67969`.
+An audit checks 260 imported-source receipts, covering 100 distinct module names,
+against both pinned Git bytes and the executed files. Eight published programs
+match the exact executed bytes after an independent publication follow-up.
+Ruff classified imports differently inside the repository, requiring six import
+separator blank lines; the reviewer re-executed the actual published scripts and
+retained a [separate report](research/0028-root-converter-publication-review.txt).
+The original package stayed unchanged. The initial verifier NumPy-scalar input mistake
+is retained as HARNESS_ERROR, separate from product findings.
+
+[Artifact custody](research/0028-root-converter-spec-artifacts.json) identifies the
+split ZIP, original manifest, duplicate-file reconstruction and Git-reconstructable
+baseline source. [Recovery instructions](research/0028-root-converter-artifact-recovery.txt)
+verify both original manifests after restoring the archive. [Reproduction commands](research/0028-root-converter-reproduction.txt)
+use the existing environment and the published programs in
+`scripts/verify_root_converters/`. The archive retains original attempts at its
+root and the independently re-executed publication supplement under `publication/`.
+Its `executed-programs/` snapshots match published bytes. Use fresh output paths
+to preserve earlier attempts.
+
+Scoped review totals: Standards zero hard / one advisory; Spec zero actionable
+findings. Full issue #28 acceptance, actual browser/Colab interaction, GPU, supported
+workload measurements and scientific comparisons remain outstanding.
