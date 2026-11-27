@@ -7,20 +7,23 @@ scientific acceptance or whole-issue completion.
 
 ## Latest verified publication checkpoint
 
-Source `a65fbb9f5180fbd2b570399880d7c9f6b2369d8e` passed full `make check`:
-2,428 passed, one skipped, one warning in 1,250.47 seconds; static gates passed.
+Source `0935822ab78cb7b49f803f5a68b4a521a38e4d87` passed full `make check`:
+2,488 passed, one skipped, one warning in 1,415.62 seconds; static gates passed.
 The warning is sklearn's high-class-count diagnostic in the observed-class-map
-fixture. This checkpoint adds explicit fitted-population lifecycles, composed
-parameter/lifecycle sampling and repaired typed-converter workflows.
-See the [population/converter checkpoint](issue-28-population-converter-checkpoint.md)
-for source qualifications, independent checks and retained rejection history.
+fixture. This adds network input views, independent variance matching, paired
+workflows and guarded edit/save/curve paths to the previous population/converter
+checkpoint. See the [network-view checkpoint](issue-28-network-view-checkpoint.md)
+for exact scope and retained rejection history.
 
+The first run passed all tests but failed its environment-integrity gate after
+an unrelated focused command changed editable metadata. That FAILED receipt is
+retained separately; the clean rerun on the same frozen source passed all gates.
 The [atomic delivery map](issue-28-atomic-delivery.md) separates mapped behavior
 from unaudited requirements. Hosted/GPU, complete measured envelopes and full
 paper-option coverage remain open. Smoke/eval-smoke remain NOT_AVAILABLE because
-training/evaluation CLI commands are absent. Network input views, variance
-matching, their save-guard repairs and neural hyperprior profiles are later
-candidates outside this full-suite result.
+training/evaluation CLI commands are absent. Neural hyperprior profiles,
+internal neural noise and source-specific root profiles remain later candidates
+outside this full-suite result.
 
 ## Combined checkpoint scoped evidence
 

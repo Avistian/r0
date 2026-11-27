@@ -134,7 +134,9 @@ Checkpoint `a65fbb9` adds explicit fitted population lifecycles, sampled-paramet
 composition and repaired typed-converter workflows. Full check passed 2,428 tests,
 one skip and one warning; see the
 [qualified checkpoint](issue-28-population-converter-checkpoint.md).
-Network input views and their matching/save guards remain later candidates.
+Network input views and matching/save guards are included in source0935822's
+2,488-test checkpoint; see [scoped evidence](issue-28-network-view-checkpoint.md).
+Neural hyperprior/noise and source-root profiles remain later candidates.
 Source-specific neural/noise/root profiles, XGBoost and every unimplemented
 inventory option remain required.
 
