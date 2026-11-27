@@ -15,6 +15,7 @@ from r0.modules.priors.lib.causal import (
     causal_rng,
     causal_values,
 )
+from r0.modules.priors.lib.node_pipeline import pipeline_from_dict
 
 
 def causal_steps(
@@ -30,8 +31,22 @@ def causal_steps(
 
     exogenous: list[torch.Tensor] = []
     scales: list[torch.Tensor] = []
+    readouts: list[torch.Tensor] = []
+    pipeline_steps: list[list[tuple[str, torch.Tensor]]] = []
+    pipelines = (
+        tuple(pipeline_from_dict(p) for p in card["pipelines"]) if "pipelines" in card else None
+    )
     values, innovations = causal_values(
-        nodes, rows, rng, "cpu", indices, exogenous_values=exogenous, noise_scales=scales
+        nodes,
+        rows,
+        rng,
+        "cpu",
+        indices,
+        exogenous_values=exogenous,
+        noise_scales=scales,
+        pipelines=pipelines,
+        readout_values=readouts,
+        pipeline_steps=pipeline_steps if pipelines is not None else None,
     )
     for i, (node, value, noise) in enumerate(zip(nodes, values, innovations, strict=True)):
         stochastic = isinstance(node, StochasticCausalNode)
@@ -87,20 +102,57 @@ def causal_steps(
                 if node.noise_position == "before_output"
                 else f"output_activation({affine}) + innovation"
             )
+            if pipelines is not None:
+                parameters["pipeline"] = asdict(pipelines[i])
+                equation = "node_importance * (pipeline(output_activation(affine)) + innovation)"
             parameters.update(
                 input_activation=asdict(node.input_activation),
                 output_activation=asdict(node.output_activation),
                 noise_position=node.noise_position,
             )
+        node_parents = [*[f"causal-{p}" for p in node.parents], f"innovation-{i}"]
+        if pipelines is not None:
+            previous = [f"causal-{p}" for p in node.parents]
+            for name, stage_value in pipeline_steps[i]:
+                key = f"pipeline-{i}-{name}"
+                formula = {
+                    "input": "output_activation(input_activation(parents) @ weights + bias)",
+                    "channel-importance": "previous * channel_importance",
+                    "l2": "previous * frozen L2 factor",
+                    "converter-state": "converter state before innovation",
+                    "converted-readout": "converter readouts before innovation",
+                }.get(name, "apply frozen ordered stage")
+                add(
+                    key,
+                    f"Node {i} {name}",
+                    previous,
+                    formula,
+                    stage_value,
+                    {"pipeline": asdict(pipelines[i])},
+                )
+                if name not in ("converter-state", "converted-readout"):
+                    previous = [key]
+            node_parents = [f"pipeline-{i}-converter-state", f"innovation-{i}"]
         add(
             f"causal-{i}",
             f"Causal node {i}",
-            [*[f"causal-{p}" for p in node.parents], f"innovation-{i}"],
+            node_parents,
             equation,
             value,
             parameters,
         )
-    raw = torch.stack([values[i][:, j] for i, j in card["target"]], dim=1)
+        if pipelines is not None:
+            add(
+                f"readout-{i}",
+                f"Node {i} converted readout",
+                ([f"pipeline-{i}-converted-readout"] if pipelines[i].converters else [])
+                + ([f"causal-{i}"] if len(pipelines[i].converters) < pipelines[i].channels else []),
+                "explicit converter output before innovation and node importance; "
+                "other channels use final state",
+                readouts[i],
+                {"pipeline": asdict(pipelines[i])},
+            )
+    raw = torch.stack([readouts[i][:, j] for i, j in card["target"]], dim=1)
     calibration = card["calibration"]
     scores = (raw - torch.tensor(calibration["center"], dtype=torch.float64)) / torch.tensor(
         calibration["scale"], dtype=torch.float64
@@ -108,7 +160,12 @@ def causal_steps(
     add(
         "signal",
         "Causal target readout",
-        list(dict.fromkeys(f"causal-{i}" for i, _ in card["target"])),
+        list(
+            dict.fromkeys(
+                f"readout-{i}" if pipelines is not None else f"causal-{i}"
+                for i, _ in card["target"]
+            )
+        ),
         "(declared target channels - fixed calibration center) / fixed scale",
         scores,
         {

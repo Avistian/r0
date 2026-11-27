@@ -2,8 +2,10 @@
 
 import math
 
+from r0.modules.priors.lib.calibrated_activations import CalibratedActivation
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode, CausalNode, StochasticCausalNode
+from r0.modules.priors.lib.node_pipeline import CausalNodePipeline
 
 _BOUNDED = {
     "kumaraswamy",
@@ -60,20 +62,39 @@ def _transform(
     ], constants
 
 
-def causal_moment_orders(nodes: tuple[CausalNode, ...]) -> list[list[float]]:
+def _pipeline_transform(
+    orders: list[float], constants: list[bool], activation: CausalActivation
+) -> tuple[list[float], list[bool]]:
+    needs_second = isinstance(activation, CalibratedActivation) or activation.kind == "l2_normalize"
+    if needs_second and any(order <= 2 for order in orders):
+        raise ValueError("pipeline normalization requires certified finite input second moments")
+    output, fixed = _transform(orders, constants, activation)
+    if isinstance(activation, CalibratedActivation) and any(order <= 2 for order in output):
+        raise ValueError("pipeline standardization requires certified finite output second moments")
+    return output, fixed
+
+
+def causal_moment_orders(
+    nodes: tuple[CausalNode, ...],
+    *,
+    pipelines: tuple[CausalNodePipeline, ...] | None = None,
+    readout_orders: list[list[float]] | None = None,
+) -> list[list[float]]:
     """Orders below each returned bound are finite; zero means not certified.
 
     Sums require each summand's moments. Noise-response products use independence
     of a node's exogenous draw from its ancestors. This is a sufficient certificate,
     not an exact symbolic integrability solver and not sample-estimated moments.
     """
+    transform = _pipeline_transform if pipelines is not None else _transform
     moments: list[list[float]] = []
     constants: list[list[bool]] = []
-    for node in nodes:
+    for index, node in enumerate(nodes):
+        captured: dict[int, float] = {}
         incoming = [order for p in node.parents for order in moments[p]]
         fixed = [known for p in node.parents for known in constants[p]]
         if isinstance(node, ActivatedCausalNode):
-            incoming, fixed = _transform(incoming, fixed, node.input_activation)
+            incoming, fixed = transform(incoming, fixed, node.input_activation)
         affine_fixed = [
             all(known or node.weights[i][j] == 0 for i, known in enumerate(fixed))
             for j in range(len(node.bias))
@@ -103,14 +124,46 @@ def causal_moment_orders(nodes: tuple[CausalNode, ...]) -> list[list[float]]:
                 if not noise_fixed[j]:
                     noise[j] = min(base, affine[j] / response.power) if response.strength else base
         if isinstance(node, ActivatedCausalNode) and node.noise_position == "after_output":
-            output, output_fixed = _transform(affine, affine_fixed, node.output_activation)
+            output, output_fixed = transform(affine, affine_fixed, node.output_activation)
+            if pipelines is not None:
+                pipeline = pipelines[index]
+                for stage in pipeline.stages:
+                    output, output_fixed = transform(output, output_fixed, stage)
+                if pipeline.channel_importance:
+                    output_fixed = [
+                        fixed or factor == 0
+                        for fixed, factor in zip(
+                            output_fixed, pipeline.channel_importance, strict=True
+                        )
+                    ]
+                    output = [
+                        math.inf if fixed else order
+                        for fixed, order in zip(output_fixed, output, strict=True)
+                    ]
+                if pipeline.l2 is not None:
+                    output, output_fixed = transform(output, output_fixed, pipeline.l2)
+                for converter in pipelines[index].converters:
+                    channel = converter.channel
+                    warped, fixed_warped = _transform(
+                        [output[channel]], [output_fixed[channel]], converter.transform
+                    )
+                    captured[channel] = (
+                        output[channel] if converter.variant == "historical-tuple" else warped[0]
+                    )
+                    if converter.variant != "readout-only":
+                        output[channel], output_fixed[channel] = warped[0], fixed_warped[0]
             moments.append([min(a, n) for a, n in zip(output, noise, strict=True)])
             constants.append([a and n for a, n in zip(output_fixed, noise_fixed, strict=True)])
         else:
             output = [min(a, n) for a, n in zip(affine, noise, strict=True)]
             output_fixed = [a and n for a, n in zip(affine_fixed, noise_fixed, strict=True)]
             if isinstance(node, ActivatedCausalNode):
-                output, output_fixed = _transform(output, output_fixed, node.output_activation)
+                output, output_fixed = transform(output, output_fixed, node.output_activation)
             moments.append(output)
             constants.append(output_fixed)
+        if readout_orders is not None:
+            readout = list(moments[-1])
+            for channel, order in captured.items():
+                readout[channel] = order
+            readout_orders.append(readout)
     return moments

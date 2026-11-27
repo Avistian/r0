@@ -47,6 +47,7 @@ from r0.modules.priors.lib.causal_graph import CausalGraph as CausalGraph
 from r0.modules.priors.lib.causal_graph import CausalGraphPrior as CausalGraphPrior
 from r0.modules.priors.lib.causal_graph import sample_causal_graph as sample_causal_graph
 from r0.modules.priors.lib.causal_limits import CausalLimits as CausalLimits
+from r0.modules.priors.lib.causal_pipeline import CausalPipelineRecipe as CausalPipelineRecipe
 from r0.modules.priors.lib.causal_preferred import PreferredCausalRecipe as PreferredCausalRecipe
 from r0.modules.priors.lib.causal_sampled import SampledCausalRecipe as SampledCausalRecipe
 from r0.modules.priors.lib.causal_sampling import sample_causal_recipe as sample_causal_recipe
@@ -73,6 +74,8 @@ from r0.modules.priors.lib.kernels import StationaryKernel as StationaryKernel
 from r0.modules.priors.lib.linear import LinearRecipe as LinearRecipe
 from r0.modules.priors.lib.linear import generate_linear as generate_linear
 from r0.modules.priors.lib.matrix_preference_prior import CausalMatrixPrior as CausalMatrixPrior
+from r0.modules.priors.lib.node_pipeline import CausalNodePipeline as CausalNodePipeline
+from r0.modules.priors.lib.node_pipeline import NumericalConverter as NumericalConverter
 from r0.modules.priors.lib.pairs import TaskPair as TaskPair
 from r0.modules.priors.lib.pairs import compare_pair as compare_pair
 from r0.modules.priors.lib.pairs import generate_pair as generate_pair

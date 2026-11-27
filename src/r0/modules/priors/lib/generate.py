@@ -7,6 +7,7 @@ from r0.modules.priors.lib.categorical_preferences import categorical_preference
 from r0.modules.priors.lib.causal import CausalRecipe, causal_node_from_dict, generate_causal
 from r0.modules.priors.lib.causal_graph import CausalGraph, CausalGraphPrior
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.causal_pipeline import CausalPipelineRecipe
 from r0.modules.priors.lib.causal_preferred import PreferredCausalRecipe
 from r0.modules.priors.lib.causal_sampled import SampledCausalRecipe
 from r0.modules.priors.lib.compositions import (
@@ -28,6 +29,7 @@ from r0.modules.priors.lib.kernels import (
 )
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.matrix_preference_prior import CausalMatrixPrior
+from r0.modules.priors.lib.node_pipeline import pipeline_from_dict
 from r0.modules.priors.lib.parameter_preferences import parameter_preferences_from_dict
 from r0.modules.priors.lib.polynomial import PolynomialRecipe
 from r0.modules.priors.lib.preference_binding import PreferenceBinding
@@ -135,6 +137,9 @@ def recipe_from_dict(data: object) -> Recipe:
             if "matrix_prior" in fields:
                 return PreferredCausalRecipe(**fields)
             return SampledCausalRecipe(**fields)
+        if "pipelines" in fields:
+            fields["pipelines"] = tuple(pipeline_from_dict(p) for p in fields["pipelines"])
+            return CausalPipelineRecipe(**fields)
         return CausalRecipe(**fields)
     if version == "composite-v1":
         task = recipe_from_dict(fields.get("task", {}))

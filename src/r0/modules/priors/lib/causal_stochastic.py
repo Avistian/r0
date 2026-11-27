@@ -1,6 +1,7 @@
 """Evaluate recorded stochastic equations, preserving separate exogenous and scale traces."""
 
 import math
+from collections.abc import Callable
 from typing import Any
 
 import torch
@@ -15,6 +16,8 @@ def stochastic_value(
     parents: torch.Tensor | None,
     node_index: int,
     diagnostics: list[dict[str, Any]] | None,
+    *,
+    before_noise: Callable[[torch.Tensor], torch.Tensor] | None = None,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     affine = torch.zeros_like(raw) + torch.tensor(node.bias, dtype=raw.dtype, device=raw.device)
     if parents is not None:
@@ -63,6 +66,8 @@ def stochastic_value(
         if entry is not None:
             diagnostics.append({"node": node_index, "stage": "output", **entry})
     value = activate(argument, node.output_activation)
+    if before_noise is not None:
+        value = before_noise(value)
     if node.noise_position == "after_output":
         value = value + innovation
     if not torch.isfinite(value).all():

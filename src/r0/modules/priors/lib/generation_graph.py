@@ -117,10 +117,17 @@ def explain_generation(
     add(
         "inputs",
         "Observed inputs",
-        list(dict.fromkeys(f"causal-{i}" for i, _ in card["observed"]))
+        list(
+            dict.fromkeys(
+                f"readout-{i}" if "pipelines" in card else f"causal-{i}"
+                for i, _ in card["observed"]
+            )
+        )
         if card["version"] in ("causal-v1", "causal-v2")
         else [],
-        "select declared causal node channels"
+        "select declared converter readouts"
+        if "pipelines" in card
+        else "select declared causal node channels"
         if card["version"] in ("causal-v1", "causal-v2")
         else "independent per-column input streams",
         inputs,

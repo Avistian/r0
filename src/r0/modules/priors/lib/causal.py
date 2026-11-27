@@ -1,6 +1,5 @@
 """Explicit acyclic structural equations behind the shared task interface."""
 
-from collections.abc import Callable, Sequence
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -8,10 +7,7 @@ import numpy as np
 import torch
 
 from r0.modules.priors.lib.calibration import stable_calibration
-from r0.modules.priors.lib.causal_activations import (
-    activate,
-    activation_diagnostic,
-)
+from r0.modules.priors.lib.causal_evaluation import causal_values as causal_values
 from r0.modules.priors.lib.causal_graph import CausalGraph
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.causal_moments import causal_moment_orders
@@ -20,9 +16,9 @@ from r0.modules.priors.lib.causal_nodes import CausalNode as CausalNode
 from r0.modules.priors.lib.causal_nodes import MatrixCausalNode as MatrixCausalNode
 from r0.modules.priors.lib.causal_nodes import StochasticCausalNode as StochasticCausalNode
 from r0.modules.priors.lib.causal_nodes import causal_node_from_dict as causal_node_from_dict
-from r0.modules.priors.lib.causal_stochastic import stochastic_value
-from r0.modules.priors.lib.exogenous import sample_exogenous
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.node_pipeline import CausalNodePipeline
+from r0.modules.priors.lib.pipeline_ancestry import pipeline_ancestry
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.task_output import complete_task
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -45,6 +41,14 @@ class CausalRecipe:
     topology: CausalGraph | None = None
     construction: str = "authored"
     version: str = "causal-v1"
+
+    @property
+    def node_pipelines(self) -> tuple[CausalNodePipeline, ...] | None:
+        return None
+
+    @property
+    def pipeline_working_channels(self) -> int:
+        return sum(p.working_extra_channels for p in self.node_pipelines or ())
 
     @property
     def admission_calibration_rows(self) -> int:
@@ -140,6 +144,7 @@ class CausalRecipe:
             features=self.task.features,
             outputs=outputs,
             extra_parameters=self.sampling_parameter_count,
+            extra_working_channels=self.pipeline_working_channels,
         )
         for node in self.nodes:
             if (
@@ -148,92 +153,16 @@ class CausalRecipe:
             ):
                 raise ValueError("recorded weights disagree with their frozen construction")
 
-        if self.normalize and any(isinstance(node, StochasticCausalNode) for node in self.nodes):
-            orders = causal_moment_orders(self.nodes)
+        if self.normalize and (
+            self.node_pipelines is not None
+            or any(isinstance(node, StochasticCausalNode) for node in self.nodes)
+        ):
+            orders: list[list[float]] = []
+            causal_moment_orders(self.nodes, pipelines=self.node_pipelines, readout_orders=orders)
             if any(orders[i][j] <= 2 for i, j in self.target):
                 raise ValueError(
                     "finite target second moments are not certified; use normalize=False"
                 )
-
-
-def causal_values(
-    nodes: tuple[CausalNode, ...],
-    rows: int,
-    rng: Callable[..., np.random.Generator],
-    device: str,
-    indices: Sequence[int] | None = None,
-    *,
-    diagnostics: list[dict[str, Any]] | None = None,
-    exogenous_values: list[torch.Tensor] | None = None,
-    noise_scales: list[torch.Tensor] | None = None,
-) -> tuple[list[torch.Tensor], list[torch.Tensor]]:
-    """Replay selected original rows without retaining all intermediate task values."""
-    values: list[torch.Tensor] = []
-    innovations: list[torch.Tensor] = []
-    for i, node in enumerate(nodes):
-        noise = (
-            sample_exogenous(node.exogenous, rows, len(node.bias), rng, i)
-            if isinstance(node, StochasticCausalNode)
-            else np.column_stack(
-                [rng("innovation", i, j).normal(size=rows) for j in range(len(node.bias))]
-            )
-        )
-        if indices is not None:
-            noise = noise[list(indices)]
-        if exogenous_values is not None:
-            exogenous_values.append(torch.tensor(noise, dtype=torch.float64, device=device))
-        if isinstance(node, StochasticCausalNode):
-            parent_values = (
-                torch.cat([values[p] for p in node.parents], dim=1) if node.parents else None
-            )
-            value, innovation, scale = stochastic_value(
-                node,
-                torch.tensor(noise, dtype=torch.float64, device=device),
-                parent_values,
-                i,
-                diagnostics,
-            )
-            if noise_scales is not None:
-                noise_scales.append(scale)
-            values.append(value)
-            innovations.append(innovation)
-            continue
-        if noise_scales is not None:
-            noise_scales.append(
-                torch.tensor(node.noise_scale, dtype=torch.float64, device=device).expand(
-                    len(noise), -1
-                )
-            )
-        innovation = torch.tensor(noise, dtype=torch.float64, device=device) * torch.tensor(
-            node.noise_scale, dtype=torch.float64, device=device
-        )
-        value = innovation + torch.tensor(node.bias, dtype=torch.float64, device=device)
-        if isinstance(node, ActivatedCausalNode) and node.noise_position == "after_output":
-            value = torch.zeros_like(innovation) + torch.tensor(
-                node.bias, dtype=torch.float64, device=device
-            )
-        if node.parents:
-            parents = torch.cat([values[p] for p in node.parents], dim=1)
-            if isinstance(node, ActivatedCausalNode):
-                if diagnostics is not None:
-                    diagnostic = activation_diagnostic(parents, node.input_activation)
-                    if diagnostic is not None:
-                        diagnostics.append({"node": i, "stage": "input", **diagnostic})
-                parents = activate(parents, node.input_activation)
-            value = value + parents @ torch.tensor(node.weights, dtype=torch.float64, device=device)
-        if isinstance(node, ActivatedCausalNode):
-            if diagnostics is not None:
-                diagnostic = activation_diagnostic(value, node.output_activation)
-                if diagnostic is not None:
-                    diagnostics.append({"node": i, "stage": "output", **diagnostic})
-            value = activate(value, node.output_activation)
-            if node.noise_position == "after_output":
-                value = value + innovation
-        if not torch.isfinite(value).all():
-            raise ValueError(f"nonfinite causal node {i}; task was not retried")
-        values.append(value)
-        innovations.append(innovation)
-    return values, innovations
 
 
 def generate_causal(
@@ -251,23 +180,29 @@ def generate_causal(
         return causal_rng(seed, task_id, *keys)
 
     diagnostics: list[dict[str, Any]] = []
-    values, _ = causal_values(
+    readouts: list[torch.Tensor] = []
+    causal_values(
         recipe.nodes,
         recipe.task.rows,
         rng,
         device,
         diagnostics=diagnostics if recipe.version == "causal-v2" else None,
+        pipelines=recipe.node_pipelines,
+        readout_values=readouts,
     )
-    inputs = torch.stack([values[i][:, j] for i, j in recipe.observed], dim=1)
-    scores = torch.stack([values[i][:, j] for i, j in recipe.target], dim=1)
+    inputs = torch.stack([readouts[i][:, j] for i, j in recipe.observed], dim=1)
+    scores = torch.stack([readouts[i][:, j] for i, j in recipe.target], dim=1)
     center, scale = np.zeros(len(recipe.target)), np.ones(len(recipe.target))
     constant_channels: list[int] = []
     if recipe.normalize:
-        calibration_values, _ = causal_values(
+        calibration_values: list[torch.Tensor] = []
+        causal_values(
             recipe.nodes,
             recipe.calibration_rows,
             lambda *keys: rng("calibration", *keys),
             "cpu",
+            pipelines=recipe.node_pipelines,
+            readout_values=calibration_values,
         )
         calibration_raw = torch.stack(
             [calibration_values[i][:, j] for i, j in recipe.target], dim=1
@@ -333,6 +268,8 @@ def generate_causal(
                     related.update(pre_output[channel])
         for channel, related in enumerate(projected):
             ancestry[i, channel] = related
+    if recipe.node_pipelines is not None:
+        ancestry = pipeline_ancestry(recipe.nodes, recipe.node_pipelines)
     target_ancestors: set[tuple[int, int]] = set()
     for ref in recipe.target:
         target_ancestors.update(ancestry[ref])
@@ -376,11 +313,16 @@ def generate_causal(
             features=recipe.task.features,
             outputs=len(recipe.target),
             extra_parameters=recipe.sampling_parameter_count,
+            extra_working_channels=recipe.pipeline_working_channels,
         ),
     }
     if any(isinstance(node, StochasticCausalNode) for node in recipe.nodes):
         card["innovation"] = "recorded exogenous laws; independently keyed streams per node/channel"
-        orders = causal_moment_orders(recipe.nodes)
+    if recipe.node_pipelines is not None or any(
+        isinstance(node, StochasticCausalNode) for node in recipe.nodes
+    ):
+        orders: list[list[float]] = []
+        causal_moment_orders(recipe.nodes, pipelines=recipe.node_pipelines, readout_orders=orders)
         card["moment_contract"] = {
             "target_orders": [
                 "all" if orders[i][j] == float("inf") else orders[i][j] for i, j in recipe.target
@@ -393,6 +335,15 @@ def generate_causal(
         }
     if recipe.version == "causal-v2":
         card["activation_diagnostics"] = diagnostics
+    if recipe.node_pipelines is not None:
+        card["pipelines"] = [asdict(p) for p in recipe.node_pipelines]
+        card["active_definition"] = (
+            "potential exogenous dependence of explicit readouts; excludes later state noise"
+        )
+        card["readout_contract"] = (
+            "explicit converter channels before innovation/node importance; "
+            "other channels use final state"
+        )
     if recipe.sampling_record is not None:
         card["activation_sampling"] = recipe.sampling_record
     return complete_task(
