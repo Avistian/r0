@@ -39,11 +39,9 @@ def test_topology_assembly_retains_topology_and_replays_all_caller_streams() -> 
     assert tuple(n.parents for n in result.graph.runtime.nodes) == result.topology.parents
     assert result.graph.runtime.nodes[2].function.input_width == 3
     assert result.replay() == result
-    from r0.modules.priors.lib.topology_graph_decoding import topology_graph_from_dict
-
     archive = json.loads(json.dumps(asdict(result)))
     retained = copy.deepcopy(archive)
-    assert topology_graph_from_dict(archive) == result
+    assert priors.topology_graph_from_dict(archive) == result
     assert archive == retained
     assert priors.recipe_from_dict(retained) == result
     emitted = priors.generate_task(result, seed=19, task_id=7)
@@ -60,7 +58,7 @@ def test_topology_assembly_retains_topology_and_replays_all_caller_streams() -> 
     assert all(json.loads(pair.card_json)["required_equalities"].values())
     archive["topology"]["raw"][3]["values"][0] += 0.01
     with pytest.raises(ValueError, match="differs from complete replay"):
-        topology_graph_from_dict(archive)
+        priors.topology_graph_from_dict(archive)
     assert retained == json.loads(json.dumps(asdict(result)))
     repeated = priors.sample_topology_graph(
         request,
