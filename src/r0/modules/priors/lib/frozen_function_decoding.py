@@ -116,6 +116,15 @@ def _decode(data: Any, allowed: frozenset[str]) -> FrozenFunction:
     return record_type(**fields)
 
 
+def decode_admitted_function(data: Any) -> FrozenFunction:
+    """Decode after enclosing raw metadata admission and before aggregate geometry admission.
+
+    Graph nodes are not the virtual dimensions counted by standalone admission.
+    Enclosing callers must admit the complete graph before allocating numerical arrays.
+    """
+    return _decode(data, frozenset(_REGISTRY))
+
+
 def frozen_function_from_dict(
     data: dict[str, Any],
     *,
@@ -124,7 +133,7 @@ def frozen_function_from_dict(
     if type(limits) is not CausalLimits:
         raise ValueError("frozen function decoding requires caller-owned limits")
     admit_function_metadata(data, limits)
-    function = _decode(data, frozenset(_REGISTRY))
+    function = decode_admitted_function(data)
     # Admission for one evaluation row includes center-dependent working floors.
     # Every later call separately admits its actual row count before tensors.
     admit_frozen_function(function, 1, limits)

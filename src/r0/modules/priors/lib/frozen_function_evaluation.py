@@ -43,7 +43,9 @@ _FUNCTION_TYPES = (
 _DEFAULT_LIMITS = CausalLimits()
 
 
-def _geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, int]:
+def function_geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, int]:
+    if type(function) not in _FUNCTION_TYPES:
+        raise ValueError("function geometry requires a frozen function record")
     widths = (function.input_width, function.output_width)
     if type(function) is FrozenLinearFunction:
         return widths, 4 * sum(widths), 0
@@ -57,15 +59,15 @@ def _geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, int]:
         k = len(function.phases)
         return (*widths, k), 4 * k + 4 * sum(widths), 0
     if type(function) is FrozenProductFunction:
-        left, left_work, left_floor = _geometry(function.left)
-        right, right_work, right_floor = _geometry(function.right)
+        left, left_work, left_floor = function_geometry(function.left)
+        right, right_work, right_floor = function_geometry(function.right)
         return (
             (*left, *right),
             left_work + right_work + 4 * function.output_width,
             max(left_floor, right_floor),
         )
     if type(function) is FrozenMLPFunction:
-        geometries = tuple(_geometry(layer) for layer in function.linears)
+        geometries = tuple(function_geometry(layer) for layer in function.linears)
         dimensions = tuple(w for geometry, _, _ in geometries for w in geometry)
         work = sum(working for _, working, _ in geometries)
         work += sum(a.working_extra_channels for a in function.activations)
@@ -214,7 +216,7 @@ def admit_frozen_function(
         raise ValueError("function admission requires a frozen record and caller-owned limits")
     if type(rows) is not int or not 1 <= rows < 2**63:
         raise ValueError("function evaluation rows must be positive integers below 2**63")
-    widths, working, floor = _geometry(function)
+    widths, working, floor = function_geometry(function)
     return limits.admit_dimensions(
         widths,
         tuple(() for _ in widths),

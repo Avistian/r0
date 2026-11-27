@@ -9,6 +9,7 @@ import torch
 
 from r0.modules.priors.lib.causal import causal_rng
 from r0.modules.priors.lib.causal_inspection import causal_steps
+from r0.modules.priors.lib.functional_causal_evaluation import functional_rng, functional_steps
 from r0.modules.priors.lib.graph_functions import analytic_steps, composite_steps, gp_steps
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.signals import component_inputs, multiply_signals
@@ -123,12 +124,12 @@ def explain_generation(
                 for i, _ in card["observed"]
             )
         )
-        if card["version"] in ("causal-v1", "causal-v2")
+        if card["version"] in ("causal-v1", "causal-v2", "functional-causal-v1")
         else [],
         "select declared converter readouts"
         if "pipelines" in card
         else "select declared causal node channels"
-        if card["version"] in ("causal-v1", "causal-v2")
+        if card["version"] in ("causal-v1", "causal-v2", "functional-causal-v1")
         else "independent per-column input streams",
         inputs,
         {
@@ -137,12 +138,14 @@ def explain_generation(
             "row_indices": list(indices),
             **(
                 {"observed_channels": card["observed"]}
-                if card["version"] in ("causal-v1", "causal-v2")
+                if card["version"] in ("causal-v1", "causal-v2", "functional-causal-v1")
                 else {}
             ),
         },
     )
-    if card["version"] in ("causal-v1", "causal-v2"):
+    if card["version"] == "functional-causal-v1":
+        signal = functional_steps(record, indices, add)
+    elif card["version"] in ("causal-v1", "causal-v2"):
         signal = causal_steps(card, len(task.inputs), indices, add)
     elif card["version"] == "exact-gp-v1":
         signal = gp_steps(card, record["recipe"], indices, add)
@@ -159,6 +162,8 @@ def explain_generation(
 
     def rng(stream: str) -> np.random.Generator:
         recipe = record["recipe"]
+        if recipe["version"] == "functional-causal-v1":
+            return functional_rng(record["seed"], record["task_id"], stream)
         if recipe["version"] in ("causal-v1", "causal-v2"):
             return causal_rng(record["seed"], record["task_id"], stream)
         namespace: tuple[object, ...] = (recipe["version"],)

@@ -15,7 +15,7 @@ from r0.modules.priors.lib.causal_nodes import (
 )
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline
 
-_BOUNDED = {
+BOUNDED_ACTIVATIONS = {
     "kumaraswamy",
     "tanh",
     "sigmoid",
@@ -40,8 +40,8 @@ _BOUNDED = {
 }
 
 
-def _activation_orders(orders: list[float], activation: CausalActivation) -> list[float]:
-    if not activation.uses_input(len(orders)) or activation.kind in _BOUNDED:
+def activation_moment_orders(orders: list[float], activation: CausalActivation) -> list[float]:
+    if not activation.uses_input(len(orders)) or activation.kind in BOUNDED_ACTIVATIONS:
         return [math.inf] * len(orders)
     kind, parameters = activation.kind, dict(activation.parameters)
     if kind in ("exp", "log"):
@@ -60,7 +60,7 @@ def _activation_orders(orders: list[float], activation: CausalActivation) -> lis
 def _transform(
     orders: list[float], constants: list[bool], activation: CausalActivation
 ) -> tuple[list[float], list[bool]]:
-    output = _activation_orders(orders, activation)
+    output = activation_moment_orders(orders, activation)
     if not activation.uses_input(len(orders)):
         constants = [True] * len(orders)
     elif activation.mixes_channels:
