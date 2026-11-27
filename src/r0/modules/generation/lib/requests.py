@@ -3,7 +3,7 @@
 import json
 import math
 from dataclasses import asdict, dataclass, replace
-from typing import Any
+from typing import Any, cast
 
 from r0.modules.generation.lib.construction import GraphConstruction
 from r0.modules.priors import (
@@ -119,6 +119,20 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
 
     selected = selected_recipe(request, task_id)
     if isinstance(selected, (PrototypeBatchNetworkRecipe, RealizedPrototypeBatchNetworkRecipe)):
+        # Python numeric equality aliases bool/float identities to integers. Check
+        # transport primitives before replay so a persisted record can replay itself.
+        raw = record.get("recipe")
+        if type(raw) is not dict:
+            return False
+        raw = cast(dict[str, Any], raw)
+        if any(
+            type(record.get(key)) is not int
+            or type(raw.get(key)) is not int
+            or record[key] != expected_id
+            or raw[key] != expected_id
+            for key, expected_id in (("seed", request.seed), ("task_id", task_id))
+        ):
+            return False
         realized = recipe_from_dict(
             record["recipe"], limits=request.causal_limits or selected.limits
         )
@@ -129,8 +143,8 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
         )
         return (
             isinstance(realized, RealizedPrototypeBatchNetworkRecipe)
-            and json.dumps(asdict(realized.request), sort_keys=True)
-            == json.dumps(asdict(expected), sort_keys=True)
+            and json.dumps(raw.get("request"), sort_keys=True, allow_nan=False)
+            == json.dumps(asdict(expected), sort_keys=True, allow_nan=False)
             and (realized.seed, realized.task_id) == (request.seed, task_id)
             and record.get("sampling") == sampling_record(request)
             and record["seed"] == request.seed
