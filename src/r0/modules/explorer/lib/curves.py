@@ -159,10 +159,15 @@ def inspect_network_curve_guarded(
     )
     record = json.loads(task.recipe_json)
     noisy = record["recipe"].get("version") == "standalone-network-innovations-v1"
+    functional = record["recipe"].get("version") in (
+        "functional-causal-v1",
+        "functional-causal-v2",
+        "xgboost-fitted-functional-causal-v1",
+    )
     result = run_guarded_document(
         {
             "validation": "network-curve",
-            "reference": data.get("reference", "zero"),
+            "reference": data.get("reference", "original-row" if functional else "zero"),
             "seed": record["seed"],
             "task_id": record["task_id"],
             "anchor_row": metadata["anchor_row"],
@@ -186,8 +191,18 @@ def inspect_network_curve_guarded(
         **metadata,
         **result.summary,
         "version": "response-curve-v1",
-        "kind": "network_innovation_reference" if noisy else "analytic_response",
+        "kind": "functional_causal_reference"
+        if functional
+        else "network_innovation_reference"
+        if noisy
+        else "analytic_response",
         "score_semantics": (
+            "raw target readouts under simultaneous state-and-readout clamps of observed channels; "
+            "hidden roots fixed to the original row, structural draws fixed or zero; "
+            "not a conditional mean, calibrated task score or enclosing task probability"
+        )
+        if functional
+        else (
             "raw latent zero-innovation or original-row fixed-innovation reference; "
             "not conditional mean or class probability"
         )
