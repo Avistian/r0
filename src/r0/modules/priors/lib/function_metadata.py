@@ -7,6 +7,9 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 
 def admit_function_metadata(data: Any, limits: CausalLimits) -> None:
     numbers, containers, strings, nodes = 0, 0, 0, 0
+    recursive_envelopes: list[dict[str, Any]] = []
+    sampled_convolutions: list[dict[str, Any]] = []
+    task_graphs: list[dict[str, Any]] = []
     node_limit = 16 * limits.parameters + 64 * limits.nodes
 
     def visit(value: Any, depth: int) -> None:
@@ -31,6 +34,12 @@ def admit_function_metadata(data: Any, limits: CausalLimits) -> None:
             raise ValueError("function raw parameter or estimated storage limit exceeded")
         if type(value) is dict:
             mapping = cast(dict[Any, Any], value)
+            if "nodes" in mapping and "task" in mapping:
+                task_graphs.append(mapping)
+            if mapping.get("version") == "sampled-feature-conv1d-r0-v1":
+                sampled_convolutions.append(mapping)
+            if mapping.get("version") == "frozen-recursive-forest-function-v1":
+                recursive_envelopes.append(mapping)
             if 2 * len(mapping) > node_limit - nodes:
                 raise ValueError("function raw object limit exceeded")
             for key, item in mapping.items():
@@ -46,3 +55,14 @@ def admit_function_metadata(data: Any, limits: CausalLimits) -> None:
                 visit(item, depth + 1)
 
     visit(data, 0)
+    if recursive_envelopes or sampled_convolutions:
+        from r0.modules.priors.lib.recursive_function_admission import admit_recursive_payloads
+
+        admit_recursive_payloads(
+            recursive_envelopes,
+            storage=64 * numbers + 32 * containers + strings,
+            numbers=numbers,
+            limits=limits,
+            graphs=task_graphs,
+            convolutions=sampled_convolutions,
+        )

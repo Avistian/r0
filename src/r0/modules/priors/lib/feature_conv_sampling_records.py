@@ -128,6 +128,18 @@ class SampledFeatureConv1D:
         ):
             raise ValueError("invalid sampled feature convolution custody")
 
+    @property
+    def input_width(self) -> int:
+        return self.function.input_width
+
+    @property
+    def output_width(self) -> int:
+        return self.function.output_width
+
+    @property
+    def parameter_count(self) -> int:
+        return self.function.parameter_count
+
     def validate_replay(self, *, limits: CausalLimits | None = None) -> None:
         from r0.modules.priors.lib.exact_frozen_record import exact_frozen_equal
         from r0.modules.priors.lib.feature_conv_sampling import sample_feature_conv1d

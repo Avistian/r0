@@ -1,5 +1,7 @@
 """Bounded shared-kernel application along feature positions, independently per row."""
 
+from collections.abc import Callable
+
 import torch
 from torch.nn import functional as F
 
@@ -80,6 +82,17 @@ def evaluate_feature_conv1d(
         or not bool(torch.isfinite(inputs).all())
     ):
         raise ValueError("convolution requires finite float64 inputs with declared flattened width")
+    return evaluate_admitted_feature_conv1d(function, inputs)
+
+
+@torch.no_grad()
+def evaluate_admitted_feature_conv1d(
+    function: FrozenFeatureConv1D,
+    inputs: torch.Tensor,
+    *,
+    observe: Callable[[int, str, torch.Tensor], None] | None = None,
+) -> torch.Tensor:
+    """Shared arithmetic after enclosing metadata, geometry and tensor admission."""
     x = (
         inputs.reshape(inputs.shape[0], function.input_channels, function.input_length)
         if function.layout == "channel-major"
@@ -87,11 +100,13 @@ def evaluate_feature_conv1d(
             inputs.shape[0], function.input_length, function.input_channels
         ).transpose(1, 2)
     )
-    for layer in function.layers:
+    for index, layer in enumerate(function.layers):
         residual = x
         _, left, right = layer.geometry.shape(x.shape[2], x.shape[1])
         if layer.placement == "before":
             x = _activate(layer, x, function.layout)
+            if observe is not None:
+                observe(index, "before", x)
         if not bool(torch.isfinite(x).all()):
             raise ValueError("nonfinite convolution activation")
         x = F.conv1d(
@@ -104,10 +119,16 @@ def evaluate_feature_conv1d(
         )
         if not bool(torch.isfinite(x).all()):
             raise ValueError("nonfinite convolution affine output")
+        if observe is not None:
+            observe(index, "affine", x)
         if layer.placement == "after":
             x = _activate(layer, x, function.layout)
+            if observe is not None:
+                observe(index, "after", x)
         if layer.geometry.residual:
             x = x + residual
+            if observe is not None:
+                observe(index, "residual", x)
         if not bool(torch.isfinite(x).all()):
             raise ValueError("nonfinite convolution output; no clipping or retry")
     if function.layout == "position-major":

@@ -113,6 +113,19 @@ def admit_functional_graph(
             )
             parameters += report["parameters"]
             working += report["estimated_working_bytes"]
+    from r0.modules.priors.lib.recursive_forest_function import recursive_function_members
+
+    for node in nodes:
+        for function in recursive_function_members(node.function):
+            recursive_report = function.admit(rows, limits)
+            working += recursive_report["estimated_working_bytes"]
+            parameters += recursive_report["parameters"]
+    from r0.modules.priors.lib.feature_conv_function_admission import convolution_replay_cost
+
+    for node in nodes:
+        extra_parameters, extra_working = convolution_replay_cost(node.function, limits)
+        parameters += extra_parameters
+        working += extra_working
     if parameters > limits.parameters:
         raise ValueError("aggregate sampled root graph parameter limit exceeded")
     if working > limits.working_bytes:

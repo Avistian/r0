@@ -1,5 +1,12 @@
 """Public direct recursive forest construction, traversal and custody."""
 
+from r0.modules.priors.lib.recursive_forest_function import (
+    FrozenRecursiveForestFunction as FrozenRecursiveForestFunction,
+)
+from r0.modules.priors.lib.recursive_native_node import (
+    recursive_forest_native_node as recursive_forest_native_node,
+)
+
 from .recursive_forest_decoding import (
     recursive_forest_from_dict as recursive_forest_from_dict,
 )

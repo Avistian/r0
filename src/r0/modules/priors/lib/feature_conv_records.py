@@ -142,6 +142,10 @@ class FrozenFeatureConv1D:
             channels = layer.geometry.output_channels
 
     @property
+    def parameter_count(self) -> int:
+        return sum(layer.parameter_count for layer in self.layers)
+
+    @property
     def input_width(self) -> int:
         return self.input_length * self.input_channels
 
