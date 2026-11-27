@@ -37,6 +37,12 @@ The new `network-input-view-v2` archive binds the calibration to the original ba
 
 ## Scope and verification
 
+Saving an authored mechanism edit sends its serialized recipe to the guarded
+generation worker. Strict decoding, matching-custody replay, authored-family
+validation and generation run under that worker's timeout; the parent loads the
+completed archive without rebuilding its calibrated mechanism. Failed edits keep
+the active source and previous edit, with attempt receipts retained.
+
 Author checks cover independent NumPy arithmetic for regression and multiclass scores, Gaussian/uniform/ball/covariance roots, retained RNG state, strict archive tamper rejection, pre-draw cap rejection, failure rollback, and legacy archive/output hashes. Evidence is under ignored `docs/evidence/issue-28-network-variance-match/`.
 
 Paired comparisons now accept `allow_estimated_variance=True` for network sparsity. `paired_recipe`, `generate_pair`, saved `compare_pair`, and the guarded generation worker use a deterministic independent RNG keyed by the original base archive, both masks and `network-pair-matching-v1`, with 256 retained calibration rows. Episode/query seed and task identity do not enter that key. Raw mode remains the default. Already matched sources reject further sparsity changes; extra columns, noise and separation preserve their frozen matching record. Original-row traces show raw network scores, the retained matching transform and its downstream signal dependencies. The library checks above are distinct from the explorer integration described below; they do not claim the entire feature-extension/sparsity scope is complete. Full-suite integration, independent review, hosted runs and GPU checks are not supplied by these author checks.

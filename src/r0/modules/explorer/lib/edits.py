@@ -2,15 +2,14 @@
 
 import json
 import uuid
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
 import torch
 
 from r0.modules import priors
-from r0.modules.explorer.lib.saved import inside, load_saved, retain_record, run_saved
-from r0.modules.generation import RunRequest
+from r0.modules.explorer.lib.saved import inside, load_saved, retain_record, run_saved_document
 
 
 @dataclass(frozen=True)
@@ -62,30 +61,11 @@ def create_edit(
     limits: priors.CausalLimits,
 ) -> SavedEdit:
     record = json.loads(before.recipe_json)
-    recipe = priors.recipe_from_dict(data["recipe"], limits=limits)
-    if not isinstance(
-        recipe,
-        (
-            priors.FunctionalCausalRecipe,
-            priors.NativeCausalRecipe,
-            priors.NativeVectorRecipe,
-            priors.NetworkRecipe,
-            priors.ConvertedCausalRecipe,
-            priors.NetworkInputView,
-        ),
-    ):
-        raise ValueError(
-            "mechanism edits require a frozen authored functional graph, native graph or network"
-        )
-    base = recipe.base if isinstance(recipe, priors.NetworkInputView) else recipe
-    if isinstance(base, priors.NetworkRecipe) and not isinstance(
-        base.network, priors.FrozenNetworkFunction
-    ):
-        raise ValueError(
-            "network edits require an authored frozen function, not sampled construction"
-        )
-    request = RunRequest(
-        recipe=recipe,
+    # Decoding can replay calibration and sampled custody. Pass the serialized
+    # source to the worker, including the authored-edit policy it must enforce.
+    request = dict(
+        edit_policy="authored-mechanism-v1",
+        recipe=data["recipe"],
         seed=record["seed"],
         start=record["task_id"],
         count=1,
@@ -93,9 +73,9 @@ def create_edit(
         max_seconds=data.get("max_seconds", 60),
         max_bytes=data.get("max_bytes", 256 * 1024**2),
         device=record["execution"]["device"],
-        causal_limits=limits,
+        causal_limits=asdict(limits),
     )
-    after, after_archive, after_run = run_saved(output_dir, request)
+    after, after_archive, after_run = run_saved_document(output_dir, request)
     document = {
         "version": "explorer-edit-v1",
         "card": edit_card(before, after),

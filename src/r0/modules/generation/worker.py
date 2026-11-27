@@ -37,7 +37,12 @@ def main() -> int:
         print(json.dumps(validate_network_draft(raw_request), allow_nan=False))
         return 0
     pairing = raw_request.pop("pairing", None)
+    edit_policy = raw_request.pop("edit_policy", None)
     request = request_from_dict(raw_request)
+    if edit_policy is not None:
+        from r0.modules.generation.lib.edit_validation import validate_edit_request
+
+        validate_edit_request(request, edit_policy)
     if pairing is not None:
         request = replace(
             request,
