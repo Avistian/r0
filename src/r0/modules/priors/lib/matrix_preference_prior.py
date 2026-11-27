@@ -80,3 +80,11 @@ def component_request() -> NumericalParameter:
 
 def distance_request() -> NumericalParameter:
     return NumericalParameter("kernel_distance_scale", 0.1, 10.0, scale="log")
+
+
+PREFERRED_MATRIX_PROFILES = {
+    "causal-shared-matrices-v1": CausalMatrixPrior(),
+    "causal-refreshed-matrices-v1": CausalMatrixPrior(categorical_policy="refresh"),
+    "causal-local-matrices-v1": CausalMatrixPrior(mode="local"),
+    "causal-global-matrices-v1": CausalMatrixPrior(mode="global"),
+}

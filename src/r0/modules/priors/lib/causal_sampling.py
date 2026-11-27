@@ -19,6 +19,8 @@ from r0.modules.priors.lib.causal_matrix_sampling import sample_matrix_profile
 from r0.modules.priors.lib.causal_sampled import with_activation_prior
 from r0.modules.priors.lib.causal_weight_sampling import sample_factorized_profile
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.matrix_preference_prior import PREFERRED_MATRIX_PROFILES
+from r0.modules.priors.lib.preferred_matrix_sampling import sample_preferred_matrices
 from r0.modules.priors.lib.representatives import record_fingerprint
 
 _EXPLORATION_ACTIVATIONS = (
@@ -61,6 +63,7 @@ def sample_causal_profile(
         "causal-importance-v1",
         "causal-matrices-v1",
         "causal-gaussian-matrices-v1",
+        *PREFERRED_MATRIX_PROFILES,
     ):
         raise ValueError("unsupported causal sampling profile")
     outputs = task.classes if task.task_type == "multiclass" else 1
@@ -96,6 +99,7 @@ def sample_causal_profile(
             "causal-importance-v1",
             "causal-matrices-v1",
             "causal-gaussian-matrices-v1",
+            *PREFERRED_MATRIX_PROFILES,
         )
         else ()
     )
@@ -107,10 +111,15 @@ def sample_causal_profile(
         "causal-importance-v1",
         "causal-matrices-v1",
         "causal-gaussian-matrices-v1",
+        *PREFERRED_MATRIX_PROFILES,
     ):
         activated = with_activation_prior(
             recipe, _preference_profile(rng), seed=seed, task_id=task_id
         )
+        if profile in PREFERRED_MATRIX_PROFILES:
+            return sample_preferred_matrices(
+                activated, rng=rng, prior=PREFERRED_MATRIX_PROFILES[profile]
+            )
         if profile in ("causal-matrices-v1", "causal-gaussian-matrices-v1"):
             return sample_matrix_profile(
                 activated, rng, gaussian_only=profile == "causal-gaussian-matrices-v1"

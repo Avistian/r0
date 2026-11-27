@@ -25,6 +25,7 @@ from r0.modules.priors.lib.kernels import (
     StationaryKernel,
 )
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.matrix_preference_prior import PREFERRED_MATRIX_PROFILES
 from r0.modules.priors.lib.polynomial import PolynomialRecipe
 from r0.modules.priors.lib.quadratic import QuadraticRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
@@ -321,6 +322,7 @@ def sample_recipe(
         "causal-importance-v1": ("forward", "layered", "redirection"),
         "causal-matrices-v1": ("forward", "layered", "redirection"),
         "causal-gaussian-matrices-v1": ("forward", "layered", "redirection"),
+        **{profile: ("forward", "layered", "redirection") for profile in PREFERRED_MATRIX_PROFILES},
     }
     if profile not in families or family not in families[profile]:
         raise ValueError("unsupported sampling profile or family")
@@ -333,6 +335,7 @@ def sample_recipe(
         "causal-importance-v1",
         "causal-matrices-v1",
         "causal-gaussian-matrices-v1",
+        *PREFERRED_MATRIX_PROFILES,
     ):
         return sample_causal_profile(
             family,

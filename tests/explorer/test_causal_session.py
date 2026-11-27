@@ -20,6 +20,10 @@ from r0.modules.explorer import ExplorerSession
         ("causal-importance-v1", "activation-importance-v1"),
         ("causal-matrices-v1", "activation-matrices-v1"),
         ("causal-gaussian-matrices-v1", "activation-gaussian-matrices-v1"),
+        ("causal-shared-matrices-v1", "activation-shared-matrices-v1"),
+        ("causal-refreshed-matrices-v1", "activation-shared-matrices-v1"),
+        ("causal-local-matrices-v1", "activation-shared-matrices-v1"),
+        ("causal-global-matrices-v1", "activation-shared-matrices-v1"),
     ],
 )
 def test_sampled_causal_session_saves_reopens_and_replays_its_graph(
