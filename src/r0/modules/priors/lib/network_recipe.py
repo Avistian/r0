@@ -10,6 +10,7 @@ from r0.modules.priors.lib.functional_causal_evaluation import generate_function
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
 from r0.modules.priors.lib.joint_root_base import JointRootBase
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.network_hyperprior_records import SampledHyperpriorNetwork
 from r0.modules.priors.lib.network_sampling_records import SampledNetwork
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
@@ -28,7 +29,8 @@ class NetworkRecipe:
         if (
             self.version != "standalone-network-v1"
             or type(self.task) is not LinearRecipe
-            or type(self.network) not in (FrozenNetworkFunction, SampledNetwork)
+            or type(self.network)
+            not in (FrozenNetworkFunction, SampledNetwork, SampledHyperpriorNetwork)
             or type(self.limits) is not CausalLimits
         ):
             raise ValueError(
@@ -126,8 +128,12 @@ def network_recipe_from_dict(data: object, *, limits: CausalLimits) -> NetworkRe
         fields["limits"] = declared
         fields["task"] = recipe_from_dict(fields["task"])
         net = fields["network"]
+        from r0.modules.priors.lib.network_hyperprior_decoding import decode_hyperprior_network
+
         fields["network"] = (
-            decode_sampled_network(net, declared)
+            decode_hyperprior_network(net, declared)
+            if net.get("version") == "sampled-hyperprior-network-v1"
+            else decode_sampled_network(net, declared)
             if net.get("version") == "sampled-structural-network-v1"
             else decode_network(net)
         )

@@ -102,14 +102,7 @@ class NetworkSamplingRequest:
     def admit(self) -> dict[str, int]:
         widths = (self.input_width, *self.widths)
         # Worst-case all earlier parents, all skips, every expert and explicit masks.
-        numbers = 0
-        for i, out in enumerate(self.widths):
-            incoming = sum(widths[: i + 1])
-            numbers += (
-                self.experts * (2 * incoming * out + out) + incoming * self.experts + self.experts
-            )
-            numbers += incoming * out + (i + 1) * out
-        draws = 32 + len(self.widths) * (16 * self.experts + 8 * len(widths))
+        numbers, draws = network_construction_cost(self)
         rawbytes = 1024 * draws + 512 * numbers + 2 * self.raw_limits.state_bytes
         if (
             numbers > self.raw_limits.numbers
@@ -152,3 +145,19 @@ class SampledNetwork:
         )
         if sample_network(self.request, named_rng=named, raw_rng=raw) != self:
             raise ValueError("network construction differs from retained complete replay")
+
+
+def network_construction_cost(request: NetworkSamplingRequest) -> tuple[int, int]:
+    """Worst-case raw matrix/mask numbers and draw records before allocation."""
+    widths = (request.input_width, *request.widths)
+    numbers = 0
+    for i, out in enumerate(request.widths):
+        incoming = sum(widths[: i + 1])
+        numbers += (
+            request.experts * (2 * incoming * out + out)
+            + incoming * request.experts
+            + request.experts
+        )
+        numbers += incoming * out + (i + 1) * out
+    draws = 32 + len(request.widths) * (16 * request.experts + 8 * len(widths))
+    return numbers, draws

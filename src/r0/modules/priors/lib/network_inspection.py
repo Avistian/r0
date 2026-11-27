@@ -2,18 +2,20 @@
 
 import json
 from collections.abc import Callable, Sequence
+from itertools import accumulate
 from typing import Any
 
 import torch
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
-from r0.modules.priors.lib.network_evaluation import evaluate_network
+from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
+from r0.modules.priors.lib.network_evaluation import evaluate_network, evaluate_network_block
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
 def network_steps(
-    function: FrozenNetworkFunction,
+    function: FrozenNetworkFunction | FrozenNetworkBlockFunction,
     inputs: torch.Tensor,
     *,
     prefix: str,
@@ -21,14 +23,23 @@ def network_steps(
     add: Callable[..., None],
     input_parents: list[str] | None = None,
 ) -> list[str]:
+    sliced = isinstance(function, FrozenNetworkBlockFunction)
+
+    def state_parent(source: int) -> str:
+        if sliced:
+            return f"{prefix}-incoming-{source}"
+        return f"{prefix}-input" if source == 0 else f"{prefix}-block-{source}-state"
+
     def trace(name: str, value: torch.Tensor, parameters: dict[str, Any]) -> None:
         parts = name.split("-")
         index = int(parts[1])
-        block = function.blocks[index - 1]
+        block = (
+            function.block
+            if isinstance(function, FrozenNetworkBlockFunction)
+            else function.blocks[index - 1]
+        )
         if name.endswith("-inputs"):
-            parents = [
-                f"{prefix}-input" if p == 0 else f"{prefix}-block-{p}-state" for p in block.parents
-            ]
+            parents = [state_parent(p) for p in block.parents]
             formula = "concatenate ordered earlier architecture states"
         elif name.endswith("-state"):
             parents = [
@@ -69,7 +80,7 @@ def network_steps(
                 parents = [f"{prefix}-{branch}-{first}"]
             elif "-skip-" in name:
                 source = block.skips[int(parts[3])].source
-                parents = [f"{prefix}-input" if source == 0 else f"{prefix}-block-{source}-state"]
+                parents = [state_parent(source)]
             else:
                 parents = [f"{prefix}-block-{index}-inputs"]
             formula = (
@@ -87,6 +98,26 @@ def network_steps(
         inputs[list(indices)],
         {},
     )
+    if isinstance(function, FrozenNetworkBlockFunction):
+        incoming = [
+            inputs[:, end - width : end]
+            for width, end in zip(
+                function.incoming_widths, accumulate(function.incoming_widths), strict=True
+            )
+        ]
+        for i, value in enumerate(incoming):
+            add(
+                f"{prefix}-incoming-{i}",
+                f"Incoming state {i}",
+                [input_parents[i]]
+                if input_parents and len(input_parents) == len(incoming)
+                else [prefix + "-input"],
+                "declared ordered incoming state slice",
+                value[list(indices)],
+                {"width": function.incoming_widths[i]},
+            )
+        evaluate_network_block(function.block, incoming, 1, trace=trace)
+        return [f"{prefix}-block-1-state"]
     evaluate_network(function, inputs, trace=trace)
     return [f"{prefix}-block-{len(function.blocks)}-state"]
 

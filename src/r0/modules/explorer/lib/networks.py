@@ -119,8 +119,20 @@ def network_details(recipe: dict[str, Any]) -> dict[str, Any]:
         else None
     )
     network = (view["base"] if view else recipe)["network"]
-    sampled = network.get("version") == "sampled-structural-network-v1"
+    profiled = network.get("version") == "sampled-hyperprior-network-v1"
+    sampled = network.get("version") == "sampled-structural-network-v1" or profiled
     function = network["function"] if sampled else network
+    notice = NOTICE
+    if profiled:
+        profile = network["profile"]
+        effective = network["request"]
+        notice += (
+            f" Scalar laws: depth {profile['depth']['family']}, "
+            f"width {profile['width']['family']}, weight {profile['weight_scale']['family']}. "
+            f"Realized block widths {effective['widths']}; weight scale "
+            f"{effective['weight_scale']:.6g}; width scope {profile['width_scope']}. "
+            "Scalar source laws do not make the surrounding architecture a full paper reproduction."
+        )
     return {
         "kind": "standalone-network",
         "input_view": None
@@ -149,12 +161,31 @@ def network_details(recipe: dict[str, Any]) -> dict[str, Any]:
                 )
             },
         },
-        "notice": NOTICE,
+        "notice": notice,
         "sampled": sampled,
         "request": network.get("request"),
         "choices": network.get("choices", []),
-        "raw_draw_count": len(network.get("raw", [])),
-        "stream_roles": ["named", "raw"] if sampled else [],
+        "raw_draw_count": len(network.get("raw", [])) + len(network.get("hyper_raw", [])),
+        "stream_roles": ["hyper", "named", "raw"]
+        if profiled
+        else ["named", "raw"]
+        if sampled
+        else [],
+        "hyperprior": None
+        if not profiled
+        else {
+            "profile": network["profile"],
+            "parameters": network["parameters"],
+            "raw_draws": network["hyper_raw"],
+            "initial": network["hyper_initial"],
+            "final": network["hyper_final"],
+            "effective_widths": network["request"]["widths"],
+            "effective_weight_scale": network["request"]["weight_scale"],
+            "scope": (
+                "Source scalar laws on an r0 architecture; capacity rejections "
+                "are not retries or source truncation"
+            ),
+        },
         "blocks": len(function["blocks"]),
         "input_width": function["input_width"],
         "output_width": len(function["blocks"][-1]["experts"][0]["bias"]),
@@ -192,3 +223,51 @@ def validate_editor_draft(
             "Invalid network draft: " + (detail[-1] if detail else "validation failed")
         )
     return {"recipe": result.summary["recipe"]}
+
+
+def noise_editor_guarded(
+    data: dict[str, Any],
+    output_dir: Path,
+    *,
+    limits: priors.CausalLimits,
+    recipe: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    from r0.modules.generation import run_guarded_document
+
+    result = run_guarded_document(
+        {
+            "validation": "network-noise-editor" if recipe is not None else "network-noise-draft",
+            "recipe": recipe if recipe is not None else data["recipe"],
+            "innovation_plan": data.get("innovation_plan"),
+            "causal_limits": asdict(limits),
+            "max_seconds": data.get("max_seconds", 60),
+            "max_bytes": data.get("max_bytes", 256 * 1024**2),
+        },
+        output_dir / "noise-editor-validation",
+    )
+    if result.timed_out:
+        raise ValueError("Network noise editor timed out; accepted draft unchanged")
+    if result.returncode or result.summary is None:
+        detail = result.stderr.strip().splitlines()
+        raise ValueError(
+            "Invalid network noise draft: " + (detail[-1] if detail else "validation failed")
+        )
+    return result.summary
+
+
+def network_editor_action(
+    action: str,
+    data: dict[str, Any],
+    task: priors.TrainingTask,
+    output_dir: Path,
+    *,
+    limits: priors.CausalLimits,
+) -> dict[str, Any] | None:
+    if action == "network_noise_draft":
+        return noise_editor_guarded(data, output_dir, limits=limits)
+    if action == "network_draft":
+        return validate_editor_draft(data, output_dir, limits=limits, source=task.recipe_json)
+    raw = json.loads(task.recipe_json)["recipe"]
+    if raw.get("version") == "standalone-network-innovations-v1":
+        return noise_editor_guarded(data, output_dir, limits=limits, recipe=raw)
+    return None

@@ -86,14 +86,6 @@ from .lib.exact_gp import GaussianProcessRecipe as GaussianProcessRecipe
 from .lib.exogenous import ExogenousDistribution as ExogenousDistribution
 from .lib.exogenous import NoiseResponse as NoiseResponse
 from .lib.fitted_function_api import *  # noqa: F403
-from .lib.fitted_function_api import FrozenNetworkFunction as FrozenNetworkFunction
-from .lib.fitted_function_api import NetworkAffine as NetworkAffine
-from .lib.fitted_function_api import NetworkBlock as NetworkBlock
-from .lib.fitted_function_api import NetworkProjection as NetworkProjection
-from .lib.fitted_function_api import NetworkRecipe as NetworkRecipe
-from .lib.fitted_function_api import NetworkSamplingRequest as NetworkSamplingRequest
-from .lib.fitted_function_api import SampledNetwork as SampledNetwork
-from .lib.fitted_function_api import sample_network as sample_network
 from .lib.fitted_parameter_api import *  # noqa: F403
 from .lib.fitted_population_api import *  # noqa: F403
 from .lib.fixture import SourceTask as SourceTask
@@ -364,7 +356,6 @@ from .lib.kernels import SpectralKernel as SpectralKernel
 from .lib.kernels import StationaryKernel as StationaryKernel
 from .lib.linear import LinearRecipe as LinearRecipe
 from .lib.linear import generate_linear as generate_linear
-from .lib.matched_network_view import MatchedNetworkInputView as MatchedNetworkInputView
 from .lib.matrix_preference_prior import CausalMatrixPrior as CausalMatrixPrior
 from .lib.native_domain_prior import AsymmetricNativeDomainPrior as AsymmetricNativeDomainPrior
 from .lib.native_graph_decoding import (
@@ -377,10 +368,7 @@ from .lib.native_vector_records import NativeVectorNode as NativeVectorNode
 from .lib.native_vector_records import NativeVectorRecipe as NativeVectorRecipe
 from .lib.native_vector_request import NativeVectorGraphRequest as NativeVectorGraphRequest
 from .lib.native_vector_sampling import sample_native_vector_graph as sample_native_vector_graph
-from .lib.network_input_view import NetworkInputView as NetworkInputView
-from .lib.network_input_view import view_signal as view_signal
-from .lib.network_variance_match import NetworkVarianceMatch as NetworkVarianceMatch
-from .lib.network_variance_match import fit_network_variance_match as fit_network_variance_match
+from .lib.network_api import *  # noqa: F403
 from .lib.node_pipeline import CausalNodePipeline as CausalNodePipeline
 from .lib.node_pipeline import NumericalConverter as NumericalConverter
 from .lib.pairs import TaskPair as TaskPair

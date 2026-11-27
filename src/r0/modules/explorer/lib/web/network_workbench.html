@@ -9,5 +9,10 @@
 <span class="muted">Recalculation uses the original calibration seed and row count with the edited root and architecture. Unchanged roots reproduce the original calibration inputs. It does not use displayed dataset rows. Both policies save a new authored edit; the original stays unchanged.</span></label>
 <button id="network-apply">Apply block to draft</button>
 <label>Complete authored network recipe<textarea id="network-recipe" rows="18" spellcheck="false"></textarea></label>
+<div id="network-noise-edit" hidden>
+<label>Explicit internal noise and outgoing importance plan<textarea id="network-noise-plan" rows="18" spellcheck="false"></textarea></label>
+<p class="muted">The architecture above is the source network. This plan adds separate compiled noise/activation nodes. Means/scales and masks are frozen; row draws remain keyed. Saving creates authored statistics and architecture without changing the original sampled archive.</p>
+<details open><summary>Compiled nodes and original-block mapping</summary><pre id="network-noise-compiled"></pre></details>
+</div>
 <button id="network-save">Generate and save linked network edit</button>
 </div>
