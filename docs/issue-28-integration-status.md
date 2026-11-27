@@ -5,6 +5,15 @@ including every in-scope option in the recorded paper inventory. This checkpoint
 is incomplete. Scoped reviews below establish only the listed behavior. They do not establish
 scientific acceptance or whole-issue completion.
 
+## Latest completed source check
+
+Source `6c0cd82d1456ff15c7109247814e2d99c023ae60` passed full `make check`:
+3,600 passed, one skipped, one warning in 1,836.22 seconds; all static gates passed.
+The [generator-family checkpoint](issue-28-generator-families-checkpoint.md)
+records the precise inclusion boundary. Later typed policies, population envelopes
+and convolution workbench changes have separate scoped evidence and are not
+covered by this full run. The published checkpoint below remains separately named.
+
 ## Latest verified publication checkpoint
 
 Source `3e7e17d9a7b0e991afba3a5d5b575a9d8f3d584d` passed full `make check`:

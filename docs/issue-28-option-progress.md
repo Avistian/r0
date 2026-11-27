@@ -8,9 +8,9 @@ been reproduced. Unlisted options remain NOT_AUDITED.
 
 The latest published source checkpoint is `3e7e17d` (publication `bddeb73`), with
 3,516 passing tests and one skip. Later combined candidate `f9a1093` has focused
-and independent evidence only. A full check of predecessor `6c0cd82` is running;
+and independent evidence only. Predecessor `6c0cd82` passed full `make check` with 3,600 tests and one skip;
 that source excludes typed policies, the convolution workbench and row-population
-integration. Do not transfer a predecessor's acceptance to a later source.
+integration. See the [generator-family checkpoint](issue-28-generator-families-checkpoint.md). Do not transfer a predecessor's acceptance to a later source.
 
 ## Observations and network structure
 
@@ -94,17 +94,18 @@ the four explicit soft parameter laws do not claim an undisclosed source prior.
 See [sampled policies](issue-28-sampled-intervention-policies.md) and
 [the workbench](issue-28-intervention-policy-workbench.md). Scalar nested-budget
 and comparison-custody repairs have bounded acceptance and are included in the
-running `6c0cd82` suite.
+completed `6c0cd82` suite.
 
 The [typed-policy core](issue-28-typed-intervention-policies.md) adds numerical,
 native logical-variable and named-capture addresses, declared categorical laws,
-and retained sampled/fitted envelopes. **This later core is currently REJECTED
-for resource admission ordering**, despite passing numerical checks. The first
-repair fixes the six-snapshot case but a broader caller-budget sweep still finds
-nested replay before aggregate rejection. A shared metadata-only admission
-planner is being implemented. Typed workbench, population/support refitting and
-remaining compositions are required; no typed-policy release acceptance follows
-from this mapping.
+and retained sampled/fitted envelopes. Original `6c6770` and first repair
+`eefdd77` remain historical **REJECT** versions for resource admission ordering.
+The complete metadata planner at `935e10a` now has bounded independent acceptance:
+13 caller-cap cases reject before replay or preserve exact valid receipts, and
+110 literal numerical cases cover typed category, converter and convolution
+compositions. This is later than the full-suite checkpoint. Typed workbench,
+population/support refitting and remaining compositions are still required;
+no complete typed-policy release acceptance follows from this mapping.
 
 ## Coverage beyond these components
 
