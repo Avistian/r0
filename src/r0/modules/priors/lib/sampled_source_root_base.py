@@ -34,6 +34,7 @@ class SampledSourceRootBase(SourceRootBase):
     version: str = "sampled-source-root-base-v1"
 
     def __post_init__(self) -> None:
+        SourceRootBase.validate_law_and_calibration(self)
         if (
             self.version != "sampled-source-root-base-v1"
             or type(self.profile) is not SampledSourceRootProfile
@@ -56,20 +57,19 @@ class SampledSourceRootBase(SourceRootBase):
         function_record_cost(self, limits)
         if self.calibration_rows:
             if (
-                type(self.calibration_initial) is not GeneratorSnapshot
+                self.calibration is None
+                or type(self.calibration_initial) is not GeneratorSnapshot
                 or type(self.calibration_final) is not GeneratorSnapshot
                 or len(self.calibration_raw) != self.width
                 or sum(len(r.values) for r in self.calibration_raw)
                 != self.calibration_rows * self.width
             ):
                 raise ValueError("independent calibration custody geometry differs")
-        elif any(
-            (
-                self.calibration,
-                self.calibration_initial,
-                self.calibration_final,
-                self.calibration_raw,
-            )
+        elif (
+            self.calibration is not None
+            or self.calibration_initial is not None
+            or self.calibration_final is not None
+            or self.calibration_raw != ()
         ):
             raise ValueError("identity root cannot retain unused calibration custody")
         self.profile.validate_replay(limits=limits)
