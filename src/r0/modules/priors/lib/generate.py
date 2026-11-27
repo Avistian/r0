@@ -18,6 +18,9 @@ from r0.modules.priors.lib.compositions import (
 )
 from r0.modules.priors.lib.exact_gp import GaussianProcessRecipe
 from r0.modules.priors.lib.fourier import FourierRecipe
+from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
+from r0.modules.priors.lib.functional_causal_decoding import functional_recipe_from_dict
+from r0.modules.priors.lib.functional_causal_evaluation import generate_functional_causal
 from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe
 from r0.modules.priors.lib.inputs import InputDistribution
 from r0.modules.priors.lib.kernels import (
@@ -42,7 +45,7 @@ from r0.modules.priors.lib.source_causal_prior import SourceActivationPrior, Sou
 from r0.modules.priors.lib.source_matrix import SourceMatrixCausalRecipe
 from r0.modules.priors.lib.training_task import TrainingTask
 
-type Recipe = BaseRecipe | CompositeRecipe | CausalRecipe
+type Recipe = BaseRecipe | CompositeRecipe | CausalRecipe | FunctionalCausalRecipe
 
 
 def _kernel_from_dict(data: dict[str, Any]) -> Kernel:
@@ -81,6 +84,8 @@ def recipe_from_dict(data: object) -> Recipe:
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
+    if version == "functional-causal-v1":
+        return functional_recipe_from_dict(fields)
     if version in ("causal-v1", "causal-v2"):
         task = recipe_from_dict(fields.get("task", {}))
         if not isinstance(task, LinearRecipe):
@@ -151,7 +156,7 @@ def recipe_from_dict(data: object) -> Recipe:
         for item in fields["components"]:
             component = dict(item)
             child = recipe_from_dict(component.pop("recipe"))
-            if isinstance(child, (CompositeRecipe, CausalRecipe)):
+            if isinstance(child, (CompositeRecipe, CausalRecipe, FunctionalCausalRecipe)):
                 raise ValueError("nest combinations in expression, not in component recipes")
             component["recipe"] = child
             if "axes" in component:
@@ -203,6 +208,8 @@ def recipe_from_dict(data: object) -> Recipe:
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, FunctionalCausalRecipe):
+        return generate_functional_causal(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, CausalRecipe):
         return generate_causal(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, CompositeRecipe):

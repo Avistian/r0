@@ -1,6 +1,5 @@
 """Evaluate recorded stochastic equations, preserving separate exogenous and scale traces."""
 
-import math
 from collections.abc import Callable
 from typing import Any
 
@@ -8,6 +7,7 @@ import torch
 
 from r0.modules.priors.lib.causal_activations import activate, activation_diagnostic
 from r0.modules.priors.lib.causal_nodes import RootInputCausalNode, StochasticCausalNode
+from r0.modules.priors.lib.signal_noise import signal_noise_scale
 
 
 def stochastic_value(
@@ -34,35 +34,7 @@ def stochastic_value(
         )
     if not torch.isfinite(affine).all():
         raise ValueError("nonfinite pre-noise affine response; task was not retried")
-    response = node.noise_response
-    base = torch.tensor(node.noise_scale, dtype=raw.dtype, device=raw.device)
-    scale = torch.full_like(raw, response.offset)
-    rescue = torch.zeros_like(raw, dtype=torch.bool)
-    if response.strength:
-        # A zero structural scale removes this path before evaluating its power.
-        magnitude = torch.where(base == 0, 0.0, affine.abs())
-        term = magnitude.pow(response.power)
-        tiny = torch.finfo(raw.dtype).tiny
-        rescue = (term < tiny) & (magnitude > 0) & (base > 0)
-        term *= response.strength
-        rescue |= (term < tiny) & (magnitude > 0) & (base > 0)
-        scale += term
-        del magnitude, term
-    scale *= base
-    if response.strength:
-        rescue |= ~torch.isfinite(scale) & (base > 0)
-    if torch.any(rescue):
-        # Intermediate powers/products can overflow or underflow even when the
-        # final positive term is representable. Keep ordinary arithmetic elsewhere.
-        selected_base = base.expand_as(raw)[rescue]
-        log_term = (
-            selected_base.log()
-            + math.log(response.strength)
-            + response.power * affine[rescue].abs().log()
-        )
-        scale[rescue] = selected_base * response.offset + log_term.exp()
-    if not torch.isfinite(scale).all():
-        raise ValueError("nonfinite signal-dependent noise scale; task was not retried")
+    scale = signal_noise_scale(affine, node.noise_scale, node.noise_response)
     innovation = scale * raw
     argument = affine + innovation if node.noise_position == "before_output" else affine
     if diagnostics is not None:
