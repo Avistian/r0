@@ -99,6 +99,11 @@ from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe as Fu
 from r0.modules.priors.lib.functional_causal_decoding import (
     functional_recipe_from_dict as functional_recipe_from_dict,
 )
+from r0.modules.priors.lib.functional_causal_evaluation import PrefixEvaluation as PrefixEvaluation
+from r0.modules.priors.lib.functional_causal_evaluation import (
+    evaluate_functional_prefix as evaluate_functional_prefix,
+)
+from r0.modules.priors.lib.functional_prefix import FunctionalPrefix as FunctionalPrefix
 from r0.modules.priors.lib.generate import Recipe as Recipe
 from r0.modules.priors.lib.generate import generate_task as generate_task
 from r0.modules.priors.lib.generate import recipe_from_dict as recipe_from_dict
