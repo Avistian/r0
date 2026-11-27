@@ -1,0 +1,12 @@
+Standards review — 4f80f9cab590cacf88f1bc463ca939a6ccccfc16
+Scope: git diff 6efde62...HEAD; sole commit 4f80f9c. Preflight confirmed /tmp/r0-28-prefix-raw, branch feat/issue-28-prefix-raw, expected HEAD, and only the pre-existing untracked .venv. Source remained unchanged.
+
+Documented-standard findings: 1
+
+[P2] Retain the verification recipe alongside the claims. docs/issue-28-prefix-raw-capture.md:26-33 claims missing-API RED, successful checks and a separately retained failed expanded command, but identifies neither the executed test selection/commands nor the evidence paths/environment. CODING_STANDARDS.md:26-32 requires identified inputs and the exact command or retained program in its declared environment; docs/agents/protocol-review.md:14-17 requires revision, procedure and output to accompany verification claims. Parent supplied external /tmp/r0-28-prefix-raw-{red,green,expanded,expanded-green,static-final,commit}.log files; inspection confirms the historical failure, no-tests attempt and 87-pass output exist. However, the expanded log has only pytest output, and the reviewed artifact does not bind that output to its executed procedure. Add the promised evidence manifest/reproduction instructions, or mark the historical claims unverified until that packaging lands. This is an evidence-documentation gap, not proof the tests failed. Parent reports packaging planned for integration; it is absent at this reviewed source.
+
+Heuristic baseline findings: 1, nonblocking
+
+Possible Duplicated Code: src/r0/modules/priors/lib/functional_causal_evaluation.py:118-127 repeats the existing evaluate_functional_prefix type/device/admission sequence at :93-99, including `if device not in ("cpu", "cuda")` and `prefix.admit()`. Consider a small shared private admission helper so future device-policy changes cannot diverge. This is a judgement call, not a documented violation; preserving separate transactional and keyed entry points is appropriate.
+
+Other inspected changes preserve explicit RNG injection and module entry-point test imports; no additional substantive standard breach identified. Reviewed AGENTS.md, requirements, CODING_STANDARDS.md, module README, protocol-review/issue-tracker guidance, README environment rules, pyproject and relevant ADRs. Home-repo TypeScript standards excluded. Tool-enforced checks omitted. Tests/full suite NOT_RUN by this reviewer; parent owns execution evidence. This report does not decide Spec, GPU, scientific or whole-issue acceptance.
