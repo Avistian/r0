@@ -89,6 +89,10 @@ class NativeVectorRecipe:
             or not 1 <= len(self.nodes) <= self.limits.nodes
         ):
             raise ValueError("native vector recipe requires bounded frozen task/nodes/limits")
+        if self.task.noise_ratio or self.task.separation != 1 or self.task.class_offsets:
+            raise ValueError(
+                "native targets bypass label adapters; adapter controls must be default"
+            )
         for index, node in enumerate(self.nodes):
             if type(node) is not NativeVectorNode or any(p >= index for p in node.equation.parents):
                 raise ValueError("native vector nodes require parent-before-child order")
