@@ -1,4 +1,4 @@
-# Issue 28: transactional raw matrix draws (candidate)
+# Issue 28: transactional raw matrix draws
 
 This implements the draw-site recorder needed by the
 [sampled graph design](research/0028-sampled-graph-ownership.md). It captures all
@@ -93,3 +93,46 @@ raw values, replay and next-RNG state against NumPy. The original failing author
 run is `/tmp/r0-28-graph-raw-repair-uniform-red.log`; repaired execution uses the
 focused command above. The repair still needs its own full check and independent
 review. This does not erase the original rejected candidate.
+
+
+## Published bounded verification
+
+Main source `90de1cdcc26e8bc13cb40ac1808d7fe85f025308` has byte-identical
+`src/` and `tests/` trees to repaired candidate `4100fe53`. Its full `make check`
+passed **1278 tests, one skipped, in 524.54 seconds**. Original `ccaf906` also
+passed its then-existing suite, but the independent uniform-bound REJECT still
+stands; the earlier green suite did not establish that contract.
+
+Independent [candidate review](research/0028-raw-matrix-capture-candidate-review.md)
+and [exact-main review](research/0028-raw-matrix-capture-publication-review.md)
+accept this bounded component: 255 baseline compatibility cases, 210 transcripts,
+1655 records and 19240 raw numbers; seven laws across five engines; literal
+matrix/point equations; nested failures; replay tampering and record budgets.
+Standards found no documented violations; the original low-severity duplicate
+engine-list heuristic remains. The fixture type and sampler retain identical ASTs
+and outputs after their private-module move.
+
+[Original REJECT](research/0028-raw-matrix-capture-original-reject.md),
+[full check](research/0028-raw-matrix-capture-check-4100fe5.txt),
+[standards](research/0028-raw-matrix-capture-standards-original.txt),
+[repair delta](research/0028-raw-matrix-capture-standards-repaired.txt) and
+[author logs](research/0028-raw-matrix-capture-development.json) remain separate.
+The archive retains immutable verifier programs verbatim, pinned source archives,
+commands, outputs, failures, environment and checksums. No formatted public program
+copy is substituted for the executed verifier.
+
+Recover and replay using the already installed compatible environment:
+
+```sh
+python3 scripts/recover_joint_sampling.py \
+  docs/research/0028-raw-matrix-capture-spec-artifacts.json \
+  /tmp/r0-raw-matrix-evidence --repo .
+PYTHONDONTWRITEBYTECODE=1 python3 \
+  /tmp/r0-raw-matrix-evidence/publication-independent/replay.py
+```
+
+The recovery verifies all six archive parts and all 96 retained manifest entries.
+The portable replay extracts the pinned source archives into a fresh directory and
+compares exact outputs/transcripts. Python 3.12.3, NumPy 2.5.5 and Torch 2.15.0+cpu
+were used; dependencies are not installed by this command. Smoke/eval-smoke are
+unavailable until the train/eval CLI exists. Full #28 remains unfinished.

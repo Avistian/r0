@@ -1,0 +1,41 @@
+{
+  "source": "90de1cdcc26e8bc13cb40ac1808d7fe85f025308",
+  "base": "89f149f4081b247f92b57685a35b305b626c748c",
+  "bytes": 4549755,
+  "sha256": "86fa0586838c69bece699a5fbdf0601d10a0fd1e0ae9b0c9af650771e868cbbb",
+  "parts": [
+    {
+      "path": "0028-raw-matrix-capture-spec.part01",
+      "bytes": 900000,
+      "sha256": "4b386ad9a8deb70879c40c67341f84a0bbe3e71b748a1bd32a96f571bc7b9ee8"
+    },
+    {
+      "path": "0028-raw-matrix-capture-spec.part02",
+      "bytes": 900000,
+      "sha256": "940d5fd7e9806d0f00bd27a1f91e501a0670d0ea98309dd366a844491b890932"
+    },
+    {
+      "path": "0028-raw-matrix-capture-spec.part03",
+      "bytes": 900000,
+      "sha256": "4c9bccc44a6dad1335aad733c309d079f760eb9100b623ca1115cc7f49836be5"
+    },
+    {
+      "path": "0028-raw-matrix-capture-spec.part04",
+      "bytes": 900000,
+      "sha256": "bce320816b015d22ba2915a23d1b3e27ba27d15bb0692300aa433850d6d90aaa"
+    },
+    {
+      "path": "0028-raw-matrix-capture-spec.part05",
+      "bytes": 900000,
+      "sha256": "b20c7da22ff78881156c38c4b5a18d55eb7dee3abd40c65c76be181259dffd80"
+    },
+    {
+      "path": "0028-raw-matrix-capture-spec.part06",
+      "bytes": 49755,
+      "sha256": "b50bbf883528beb2d031120f4126e383d2c2631c4f60f10b726cd05534d2aa12"
+    }
+  ],
+  "manifest_entries": 96,
+  "manifest_sha256": "4a0944e8440afe8b1284ccbac4bbee0f37b6e21747c4fd8cc6bf0a6f2b496ff0",
+  "qualification": "Original ccaf906 SPEC REJECT preserved. Repaired candidate4100fe5 and exact-main90de1cd bounded independent ACCEPT; portable verifier programs remain verbatim inside recovered evidence. No complete graph/function/root/prefix capture, typed ownership, decoding, browser/Colab/GPU or scientific acceptance."
+}
