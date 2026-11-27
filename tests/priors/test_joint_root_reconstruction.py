@@ -13,9 +13,9 @@ from r0.modules import priors
 
 
 def _root(
-    family: str = "covariance", function: str = "tree", vector: str = "uniform"
+    family: str = "covariance", function: str = "tree", vector: str = "uniform", seed: int = 110
 ) -> tuple[priors.JointRootRealization, priors.JointSamplingRecord]:
-    context = priors.JointSamplingContext(np.random.default_rng(110), mode="local")
+    context = priors.JointSamplingContext(np.random.default_rng(seed), mode="local")
     plan = priors.sample_joint_root(
         context,
         "saved-root",
@@ -160,3 +160,18 @@ def test_saved_root_honors_caller_owned_resource_limits() -> None:
         priors.joint_root_realization_from_dict(
             payload, decisions=decisions, limits=priors.CausalLimits(parameters=16)
         )
+
+
+@pytest.mark.parametrize(("seed", "base"), [(0, "uniform"), (1, "gaussian")])
+@pytest.mark.parametrize("vector", ["uniform", "polynomial"])
+def test_saved_covariance_root_retains_both_base_and_weight_laws(
+    seed: int, base: str, vector: str
+) -> None:
+    root, decisions = _root(function="lin", vector=vector, seed=seed)
+    assert root.plan.covariance_base == base
+    assert root.plan.weights is not None
+    assert root.plan.weights.family == vector
+    restored = priors.joint_root_realization_from_dict(
+        json.loads(json.dumps(asdict(root))), decisions=decisions
+    )
+    assert restored == root

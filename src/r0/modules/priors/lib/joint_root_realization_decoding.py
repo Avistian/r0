@@ -12,6 +12,7 @@ from r0.modules.priors.lib.joint_function_realization_decoding import (
 from r0.modules.priors.lib.joint_root_admission import admit_root_realization
 from r0.modules.priors.lib.joint_root_base import JointRootBase, JointRootBaseSample
 from r0.modules.priors.lib.joint_root_decoding import joint_root_plan_from_dict
+from r0.modules.priors.lib.joint_root_emission import JointRootEmission, admit_root_emission
 from r0.modules.priors.lib.joint_root_plans import JointRootPlan
 from r0.modules.priors.lib.joint_root_realization import JointRootRealization
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
@@ -119,3 +120,34 @@ def _decode(
     result = JointRootRealization(**fields)
     result.validate(decisions)
     return result
+
+
+def joint_root_emission_from_dict(
+    data: dict[str, Any],
+    *,
+    decisions: JointSamplingRecord,
+    limits: CausalLimits = _DEFAULT_LIMITS,
+) -> JointRootEmission:
+    """Reconstruct the fixed root and validate fresh raw rows and outputs against it."""
+    if type(decisions) is not JointSamplingRecord or type(limits) is not CausalLimits:
+        raise ValueError("root emission decoding requires frozen decisions and caller-owned limits")
+    admit_function_metadata(data, limits)
+    fields = _record(data, JointRootEmission, "joint-root-emission-v1")
+    root = joint_root_realization_from_dict(fields["root"], decisions=decisions, limits=limits)
+    sample = _record(fields["sample"], JointRootBaseSample, "joint-root-base-sample-v1")
+    if type(sample["draws"]) not in (list, tuple):
+        raise ValueError("root emission draws must be an array")
+    rows = len(sample["draws"])
+    admit_root_emission(root, decisions, rows, limits)
+    sample["base"] = _base(sample["base"], root.plan)
+    if sample["base"] != root.calibration.base:
+        raise ValueError("root emission base differs from its frozen root")
+    for name in ("draws", "values"):
+        sample[name] = _matrix(sample[name], rows, root.plan.width)
+    sample["radial_uniform"] = _array(
+        sample["radial_uniform"], rows if root.plan.family == "ball" else 0
+    )
+    fields["root"] = root
+    fields["sample"] = JointRootBaseSample(**sample)
+    fields["outputs"] = _matrix(fields["outputs"], rows, root.plan.width)
+    return JointRootEmission(**fields)

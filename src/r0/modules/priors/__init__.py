@@ -182,6 +182,10 @@ from r0.modules.priors.lib.joint_rff_realization import (
 from r0.modules.priors.lib.joint_root_decoding import (
     joint_root_plan_from_dict as joint_root_plan_from_dict,
 )
+from r0.modules.priors.lib.joint_root_emission import JointRootEmission as JointRootEmission
+from r0.modules.priors.lib.joint_root_emission import (
+    sample_joint_root_values as sample_joint_root_values,
+)
 from r0.modules.priors.lib.joint_root_plans import JointRootPlan as JointRootPlan
 from r0.modules.priors.lib.joint_root_plans import JointRootPrior as JointRootPrior
 from r0.modules.priors.lib.joint_root_plans import sample_joint_root as sample_joint_root
@@ -190,6 +194,9 @@ from r0.modules.priors.lib.joint_root_realization import (
 )
 from r0.modules.priors.lib.joint_root_realization import (
     materialize_joint_root as materialize_joint_root,
+)
+from r0.modules.priors.lib.joint_root_realization_decoding import (
+    joint_root_emission_from_dict as joint_root_emission_from_dict,
 )
 from r0.modules.priors.lib.joint_root_realization_decoding import (
     joint_root_realization_from_dict as joint_root_realization_from_dict,
