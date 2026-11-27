@@ -23,11 +23,22 @@
 </details>
 <div class="actions"><button id="generate" type="submit" class="primary">Generate dataset</button><button id="next" type="button">Next task</button></div>
 </form>
+<details id="construction-panel"><summary>Sample a causal graph</summary>
+<p class="muted">Sample frozen mechanisms and retain their construction draws. Construction, archive replay and generation share the run timeout.</p>
+<label>Graph recipe<select id="construction-family"></select></label>
+<label>Construction seed<input id="construction-seed" value="28" inputmode="numeric"></label>
+<label>Construction controls<textarea id="construction-controls" rows="18" spellcheck="false"></textarea></label>
+<p class="muted">Edit parents, widths and observed/target channel pairs; choose root families and function priors. These controls are separate from the dataset settings above.</p>
+<label>Exploration caps (JSON)<textarea id="exploration-limits" rows="3" spellcheck="false">{}</textarea></label>
+<p class="muted">Empty uses default causal limits. Explicit larger caps also authorize replay and inspection. Workloads are not promised at every combination of maxima.</p>
+<button id="construct" type="button">Sample graph and save dataset</button>
+</details>
 <details><summary>Replay or open saved data</summary>
 <label>Paste exported recipe.json<textarea id="replay-record" rows="5" spellcheck="false"></textarea></label><button id="replay" type="button">Replay recipe</button>
 <label>Archive path within output folder<input id="archive-path" placeholder="…/groups/0/0/attempt-0.zip"></label>
 <label>Saved task identifier<input id="saved-id" type="text" inputmode="numeric" value="0" min="0"></label><button id="open" type="button">Open saved dataset</button>
 <label>Saved comparison path<input id="pair-path" placeholder="pairs/….json"></label><button id="pair-open" type="button">Open saved comparison</button>
+<label>Saved mechanism edit path<input id="edit-path" placeholder="edits/….json"></label><button id="edit-open" type="button">Open saved mechanism edit</button>
 <p id="output-dir" class="muted path"></p>
 </details>
 </aside>
@@ -45,6 +56,21 @@
 <article><h3>Feature and latent signal</h3><p class="muted">Observed points, not a response curve · other features vary</p><div id="signal-plot" class="plot"></div></article>
 <article><h3 id="diagnostic-title">Signal and observation</h3><p class="muted" id="diagnostic-note"></p><div id="diagnostic-plot" class="plot"></div></article>
 </div>
+<article id="workbench-panel">
+<p class="eyebrow">CAUSAL MECHANISM WORKBENCH</p><h3>Inspect and edit the frozen graph</h3>
+<p class="muted">The causal structure below is distinct from the generation-process diagram. Select a node to see its channels, function and structural noise. An edit creates a new authored mechanism linked to the original archive; it is not a causal intervention or observational conditioning.</p>
+<button id="mechanism-load">Inspect graph and prepare edit</button><p id="workbench-note" class="muted"></p>
+<div id="workbench-content" hidden><div id="causal-structure" class="graph-scroll"></div>
+<label>Node<select id="mechanism-node"></select></label><pre id="mechanism-node-info"></pre>
+<div class="fields"><label>Parent node indices<input id="mechanism-parents"></label><label>Structural noise scales<input id="mechanism-noise"></label></div>
+<label>Frozen node function (JSON)<textarea id="mechanism-function" rows="9" spellcheck="false"></textarea></label>
+<button id="mechanism-apply">Apply node to draft</button>
+<div class="fields"><label>Observed [node, channel] pairs<textarea id="mechanism-observed" rows="3"></textarea></label><label>Target [node, channel] pairs<textarea id="mechanism-target" rows="3"></textarea></label></div>
+<details><summary>Complete editable mechanism</summary><textarea id="mechanism-recipe" rows="16" spellcheck="false"></textarea></details>
+<button id="mechanism-save" class="primary">Generate and save mechanism edit</button>
+<p class="muted">Shape-changing edge or function edits must provide compatible function dimensions. Validation failures preserve the original dataset.</p></div>
+<section id="edit-results" hidden><h4>Saved mechanism edit comparison</h4><p id="edit-semantics" class="muted"></p><div class="chart-grid"><div id="edit-before-plot" class="plot"></div><div id="edit-after-plot" class="plot"></div></div><pre id="edit-card"></pre><button id="edit-export">Download edit and both datasets</button></section>
+</article>
 <article id="pair-panel">
 <p class="eyebrow">CHANGE ONE PROPERTY</p><h3>Compare two versions of this dataset</h3>
 <p class="muted">Keep the seed, shared input columns and context/query split fixed. Generate one saved variant of the dataset shown above.</p>
@@ -90,5 +116,5 @@
 </div>
 </section>
 </main>
-<script>/* TRANSPORT */</script><script>/* APPLICATION */</script><script>/* CURVES */</script><script>/* GRAPHS */</script><script>/* PAIRS */</script>
+<script>/* TRANSPORT */</script><script>/* APPLICATION */</script><script>/* CURVES */</script><script>/* GRAPHS */</script><script>/* PAIRS */</script><script>/* WORKBENCH */</script>
 </body></html>

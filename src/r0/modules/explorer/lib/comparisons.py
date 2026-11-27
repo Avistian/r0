@@ -8,10 +8,17 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+from r0.modules.explorer.lib.construction import caller_limits
 from r0.modules.explorer.lib.exports import replay_bundle
 from r0.modules.explorer.lib.saved import inside, load_saved, retain_record, run_saved
 from r0.modules.generation import RunRequest
-from r0.modules.priors import TrainingTask, compare_pair, paired_recipe, recipe_from_dict
+from r0.modules.priors import (
+    CausalLimits,
+    TrainingTask,
+    compare_pair,
+    paired_recipe,
+    recipe_from_dict,
+)
 
 
 @dataclass(frozen=True)
@@ -32,8 +39,11 @@ def create_pair(
     record = json.loads(before.recipe_json)
     if data.get("device", record["execution"]["device"]) != record["execution"]["device"]:
         raise ValueError("comparison must use the original dataset's generation device")
+    limits = caller_limits(data)
     recipe = paired_recipe(
-        recipe_from_dict(record["recipe"]), intervention=data["intervention"], value=data["value"]
+        recipe_from_dict(record["recipe"], limits=limits),
+        intervention=data["intervention"],
+        value=data["value"],
     )
     request = RunRequest(
         recipe=recipe,
@@ -44,6 +54,7 @@ def create_pair(
         max_seconds=data.get("max_seconds", 60),
         max_bytes=data.get("max_bytes", 256 * 1024**2),
         device=record["execution"]["device"],
+        causal_limits=limits,
     )
     attempts = output_dir / ".pair-attempts"
     attempts.mkdir(parents=True, exist_ok=True)
@@ -64,6 +75,7 @@ def create_pair(
             after,
             intervention=data["intervention"],
             allow_estimated_variance=data.get("allow_estimated_variance", False),
+            limits=limits,
         )
         document = {
             "version": "explorer-pair-v1",
@@ -91,7 +103,7 @@ def create_pair(
         raise
 
 
-def open_pair(output_dir: Path, name: str) -> SavedPair:
+def open_pair(output_dir: Path, name: str, *, limits: CausalLimits | None = None) -> SavedPair:
     path = inside(output_dir, output_dir / name)
     if path.stat().st_size > 1024**2:
         raise ValueError("saved comparison record exceeds 1 MiB")
@@ -106,6 +118,7 @@ def open_pair(output_dir: Path, name: str) -> SavedPair:
         after,
         intervention=card["intervention"],
         allow_estimated_variance=card["allow_estimated_variance"],
+        limits=limits,
     )
     if checked != card:
         raise ValueError("saved comparison card disagrees with verified datasets")

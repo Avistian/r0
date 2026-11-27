@@ -46,3 +46,21 @@ def test_notebook_registers_callback_and_returns_structured_errors(
     assert response["output_dir"] == str(tmp_path)
     failure = callbacks[name]("row", {"index": 0})["application/json"]
     assert failure == {"error": "generate or open a dataset first"}
+
+    assert 'id="construction-panel"' in displayed[0]
+    assert 'id="workbench-panel"' in displayed[0]
+    controls = callbacks[name]("construction_examples", {})["application/json"]["examples"][
+        "Explicit causal graph"
+    ]
+    controls["task"].update(rows=16, context_rows=8)
+    controls["calibration_rows"] = 4
+    created = callbacks[name](
+        "construct", {"controls": controls, "construction_seed": 28, "seed": 19, "task_id": 0}
+    )["application/json"]
+    assert "error" not in created
+    editor = callbacks[name]("mechanism", {})["application/json"]
+    editor["editable_recipe"]["nodes"][0]["noise_scale"] = [0.1, 0.1]
+    changed = callbacks[name]("edit", {"recipe": editor["editable_recipe"]})["application/json"]
+    assert changed["edit"]["card"]["kind"] == "mechanism-edit"
+    reopened = callbacks[name]("open_edit", {"path": changed["edit"]["path"]})["application/json"]
+    assert reopened["edit"]["card"] == changed["edit"]["card"]

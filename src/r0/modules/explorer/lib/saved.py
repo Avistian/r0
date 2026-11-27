@@ -7,7 +7,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
-from r0.modules.generation import RunRequest, load_group, run_guarded
+from r0.modules.generation import RunRequest, load_group, run_guarded, run_guarded_document
 from r0.modules.priors import TrainingTask, record_fingerprint
 
 
@@ -38,6 +38,10 @@ def run_saved(output_dir: Path, request: RunRequest) -> tuple[TrainingTask, str,
     config = asdict(request)
     if request.sampling is None:
         config.pop("sampling")
+    if request.causal_limits is None:
+        config.pop("causal_limits")
+    if request.construction is None:
+        config.pop("construction")
     out = output_dir / record_fingerprint(config)
     attempts = output_dir / ".attempts" / out.name
     attempts.mkdir(parents=True, exist_ok=True)
@@ -66,4 +70,42 @@ def run_saved(output_dir: Path, request: RunRequest) -> tuple[TrainingTask, str,
     if len(archives) != 1:
         raise ValueError(f"Expected one completed task archive in {out}")
     task = load_saved(output_dir, archives[0], request.start)
+    return task, str(archives[0].relative_to(output_dir)), asdict(run)
+
+
+def run_saved_document(
+    output_dir: Path, request: dict[str, Any]
+) -> tuple[TrainingTask, str, dict[str, Any]]:
+    config: dict[str, Any] = {"start": 0, "group_size": 64, "device": "cpu", **request}
+    for optional in ("sampling", "causal_limits", "construction"):
+        if config.get(optional) is None:
+            config.pop(optional, None)
+    out = output_dir / record_fingerprint(config)
+    attempts = output_dir / ".attempts" / out.name
+    attempts.mkdir(parents=True, exist_ok=True)
+    attempt = uuid.uuid4().hex
+    record = {"attempt": attempt, "request": config, "output": str(out)}
+    retain_record(attempts / f"{attempt}-started.json", {**record, "status": "STARTED"})
+    try:
+        run = run_guarded_document(config, out)
+    except (OSError, RuntimeError, ValueError, KeyboardInterrupt) as error:
+        retain_record(
+            attempts / f"{attempt}-failed.json",
+            {**record, "status": "FAILED", "error": repr(error)},
+        )
+        raise
+    failed = run.timed_out or bool(run.returncode) or run.summary is None
+    retain_record(
+        attempts / f"{attempt}-result.json",
+        {**record, "status": "FAILED" if failed else "COMPLETE", "result": asdict(run)},
+    )
+    if failed:
+        raise ValueError(
+            f"Generation failed; attempt records retained in {attempts}. "
+            f"Timed out: {run.timed_out}. {run.stderr[-2000:]} {run.summary}"
+        )
+    archives = sorted(out.glob("groups/**/*.zip"))
+    if len(archives) != 1:
+        raise ValueError(f"Expected one completed task archive in {out}")
+    task = load_saved(output_dir, archives[0], config["start"])
     return task, str(archives[0].relative_to(output_dir)), asdict(run)

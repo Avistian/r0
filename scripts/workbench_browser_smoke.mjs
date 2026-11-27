@@ -1,0 +1,42 @@
+// Actual local-browser construction, editing, saved replay and export proof.
+import fs from "node:fs/promises";
+import path from "node:path";
+import {openBrowser} from "./explorer_browser.mjs";
+const [port, url, directory] = process.argv.slice(2);
+const browser = await openBrowser(Number(port), url, directory);
+try {
+  await browser.waitFor("document.getElementById('construction-family').options.length === 2");
+  await browser.evaluate(`$('construction-panel').open=true; $('construction-family').value='Cauchy causal graph'; $('construction-family').onchange();
+    const c=JSON.parse($('construction-controls').value); c.task.rows=16; c.task.context_rows=8; c.calibration_rows=4; c.offset=1000; $('construction-controls').value=JSON.stringify(c);
+    $('exploration-limits').value='{"parameters":1000001}'; $('seconds').value=120;`);
+  await browser.click("construct");
+  const before = await browser.evaluate("({archive:current.archive,episode:current.view.episode_id,recipe:JSON.parse(current.recipe_json).recipe.version})");
+  if (before.recipe !== "sampled-topology-graph-v1") throw new Error("sampled archive provenance missing");
+  await browser.click("mechanism-load");
+  await browser.waitFor("document.querySelectorAll('#causal-structure svg [role=button]').length === 3");
+  await browser.screenshot("construction.png");
+  await browser.evaluate("$('mechanism-noise').value='[0.2,0.2]'");
+  await browser.click("mechanism-apply");
+  await browser.click("mechanism-save");
+  const edit = await browser.evaluate("({path:current.edit.path,kind:current.edit.card.kind,after:current.edit.card.after_episode_id,original:current.view.episode_id})");
+  if(edit.kind!=="mechanism-edit" || edit.original!==before.episode || edit.after===before.episode) throw new Error("linked edit identity failure");
+  await browser.screenshot("edit-comparison.png");
+  await browser.click("edit-open");
+  await browser.click("edit-export");
+  await browser.downloaded("mechanism-edit.zip");
+  await browser.evaluate("$('graph-rows').value='7,0,7'");
+  await browser.click("graph");
+  const errors = await browser.evaluate("({signal:generationGraph.signal_max_error,target:generationGraph.target_max_error})");
+  if(errors.signal!==0 || errors.target!==0) throw new Error("drill-down reconstruction mismatch");
+  await browser.evaluate("$('construction-controls').value='{}'");
+  await browser.evaluate("$('construct').click()");
+  await browser.waitFor("!busy");
+  const failure = await browser.evaluate("({text:$('status').textContent,error:$('status').className,episode:current.view.episode_id})");
+  if(failure.error!=="error" || failure.episode!==before.episode) throw new Error("failure replaced active dataset");
+  await browser.send("Emulation.setDeviceMetricsOverride", {width:390,height:844,deviceScaleFactor:1,mobile:true});
+  const overflow = await browser.evaluate("document.documentElement.scrollWidth > innerWidth + 2");
+  await browser.screenshot("mobile.png");
+  if(overflow) throw new Error("mobile page overflows");
+  if(browser.exceptions.length) throw new Error(JSON.stringify(browser.exceptions));
+  await fs.writeFile(path.join(directory,"receipt.json"),JSON.stringify({before,edit,errors,failure,mobile_overflow:overflow,downloads:browser.downloads,exceptions:browser.exceptions},null,2));
+} finally { browser.close(); }
