@@ -52,6 +52,35 @@ evaluation CLI commands are absent, so smoke/eval-smoke remain NOT_AVAILABLE.
 | `c7495bd` | Native decoder repaired. Independent bounded review passed 15 emission/frequency/cutpoint combinations, eight function families, five RNG engines, typed ancestor calibration, raw replay, limits and archive corruption checks. This is not whole-issue acceptance. |
 | `30a8cb3` | Sampled-native integration atop `738670c`; public exports preserved. Focused native, pipeline and explorer checks passed. Research-only successor `123c0b7` adds fitted-tree source contracts. Full integrated suite remains pending. |
 
+## Parent, fitted-tree and sampled-native follow-on review
+
+These integrations remain unpublished and are not covered by the 1,893-test
+publication result above.
+
+- Parent composition `8097c3b` passed bounded independent review of all 22 changed
+  files, 84 multioutput arithmetic cases, six raw-custody/archive cases and 14
+  reconstructed ancestor/slice/reducer calibration populations. Geometry/native
+  integration and UI delivery are separate follow-on work.
+- Sampled-native UI `7b625ce` was rejected because malformed row geometry failed
+  before the attempt receipt. Repair `575d347` moved task decoding inside the
+  guarded worker. Independent reruns checked invalid row count, context count and
+  empty observations: each retains the original controls in a failed receipt and
+  preserves the entire active view. Subsequent independent browser/public review
+  passed typed construction, threshold arithmetic, inspection, frozen edits,
+  save/reopen/export and mobile layout. Hosted Colab remains NOT_RUN.
+- Fitted trees `e0fdd72` were rejected for nonfinite boosted class scores reaching
+  argmax. Repair `ddf1c5b` rejects those scores. Independent checks exercised both
+  public inference interfaces for identity/sigmoid/softmax boosting and preserved
+  a finite `1e308` leaf. Further review then found contradictory learning-rate
+  plan/backend/output metadata; that second rejection remains open pending repair.
+- Authored fitted-tree parent and joint membership `75ebb93` has ten public
+  regressions that failed before implementation; 69 combined focused checks and
+  commit hooks passed afterward. This does not extend the sampled eight-family
+  parent selector to fit trees automatically.
+
+Original failed probes, subsequent checks and browser artifacts remain local,
+ignored evidence. None of these scoped reviews establishes complete #28 coverage.
+
 Original rejection probes and failure logs are retained alongside repairs. Local
 copies live under ignored `docs/evidence/issue-28-parallel/`, with a byte-verified
 `manifest.json`. This directory contains both independent probes and separately
