@@ -68,8 +68,6 @@ def test_fit_archive_rejects_missing_fit_custody():
 def test_graph_and_fit_aggregate_limit_precedes_any_snapshot_restore(
     monkeypatch: pytest.MonkeyPatch,
 ):
-    from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
-
     recipe = fitted_graph()
     boundary = recipe.admit()["estimated_working_bytes"]
     limited = replace(recipe.limits, working_bytes=boundary - 1)
@@ -79,7 +77,7 @@ def test_graph_and_fit_aggregate_limit_precedes_any_snapshot_restore(
         calls.append(True)
         raise AssertionError("aggregate graph/fit admission must precede snapshot restoration")
 
-    monkeypatch.setattr(GeneratorSnapshot, "restore", forbidden)
+    monkeypatch.setattr(type(recipe.fits[0].realization.initial_rng[0]), "restore", forbidden)
     with pytest.raises(ValueError, match="working|limit"):
         p.recipe_from_dict(asdict(recipe), limits=limited)
     assert calls == []
