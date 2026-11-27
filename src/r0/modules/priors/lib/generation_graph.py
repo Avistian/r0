@@ -57,7 +57,6 @@ def explain_generation(
         raise ValueError("column_start must be 0..4095")
     record = json.loads(task.recipe_json)
     card = json.loads(task.mechanism_json)
-    inputs = task.inputs.detach().cpu()[list(indices)].clone()
     nodes: list[dict[str, Any]] = []
 
     def add(
@@ -86,15 +85,15 @@ def explain_generation(
             }
         )
 
-    if record["recipe"].get("version") in (
-        "recursive-population-v1",
-        "recursive-population-intervention-v1",
-    ):
+    from r0.modules.priors.lib.population_task_semantics import is_population_task_record
+
+    if is_population_task_record(record, card):
         from r0.modules.priors.lib.recursive_population_inspection import recursive_population_steps
 
         if component is not None:
             raise ValueError("recursive populations do not have composite children")
         return {**recursive_population_steps(task, indices, add, limits=limits), "nodes": nodes}
+    inputs = task.inputs.detach().cpu()[list(indices)].clone()
     if record["recipe"].get("version") in ("converted-causal-v1", "sampled-converted-graph-v1"):
         from r0.modules.priors.lib.converted_inspection import converted_steps
 

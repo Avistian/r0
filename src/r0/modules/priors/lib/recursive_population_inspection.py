@@ -1,6 +1,5 @@
 """Inspect full original populations before selecting repeated or out-of-order rows."""
 
-import json
 from collections.abc import Callable, Sequence
 from dataclasses import asdict
 from typing import Any
@@ -10,6 +9,10 @@ import torch
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
+from r0.modules.priors.lib.population_task_semantics import (
+    population_task_record,
+    validate_population_task,
+)
 from r0.modules.priors.lib.recursive_forest_evaluation import (
     evaluate_recursive_forest,
     inspect_recursive_forest,
@@ -29,34 +32,12 @@ def recursive_population_steps(
 ) -> dict[str, Any]:
     from r0.modules.priors.lib.generate import generate_task, recipe_from_dict
 
-    record = json.loads(task.recipe_json)
+    record = population_task_record(task)
     recipe = recipe_from_dict(record["recipe"], limits=limits or CausalLimits())
     if not isinstance(recipe, (RecursivePopulationRecipe, RecursivePopulationIntervention)):
         raise ValueError("population inspection requires its distinct lifecycle record")
     replay = generate_task(recipe, seed=record["seed"], task_id=record["task_id"])
-    expected_record = json.loads(replay.recipe_json)
-    if (
-        record["execution"].keys() != expected_record["execution"].keys()
-        or record["execution"]["implementation"] != expected_record["execution"]["implementation"]
-        or any(
-            getattr(task, name) != getattr(replay, name)
-            for name in (
-                "source_task_id",
-                "episode_id",
-                "task_type",
-                "classes",
-                "feature_schema",
-                "target_origin",
-                "mechanism_json",
-            )
-        )
-        or task.probabilities is not None
-        or any(
-            not torch.equal(getattr(task, name), getattr(replay, name))
-            for name in ("inputs", "targets", "scores", "context_indices", "query_indices")
-        )
-    ):
-        raise ValueError("population task differs from exact semantic replay")
+    validate_population_task(task, replay, record)
     intervention = recipe if isinstance(recipe, RecursivePopulationIntervention) else None
     base = recipe.base if isinstance(recipe, RecursivePopulationIntervention) else recipe
     values = (
