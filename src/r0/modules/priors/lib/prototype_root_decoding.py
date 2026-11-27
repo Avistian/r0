@@ -1,6 +1,6 @@
 """Strict bounded prototype root records; batch references never decode as frozen banks."""
 
-from dataclasses import fields
+from dataclasses import fields, is_dataclass
 from typing import Any, cast
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
@@ -35,6 +35,26 @@ def prototype_object(data: object, kind: Any) -> dict[str, Any]:
     return values
 
 
+def require_nested_fields(data: Any, record: Any) -> None:
+    """Prototype custody cannot inherit omitted defaults from authored base decoders."""
+    if is_dataclass(record) and not isinstance(record, type):
+        if type(data) is not dict:
+            raise ValueError("prototype nested record must be an object")
+        values = cast(dict[str, Any], data)
+        required = fields(record)
+        if set(values) != {field.name for field in required}:
+            raise ValueError("prototype nested record fields differ")
+        for field in required:
+            require_nested_fields(values[field.name], getattr(record, field.name))
+    elif type(record) is tuple and type(data) in (tuple, list):
+        expected = cast(tuple[Any, ...], record)
+        supplied = cast(tuple[Any, ...] | list[Any], data)
+        if len(supplied) != len(expected):
+            raise ValueError("prototype nested record sequence differs")
+        for value, item in zip(supplied, expected, strict=True):
+            require_nested_fields(value, item)
+
+
 def prototype_weight_law_from_dict(data: object) -> PrototypeWeightLaw:
     try:
         values = prototype_object(data, PrototypeWeightLaw)
@@ -57,6 +77,7 @@ def prototype_root_plan_from_dict(
         ):
             prototype_object(cast(dict[str, Any], base), JointRootBase)
         values["base"] = functional_root(base, limits=limits)
+        require_nested_fields(base, values["base"])
         values["weights"] = prototype_weight_law_from_dict(values["weights"])
         values["raw_limits"] = RawDrawLimits(
             **prototype_object(values["raw_limits"], RawDrawLimits)
