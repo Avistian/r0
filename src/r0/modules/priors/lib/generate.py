@@ -26,6 +26,7 @@ from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_decoding import functional_recipe_from_dict
 from r0.modules.priors.lib.functional_causal_evaluation import generate_functional_causal
 from r0.modules.priors.lib.geometry_graph_decoding import geometry_graph_from_dict
+from r0.modules.priors.lib.hyperprior_graph import HyperpriorGraph, generate_hyperprior_graph
 from r0.modules.priors.lib.inputs import InputDistribution
 from r0.modules.priors.lib.intervention_policy_records import SampledInterventionPolicy
 from r0.modules.priors.lib.linear import LinearRecipe
@@ -92,6 +93,7 @@ type Recipe = (
     | RealizedPrototypeBatchNetworkRecipe
     | NetworkRecipe
     | NetworkObservationRecipe
+    | HyperpriorGraph
     | RecursivePopulationIntervention
     | RecursivePopulationRecipe
     | NetworkInputView
@@ -143,6 +145,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         )
 
         return network_observation_recipe_from_dict(fields, limits=limits)
+    if version == "sampled-hyperprior-graph-v1":
+        from r0.modules.priors.lib.hyperprior_graph_decoding import hyperprior_graph_from_dict
+
+        return hyperprior_graph_from_dict(fields, limits=limits)
     population = population_recipe_from_dict(fields, limits=limits)
     if population is not None:
         return population
@@ -308,6 +314,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, HyperpriorGraph):
+        return generate_hyperprior_graph(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkObservationRecipe):
         return generate_network_observations(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, (RecursivePopulationRecipe, RecursivePopulationIntervention)):

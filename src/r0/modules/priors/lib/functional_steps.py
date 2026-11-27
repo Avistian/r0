@@ -38,6 +38,25 @@ def functional_steps(
             or encode(card.get("nodes")) != encode([asdict(n) for n in recipe.nodes])
         ):
             raise ValueError("observation inspection metadata differs from retained selection")
+    elif raw_recipe.get("version") == "sampled-hyperprior-graph-v1":
+        from r0.modules.priors.lib.hyperprior_graph import hyperprior_graph_card
+        from r0.modules.priors.lib.hyperprior_graph_decoding import hyperprior_graph_from_dict
+        from r0.modules.priors.lib.representatives import encode
+
+        envelope = hyperprior_graph_from_dict(raw_recipe, limits=limits)
+        recipe = envelope.runtime
+        expected = {
+            **hyperprior_graph_card(envelope),
+            "nodes": [asdict(n) for n in recipe.nodes],
+            "observed": recipe.observed,
+            "target": recipe.target,
+        }
+        if any(encode(card.get(k)) != encode(v) for k, v in expected.items()) or (
+            record.get("execution", {}).get("implementation") != envelope.version
+        ):
+            raise ValueError(
+                "topology graph inspection metadata differs from retained construction"
+            )
     elif raw_recipe.get("version") == "sampled-geometry-graph-v1":
         from r0.modules.priors.lib.geometry_graph_decoding import geometry_graph_from_dict
 
