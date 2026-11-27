@@ -283,3 +283,25 @@ recommends one shared preference context, complete transactional binding ownersh
 explicit global-mode adaptation, source-name adapters and ancestral fitting against
 final parent states. It preserves legacy families. Proposed design oracles are
 NOT_RUN. Full #28 scope, browser/Colab, GPU, scale and scientific evidence remain open.
+
+## Shared sampling context checkpoint
+
+Source `662fb89` adds one transactional numerical/categorical scope across named
+operations, nested ownership, explicit global policies, forced identities and
+aggregate admission before draws/decoding. Existing samplers retain their default
+behavior. [Contract and retained evidence](issue-28-joint-sampling.md).
+
+Full checks pass **825 tests, one skipped**, all static gates. Independent review
+passes 286 assertions including 165 expected rejections; all 156 legacy pairs are
+byte-identical, including three retained failures. Source/import custody verifies
+323 entries each. The original `2812d23` decoder REJECT remains retained: a string
+path was silently coerced into character components. Repaired decoding rejects
+string/dictionary paths. The separate Tensor-output verifier mistake is retained.
+Standards accepts the narrow repair/documentation remedy, with no source-level
+hard finding and one advisory transaction-copy duplication concern.
+
+This is the shared context/ledger foundation, not the sampled graph integration.
+Typed activation/matrix/root/converter plans, semantic destination bindings,
+independent ancestral fitting against finalized parent states, source profiles,
+all wider options and actual browser/Colab/GPU/scale evidence remain required.
+The full #28 goal stays active.

@@ -1,0 +1,141 @@
+{
+  "source": "662fb89e098126990c2b6d5a86a4e6c189fc0321",
+  "archive": "0028-joint-sampling-development.zip",
+  "bytes": 21050,
+  "sha256": "51ec4e06e34318da2961d97a84cd0e29036e5d0d5f0447f0c6fd28b90e5dff0c",
+  "files": {
+    "cli-help.txt": {
+      "bytes": 533,
+      "sha256": "94976f5eb650874edbfb1285992d99516d32f12dd8e6bb2fae00f7e35119da62"
+    },
+    "joint-sampling-standards-2812d23.txt": {
+      "bytes": 2646,
+      "sha256": "3e503c9b389c08ba9af3ed295dd24e0b3113da6ed5fa8a329720f1741222839a"
+    },
+    "joint-sampling-standards-662fb89.txt": {
+      "bytes": 2579,
+      "sha256": "c76b78dc4ff0a6baf221551fd39788922a407c63e0d066979afb38512030b876"
+    },
+    "joint-sampling-standards-mirror-662fb89.txt": {
+      "bytes": 1876,
+      "sha256": "5e91709b8c3f9933e50c40b5a9d3047c49b51b52311c8b66bde6035a7fce655a"
+    },
+    "r0-28-joint-atomic-green.log": {
+      "bytes": 98,
+      "sha256": "91fddbaa659704097a402ea9d8a5f8ade5e0567b66ff649cb956d266cc750b33"
+    },
+    "r0-28-joint-atomic-red.log": {
+      "bytes": 1074,
+      "sha256": "f32cad83f974670656faa429dd905699e16ce6af284531d828456eaa01588f85"
+    },
+    "r0-28-joint-budget-green.log": {
+      "bytes": 99,
+      "sha256": "cf8e91f5ca56ee5809498c3c017582903100838996f7a05912be0cbc97c9f1f9"
+    },
+    "r0-28-joint-budget-red.log": {
+      "bytes": 3774,
+      "sha256": "a83ac4aa1c0d3d1b15163d08fc367930c778a18d62f1497936431351a6297b5a"
+    },
+    "r0-28-joint-forced-green.log": {
+      "bytes": 99,
+      "sha256": "4a04503c94cf1d91e2c270709b40fa1f7df0fd7e309f68ae4298843874446162"
+    },
+    "r0-28-joint-forced-red.log": {
+      "bytes": 1111,
+      "sha256": "7c1740a24bed75b507b49c069fe3c946417e52926a9e67ef8682bd0ea58c2ceb"
+    },
+    "r0-28-joint-full-check-corrected.log": {
+      "bytes": 2077,
+      "sha256": "097804257a5aacefb1e4daa36a9f6d42e649fedc4d838f75b284a97bb75e73f7"
+    },
+    "r0-28-joint-full-check.log": {
+      "bytes": 1022,
+      "sha256": "61f4b9e182808041413ec6183a94f26130999daeb839c53dc2907381e81620c2"
+    },
+    "r0-28-joint-ownership-green.log": {
+      "bytes": 99,
+      "sha256": "76acb444e81a1df41ecddc489fabd3380000998c3ea5a66afb730addc237462f"
+    },
+    "r0-28-joint-ownership-red.log": {
+      "bytes": 1340,
+      "sha256": "5064883fed8e38f5e3189340c5801e5aa987308a0385b5c3a73e641ddc92550a"
+    },
+    "r0-28-joint-path-type-green.log": {
+      "bytes": 99,
+      "sha256": "5e5cc2385e80af567c36920fc84377434d1ae667e2deac349b576acbf44a4fdf"
+    },
+    "r0-28-joint-path-type-red.log": {
+      "bytes": 1956,
+      "sha256": "f9b1d31c19deac57d3c43dbf10e3b2ce8891ab5e80eac5aed96a36781a7b7f83"
+    },
+    "r0-28-joint-policy-green.log": {
+      "bytes": 98,
+      "sha256": "d47dbf99ec5be5e51649587f33348b04e1867ce4ccbc09b11077ce75061b3a2d"
+    },
+    "r0-28-joint-policy-red.log": {
+      "bytes": 3522,
+      "sha256": "41020f29a721932568031fb998cebde6df0e45fe3f1cd9bf9f068d0459ff8d35"
+    },
+    "r0-28-joint-regression-corrected.log": {
+      "bytes": 99,
+      "sha256": "67173e22e1c6e3eff8120771d6bdf03f639db8723bed1c2c7cac143cf4b5c1e1"
+    },
+    "r0-28-joint-regression.log": {
+      "bytes": 102,
+      "sha256": "98048b5237a20728754ad5bc7f8869fae8990988ee7f41fd7ba0e4320111ed53"
+    },
+    "r0-28-joint-repaired-full-check.log": {
+      "bytes": 2854,
+      "sha256": "6e489848bb4a0c9ca07d6707332b233ffccc24f0166f9d90405d2a63572f76e6"
+    },
+    "r0-28-joint-rng-corrected-red.log": {
+      "bytes": 4392,
+      "sha256": "1bd9818f1ab7fb0ad9e7233b14af54c10af1fbcab46918d0173a69c28b63ce53"
+    },
+    "r0-28-joint-rng-green.log": {
+      "bytes": 98,
+      "sha256": "9b238535efef484adecb072b8b692eaf3d1ce3a1308268ad654227904d04cdef"
+    },
+    "r0-28-joint-rng-red.log": {
+      "bytes": 4392,
+      "sha256": "6fb13e8cb8d45445c0f2b158d9fbb48b835ea5967e5077bf1510aec4340608cc"
+    },
+    "r0-28-joint-scope-green.log": {
+      "bytes": 98,
+      "sha256": "c420fbcd629a020d82db5355a0430090ad57720c65b08d7983461589c3bab90d"
+    },
+    "r0-28-joint-scope-red.log": {
+      "bytes": 819,
+      "sha256": "e654b4a0284f458b8dcb42478dafa70598f6849458bb01f31211ae0532ec5671"
+    },
+    "r0-28-joint-transaction-green.log": {
+      "bytes": 98,
+      "sha256": "9f3ab38f467f9a8007eb8c2f84527dcda49465fb3139400098ddaf223fa8063c"
+    },
+    "r0-28-joint-transaction-red.log": {
+      "bytes": 1380,
+      "sha256": "f8c01aaefa829c677d7fc8a265b12656e38c587b7d48f81297518a3914d19976"
+    },
+    "r0-28-joint-typecheck-final.log": {
+      "bytes": 37,
+      "sha256": "6d88a1b220adb7a3d62092b6e38431f0b3fe8babe9864fab90e5849766260332"
+    },
+    "r0-28-joint-typecheck.log": {
+      "bytes": 522,
+      "sha256": "49310b452b27a8a166f144382709e72bfd6d298a6d74a78686a8eab5d2543b35"
+    },
+    "recover-attempt1.json": {
+      "bytes": 349,
+      "sha256": "8cdc3d77fd5a0e2b536599c5db129ea59879ba946d264b04842ba34c0900ef99"
+    },
+    "recover-attempt1.py": {
+      "bytes": 2739,
+      "sha256": "9d46cdfb1c40f7d7a3cddaaa43ee15104c5dacd01a3a6aefb531e0374d862876"
+    },
+    "standards-frozen.txt": {
+      "bytes": 2646,
+      "sha256": "3e503c9b389c08ba9af3ed295dd24e0b3113da6ed5fa8a329720f1741222839a"
+    }
+  },
+  "qualification": "Author development logs; RED/GREEN at intermediate source states, not independent scientific evidence. Initial regression typo, formatter failure, typecheck failure, interrupted full run and repaired full PASS retained. Failed and corrected independent verifier evidence is in separate archives."
+}

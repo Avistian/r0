@@ -1,0 +1,8 @@
+{
+  "verdict": "RESTORED_AND_VERIFIED",
+  "metadata": "/tmp/r0-28/docs/research/0028-joint-sampling-reject-artifacts.json",
+  "output": "/tmp/joint-sampling-reject-recovered-final",
+  "source": "2812d23b390a44f5b817c4a2a112de369861ee56",
+  "manifest_entries": 2454,
+  "archive_sha256": "907ea33bf2cbb79252215fc8acace01cbe34aff590d868dac3e0c5d66f8f1d7a"
+}

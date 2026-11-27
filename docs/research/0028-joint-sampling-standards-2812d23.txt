@@ -1,0 +1,15 @@
+Standards review: REJECT evidence documentation; source standards no hard findings.
+BASE: 32c24ec0fde27ec2ae096272f66e584ad3760e4c
+SOURCE: 2812d23b390a44f5b817c4a2a112de369861ee56
+Diff: git diff 32c24ec0fde27ec2ae096272f66e584ad3760e4c...2812d23b390a44f5b817c4a2a112de369861ee56
+Commit: 2812d23 feat(priors): add transactional shared sampling context #28.
+
+Preflight: parent owns /tmp/r0-28; initial HEAD matched SOURCE; status only ?? .venv. Agent slots inspected: parent and two assigned reviewers running, prior research worker completed. No checkout/branch changes, tests, dependencies, cloud, downloads, or secrets. Final HEAD b029b64362a30395b1d2f0ec456926ac1839be97 was parent-reported documentation formatting correction; git diff SOURCE -- src tests remained empty. Source/test files untouched by reviewer.
+
+Inspected scope: all eight changed files, AGENTS.md, docs/requirements.md, CODING_STANDARDS.md, src/r0/modules/README.md, ADR 0006, README verification/evidence conventions, existing sampler/limit implementations and retained joint logs. Tool-enforced formatting/types excluded. Full tests owned by parent: NOT_RUN by this reviewer.
+
+(a) Documented-standard violation (evidence, not runtime): docs/issue-28-joint-sampling.md:88-91 claims nine existing sampler checks passed, but identifies neither their test files nor the regression invocation and environment. The corrected regression log contains only “23 passed”; the new test file cannot identify the other nine checks. CODING_STANDARDS.md:26-32 requires identified inputs and an exact command or retained program in the declared environment. Also README.md:73-78 directs generated logs to docs/evidence/, whereas the evidence pointer is only /tmp/r0-28-joint-*.log. Retain the logs in the documented location and add the exact regression command plus environment/source identity. New behavior-test code is retained; this finding is specifically the incomplete legacy regression reproduction claim.
+
+(b) Nonblocking heuristic: possible Duplicated Code / Data Clump in joint_sampling.py:73-82 and 91-98. Both staging and commit manually enumerate `_events`, `_completed`, `_roles`, `_counts`, `_contracts`, plus samplers/RNG. Future transactional state must be added consistently to both lists. Consider bundling mutable transaction state or centralizing the copy operation; current reviewed fields appear consistently handled. This is judgment, not a documented breach.
+
+Overall issue #28 remains incomplete: graph/plan/fitter/saved-task/explorer integration stays PENDING. This report covers only the outer context/ledger checkpoint, not full specification acceptance.

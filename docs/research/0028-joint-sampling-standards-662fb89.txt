@@ -1,0 +1,14 @@
+Standards delta review: ACCEPT narrow code repair and historical documentation remedy; publication evidence mirroring PENDING.
+BASE (historically rejected): 2812d23b390a44f5b817c4a2a112de369861ee56
+SOURCE: 662fb89e098126990c2b6d5a86a4e6c189fc0321
+Diff: git diff 2812d23b390a44f5b817c4a2a112de369861ee56...662fb89e098126990c2b6d5a86a4e6c189fc0321
+
+Read-only preflight: /tmp/r0-28 remains parent-owned; HEAD matched SOURCE; status only ?? .venv. Slot list showed parent and both assigned reviewers running. Inspected exactly three changed files: joint_sampling_records.py, test_joint_sampling.py, docs/issue-28-joint-sampling.md; additionally inspected referenced local evidence and nine inherited test names. No checkout mutations, branches, tests, dependencies, cloud, downloads, or secrets. Original /tmp/joint-sampling-standards-2812d23.txt remains unchanged.
+
+Repair: joint_sampling_records.py:183-184 now requires raw operation paths to be an exact list or tuple before length checking/conversion. This prevents the reviewed string/dictionary ownership coercion while retaining JSON-array and tuple decoding. Public regression cases at test_joint_sampling.py:222-230 exercise both malformed representations through priors.joint_sampling_from_dict. No new documented-standard violations or heuristic concerns in this repair.
+
+Historical documentation finding remedied: docs/issue-28-joint-sampling.md:94-107 identifies the exact guarded regression command, checkout, existing environment, interpreter/NumPy versions, historical source SHA, and all three test files. The two inherited files contain nine named tests. The corrected 23-pass log exists in the documented Git-ignored docs/evidence/issue-28/joint-sampling directory. This addresses CODING_STANDARDS.md:26-32 and README.md:73-78 for the original regression claim. Historical REJECT and interrupted full-check status are explicitly preserved.
+
+Publication limitation: at inspection, the newly referenced path-type RED/GREEN logs were absent from that evidence directory. Their /tmp originals exist and show 2 failed/14 passed, then 25 passed. Parent explicitly owns mirroring completed logs before publication; that action remains PENDING. No independent test-execution or full-suite-pass claim is made here. Full check remains parent-owned.
+
+The previous nonblocking transaction-copy-list duplication advisory remains unchanged. This report accepts only the reviewed repair/documentation delta, not all prior implementation or issue #28. Graph/plan/fitter/saved-task/explorer completion remains outside this review.
