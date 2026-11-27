@@ -5,6 +5,9 @@ from dataclasses import asdict, replace
 from typing import Any
 
 from r0.modules import priors
+from r0.modules.explorer.lib.observation_architecture_examples import (
+    architecture_observation_examples,
+)
 
 
 def observation_examples() -> dict[str, Any]:
@@ -132,4 +135,5 @@ def observation_examples() -> dict[str, Any]:
     }
     item["observations"]["profile"] = "p1-778f0d0-v1"
     examples["Observations: authored affine equations / pinned selection"] = item
+    examples.update(architecture_observation_examples(task))
     return examples

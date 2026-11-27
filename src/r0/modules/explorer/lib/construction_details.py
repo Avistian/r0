@@ -10,8 +10,9 @@ def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
             "notice": "Full source and selection receipt retained. Selected internal channels "
             "are observations, not original network inputs. Pinned overlap may leak targets; "
             "aliases preserve it explicitly. Frozen Next preserves source/selection draws. "
-            "Coordinate-root row-shape RNG behavior is source-dependent. Variable-width and "
-            "nonsequential observation policies remain required. Causal references clamp "
+            "Coordinate-root row-shape RNG behavior is source-dependent. P1 profiles retain "
+            "equal-width sequential limits; r0 general selects propagated DAG block states. "
+            "Causal references clamp "
             "observed channels while fixing hidden roots and structural innovations.",
             "receipt": recipe["observations"],
         }

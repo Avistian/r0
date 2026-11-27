@@ -115,8 +115,10 @@ these versioned semantics, frozen normalization and exact same-shape replay; it
 does not claim universal prefix stability. A versioned prefix-stable extension
 remains required where the broader specification calls for it.
 
-Broad follow-up scope is unchanged: variable-width and nonsequential/gated/skip
-observation policies, source-qualified additional selection laws, further policy controls and actual hosted Colab verification.
+The explicit r0 general profile below extends propagated-state selection to
+variable-width and nonsequential/gated/skip architectures. Further source-qualified
+selection laws, expert-internal/gate-logit policies and actual hosted Colab
+verification remain required breadth.
 The existing sequential profiles compose with sampled weights/hyperpriors,
 internal innovations/importance, coordinate roots and prototype roots; they do
 not silently substitute another architecture when a source is unsupported.
@@ -132,16 +134,21 @@ exact saved tensor replay is still mandatory.
 
 ## Guarded workbench and shared notebook callback
 
-The explorer's construction menu exposes 16 observation presets: both P1
+The explorer's construction menu preserves the original 16 observation presets: both P1
 policies with dense/individual-sparse/block-sparse sources, explicit alternative
 selection/target/order combinations, sampled internal noise and importance,
 source scalar weight laws with explicit equal widths, P1/P2 coordinate roots,
 a frozen independent prototype bank and editable authored affine equations.
 The dedicated controls edit policy, ordering and an exact separate selection
 seed. Complete source, task adapter and raw-limit controls remain visible in JSON.
-Restrictions are shown before construction: these profiles accept equal-width
-sequential single-expert layers without gates or skips. Unsupported requests
-reject without widening, retrying or substituting architectures.
+Restrictions are shown before construction: the P1 profiles accept equal-width
+sequential single-expert layers without gates or skips. The additional 12 r0
+general presets cover every standalone architecture with variable widths,
+authored sparse gated multi-parent projected skips, combined post-block noise,
+P1 mixed roots, independent prototype roots and independently sampled hidden
+widths. The policy selector explicitly distinguishes the r0 extension from the
+P1 profiles. Unsupported requests reject without widening, retrying or
+substituting architectures.
 
 Construction, frozen Next/replay, receipt-derived graph preparation, original-row
 trace and observation draft validation use the bounded generation worker. The
@@ -206,5 +213,8 @@ archive replay, selected-row traces, state/readout interventions and causal
 references share these mappings. Source-specific noise placement restrictions
 still apply: general gated/skip sources may use explicit post-block noise, while
 pre-activation and pinned source noise retain their narrower accepted shapes.
-Dedicated workbench presets for this extension are a separate delivery increment.
-Additional expert-internal or gate-logit observation catalogs are not claimed.
+Dedicated workbench presets and JSON controls expose this extension explicitly;
+the same bounded callbacks support local notebooks. Frozen Next, receipt/graph
+inspection, linked authored edits, exact-ID save/reopen/export and causal
+references preserve the complete original envelope. Additional expert-internal
+or gate-logit observation catalogs are not claimed.
