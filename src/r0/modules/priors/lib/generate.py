@@ -3,6 +3,7 @@
 from typing import Any, cast
 
 from r0.modules.priors.lib.activation_sampling import activation_prior_from_dict
+from r0.modules.priors.lib.base_recipe_decoding import base_recipe_from_dict
 from r0.modules.priors.lib.categorical_preferences import categorical_preferences_from_dict
 from r0.modules.priors.lib.causal import CausalRecipe, causal_node_from_dict, generate_causal
 from r0.modules.priors.lib.causal_graph import CausalGraph, CausalGraphPrior
@@ -21,16 +22,12 @@ from r0.modules.priors.lib.converted_causal_records import ConvertedCausalRecipe
 from r0.modules.priors.lib.converted_decoding import converted_recipe_from_dict
 from r0.modules.priors.lib.converted_graph_decoding import converted_graph_from_dict
 from r0.modules.priors.lib.converted_output import generate_converted
-from r0.modules.priors.lib.exact_gp import GaussianProcessRecipe
-from r0.modules.priors.lib.fourier import FourierRecipe
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_decoding import functional_recipe_from_dict
 from r0.modules.priors.lib.functional_causal_evaluation import generate_functional_causal
 from r0.modules.priors.lib.geometry_graph_decoding import geometry_graph_from_dict
-from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe
 from r0.modules.priors.lib.inputs import InputDistribution
 from r0.modules.priors.lib.intervention_policy_records import SampledInterventionPolicy
-from r0.modules.priors.lib.kernel_decoding import kernel_from_dict
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.matrix_preference_prior import CausalMatrixPrior
 from r0.modules.priors.lib.native_causal import NativeCausalRecipe
@@ -59,13 +56,11 @@ from r0.modules.priors.lib.network_recipe import (
 )
 from r0.modules.priors.lib.node_pipeline import pipeline_from_dict
 from r0.modules.priors.lib.parameter_preferences import parameter_preferences_from_dict
-from r0.modules.priors.lib.polynomial import PolynomialRecipe
 from r0.modules.priors.lib.preference_binding import PreferenceBinding
 from r0.modules.priors.lib.prototype_batch_network import (
     PrototypeBatchNetworkRecipe,
     RealizedPrototypeBatchNetworkRecipe,
 )
-from r0.modules.priors.lib.quadratic import QuadraticRecipe
 from r0.modules.priors.lib.recursive_population_dispatch import (
     generate_population_recipe,
     population_recipe_from_dict,
@@ -84,13 +79,13 @@ from r0.modules.priors.lib.sampled_native_vector_output import generate_sampled_
 from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
 from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.sampling import BaseRecipe, generate_base_task
-from r0.modules.priors.lib.smooth import SmoothRecipe
 from r0.modules.priors.lib.source_activation_sampling import source_activation_selections_from_dict
 from r0.modules.priors.lib.source_causal import SourceCausalRecipe
 from r0.modules.priors.lib.source_causal_prior import SourceActivationPrior, SourceStageBinding
 from r0.modules.priors.lib.source_matrix import SourceMatrixCausalRecipe
 from r0.modules.priors.lib.topology_graph_decoding import topology_graph_from_dict
 from r0.modules.priors.lib.training_task import TrainingTask
+from r0.modules.priors.lib.typed_policy_records import SampledTypedInterventionPolicy
 
 type Recipe = (
     PrototypeBatchNetworkRecipe
@@ -102,6 +97,7 @@ type Recipe = (
     | NetworkInputView
     | CausalInterventionRecipe
     | SampledInterventionPolicy
+    | SampledTypedInterventionPolicy
     | BaseRecipe
     | ConvertedCausalRecipe
     | SampledConvertedGraph
@@ -170,6 +166,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         return converted_graph_from_dict(fields, limits=limits)
     if version == "converted-causal-v1":
         return converted_recipe_from_dict(fields, limits=limits)
+    if version == "sampled-typed-intervention-policy-v1":
+        from r0.modules.priors.lib.typed_policy_decoding import typed_policy_from_dict
+
+        return typed_policy_from_dict(data, limits=limits or CausalLimits())
     if version == "sampled-intervention-policy-v1" or (
         "reference_raw" in fields and "runtime" in fields
     ):
@@ -303,45 +303,7 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         fields["components"] = tuple(components)
         fields["expression"] = _expression_from_dict(fields.get("expression", 0))
         return CompositeRecipe(**fields)
-    if version == "linear-v1":
-        if "class_offsets" in fields:
-            fields["class_offsets"] = tuple(fields["class_offsets"])
-        return LinearRecipe(**fields)
-    if version in (
-        "fourier-v1",
-        "polynomial-v1",
-        "quadratic-v1",
-        "grouped-linear-v1",
-        "smooth-v1",
-        "exact-gp-v1",
-    ):
-        task = recipe_from_dict(fields.get("task", {}))
-        if not isinstance(task, LinearRecipe):
-            raise ValueError("task controls must use linear-v1 settings")
-        fields["task"] = task
-        if version in (
-            "polynomial-v1",
-            "quadratic-v1",
-            "grouped-linear-v1",
-            "smooth-v1",
-            "exact-gp-v1",
-        ):
-            fields["inputs"] = InputDistribution(**fields.get("inputs", {}))
-            if version == "exact-gp-v1":
-                if "kernels" in fields:
-                    fields["kernels"] = tuple(kernel_from_dict(k) for k in fields["kernels"])
-                return GaussianProcessRecipe(**fields)
-            if version == "smooth-v1":
-                return SmoothRecipe(**fields)
-            if version == "grouped-linear-v1":
-                return GroupedLinearRecipe(**fields)
-            return (
-                PolynomialRecipe(**fields)
-                if version == "polynomial-v1"
-                else QuadraticRecipe(**fields)
-            )
-        return FourierRecipe(**fields)
-    raise ValueError(f"unsupported recipe version: {version!r}")
+    return base_recipe_from_dict(fields)
 
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
@@ -362,6 +324,10 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
         return generate_prototype_batch_network(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkRecipe):
         return generate_network(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, SampledTypedInterventionPolicy):
+        from r0.modules.priors.lib.typed_policy_output import generate_typed_policy_task
+
+        return generate_typed_policy_task(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, SampledInterventionPolicy):
         from r0.modules.priors.lib.intervention_policy_output import generate_policy_task
 

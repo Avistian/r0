@@ -1,0 +1,155 @@
+"""Strict typed receipts with metadata-only admission before nested snapshot replay."""
+
+from dataclasses import fields, replace
+from typing import Any, cast
+
+from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.function_metadata import admit_function_metadata
+from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
+from r0.modules.priors.lib.intervention_policy_decoding import complete_record
+from r0.modules.priors.lib.intervention_policy_laws import InterventionParameterLaw
+from r0.modules.priors.lib.joint_function_admission import function_record_cost
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger
+from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
+from r0.modules.priors.lib.raw_draw_spec import RawDrawSpec
+from r0.modules.priors.lib.sampled_graph_decoding import construction_matches
+from r0.modules.priors.lib.typed_policy_locations import InterventionPolicyLocation
+from r0.modules.priors.lib.typed_policy_records import SampledTypedInterventionPolicy
+from r0.modules.priors.lib.typed_policy_request import TypedInterventionPolicyRequest
+
+
+def stored_base_limits(raw: dict[str, Any]) -> CausalLimits:
+    declared = raw["limits"] if "limits" in raw else raw["request"]["limits"]
+    return CausalLimits(**complete_record(declared, CausalLimits))
+
+
+def restore_typed_base(raw: dict[str, Any]):
+    from r0.modules.priors.lib.generate import recipe_from_dict
+
+    return recipe_from_dict(raw, limits=stored_base_limits(raw))
+
+
+def raw_reference_preflight(base: dict[str, Any], rows: int, limits: CausalLimits) -> None:
+    """Conservative row-by-retained-parameter bound needs no decoded roots or RNGs."""
+    if type(rows) is not int or not 1 <= rows <= 20000:
+        raise ValueError("typed reference rows must be a bounded exact integer")
+    graph = base
+    while "nodes" not in graph:
+        if "runtime" in graph:
+            graph = graph["runtime"]
+        elif "recipe" in graph:
+            graph = graph["recipe"]
+        elif "graph" in graph:
+            graph = graph["graph"]
+        else:
+            raise ValueError("typed policy archive has no retained causal runtime")
+    own = CausalLimits(**complete_record(graph["limits"], CausalLimits))
+    effective = CausalLimits(
+        **{f.name: min(getattr(own, f.name), getattr(limits, f.name)) for f in fields(CausalLimits)}
+    )
+    admit_function_metadata(graph, effective)
+
+    def frozen(value: Any) -> Any:
+        if type(value) is dict:
+            return tuple((key, frozen(item)) for key, item in cast(dict[str, Any], value).items())
+        if type(value) in (list, tuple):
+            return tuple(frozen(item) for item in cast(list[Any] | tuple[Any, ...], value))
+        return value
+
+    numbers, storage = function_record_cost(frozen(graph), effective)
+    if storage + 128 * rows * max(1, numbers) > effective.working_bytes:
+        raise ValueError("typed reference conservative pre-replay working limit exceeded")
+
+
+def typed_policy_from_dict(data: Any, *, limits: CausalLimits) -> SampledTypedInterventionPolicy:
+    from r0.modules.priors.lib.generate import recipe_from_dict
+    from r0.modules.priors.lib.typed_policy_admission import admit_typed_policy
+    from r0.modules.priors.lib.typed_policy_sampling import sample_typed_intervention_policy
+
+    admit_function_metadata(data, limits)
+    try:
+        raw = complete_record(data, SampledTypedInterventionPolicy)
+        request = complete_record(raw["request"], TypedInterventionPolicyRequest)
+        declared = CausalLimits(**complete_record(request["limits"], CausalLimits))
+        effective = CausalLimits(
+            **{
+                f.name: min(getattr(declared, f.name), getattr(limits, f.name))
+                for f in fields(CausalLimits)
+            }
+        )
+        raw_limits = RawDrawLimits(**complete_record(request["raw_limits"], RawDrawLimits))
+        raw_reference_preflight(request["base"], request["reference_rows"], effective)
+        if any(type(raw[group]) not in (list, tuple) for group in ("raw", "reference_raw")):
+            raise ValueError("typed raw custody requires arrays")
+        count = len(raw["raw"]) + len(raw["reference_raw"])
+        if (
+            count > raw_limits.draws
+            or 128 * count + 6 * raw_limits.state_bytes > raw_limits.working_bytes
+        ):
+            raise ValueError("typed raw/snapshot metadata reserve exceeds limits")
+        specs: list[RawDrawSpec] = []
+
+        def freeze(v: Any) -> Any:
+            return (
+                tuple(freeze(x) for x in cast(list[Any] | tuple[Any, ...], v))
+                if type(v) in (list, tuple)
+                else v
+            )
+
+        for group in ("raw", "reference_raw"):
+            if type(raw[group]) not in (list, tuple):
+                raise ValueError("typed raw custody requires arrays")
+            for item in raw[group]:
+                specs.append(
+                    RawDrawSpec(
+                        freeze(item["owner"]),
+                        item["role"],
+                        item["distribution"],
+                        freeze(item["shape"]),
+                        freeze(item["parameters"]),
+                    )
+                )
+        RawDrawLedger(limits=raw_limits).admit_specs(tuple(specs))
+        recipe_from_dict(request["base"], limits=effective)
+        request["base"] = restore_typed_base(request["base"])
+        request["limits"], request["raw_limits"] = declared, raw_limits
+        for key in ("label_nodes", "eligibility", "locations", "parameter_laws"):
+            if type(request[key]) not in (list, tuple):
+                raise ValueError("typed policy fields require arrays")
+            request[key] = tuple(request[key])
+        locations: list[InterventionPolicyLocation] = []
+        for item in request["locations"]:
+            address = complete_record(item, InterventionPolicyLocation)
+            for key in ("channels", "probabilities"):
+                if type(address[key]) not in (list, tuple):
+                    raise ValueError("typed location fields require arrays")
+                address[key] = tuple(address[key])
+            locations.append(InterventionPolicyLocation(**address))
+        request["locations"] = tuple(locations)
+        laws: list[InterventionParameterLaw] = []
+        for item in request["parameter_laws"]:
+            law = complete_record(item, InterventionParameterLaw)
+            for key in ("path", "choices"):
+                if type(law[key]) not in (list, tuple):
+                    raise ValueError("typed law fields require arrays")
+                law[key] = tuple(law[key])
+            laws.append(InterventionParameterLaw(**law))
+        request["parameter_laws"] = tuple(laws)
+        typed = TypedInterventionPolicyRequest(**request)
+        admit_typed_policy(replace(typed, limits=effective))
+        if type(raw["initial"]) not in (list, tuple) or len(raw["initial"]) != 3:
+            raise ValueError("typed policy requires three initial snapshots")
+        streams = [
+            GeneratorSnapshot(**complete_record(s, GeneratorSnapshot)).restore(
+                byte_limit=raw_limits.state_bytes
+            )
+            for s in raw["initial"]
+        ]
+        result = sample_typed_intervention_policy(
+            typed, selection_rng=streams[0], value_rng=streams[1], calibration_rng=streams[2]
+        )
+        if not construction_matches(result, data):
+            raise ValueError("typed policy archive differs from complete exact replay")
+        return result
+    except (KeyError, TypeError, AttributeError, IndexError, OverflowError) as error:
+        raise ValueError("malformed typed intervention policy archive") from error
