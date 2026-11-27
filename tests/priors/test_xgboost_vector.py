@@ -5,12 +5,12 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from r0.modules.priors.lib.xgboost_vector import (
+from r0.modules.priors import (
     FrozenXGBoostVector,
     XGBoostVectorTree,
     evaluate_xgboost_vector,
+    export_xgboost_vector,
 )
-from r0.modules.priors.lib.xgboost_vector_export import export_xgboost_vector
 
 
 def _model() -> FrozenXGBoostVector:

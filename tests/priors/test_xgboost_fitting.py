@@ -8,11 +8,13 @@ from typing import Any
 import numpy as np
 import pytest
 
-from r0.modules.priors.lib.causal_limits import CausalLimits
-from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
-from r0.modules.priors.lib.xgboost_fit_plan import XGBoostFitPlan
-from r0.modules.priors.lib.xgboost_fitting import fit_xgboost
-from r0.modules.priors.lib.xgboost_vector import evaluate_xgboost_vector
+from r0.modules.priors import (
+    CausalLimits,
+    RawDrawLimits,
+    XGBoostFitPlan,
+    evaluate_xgboost_vector,
+    fit_xgboost,
+)
 
 
 @pytest.mark.parametrize("objective", ["reg:squarederror", "binary:logistic", "multi:softprob"])

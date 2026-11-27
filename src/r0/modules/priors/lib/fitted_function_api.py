@@ -69,6 +69,7 @@ __all__ = [
     "FrozenXGBoostVector",
     "XGBoostVectorTree",
     "export_xgboost_vector",
+    "evaluate_xgboost_vector",
     "FrozenKumoProductFunction",
     "inspect_fitted_tree_scores",
     "FittedFunctionalCausalRecipe",
@@ -115,6 +116,7 @@ from r0.modules.priors.lib.xgboost_fitting import XGBoostFit as XGBoostFit
 from r0.modules.priors.lib.xgboost_fitting import fit_xgboost as fit_xgboost
 from r0.modules.priors.lib.xgboost_vector import FrozenXGBoostVector as FrozenXGBoostVector
 from r0.modules.priors.lib.xgboost_vector import XGBoostVectorTree as XGBoostVectorTree
+from r0.modules.priors.lib.xgboost_vector import evaluate_xgboost_vector as evaluate_xgboost_vector
 from r0.modules.priors.lib.xgboost_vector_export import (
     export_xgboost_vector as export_xgboost_vector,
 )
