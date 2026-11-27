@@ -1,7 +1,7 @@
 """Admitted decoding of native typed graph recipes."""
 
 from dataclasses import fields as dataclass_fields
-from typing import Any
+from typing import Any, cast
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
@@ -41,6 +41,9 @@ def native_recipe_from_dict(data: dict[str, Any], *, limits: CausalLimits) -> Na
             node = functional_record(raw, NativeCausalNode)
             node["equation"] = functional_node_from_dict(node["equation"])
             raw_domain = node.get("domain", {})
+            if type(raw_domain) is not dict:
+                raise ValueError("native variable domain must be an object")
+            raw_domain = cast(dict[str, Any], raw_domain)
             kind = (
                 FrequencyVariableDomain
                 if raw_domain.get("version") == "native-frequency-domain-v2"

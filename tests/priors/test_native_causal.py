@@ -243,3 +243,11 @@ def test_native_vector_continuous_target_selects_its_score_channel() -> None:
     assert task.scores.shape == (32, 1)
     assert torch.equal(task.scores[:, 0], task.targets)
     assert set(task.targets.numpy().tolist()) <= {30.0, 40.0}
+
+
+@pytest.mark.parametrize("domain", [None, [], "categorical", 7, 0.5])
+def test_native_decoder_rejects_nonobject_domains(domain: object) -> None:
+    record = json.loads(json.dumps(asdict(mixed_recipe())))
+    record["nodes"][0]["domain"] = domain
+    with pytest.raises(ValueError, match="domain.*object"):
+        recipe_from_dict(record)
