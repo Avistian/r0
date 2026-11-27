@@ -10,7 +10,7 @@ from r0.modules.priors.lib.calibration import stable_calibration
 from r0.modules.priors.lib.causal_evaluation import causal_values as causal_values
 from r0.modules.priors.lib.causal_graph import CausalGraph
 from r0.modules.priors.lib.causal_limits import CausalLimits
-from r0.modules.priors.lib.causal_moments import causal_moment_orders
+from r0.modules.priors.lib.causal_moments import causal_moment_orders, has_standardization
 from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode as ActivatedCausalNode
 from r0.modules.priors.lib.causal_nodes import CausalNode as CausalNode
 from r0.modules.priors.lib.causal_nodes import MatrixCausalNode as MatrixCausalNode
@@ -155,13 +155,17 @@ class CausalRecipe:
             ):
                 raise ValueError("recorded weights disagree with their frozen construction")
 
-        if self.normalize and (
-            self.node_pipelines is not None
-            or any(isinstance(node, StochasticCausalNode) for node in self.nodes)
+        if (
+            has_standardization(self.nodes)
+            or self.normalize
+            and (
+                self.node_pipelines is not None
+                or any(isinstance(node, StochasticCausalNode) for node in self.nodes)
+            )
         ):
             orders: list[list[float]] = []
             causal_moment_orders(self.nodes, pipelines=self.node_pipelines, readout_orders=orders)
-            if any(orders[i][j] <= 2 for i, j in self.target):
+            if self.normalize and any(orders[i][j] <= 2 for i, j in self.target):
                 raise ValueError(
                     "finite target second moments are not certified; use normalize=False"
                 )
@@ -323,8 +327,10 @@ def generate_causal(
     }
     if any(isinstance(node, StochasticCausalNode) for node in recipe.nodes):
         card["innovation"] = "recorded exogenous laws; independently keyed streams per node/channel"
-    if recipe.node_pipelines is not None or any(
-        isinstance(node, StochasticCausalNode) for node in recipe.nodes
+    if (
+        has_standardization(recipe.nodes)
+        or recipe.node_pipelines is not None
+        or any(isinstance(node, StochasticCausalNode) for node in recipe.nodes)
     ):
         orders: list[list[float]] = []
         causal_moment_orders(recipe.nodes, pipelines=recipe.node_pipelines, readout_orders=orders)

@@ -10,7 +10,7 @@ import torch
 from numpy.typing import NDArray
 
 from r0.modules.priors.lib.activation_sampling import finite_number
-from r0.modules.priors.lib.calibrated_transforms import CalibratedTransform
+from r0.modules.priors.lib.calibrated_transforms import CalibratedTransform, calibration_sample
 from r0.modules.priors.lib.causal_activations import CausalActivation, primitive_activation
 from r0.modules.priors.lib.causal_limits import CausalLimits
 
@@ -144,6 +144,86 @@ def _statistics(value: torch.Tensor) -> tuple[tuple[float, ...], tuple[float, ..
     return tuple(float(v) for v in mean), tuple(float(v) for v in inverse)
 
 
+@dataclass(frozen=True, slots=True)
+class CalibratedStandardization(CausalActivation):
+    """One frozen population mean/std stage; epsilon 1e-4 is outside the square root."""
+
+    kind: str = "standardize"
+    mean: tuple[float, ...] = ()
+    inverse_std: tuple[float, ...] = ()
+    calibration_rows: int = 0
+    calibration_id: str = ""
+    calibration_digest: str = ""
+    calibration_version: str = "independent-standardization-v1"
+
+    def __post_init__(self) -> None:
+        if self.kind != "standardize" or self.parameters != ():
+            raise ValueError("standalone standardization has no primitive shape parameters")
+        if self.calibration_version != "independent-standardization-v1":
+            raise ValueError("unsupported standalone standardization version")
+        if not self.mean or any(
+            type(values) is not tuple
+            or len(values) != len(self.mean)
+            or any(not finite_number(v) for v in values)
+            for values in (self.mean, self.inverse_std)
+        ):
+            raise ValueError("standardization constants must be finite aligned channel tuples")
+        if any(not 0 < value <= 1 / _EPSILON for value in self.inverse_std):
+            raise ValueError("standardization inverse scales must be in (0,10000]")
+        if type(self.calibration_rows) is not int or not 1 <= self.calibration_rows < 2**63:
+            raise ValueError("standardization requires a positive calibration row count")
+        if (
+            type(self.calibration_id) is not str
+            or not self.calibration_id
+            or type(self.calibration_digest) is not str
+            or re.fullmatch(r"[0-9a-f]{64}", self.calibration_digest) is None
+        ):
+            raise ValueError("standardization requires sample identity and SHA-256 digest")
+
+    @property
+    def parameter_count(self) -> int:
+        return 2 * len(self.mean) + 1
+
+    @property
+    def working_extra_channels(self) -> int:
+        return 10 * len(self.mean)
+
+    def validate_width(self, width: int) -> None:
+        if width != len(self.mean):
+            raise ValueError("standardization width does not match its channels")
+
+    def apply(self, value: torch.Tensor) -> torch.Tensor:
+        if value.ndim != 2 or not value.is_floating_point():
+            raise ValueError("standardization requires floating rows by channels")
+        self.validate_width(value.shape[1])
+        return _center_scale(_finite(value), self.mean, self.inverse_std)
+
+
+def calibrate_standardization(
+    calibration: NDArray[np.float64],
+    *,
+    calibration_id: str,
+    limits: CausalLimits = _DEFAULT_LIMITS,
+) -> CalibratedStandardization:
+    """Fit a caller-owned independent sample once; evaluation never refits constants."""
+    width = calibration.shape[1] if type(calibration) is np.ndarray and calibration.ndim == 2 else 0
+    value, digest = calibration_sample(
+        calibration,
+        calibration_id,
+        limits,
+        parameters=2 * width + 1,
+        working_channels_per_feature=10,
+    )
+    mean, inverse = _statistics(value)
+    return CalibratedStandardization(
+        mean=mean,
+        inverse_std=inverse,
+        calibration_rows=value.shape[0],
+        calibration_id=calibration_id,
+        calibration_digest=digest,
+    )
+
+
 def calibrate_source_activation(
     activation: CausalActivation,
     calibration: NDArray[np.float64],
@@ -216,6 +296,10 @@ def calibrate_source_activation(
 def activation_from_dict(data: dict[str, Any]) -> CausalActivation:
     fields = dict(data)
     fields["parameters"] = tuple(tuple(p) for p in fields.get("parameters", ()))
+    if fields.get("calibration_version") == "independent-standardization-v1":
+        for key in ("mean", "inverse_std"):
+            fields[key] = tuple(fields.get(key, ()))
+        return CalibratedStandardization(**fields)
     if fields.get("calibration_version") == "independent-transform-v1":
         for key in ("minimum", "maximum"):
             fields[key] = tuple(fields.get(key, ()))

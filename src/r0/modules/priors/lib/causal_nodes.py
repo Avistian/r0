@@ -4,7 +4,11 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
-from r0.modules.priors.lib.calibrated_activations import CalibratedActivation, activation_from_dict
+from r0.modules.priors.lib.calibrated_activations import (
+    CalibratedActivation,
+    CalibratedStandardization,
+    activation_from_dict,
+)
 from r0.modules.priors.lib.calibrated_transforms import CalibratedTransform
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
@@ -83,7 +87,13 @@ class ActivatedCausalNode(CausalNode):
     def __post_init__(self) -> None:
         CausalNode.__post_init__(self)
         if any(
-            type(a) not in (CausalActivation, CalibratedActivation, CalibratedTransform)
+            type(a)
+            not in (
+                CausalActivation,
+                CalibratedActivation,
+                CalibratedTransform,
+                CalibratedStandardization,
+            )
             for a in (
                 self.input_activation,
                 self.output_activation,

@@ -132,7 +132,7 @@ class CalibratedTransform(CausalActivation):
         }
 
 
-def _sample(
+def calibration_sample(
     calibration: NDArray[np.float64],
     calibration_id: str,
     limits: CausalLimits,
@@ -176,7 +176,7 @@ def calibrate_l2_normalization(
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> CalibratedTransform:
     """Freeze inverse RMS row norm with epsilon 1e-8; never fit evaluation rows."""
-    value, digest = _sample(
+    value, digest = calibration_sample(
         calibration, calibration_id, limits, parameters=3, working_channels_per_feature=4
     )
     magnitude = float(value.abs().max())
@@ -214,7 +214,7 @@ def calibrate_kumaraswamy(
     if any(not finite_number(v) or v <= 0 for v in (a, b)):
         raise ValueError("Kumaraswamy shape parameters must be finite positive numbers")
     width = calibration.shape[1] if type(calibration) is np.ndarray and calibration.ndim == 2 else 0
-    value, digest = _sample(
+    value, digest = calibration_sample(
         calibration,
         calibration_id,
         limits,

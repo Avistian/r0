@@ -6,7 +6,11 @@ from typing import Any
 import torch
 
 from r0.modules.priors.lib.activation_sampling import finite_number
-from r0.modules.priors.lib.calibrated_activations import CalibratedActivation, activation_from_dict
+from r0.modules.priors.lib.calibrated_activations import (
+    CalibratedActivation,
+    CalibratedStandardization,
+    activation_from_dict,
+)
 from r0.modules.priors.lib.calibrated_transforms import CalibratedTransform
 from r0.modules.priors.lib.causal_activations import CausalActivation, activation_diagnostic
 
@@ -67,7 +71,13 @@ class CausalNodePipeline:
         if type(self.channels) is not int or not 1 <= self.channels < 2**63:
             raise ValueError("pipeline channels must be positive")
         if type(self.stages) is not tuple or any(
-            type(a) not in (CausalActivation, CalibratedActivation, CalibratedTransform)
+            type(a)
+            not in (
+                CausalActivation,
+                CalibratedActivation,
+                CalibratedTransform,
+                CalibratedStandardization,
+            )
             for a in self.stages
         ):
             raise ValueError("pipeline stages require frozen activation records")

@@ -14,7 +14,13 @@ from r0.modules.priors.lib.calibrated_activations import (
     CalibratedActivation as CalibratedActivation,
 )
 from r0.modules.priors.lib.calibrated_activations import (
+    CalibratedStandardization as CalibratedStandardization,
+)
+from r0.modules.priors.lib.calibrated_activations import (
     calibrate_source_activation as calibrate_source_activation,
+)
+from r0.modules.priors.lib.calibrated_activations import (
+    calibrate_standardization as calibrate_standardization,
 )
 from r0.modules.priors.lib.calibrated_transforms import CalibratedTransform as CalibratedTransform
 from r0.modules.priors.lib.calibrated_transforms import (

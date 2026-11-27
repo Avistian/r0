@@ -2,7 +2,10 @@
 
 import math
 
-from r0.modules.priors.lib.calibrated_activations import CalibratedActivation
+from r0.modules.priors.lib.calibrated_activations import (
+    CalibratedActivation,
+    CalibratedStandardization,
+)
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.causal_nodes import (
     ActivatedCausalNode,
@@ -70,13 +73,27 @@ def _transform(
 def _pipeline_transform(
     orders: list[float], constants: list[bool], activation: CausalActivation
 ) -> tuple[list[float], list[bool]]:
-    needs_second = isinstance(activation, CalibratedActivation) or activation.kind == "l2_normalize"
+    needs_second = (
+        isinstance(activation, CalibratedActivation | CalibratedStandardization)
+        or activation.kind == "l2_normalize"
+    )
     if needs_second and any(order <= 2 for order in orders):
         raise ValueError("pipeline normalization requires certified finite input second moments")
     output, fixed = _transform(orders, constants, activation)
     if isinstance(activation, CalibratedActivation) and any(order <= 2 for order in output):
         raise ValueError("pipeline standardization requires certified finite output second moments")
     return output, fixed
+
+
+def has_standardization(nodes: tuple[CausalNode, ...]) -> bool:
+    return any(
+        isinstance(node, ActivatedCausalNode)
+        and any(
+            isinstance(activation, CalibratedStandardization)
+            for activation in (node.input_activation, node.output_activation)
+        )
+        for node in nodes
+    )
 
 
 def causal_moment_orders(
@@ -91,7 +108,9 @@ def causal_moment_orders(
     of a node's exogenous draw from its ancestors. This is a sufficient certificate,
     not an exact symbolic integrability solver and not sample-estimated moments.
     """
-    transform = _pipeline_transform if pipelines is not None else _transform
+    transform = (
+        _pipeline_transform if pipelines is not None or has_standardization(nodes) else _transform
+    )
     moments: list[list[float]] = []
     constants: list[list[bool]] = []
     for index, node in enumerate(nodes):
