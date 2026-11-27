@@ -29,7 +29,11 @@ window.r0request = async (action, data) => {
             + (assets / "gp_column_curves.js").read_text(),
         )
         .replace("<!-- GP TARGET CONTROLS -->", (assets / "gp_column_curves.html").read_text())
-        .replace("/* GRAPHS */", (assets / "graphs.js").read_text())
+        .replace(
+            "/* GRAPHS */",
+            (assets / "graphs.js").read_text() + (assets / "gp_covariance.js").read_text(),
+        )
+        .replace("<!-- GP POPULATION MATRICES -->", (assets / "gp_covariance.html").read_text())
         .replace("/* PAIRS */", (assets / "pairs.js").read_text())
         .replace(
             "<!-- INTERVENTIONS -->",
