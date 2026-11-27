@@ -171,6 +171,7 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         "fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
         "population-fitted-functional-causal-v1",
+        "sampled-population-fitted-functional-causal-v1",
         "support-population-functional-causal-v1",
     ):
         return functional_recipe_from_dict(fields, limits=limits)

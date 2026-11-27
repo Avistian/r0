@@ -34,6 +34,7 @@ class FunctionalCausalRecipe:
                 "fitted-functional-causal-v1",
                 "sampled-fitted-functional-causal-v1",
                 "population-fitted-functional-causal-v1",
+                "sampled-population-fitted-functional-causal-v1",
                 "support-population-functional-causal-v1",
             )
             or self.version == "functional-causal-v2"
@@ -43,6 +44,7 @@ class FunctionalCausalRecipe:
                 "fitted-functional-causal-v1",
                 "sampled-fitted-functional-causal-v1",
                 "population-fitted-functional-causal-v1",
+                "sampled-population-fitted-functional-causal-v1",
             )
             and not getattr(self, "fits", ())
             or type(self.task) is not LinearRecipe

@@ -62,7 +62,13 @@ class PopulationFittedGraph(FunctionalCausalRecipe):
 
     def __post_init__(self) -> None:
         if (
-            self.version != "population-fitted-functional-causal-v1"
+            self.version
+            not in (
+                "population-fitted-functional-causal-v1",
+                "sampled-population-fitted-functional-causal-v1",
+            )
+            or self.version == "sampled-population-fitted-functional-causal-v1"
+            and not getattr(self, "parameter_samples", ())
             or self.lifecycle != "explicit-population-freeze-r0-v1"
             or self.population not in ("support-only", "batch-refit-reference", "mixed-independent")
             or any(

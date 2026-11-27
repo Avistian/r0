@@ -108,3 +108,7 @@ use the same local/browser/Colab callback. Hosted Colab remains **NOT_RUN**.
 Verification receipts, including historical failures, are gitignored under
 `docs/evidence/issue-28-fitted-lifecycles/`. Author checks are distinct from the
 independent frozen-head review and root-owned combined full-suite verification.
+
+The follow-on [sampled parameter compositions](issue-28-sampled-population-fits.md)
+combine the same lifecycle contracts with broad parameter laws and pinned profiles;
+support/batch rows remain bound to the actual episode.

@@ -271,6 +271,9 @@ def generate_functional_causal(
                 "source_fidelity": "lifecycle-adaptation-not-full-source-reproduction",
             }
         )
+    if recipe.version == "sampled-population-fitted-functional-causal-v1":
+        card["construction"] = "sampled-parameter-population-fit-v1"
+        card["sampling_provenance"] = "retained-parameter-and-population-custody-v1"
     if calibration is not None:
         card["normalization"] = "fixed independent calibration"
         card["calibration"] = asdict(calibration)

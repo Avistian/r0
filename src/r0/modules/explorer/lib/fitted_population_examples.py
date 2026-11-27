@@ -33,4 +33,6 @@ def fitted_population_examples(explicit: dict[str, Any]) -> dict[str, Any]:
                         else None
                     ),
                 }
-    return result
+    from r0.modules.explorer.lib.sampled_population_examples import sampled_population_examples
+
+    return {**result, **sampled_population_examples(explicit)}

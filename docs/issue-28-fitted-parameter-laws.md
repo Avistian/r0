@@ -99,3 +99,7 @@ The subsequent [explicit population lifecycle slice](issue-28-fitted-population-
 adds actual support, batch-reference and mixed synthetic populations with explicit
 selected plans. The sampled-parameter API here retains its independent-calibration
 contract; it is not relabelled as a paper lifecycle.
+
+[Population-law compositions](issue-28-sampled-population-fits.md) now add a
+separately versioned sampler for support, batch-reference and mixed-independent
+fits, retaining effective rows and source/lifecycle distinctions.

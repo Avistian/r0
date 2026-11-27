@@ -23,3 +23,27 @@ __all__ = [
     "population_fit_from_dict",
     "mixed_population_from_dict",
 ]
+
+from r0.modules.priors.lib.population_parameter_decoding import (
+    population_parameter_prior_from_dict,
+    sampled_population_plan_from_dict,
+)
+from r0.modules.priors.lib.population_parameter_prior import PopulationTreeParameterPrior
+from r0.modules.priors.lib.population_parameter_sampling import (
+    SampledPopulationTreePlan,
+    sample_population_tree_plan,
+)
+from r0.modules.priors.lib.sampled_population_graph import (
+    SampledPopulationFittedGraph,
+    sample_parameterized_population_graph,
+)
+
+__all__ += [
+    "PopulationTreeParameterPrior",
+    "SampledPopulationTreePlan",
+    "sample_population_tree_plan",
+    "population_parameter_prior_from_dict",
+    "sampled_population_plan_from_dict",
+    "SampledPopulationFittedGraph",
+    "sample_parameterized_population_graph",
+]

@@ -8,9 +8,27 @@ def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
         from r0.modules.explorer.lib.networks import network_details
 
         return network_details(recipe)
-    if recipe.get("version") == "population-fitted-functional-causal-v1":
+    if recipe.get("version") in (
+        "population-fitted-functional-causal-v1",
+        "sampled-population-fitted-functional-causal-v1",
+    ):
         return {
             "kind": "explicit-population-fitted-trees",
+            "parameter_samples": [
+                {
+                    "node": node,
+                    "actual_plan": sample["plan"],
+                    "profile": sample["prior"]["profile"],
+                    "laws": sample["prior"]["laws"],
+                    "parameter_source": sample["parameter_source"],
+                    "row_binding": sample["row_binding"],
+                    "lifecycle": sample["lifecycle"],
+                    "backend_semantics": sample["backend_semantics"],
+                    "unused_parameters": sample["unused_parameters"],
+                    "raw_draw_count": len(sample["raw"]),
+                }
+                for node, sample in recipe.get("parameter_samples", [])
+            ],
             "population": recipe["population"],
             "lifecycle": recipe["lifecycle"],
             "fit_seed": str(recipe["fit_seed"]),

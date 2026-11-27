@@ -138,11 +138,17 @@ def functional_recipe_from_dict(
         PopulationFittedGraph,
         SupportPopulationFunctionalRecipe,
     )
+    from r0.modules.priors.lib.population_parameter_decoding import (
+        sampled_population_plan_from_dict,
+    )
     from r0.modules.priors.lib.sampled_fitted_graph import SampledFittedFunctionalCausalRecipe
+    from r0.modules.priors.lib.sampled_population_graph import SampledPopulationFittedGraph
 
     try:
         kind = (
-            SupportPopulationFunctionalRecipe
+            SampledPopulationFittedGraph
+            if data.get("version") == "sampled-population-fitted-functional-causal-v1"
+            else SupportPopulationFunctionalRecipe
             if data.get("version") == "support-population-functional-causal-v1"
             else PopulationFittedGraph
             if data.get("version") == "population-fitted-functional-causal-v1"
@@ -187,10 +193,16 @@ def functional_recipe_from_dict(
                 for pair in functional_array(fields.get("parameter_samples", ()))
                 if _parameter_pair(pair)
             )
-        if kind is PopulationFittedGraph:
+        if issubclass(kind, PopulationFittedGraph):
             fields["fits"] = tuple(
                 population_node_fit_from_dict(f, limits=effective)
                 for f in functional_array(fields.get("fits", ()))
+            )
+        if kind is SampledPopulationFittedGraph:
+            fields["parameter_samples"] = tuple(
+                (pair[0], sampled_population_plan_from_dict(pair[1], limits=effective))
+                for pair in functional_array(fields.get("parameter_samples", ()))
+                if _parameter_pair(pair)
             )
         return kind(**fields)
     except (TypeError, KeyError) as error:

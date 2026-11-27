@@ -35,28 +35,7 @@ class FittedTreeParameterPrior:
     version: str = "fitted-tree-parameter-prior-v1"
 
     def __post_init__(self) -> None:
-        if (
-            self.version != "fitted-tree-parameter-prior-v1"
-            or self.profile not in ("r0-explicit-parameter-laws-v1", "tabicl-pinned-depth-count-v1")
-            or type(self.base) is not FittedTreePlan
-            or type(self.raw_limits) is not RawDrawLimits
-            or type(self.laws) is not tuple
-            or len(self.laws) > len(PARAMETERS)
-            or any(
-                type(v) is not tuple
-                or len(v) != 2
-                or v[0] not in PARAMETERS
-                or type(v[1]) is not FittedParameterLaw
-                for v in self.laws
-            )
-            or len({v[0] for v in self.laws}) != len(self.laws)
-        ):
-            raise ValueError("invalid fitted parameter prior or repeated parameter")
-        if self.profile == "tabicl-pinned-depth-count-v1" and any(
-            name in ("depth", "estimators") for name, _ in self.laws
-        ):
-            raise ValueError("pinned depth/count laws cannot be overridden; use explicit profile")
-        self.options()
+        validate_fitted_parameter_prior(self, FittedTreePlan, "fitted-tree-parameter-prior-v1")
 
     @property
     def effective_laws(self) -> tuple[tuple[str, FittedParameterLaw], ...]:
@@ -145,3 +124,33 @@ class FittedTreeParameterPrior:
             raise ValueError("fitted parameter raw custody budget exceeded before draws")
         if metadata > limits.working_bytes:
             raise ValueError("fitted parameter metadata exceeds caller memory cap")
+
+
+def validate_fitted_parameter_prior(
+    prior: FittedTreeParameterPrior,
+    base_type: type[FittedTreePlan],
+    version: str,
+) -> None:
+    """Shared schema checks; lifecycle-specific priors still own their exact version/type."""
+    if (
+        prior.version != version
+        or prior.profile not in ("r0-explicit-parameter-laws-v1", "tabicl-pinned-depth-count-v1")
+        or type(prior.base) is not base_type
+        or type(prior.raw_limits) is not RawDrawLimits
+        or type(prior.laws) is not tuple
+        or len(prior.laws) > len(PARAMETERS)
+        or any(
+            type(v) is not tuple
+            or len(v) != 2
+            or v[0] not in PARAMETERS
+            or type(v[1]) is not FittedParameterLaw
+            for v in prior.laws
+        )
+        or len({v[0] for v in prior.laws}) != len(prior.laws)
+    ):
+        raise ValueError("invalid fitted parameter prior or repeated parameter")
+    if prior.profile == "tabicl-pinned-depth-count-v1" and any(
+        name in ("depth", "estimators") for name, _ in prior.laws
+    ):
+        raise ValueError("pinned depth/count laws cannot be overridden; use explicit profile")
+    prior.options()

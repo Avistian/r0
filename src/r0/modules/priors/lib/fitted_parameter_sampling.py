@@ -17,7 +17,7 @@ from r0.modules.priors.lib.raw_draw_records import RawDrawRecord
 _DEFAULT_LIMITS = CausalLimits()
 
 
-def _realize(
+def realize_fitted_parameter_plan(
     prior: FittedTreeParameterPrior, rng: np.random.Generator, capture: RawDrawLedger
 ) -> FittedTreePlan:
     def draw(role: str, law: str, parameters: tuple[tuple[str, Any], ...] = ()) -> Any:
@@ -100,7 +100,7 @@ class SampledFittedTreePlan:
         rng = self.initial_rng.restore()
         ledger = RawDrawLedger(limits=self.prior.raw_limits)
         with ledger.transactions({"parameters": rng}) as (streams, capture):
-            plan = _realize(self.prior, streams["parameters"], capture)
+            plan = realize_fitted_parameter_plan(self.prior, streams["parameters"], capture)
             if (
                 plan != self.plan
                 or capture.freeze() != self.raw
@@ -122,7 +122,7 @@ def sample_fitted_tree_plan(
     with ledger.transactions({"parameters": rng}) as (streams, capture):
         active = streams["parameters"]
         initial = snapshot_generator(active, byte_limit=prior.raw_limits.state_bytes)
-        plan = _realize(prior, active, capture)
+        plan = realize_fitted_parameter_plan(prior, active, capture)
         pinned = prior.profile == "tabicl-pinned-depth-count-v1"
         return SampledFittedTreePlan(
             prior,
