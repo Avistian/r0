@@ -164,6 +164,13 @@ from r0.modules.priors.lib.joint_matrix_realization import (
 from r0.modules.priors.lib.joint_mlp_realization import (
     JointMLPFunctionRealization as JointMLPFunctionRealization,
 )
+from r0.modules.priors.lib.joint_operation_registry import (
+    JointOperationRegistry as JointOperationRegistry,
+)
+from r0.modules.priors.lib.joint_operation_registry import JointOperationSpan as JointOperationSpan
+from r0.modules.priors.lib.joint_operation_registry import (
+    JointRegistryLimits as JointRegistryLimits,
+)
 from r0.modules.priors.lib.joint_plan_calibration import (
     fit_joint_activation as fit_joint_activation,
 )
@@ -175,6 +182,9 @@ from r0.modules.priors.lib.joint_point_plans import (
 from r0.modules.priors.lib.joint_point_plans import sample_joint_points as sample_joint_points
 from r0.modules.priors.lib.joint_point_realization import (
     materialize_joint_points as materialize_joint_points,
+)
+from r0.modules.priors.lib.joint_registry_decoding import (
+    joint_operation_registry_from_dict as joint_operation_registry_from_dict,
 )
 from r0.modules.priors.lib.joint_rff_realization import (
     JointRFFFunctionRealization as JointRFFFunctionRealization,

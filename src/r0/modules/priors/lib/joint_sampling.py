@@ -9,6 +9,11 @@ import numpy as np
 
 from r0.modules.priors.lib.categorical_preferences import CategoricalDraw, CategoricalParameter
 from r0.modules.priors.lib.categorical_sampling import CategoricalSampler
+from r0.modules.priors.lib.joint_operation_registry import (
+    JointOperationRegistry,
+    JointOperationSpan,
+    JointRegistryLimits,
+)
 from r0.modules.priors.lib.joint_sampling_records import (
     JointDecision,
     JointSamplingRecord,
@@ -24,6 +29,7 @@ from r0.modules.priors.lib.parameter_preferences import (
 from r0.modules.priors.lib.preference_limits import PreferenceLimits
 
 _DEFAULT_LIMITS = PreferenceLimits()
+_DEFAULT_REGISTRY_LIMITS = JointRegistryLimits()
 
 
 class JointSamplingContext:
@@ -37,7 +43,13 @@ class JointSamplingContext:
         categorical_policy: str = "shared",
         global_policy: str = "scalar-quantile-v1",
         limits: PreferenceLimits = _DEFAULT_LIMITS,
+        registry_limits: JointRegistryLimits = _DEFAULT_REGISTRY_LIMITS,
     ) -> None:
+        if type(registry_limits) is not JointRegistryLimits:
+            raise ValueError("joint context requires frozen registry limits")
+        self._registry_limits = registry_limits
+        self._operations: list[JointOperationSpan] = []
+        self._operation_bytes = 0
         self._numerical = ParameterSampler(
             rng, default_mode=mode, global_policy=numerical_policy(global_policy), limits=limits
         )
@@ -76,11 +88,17 @@ class JointSamplingContext:
         validate_path(path)
         if path in self._completed:
             raise ValueError("joint operation has already completed")
+        opened = JointOperationSpan(path, len(self._events), len(self._events))
+        operation_bytes = self._operation_bytes + opened.path_bytes
+        self._registry_limits.admit(len(self._operations) + 1, operation_bytes)
         staged = copy.copy(self)
         staged._rng = copy.deepcopy(self._rng)
         staged._numerical = self._numerical.fork(staged._rng)
         staged._categorical = self._categorical.fork(staged._rng)
         staged._events = self._events.copy()
+        slot = len(self._operations)
+        staged._operations = [*self._operations, opened]
+        staged._operation_bytes = operation_bytes
         staged._path = path
         staged._completed = self._completed.copy()
         staged._roles = self._roles.copy()
@@ -92,19 +110,23 @@ class JointSamplingContext:
         try:
             yield staged
             staged.freeze()
+            staged._operations[slot] = JointOperationSpan(
+                path, opened.event_start, len(staged._events)
+            )
             if pickle.dumps(self._rng.bit_generator.state) != initial_state:
                 raise ValueError("caller RNG changed during the joint transaction")
             self._rng.bit_generator.state = staged._rng.bit_generator.state
             self._numerical = staged._numerical.fork(self._rng)
             self._categorical = staged._categorical.fork(self._rng)
             self._events = staged._events.copy()
+            self._operations = staged._operations.copy()
+            self._operation_bytes = staged._operation_bytes
             self._completed = staged._completed.copy()
             self._roles = staged._roles.copy()
             self._counts = staged._counts.copy()
             self._contracts = staged._contracts.copy()
-            # Ancestor operations are represented by any owned descendant event.
-            if any(event.operation[: len(path)] == path for event in staged._events):
-                self._completed.add(path)
+            # Successful operations own their path even when no named draws were needed.
+            self._completed.add(path)
         finally:
             staged._closed = True
             self._busy = False
@@ -186,4 +208,13 @@ class JointSamplingContext:
             tuple(self._events),
             global_policy=self._global_policy,
             limits=self._limits,
+        )
+
+    def freeze_registry(self) -> JointOperationRegistry:
+        """Snapshot completed operation ownership from the outer, idle context only."""
+        self._available()
+        if self._path:
+            raise ValueError("joint registry snapshots require the outer context after completion")
+        return JointOperationRegistry(
+            self.freeze(), tuple(self._operations), limits=self._registry_limits
         )
