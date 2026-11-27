@@ -19,6 +19,7 @@ def inspect_graph(
 
     if not contains_convolution(record["recipe"]) and record["recipe"].get("version") not in (
         "prototype-batch-network-realized-v1",
+        "gp-column-recipe-v1",
         "network-observation-recipe-v1",
         "standalone-network-innovations-v1",
         "standalone-network-v1",

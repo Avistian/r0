@@ -118,6 +118,35 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
     )
 
     selected = selected_recipe(request, task_id)
+    from r0.modules.priors import GPColumnPopulation, GPColumnRecipe
+
+    if isinstance(selected, GPColumnRecipe):
+        if any(
+            type(record.get(key)) is not int or record[key] != identity
+            for key, identity in (("seed", request.seed), ("task_id", task_id))
+        ):
+            return False
+        realized = recipe_from_dict(
+            record["recipe"], limits=request.causal_limits or selected.request.limits
+        )
+        if not isinstance(realized, GPColumnRecipe) or not isinstance(
+            realized.source, GPColumnPopulation
+        ):
+            return False
+        if (realized.source.seed, realized.source.task_id) != (request.seed, task_id):
+            return False
+        expected = (
+            selected
+            if isinstance(selected.source, GPColumnPopulation)
+            else replace(selected, source=realized.source)
+        )
+        return (
+            json.dumps(asdict(realized), sort_keys=True, allow_nan=False)
+            == json.dumps(asdict(expected), sort_keys=True, allow_nan=False)
+            and json.dumps(asdict(realized.request), sort_keys=True, allow_nan=False)
+            == json.dumps(asdict(selected.request), sort_keys=True, allow_nan=False)
+            and record.get("sampling") == sampling_record(request)
+        )
     if isinstance(selected, (PrototypeBatchNetworkRecipe, RealizedPrototypeBatchNetworkRecipe)):
         # Python numeric equality aliases bool/float identities to integers. Check
         # transport primitives before replay so a persisted record can replay itself.

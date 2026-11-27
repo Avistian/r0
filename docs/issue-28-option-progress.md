@@ -79,8 +79,13 @@ bounded independent arithmetic/archive and browser acceptance; see their
 [convolution contract](issue-28-feature-convolution.md).
 
 `OP.function.08`–`.11` remain distinct: finite joint GP column draws followed by
-linear, quadratic or neural target mechanisms. Existing frozen GP functions and
-standalone GP target draws do not prove those population-column semantics.
+linear, quadratic or neural target mechanisms. The finite-column core and strict
+outer-envelope repair now have bounded independent acceptance at `5e87d34`,
+integrated at `023a487`: shared/per-column RBF factors, all three target families,
+independent calibration, matched/fresh target comparisons and complete replay.
+The [GP workbench](issue-28-gp-workbench.md) is under development; hybrid DAG
+roots, broader controls and full workflow qualification remain required. Existing
+frozen GP functions and standalone GP target draws are separate mechanisms.
 `OP.selection.01`–`.05` remain the #30 interface; selection ownership must not
 silently migrate into this structural-mechanism slice.
 
