@@ -12,6 +12,9 @@ from .typed_policy_locations import InterventionPolicyLocation as InterventionPo
 from .typed_policy_output import generate_typed_policy_pair as generate_typed_policy_pair
 from .typed_policy_records import SampledTypedInterventionPolicy as SampledTypedInterventionPolicy
 from .typed_policy_request import TypedInterventionPolicyRequest as TypedInterventionPolicyRequest
+from .typed_policy_request_decoding import (
+    typed_intervention_policy_request_from_dict as typed_intervention_policy_request_from_dict,
+)
 from .typed_policy_sampling import (
     sample_typed_intervention_policy as sample_typed_intervention_policy,
 )

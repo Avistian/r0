@@ -25,6 +25,8 @@ def network_graph(data: dict[str, Any]) -> dict[str, Any]:
             "native-causal-v1",
             "native-vector-causal-v1",
             "converted-causal-v1",
+            "sampled-intervention-policy-v1",
+            "sampled-typed-intervention-policy-v1",
             "prototype-batch-network-realized-v1",
             "network-observation-recipe-v1",
             "standalone-network-innovations-v1",

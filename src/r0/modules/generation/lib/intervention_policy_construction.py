@@ -11,11 +11,15 @@ from r0.modules import priors as p
 
 def construct_intervention_policy(
     record: dict[str, Any], draft: str, *, limits: p.CausalLimits
-) -> p.SampledInterventionPolicy:
+) -> p.SampledInterventionPolicy | p.SampledTypedInterventionPolicy:
     fields = json.loads(draft)
     if type(fields) is not dict:
         raise ValueError("sampled policy settings require an object")
     fields = dict(cast(dict[str, Any], fields))
+    if fields.get("profile") == "explicit-typed-policy-r0-v1":
+        from r0.modules.generation.lib.typed_policy_construction import construct_typed_policy
+
+        return construct_typed_policy(record, fields, limits=limits)
     seeds: Any = fields.pop("streams", None)
     if (
         type(seeds) is not list
