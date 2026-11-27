@@ -91,22 +91,6 @@ from r0.modules.priors.lib.frozen_function_primitives import FrozenRFFFunction a
 from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenTreeFunction as FrozenTreeFunction,
 )
-from r0.modules.priors.lib.functional_causal import (
-    CalibratedFunctionalCausalRecipe as CalibratedFunctionalCausalRecipe,
-)
-from r0.modules.priors.lib.functional_causal import FunctionalCausalNode as FunctionalCausalNode
-from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe as FunctionalCausalRecipe
-from r0.modules.priors.lib.functional_causal_decoding import (
-    functional_recipe_from_dict as functional_recipe_from_dict,
-)
-from r0.modules.priors.lib.functional_causal_evaluation import PrefixEvaluation as PrefixEvaluation
-from r0.modules.priors.lib.functional_causal_evaluation import (
-    evaluate_functional_prefix as evaluate_functional_prefix,
-)
-from r0.modules.priors.lib.functional_causal_evaluation import (
-    sample_functional_prefix as sample_functional_prefix,
-)
-from r0.modules.priors.lib.functional_prefix import FunctionalPrefix as FunctionalPrefix
 from r0.modules.priors.lib.generate import Recipe as Recipe
 from r0.modules.priors.lib.generate import generate_task as generate_task
 from r0.modules.priors.lib.generate import recipe_from_dict as recipe_from_dict
@@ -208,6 +192,22 @@ from r0.modules.priors.lib.weight_matrices import LaplaceKernelWeights as Laplac
 from r0.modules.priors.lib.weight_vectors import PolynomialWeightVector as PolynomialWeightVector
 from r0.modules.priors.lib.weight_vectors import UniformWeightVector as UniformWeightVector
 
+from .lib.functional_causal import (
+    CalibratedFunctionalCausalRecipe as CalibratedFunctionalCausalRecipe,
+)
+from .lib.functional_causal import FunctionalCausalNode as FunctionalCausalNode
+from .lib.functional_causal import FunctionalCausalRecipe as FunctionalCausalRecipe
+from .lib.functional_causal_decoding import (
+    functional_recipe_from_dict as functional_recipe_from_dict,
+)
+from .lib.functional_causal_evaluation import PrefixEvaluation as PrefixEvaluation
+from .lib.functional_causal_evaluation import (
+    evaluate_functional_prefix as evaluate_functional_prefix,
+)
+from .lib.functional_causal_evaluation import (
+    sample_functional_prefix as sample_functional_prefix,
+)
+from .lib.functional_prefix import FunctionalPrefix as FunctionalPrefix
 from .lib.joint_api import (
     FeatureGroup as FeatureGroup,
 )
@@ -329,8 +329,12 @@ from .lib.joint_api import (
 from .lib.joint_api import (
     JointWidthPrior as JointWidthPrior,
 )
+from .lib.joint_api import NativeCausalNode as NativeCausalNode
+from .lib.joint_api import NativeCausalRecipe as NativeCausalRecipe
 from .lib.joint_api import ObservationChannelLayout as ObservationChannelLayout
 from .lib.joint_api import SampledGeometryGraph as SampledGeometryGraph
+from .lib.joint_api import TrainingFeature as TrainingFeature
+from .lib.joint_api import VariableDomain as VariableDomain
 from .lib.joint_api import allocate_observation_channels as allocate_observation_channels
 from .lib.joint_api import (
     fit_joint_activation as fit_joint_activation,

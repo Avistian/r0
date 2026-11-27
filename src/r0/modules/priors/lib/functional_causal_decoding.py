@@ -154,26 +154,7 @@ def functional_recipe_from_dict(
             raise ValueError("functional graph node limit exceeded")
         nodes: list[FunctionalCausalNode] = []
         for raw in raw_nodes:
-            node = functional_record(raw, FunctionalCausalNode)
-            node["parents"] = functional_array(node["parents"])
-            node["function"] = decode_admitted_function(node["function"])
-            if node.get("root") is not None:
-                node["root"] = _root(node["root"])
-            node["noise_scale"] = functional_array(node.get("noise_scale", ()))
-            exogenous = functional_record(node.get("exogenous", {}), ExogenousDistribution)
-            exogenous["inputs"] = InputDistribution(
-                **functional_record(exogenous.get("inputs", {}), InputDistribution)
-            )
-            exogenous["factor"] = tuple(
-                functional_array(row) for row in functional_array(exogenous.get("factor", ()))
-            )
-            node["exogenous"] = ExogenousDistribution(**exogenous)
-            node["noise_response"] = NoiseResponse(
-                **functional_record(node.get("noise_response", {}), NoiseResponse)
-            )
-            if node.get("pipeline") is not None:
-                node["pipeline"] = functional_pipeline(node["pipeline"])
-            nodes.append(FunctionalCausalNode(**node))
+            nodes.append(functional_node_from_dict(raw))
         fields["nodes"] = tuple(nodes)
         for key in ("observed", "target"):
             fields[key] = tuple(functional_array(ref) for ref in functional_array(fields[key]))
@@ -181,3 +162,27 @@ def functional_recipe_from_dict(
         return kind(**fields)
     except (TypeError, KeyError) as error:
         raise ValueError("malformed functional graph record") from error
+
+
+def functional_node_from_dict(raw: Any) -> FunctionalCausalNode:
+    """Decode an equation after the enclosing record has passed metadata admission."""
+    node = functional_record(raw, FunctionalCausalNode)
+    node["parents"] = functional_array(node["parents"])
+    node["function"] = decode_admitted_function(node["function"])
+    if node.get("root") is not None:
+        node["root"] = _root(node["root"])
+    node["noise_scale"] = functional_array(node.get("noise_scale", ()))
+    exogenous = functional_record(node.get("exogenous", {}), ExogenousDistribution)
+    exogenous["inputs"] = InputDistribution(
+        **functional_record(exogenous.get("inputs", {}), InputDistribution)
+    )
+    exogenous["factor"] = tuple(
+        functional_array(row) for row in functional_array(exogenous.get("factor", ()))
+    )
+    node["exogenous"] = ExogenousDistribution(**exogenous)
+    node["noise_response"] = NoiseResponse(
+        **functional_record(node.get("noise_response", {}), NoiseResponse)
+    )
+    if node.get("pipeline") is not None:
+        node["pipeline"] = functional_pipeline(node["pipeline"])
+    return FunctionalCausalNode(**node)

@@ -12,6 +12,7 @@ from r0.modules.priors.lib.causal_inspection import causal_steps
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng, functional_steps
 from r0.modules.priors.lib.graph_functions import analytic_steps, composite_steps, gp_steps
+from r0.modules.priors.lib.native_inspection import native_steps
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.signals import component_inputs, multiply_signals
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -82,6 +83,11 @@ def explain_generation(
                 "parameters": _preview(parameters),
             }
         )
+
+    if record["recipe"].get("version") == "native-causal-v1":
+        if component is not None:
+            raise ValueError("native graphs do not have composite children")
+        return {**native_steps(task, indices, add, limits=limits), "nodes": nodes}
 
     components = card.get("components", [])
     if component is not None:

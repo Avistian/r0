@@ -12,6 +12,7 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.compositions import CompositeRecipe
 from r0.modules.priors.lib.generate import Recipe, generate_task, recipe_from_dict
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.native_causal import NativeCausalRecipe
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
@@ -35,6 +36,10 @@ class TaskPair:
 
 def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> Recipe:
     """Construct one explicit change; preserve all other recipe controls."""
+    if isinstance(recipe, NativeCausalRecipe):
+        raise ValueError(
+            "native graph pairs require domain/equation interventions, not adapter controls"
+        )
     if intervention not in _FIELDS:
         raise ValueError("unsupported pair intervention")
     controls = recipe if isinstance(recipe, LinearRecipe) else recipe.task

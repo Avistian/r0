@@ -179,3 +179,8 @@ from r0.modules.priors.lib.observation_channel_layout import (
 from r0.modules.priors.lib.sampled_geometry_graph import (
     SampledGeometryGraph as SampledGeometryGraph,
 )
+
+from .native_causal import NativeCausalNode as NativeCausalNode
+from .native_causal import NativeCausalRecipe as NativeCausalRecipe
+from .native_causal import VariableDomain as VariableDomain
+from .training_features import TrainingFeature as TrainingFeature

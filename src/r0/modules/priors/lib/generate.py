@@ -33,6 +33,9 @@ from r0.modules.priors.lib.kernels import (
 )
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.matrix_preference_prior import CausalMatrixPrior
+from r0.modules.priors.lib.native_causal import NativeCausalRecipe
+from r0.modules.priors.lib.native_decoding import native_recipe_from_dict
+from r0.modules.priors.lib.native_evaluation import generate_native_causal
 from r0.modules.priors.lib.node_pipeline import pipeline_from_dict
 from r0.modules.priors.lib.parameter_preferences import parameter_preferences_from_dict
 from r0.modules.priors.lib.polynomial import PolynomialRecipe
@@ -59,6 +62,7 @@ type Recipe = (
     | SampledFunctionalGraph
     | SampledTopologyGraph
     | SampledGeometryGraph
+    | NativeCausalRecipe
 )
 
 
@@ -101,6 +105,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
+    if version == "native-causal-v1":
+        return native_recipe_from_dict(fields, limits=limits)
     if version == "sampled-geometry-graph-v1":
         return geometry_graph_from_dict(fields, limits=limits)
     if version == "sampled-topology-graph-v1":
@@ -188,6 +194,7 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
                     SampledFunctionalGraph,
                     SampledTopologyGraph,
                     SampledGeometryGraph,
+                    NativeCausalRecipe,
                 ),
             ):
                 raise ValueError("nest combinations in expression, not in component recipes")
@@ -241,6 +248,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, NativeCausalRecipe):
+        return generate_native_causal(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(
         recipe,
         (
