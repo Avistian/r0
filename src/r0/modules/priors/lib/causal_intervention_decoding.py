@@ -8,6 +8,11 @@ from r0.modules.priors.lib.causal_intervention_records import (
     SoftIntervention,
 )
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.converted_decoding import categorical_converter_from_dict
+from r0.modules.priors.lib.converter_intervention import (
+    ConverterHardIntervention,
+    ConverterSoftIntervention,
+)
 from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
 from r0.modules.priors.lib.frozen_function_decoding import frozen_function_from_dict
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
@@ -39,11 +44,23 @@ def intervention_from_dict(data: object, *, limits: CausalLimits) -> CausalInter
             | StageIntervention
             | NativeVectorHardIntervention
             | NativeVectorDomainIntervention
+            | ConverterHardIntervention
+            | ConverterSoftIntervention
         ] = []
         for item in functional_array(raw["interventions"]):
             if type(item) is not dict:
                 raise ValueError("intervention must be a versioned object")
-            if cast(dict[str, Any], item).get("version") == "native-vector-hard-intervention-v1":
+            if cast(dict[str, Any], item).get("version") == "converter-hard-intervention-v1":
+                changes.append(
+                    ConverterHardIntervention(**functional_record(item, ConverterHardIntervention))
+                )
+            elif cast(dict[str, Any], item).get("version") == "converter-soft-intervention-v1":
+                change = functional_record(item, ConverterSoftIntervention)
+                change["converter"] = categorical_converter_from_dict(
+                    change["converter"], limits=limits
+                )
+                changes.append(ConverterSoftIntervention(**change))
+            elif cast(dict[str, Any], item).get("version") == "native-vector-hard-intervention-v1":
                 changes.append(
                     NativeVectorHardIntervention(
                         **functional_record(item, NativeVectorHardIntervention)

@@ -1,9 +1,18 @@
 """Explicit surgical changes retain their original graph and intervention location."""
 
 from dataclasses import dataclass, replace
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from r0.modules.priors.lib.activation_sampling import finite_number
+from r0.modules.priors.lib.converted_causal_records import (
+    ConvertedCausalNode,
+    ConvertedCausalRecipe,
+)
+from r0.modules.priors.lib.converter_intervention import (
+    ConverterHardIntervention,
+    ConverterSoftIntervention,
+    validate_converter_change,
+)
 from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
 from r0.modules.priors.lib.frozen_function_evaluation import FrozenFunction, function_geometry
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
@@ -24,8 +33,13 @@ from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
 from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.stage_intervention import StageIntervention
 
+if TYPE_CHECKING:
+    from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
+
 type CausalBase = (
     FunctionalCausalRecipe
+    | ConvertedCausalRecipe
+    | SampledConvertedGraph
     | NativeCausalRecipe
     | SampledFunctionalGraph
     | SampledGeometryGraph
@@ -100,10 +114,15 @@ class SoftIntervention:
 
 def causal_runtime(
     base: object,
-) -> FunctionalCausalRecipe | NativeCausalRecipe | NativeVectorRecipe:
-    if isinstance(base, (FunctionalCausalRecipe, NativeCausalRecipe, NativeVectorRecipe)):
+) -> FunctionalCausalRecipe | NativeCausalRecipe | NativeVectorRecipe | ConvertedCausalRecipe:
+    from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
+
+    if isinstance(
+        base,
+        (FunctionalCausalRecipe, NativeCausalRecipe, NativeVectorRecipe, ConvertedCausalRecipe),
+    ):
         return base
-    if isinstance(base, (SampledNativeGraph, SampledNativeVectorGraph)):
+    if isinstance(base, (SampledNativeGraph, SampledNativeVectorGraph, SampledConvertedGraph)):
         return base.recipe
     if isinstance(
         base,
@@ -121,7 +140,9 @@ class CausalInterventionRecipe:
         | SoftIntervention
         | StageIntervention
         | NativeVectorHardIntervention
-        | NativeVectorDomainIntervention,
+        | NativeVectorDomainIntervention
+        | ConverterHardIntervention
+        | ConverterSoftIntervention,
         ...,
     ]
     mode: str = "matched"
@@ -153,9 +174,23 @@ class CausalInterventionRecipe:
                 StageIntervention,
                 NativeVectorHardIntervention,
                 NativeVectorDomainIntervention,
+                ConverterHardIntervention,
+                ConverterSoftIntervention,
             ) or change.node >= len(runtime.nodes):
                 raise ValueError("intervention refers to an invalid node")
             node = runtime.nodes[change.node]
+            if isinstance(change, (ConverterHardIntervention, ConverterSoftIntervention)):
+                if not isinstance(node, ConvertedCausalNode):
+                    raise ValueError("converter intervention requires a typed converted node")
+                validate_converter_change(change, node)
+                position = next(
+                    i for i, c in enumerate(node.converters) if c.name == change.capture
+                )
+                key = (change.node, "capture", position)
+                if key in occupied:
+                    raise ValueError("overlapping converter interventions")
+                occupied.add(key)
+                continue
             if isinstance(change, (NativeVectorHardIntervention, NativeVectorDomainIntervention)):
                 if not isinstance(node, NativeVectorNode):
                     raise ValueError("logical-variable intervention requires a native vector node")
@@ -169,7 +204,9 @@ class CausalInterventionRecipe:
                 raise ValueError("vector clamps require explicit logical-variable records")
             native = node if isinstance(node, NativeCausalNode) else None
             equation = (
-                node.equation if isinstance(node, (NativeCausalNode, NativeVectorNode)) else node
+                node.equation
+                if isinstance(node, (NativeCausalNode, NativeVectorNode, ConvertedCausalNode))
+                else node
             )
             if isinstance(change, (SoftIntervention, StageIntervention)):
                 kwargs = replacement_equation_fields(change)
@@ -216,6 +253,10 @@ class CausalInterventionRecipe:
                         raise ValueError(
                             "native continuous variables have one emitted state location"
                         )
+                    if isinstance(node, ConvertedCausalNode) and change.location != "state":
+                        reserved = {i for c in node.converters for i in range(c.start, c.stop)}
+                        if reserved.intersection(change.channels):
+                            raise ValueError("category readouts require named converter clamps")
                     locations = (
                         ("state", "readout")
                         if change.location == "state_and_readout"
@@ -236,9 +277,14 @@ class CausalInterventionRecipe:
             (
                 n.equation.function.input_width
                 + 8 * n.equation.function.output_width
-                + 4 * n.state_width
+                + 4
+                * (
+                    n.equation.function.output_width
+                    if isinstance(n, ConvertedCausalNode)
+                    else n.state_width
+                )
             )
-            if isinstance(n, (NativeCausalNode, NativeVectorNode))
+            if isinstance(n, (NativeCausalNode, NativeVectorNode, ConvertedCausalNode))
             else (n.function.input_width + 10 * n.function.output_width)
             for n in original.nodes
         )
@@ -252,7 +298,9 @@ class CausalInterventionRecipe:
             raise ValueError("causal intervention comparison working memory limit exceeded")
         return {"parameters": metadata, "estimated_working_bytes": working}
 
-    def effective_runtime(self) -> FunctionalCausalRecipe | NativeCausalRecipe | NativeVectorRecipe:
+    def effective_runtime(
+        self,
+    ) -> FunctionalCausalRecipe | NativeCausalRecipe | NativeVectorRecipe | ConvertedCausalRecipe:
         original = causal_runtime(self.base)
         replacements = {
             c.node: c
@@ -277,6 +325,23 @@ class CausalInterventionRecipe:
                 else node.domain
             )
 
+        if isinstance(original, ConvertedCausalRecipe):
+            converters = {
+                (c.node, c.capture): c.converter
+                for c in self.interventions
+                if isinstance(c, ConverterSoftIntervention)
+            }
+            return replace(
+                original,
+                nodes=tuple(
+                    replace(
+                        n,
+                        equation=equation(i, n.equation),
+                        converters=tuple(converters.get((i, c.name), c) for c in n.converters),
+                    )
+                    for i, n in enumerate(original.nodes)
+                ),
+            )
         if isinstance(original, NativeVectorRecipe):
             domains = {
                 (c.node, c.variable): c.domain

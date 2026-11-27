@@ -12,6 +12,7 @@ from r0.modules.priors.lib.converted_evaluation import (
     converted_rng,
     evaluate_converted,
 )
+from r0.modules.priors.lib.converter_intervention_execution import ConverterInterventionExecution
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -24,9 +25,16 @@ def converted_value(result: ConvertedEvaluation, ref: ConvertedReadout) -> torch
 
 
 def generate_converted(
-    recipe: ConvertedCausalRecipe, *, seed: int, task_id: int, device: str = "cpu"
+    recipe: ConvertedCausalRecipe,
+    *,
+    seed: int,
+    task_id: int,
+    device: str = "cpu",
+    execution: ConverterInterventionExecution | None = None,
 ) -> TrainingTask:
-    result = evaluate_converted(recipe, seed=seed, task_id=task_id, device=device)
+    result = evaluate_converted(
+        recipe, seed=seed, task_id=task_id, device=device, execution=execution
+    )
     config = asdict(recipe)
     source = {
         **config,

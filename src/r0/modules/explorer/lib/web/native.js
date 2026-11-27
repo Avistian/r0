@@ -18,7 +18,7 @@ function nativeCharts(view,feature,channel) {
   if(view.classes.length) categoryHistogram("target-hist",view.classes,view.classification.observed_counts,"Native target");
   else histogram("target-hist",view.target,"Native target value");
   const xLabel=summary.categories ? `${f.name} · declared category index` : f.name;
-  scatter("signal-plot",view.rows.map(r=>({...r,x:r.inputs[feature],y:r.scores[Math.min(channel,r.scores.length-1)]})),xLabel,"Native equation score");
+  scatter("signal-plot",view.rows.map(r=>({...r,x:r.inputs[feature],y:r.scores[Math.min(channel,r.scores.length-1)]})),xLabel,view.converted ? "Converter score before category capture" : "Native equation score");
   $("diagnostic-title").textContent=view.classes.length ? `Native emission: ${view.classes[channel]}` : "Direct native target";
   $("diagnostic-note").textContent=view.classes.length ? (view.target_emission==="softmax" ? "Native softmax emission probabilities; no target adapter." : `Deterministic ${view.target_emission} emission; probabilities are one-hot indicators, not stochastic sampling.`) : "The selected variable channel is the target; no observation-noise adapter or empirical normalization.";
   scatter("diagnostic-plot",view.rows.map(r=>({...r,x:r.inputs[feature],y:r.probabilities ? r.probabilities[channel] : r.target})),xLabel,view.classes.length ? "Native emission probability" : "Native target value");
@@ -28,6 +28,7 @@ function nativeViewControls(view) {
   const native=view.target_origin==="native-variable-v1";
   $("native-notice").hidden=!native;
   if(native) $("native-notice").textContent="Native direct target · declared categorical values and vocabularies are retained. Numeric arrays encode categories by vocabulary index. Edit equations and domains below; adapter pairs and response curves are unavailable." + (["sampled-native-graph-v1","sampled-native-vector-graph-v1"].includes(view.native_construction) ? " Sampled domain construction and four RNG streams are retained. Frequency weights shift logits or reference cutpoints; they do not guarantee marginal class frequencies." : "");
+  if(view.converted) $("native-notice").textContent="Typed converter captures · categories are extracted before structural noise and node importance. Descendants use the declared numeric representation, not an implicit one-hot category. Original-input modes preserve latent state. Frozen fitting and raw construction remain in the archive.";
   $("pair-panel").hidden=native;
   $("curve").closest("article").hidden=native;
   $("signal-title").textContent=native ? "Feature and native equation score" : "Feature and latent signal";

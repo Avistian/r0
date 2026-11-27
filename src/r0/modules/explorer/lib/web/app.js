@@ -51,7 +51,7 @@ function parseRecipe() {
 }
 function fillControls(recipe) {
   const task = taskControls(recipe);
-  const native=["native-causal-v1","sampled-native-graph-v1","native-vector-causal-v1","sampled-native-vector-graph-v1"].includes(recipe.version);
+  const native=["native-causal-v1","sampled-native-graph-v1","native-vector-causal-v1","sampled-native-vector-graph-v1","converted-causal-v1","sampled-converted-graph-v1"].includes(recipe.version);
   $("difficulty-label").hidden=native;
   for(const id of ["features","active","task-type","classes"]) $(id).disabled=native;
   for (const [id, key] of Object.entries({rows: "rows", context: "context_rows", features: "features", active: "active_features", "task-type": "task_type", classes: "classes"})) $(id).value = task[key];

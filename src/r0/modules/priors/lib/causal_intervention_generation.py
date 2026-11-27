@@ -6,7 +6,10 @@ from typing import Any, cast
 
 import torch
 
-from r0.modules.priors.lib.causal_intervention_execution import InterventionExecution
+from r0.modules.priors.lib.causal_intervention_execution import (
+    InterventionExecution,
+    intervention_execution,
+)
 from r0.modules.priors.lib.causal_intervention_records import (
     CausalBase,
     CausalInterventionRecipe,
@@ -15,6 +18,14 @@ from r0.modules.priors.lib.causal_intervention_records import (
     causal_runtime,
 )
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.converted_causal_records import ConvertedCausalRecipe
+from r0.modules.priors.lib.converted_evaluation import evaluate_converted
+from r0.modules.priors.lib.converted_output import generate_converted
+from r0.modules.priors.lib.converter_intervention import (
+    ConverterHardIntervention,
+    ConverterSoftIntervention,
+)
+from r0.modules.priors.lib.converter_intervention_execution import ConverterInterventionExecution
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_evaluation import (
     generate_functional_causal,
@@ -29,6 +40,7 @@ from r0.modules.priors.lib.native_vector_intervention import (
 from r0.modules.priors.lib.native_vector_output import generate_native_vector
 from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
 from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
 from r0.modules.priors.lib.sampled_native_vector_graph import SampledNativeVectorGraph
 from r0.modules.priors.lib.stage_intervention import StageIntervention
@@ -45,18 +57,26 @@ def generate_intervened(
 ) -> TrainingTask:
     if device != "cpu":
         raise ValueError("causal intervention execution currently supports explicit CPU only")
-    execution = execution or InterventionExecution(recipe)
+    execution = execution or intervention_execution(recipe)
     original = causal_runtime(recipe.base)
     if not isinstance(
-        recipe.base, (FunctionalCausalRecipe, NativeCausalRecipe, NativeVectorRecipe)
+        recipe.base,
+        (FunctionalCausalRecipe, NativeCausalRecipe, NativeVectorRecipe, ConvertedCausalRecipe),
     ):
-        if isinstance(recipe.base, (SampledNativeGraph, SampledNativeVectorGraph)):
+        if isinstance(
+            recipe.base, (SampledNativeGraph, SampledNativeVectorGraph, SampledConvertedGraph)
+        ):
             recipe.base.validate_replay()
         else:
             recipe.base.validate()
     recipe.admit()
     runtime = recipe.effective_runtime()
-    if isinstance(runtime, NativeVectorRecipe):
+    if isinstance(runtime, ConvertedCausalRecipe):
+        assert isinstance(execution, ConverterInterventionExecution)
+        task = generate_converted(
+            runtime, seed=seed, task_id=task_id, device=device, execution=execution
+        )
+    elif isinstance(runtime, NativeVectorRecipe):
         task = generate_native_vector(
             runtime, seed=seed, task_id=task_id, device=device, execution=execution
         )
@@ -98,9 +118,12 @@ def generate_intervened(
 def trace_original(
     recipe: CausalInterventionRecipe, *, seed: int, task_id: int
 ) -> InterventionExecution:
-    trace = InterventionExecution(recipe, baseline=True)
+    trace = intervention_execution(recipe, baseline=True)
     runtime = causal_runtime(recipe.base)
-    if isinstance(runtime, NativeVectorRecipe):
+    if isinstance(runtime, ConvertedCausalRecipe):
+        assert isinstance(trace, ConverterInterventionExecution)
+        evaluate_converted(runtime, seed=seed, task_id=task_id, execution=trace)
+    elif isinstance(runtime, NativeVectorRecipe):
         evaluate_native_vector_graph(runtime, seed=seed, task_id=task_id, execution=trace)
     elif isinstance(runtime, NativeCausalRecipe):
         evaluate_native_graph(runtime, seed=seed, task_id=task_id, execution=trace)
@@ -119,7 +142,9 @@ def generate_causal_pair(
         | SoftIntervention
         | StageIntervention
         | NativeVectorHardIntervention
-        | NativeVectorDomainIntervention,
+        | NativeVectorDomainIntervention
+        | ConverterHardIntervention
+        | ConverterSoftIntervention,
         ...,
     ],
     mode: str = "matched",
@@ -141,7 +166,10 @@ def generate_causal_pair(
     # caller limits on compare/load remain independently enforced by decoding.
     limits = (
         base.limits
-        if isinstance(base, (FunctionalCausalRecipe, NativeCausalRecipe, NativeVectorRecipe))
+        if isinstance(
+            base,
+            (FunctionalCausalRecipe, NativeCausalRecipe, NativeVectorRecipe, ConvertedCausalRecipe),
+        )
         else base.request.limits
     )
     return TaskPair(
@@ -164,7 +192,7 @@ def compare_causal_pair(
         raise ValueError("causal comparison must retain original source row identities")
     seed, task_id = a["seed"], a["task_id"]
     expected_before = generate_task(recipe.base, seed=seed, task_id=task_id)
-    execution = InterventionExecution(recipe)
+    execution = intervention_execution(recipe)
     expected_after = generate_intervened(recipe, seed=seed, task_id=task_id, execution=execution)
     for actual, expected in ((before, expected_before), (after, expected_after)):
         for field in (
@@ -228,7 +256,7 @@ def compare_causal_pair(
         raise ValueError("matched intervention changed an unaffected exogenous draw")
     before_inputs, after_inputs = before.inputs, after.inputs
     before_targets, after_targets = before.targets.double(), after.targets.double()
-    if isinstance(causal_runtime(recipe.base), NativeVectorRecipe):
+    if isinstance(causal_runtime(recipe.base), (NativeVectorRecipe, ConvertedCausalRecipe)):
         # Group archives restore contiguous tensors; reduce the same layout before/after load.
         before_inputs, after_inputs = before_inputs.contiguous(), after_inputs.contiguous()
         before_targets, after_targets = before_targets.contiguous(), after_targets.contiguous()

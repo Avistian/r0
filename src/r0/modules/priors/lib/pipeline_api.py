@@ -13,11 +13,20 @@ from r0.modules.priors.lib.converted_causal_records import (
 from r0.modules.priors.lib.converted_causal_records import (
     ConvertedReadout as ConvertedReadout,
 )
+from r0.modules.priors.lib.converted_graph_decoding import (
+    converted_request_from_dict as converted_request_from_dict,
+)
 from r0.modules.priors.lib.converted_graph_request import (
     ConvertedGraphRequest as ConvertedGraphRequest,
 )
 from r0.modules.priors.lib.converted_graph_sampling import (
     sample_converted_graph as sample_converted_graph,
+)
+from r0.modules.priors.lib.converter_intervention import (
+    ConverterHardIntervention as ConverterHardIntervention,
+)
+from r0.modules.priors.lib.converter_intervention import (
+    ConverterSoftIntervention as ConverterSoftIntervention,
 )
 from r0.modules.priors.lib.geometry_pipeline_request import (
     GeometryPipelineRequest as GeometryPipelineRequest,
@@ -44,6 +53,9 @@ from r0.modules.priors.lib.sampled_pipeline_geometry import (
 )
 
 __all__ = [
+    "ConverterHardIntervention",
+    "ConverterSoftIntervention",
+    "converted_request_from_dict",
     "pipeline_prior_from_dict",
     "JointInnovationPrior",
     "JointInnovationPipelinePrior",

@@ -35,6 +35,8 @@ window.r0request = async (action, data) => {
         .replace("/* NATIVE */", (assets / "native.js").read_text())
         .replace("/* INNOVATIONS */", (assets / "innovations.js").read_text())
         .replace("<!-- INNOVATIONS -->", (assets / "innovations.html").read_text())
+        .replace("/* CONVERTERS */", (assets / "converters.js").read_text())
+        .replace("<!-- CONVERTERS -->", (assets / "converters.html").read_text())
         .replace("/* TRANSPORT */", transport)
         .replace("<!-- RUNTIME -->", "Colab generation" if callback_name else "local generation")
     )

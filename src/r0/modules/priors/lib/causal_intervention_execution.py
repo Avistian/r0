@@ -151,3 +151,18 @@ class InterventionExecution:
                 "forced_probability": "separate K-wide category indicator",
             }
         return result
+
+
+def intervention_execution(
+    recipe: CausalInterventionRecipe, *, baseline: bool = False
+) -> InterventionExecution:
+    from r0.modules.priors.lib.causal_intervention_records import causal_runtime
+    from r0.modules.priors.lib.converted_causal_records import ConvertedCausalRecipe
+
+    if isinstance(causal_runtime(recipe.base), ConvertedCausalRecipe):
+        from r0.modules.priors.lib.converter_intervention_execution import (
+            ConverterInterventionExecution,
+        )
+
+        return ConverterInterventionExecution(recipe, baseline=baseline)
+    return InterventionExecution(recipe, baseline=baseline)

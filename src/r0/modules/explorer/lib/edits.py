@@ -70,6 +70,7 @@ def create_edit(
             priors.NativeCausalRecipe,
             priors.NativeVectorRecipe,
             priors.NetworkRecipe,
+            priors.ConvertedCausalRecipe,
         ),
     ):
         raise ValueError(

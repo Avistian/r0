@@ -4,8 +4,9 @@
 <button id="intervention-load">Prepare causal intervention</button>
 <p id="intervention-notice" class="muted">CPU execution. Hosted Colab and GPU verification remain pending.</p>
 <div id="intervention-controls" hidden>
-<div class="fields"><label>Node<select id="intervention-node"></select></label><label>Change<select id="intervention-kind"><option value="hard">Hard clamp</option><option value="soft">Soft equation / noise change</option><option value="stage">Root / pipeline change</option><option value="domain">Native emission domain change</option></select></label></div>
+<div class="fields"><label>Node<select id="intervention-node"></select></label><label>Change<select id="intervention-kind"><option value="hard">Hard clamp</option><option value="soft">Soft equation / noise change</option><option value="stage">Root / pipeline change</option><option value="domain">Native emission domain change</option><option value="converter">Frozen categorical converter change</option></select></label></div>
 <label id="intervention-variable-label" hidden>Logical variable<select id="intervention-variable"></select></label>
+<div id="intervention-converter-fields" hidden><label>Typed location<select id="intervention-converter"><option value="">Numerical state / readout channels</option></select></label><label>Category clamp location<select id="intervention-converter-location"><option value="capture">Captured category only</option><option value="representation_and_capture">Representation and captured category</option></select></label><label id="intervention-converter-json-label" hidden>Replacement frozen converter (JSON; same name, span and vocabulary)<textarea id="intervention-converter-json" rows="7"></textarea></label></div>
 <p id="intervention-node-note" class="muted"></p>
 <div id="intervention-hard">
 <label id="intervention-category-label" hidden>Declared category<select id="intervention-category"></select></label>

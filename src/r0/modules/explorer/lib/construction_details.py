@@ -110,6 +110,34 @@ def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
             "domains": [[d["kind"] for d in n["domains"]] for n in runtime["nodes"]],
             "composition": recipe.get("request", {}).get("composition"),
         }
+    if recipe.get("version") in ("converted-causal-v1", "sampled-converted-graph-v1"):
+        runtime = recipe.get("recipe", recipe)
+        return {
+            "kind": "typed-category-converters",
+            "notice": (
+                "Categories are captured before structural innovation and node importance. "
+                "Descendants consume the width-preserving numeric representation. Seven TabICL "
+                "converter modes use frozen independent calibration (r0 adaptation). Optional "
+                "non-Gaussian innovations are r0 extensions; "
+                "frequency biases do not guarantee marginals."
+            ),
+            "converters": [
+                [
+                    {
+                        "name": c["name"],
+                        "mode": c["mode"],
+                        "span": [c["start"], c["stop"]],
+                        "vocabulary": c["vocabulary"],
+                    }
+                    for c in node["converters"]
+                ]
+                for node in runtime["nodes"]
+            ],
+            "composition": recipe.get("request", {}).get("composition"),
+            "innovations": [
+                p.get("noise", {"sigma": p["plan"]["sigma"]}) for p in recipe.get("pipelines", [])
+            ],
+        }
     pipelines = recipe.get("pipelines", [])
     if any(p.get("version") == "r0-innovation-pipeline-realization-v2" for p in pipelines):
         return {

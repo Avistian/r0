@@ -35,6 +35,18 @@ def construct_graph(
         )
     if topology == "sampled-fitted":
         return construct_sampled_fitted(fields, seed=seed, limits=limits)
+    if topology == "sampled-converted":
+        request = priors.converted_request_from_dict(
+            {**fields["request"], "limits": asdict(limits)}, limits=limits
+        )
+        streams = [np.random.default_rng(s) for s in np.random.SeedSequence(seed).spawn(4)]
+        return priors.sample_converted_graph(
+            request,
+            named_rng=streams[0],
+            raw_rng=streams[1],
+            calibration_rng=streams[2],
+            fit_rng=streams[3],
+        )
     if topology == "fitted":
         return construct_fitted(fields, seed=seed, limits=limits)
     if topology == "sampled-native-vector":
@@ -144,6 +156,12 @@ class GraphConstruction:
     def task_record(self) -> dict[str, Any]:
         """Return preconstruction row geometry; sampled native target type is not yet known."""
         controls = json.loads(self.controls_json)
+        if controls.get("topology") == "sampled-converted":
+            request = priors.converted_request_from_dict(
+                controls["request"],
+                limits=priors.CausalLimits(**controls["request"].get("limits", {})),
+            )
+            return asdict(request.task())
         if controls.get("topology") in (
             "fitted",
             "sampled-fitted",

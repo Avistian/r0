@@ -1,5 +1,6 @@
 """Notebook transport uses the same session actions and charts as the local UI."""
 
+import json
 import sys
 from pathlib import Path
 from types import ModuleType
@@ -19,6 +20,7 @@ from r0.modules.explorer import show_colab_explorer
         "Pipeline innovations: uniform (r0 extension)",
         "Attachment geometry (r0 extension)",
         "Motif geometry (r0 adaptation)",
+        "Typed categorical converter pipelines",
     ],
 )
 def test_notebook_registers_callback_and_returns_structured_errors(
@@ -61,8 +63,11 @@ def test_notebook_registers_callback_and_returns_structured_errors(
     assert 'id="construction-panel"' in displayed[0]
     assert 'id="workbench-panel"' in displayed[0]
     controls = callbacks[name]("construction_examples", {})["application/json"]["examples"][example]
-    controls["task"].update(rows=16, context_rows=8)
-    if controls["topology"] != "native":
+    if controls["topology"] == "sampled-converted":
+        controls["request"].update(rows=16, context_rows=8, calibration_rows=8)
+    else:
+        controls["task"].update(rows=16, context_rows=8)
+    if controls["topology"] not in ("native", "sampled-converted"):
         controls["calibration_rows"] = 4
     if "width_prior" in controls:
         controls["width_prior"].update(low=1, high=3)
@@ -98,3 +103,30 @@ def test_notebook_registers_callback_and_returns_structured_errors(
             "application/json"
         ]
         assert loaded_pair["intervention"]["card"] == pair["intervention"]["card"]
+
+    if example == "Typed categorical converter pipelines":
+        info = callbacks[name]("intervention_controls", {})["application/json"]
+        node = next(n for n in info["nodes"] if n["converters"])
+        converter = node["converters"][0]
+        pair = callbacks[name](
+            "intervene",
+            {
+                "interventions_json": json.dumps(
+                    [
+                        {
+                            "version": "converter-hard-intervention-v1",
+                            "node": node["index"],
+                            "capture": converter["name"],
+                            "category": converter["vocabulary"][0],
+                            "location": "capture",
+                        }
+                    ]
+                )
+            },
+        )["application/json"]
+        assert "error" not in pair
+        assert pair["recipe_json"] == created["recipe_json"]
+        loaded = callbacks[name]("open_intervention", {"path": pair["intervention"]["path"]})[
+            "application/json"
+        ]
+        assert loaded["intervention"]["card"] == pair["intervention"]["card"]

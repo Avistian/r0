@@ -1,6 +1,6 @@
 "use strict";
 function fillInnovationControls(example) {
-  const law=example?.pipeline_prior?.innovation;
+  const law=(example?.topology==="sampled-converted"?example.request:example)?.pipeline_prior?.innovation;
   $("innovation-controls").hidden=!law;
   if(!law)return;
   $("innovation-family").value=law.families.length===1?law.families[0]:"all";
@@ -11,7 +11,7 @@ function fillInnovationControls(example) {
   $("innovation-truncation").value=law.truncation.length===1?(law.truncation[0]===null?"none":String(law.truncation[0])):"mixed";
 }
 $("innovation-apply").onclick=()=>act("Updating innovation draft…",async()=>{
-  const draft=JSON.parse($("construction-controls").value),law=draft.pipeline_prior?.innovation;
+  const draft=JSON.parse($("construction-controls").value),law=(draft.topology==="sampled-converted"?draft.request:draft).pipeline_prior?.innovation;
   if(!law)throw new Error("Choose a sampled innovation pipeline first.");
   const numeric=id=>{const s=$(id).value.trim();if(!s||!Number.isFinite(Number(s)))throw new Error("Enter a finite numeric value.");return Number(s);};
   const catalog=name=>$("innovation-"+name).value.split(",").map(s=>{if(!s.trim()||!Number.isFinite(Number(s)))throw new Error("Catalogs require comma-separated finite numbers.");return Number(s);});

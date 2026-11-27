@@ -10,7 +10,18 @@ function resetIntervention() {
   $("intervention-controls").hidden=true; $("intervention-traces").hidden=true;
   showIntervention();
 }
+function selectedConverter() {
+  return interventionInfo?.nodes[Number($("intervention-node").value)]?.converters?.find(c=>c.name===$("intervention-converter").value);
+}
 function interventionLocation() {
+  const converter=selectedConverter();
+  if(converter) {
+    const location=$("intervention-converter-location").value;
+    $("intervention-location-note").textContent=location==="capture"
+      ? "Forces the captured category only; original descendant representation remains unchanged. Reported scores/probabilities are forced-category indicators."
+      : "Forces the category representation before structural noise and importance; descendants receive the resulting final state. Original-input modes have no unique inverse and reject this location.";
+    return;
+  }
   if(interventionInfo?.vector) {
     $("intervention-location-note").textContent="Clamps one logical emitted value and its entire descendant-state block. Partial clamps retain the joint equation and correlated noise; clamping every variable bypasses that equation.";
     return;
@@ -20,12 +31,16 @@ function interventionLocation() {
 }
 function selectedInterventionDomain() {
   const node=interventionInfo.nodes[Number($("intervention-node").value)];
+  const converter=selectedConverter();
+  if(converter) return {kind:"categorical",vocabulary:converter.vocabulary};
   return interventionInfo.vector ? node.domains[Number($("intervention-variable").value)] : node.domain;
 }
 function selectInterventionNode() {
   const node=interventionInfo.nodes[Number($("intervention-node").value)];
   $("intervention-variable-label").hidden=!interventionInfo.vector;
   $("intervention-variable").replaceChildren(...(node.domains || []).map((d,j)=>new Option(`Variable ${j} · ${d.kind} · ${d.emission}`,j)));
+  $("intervention-converter-fields").hidden=!interventionInfo.converted;
+  $("intervention-converter").replaceChildren(new Option("Numerical state / readout channels",""),...(node.converters||[]).map(c=>new Option(`${c.name} · ${c.mode} · [${c.start}, ${c.stop})`,c.name)));
   selectInterventionVariable();
 }
 function selectInterventionVariable() {
@@ -35,9 +50,11 @@ function selectInterventionVariable() {
   $("intervention-location").disabled=interventionInfo.native;
   if(interventionInfo.native) $("intervention-location").value="state";
   $("intervention-function").value=pretty(node.function); $("intervention-noise").value="{}";
-  $("intervention-node-note").textContent=`Node ${node.index} · ${node.function.version} · parents [${node.parents.join(", ")}]. ${discrete ? "Native category clamp replaces emitted value and one-hot descendant state; forced probabilities are indicators." : `Captured converter channels: [${node.captured_channels.join(", ")}].`}`;
+  $("intervention-node-note").textContent=`Node ${node.index} · ${node.function.version} · parents [${node.parents.join(", ")}]. ${selectedConverter() ? `Named category capture ${selectedConverter().name}; numeric representation width ${selectedConverter().stop-selectedConverter().start}. No one-hot expansion.` : discrete ? "Native category clamp replaces emitted value and one-hot descendant state; forced probabilities are indicators." : `Captured converter channels: [${node.captured_channels.join(", ")}].`}`;
   $("intervention-channels").disabled=interventionInfo.vector;
   $("intervention-domain-json").value=pretty(domain);
+  $("intervention-converter-json").value=pretty(selectedConverter() || null);
+  $("intervention-converter-location").disabled=!selectedConverter();
   $("intervention-stage-fields-json").value=pretty({root:null,replace_pipeline:false,pipeline:null});
   interventionLocation();
 }
@@ -71,9 +88,12 @@ $("intervention-load").onclick=()=>act("Preparing intervention controls…",asyn
 $("intervention-node").onchange=selectInterventionNode;
 $("intervention-variable").onchange=selectInterventionVariable;
 $("intervention-location").onchange=interventionLocation;
+$("intervention-converter").onchange=selectInterventionVariable;
+$("intervention-converter-location").onchange=interventionLocation;
 $("intervention-kind").onchange=()=>{
   const kind=$("intervention-kind").value;
   $("intervention-hard").hidden=kind!=="hard";$("intervention-soft").hidden=kind!=="soft";
+  $("intervention-converter-json-label").hidden=kind!=="converter";
   $("intervention-stage-fields").hidden=kind!=="stage";$("intervention-domain-fields").hidden=kind!=="domain";
 };
 $("intervention-mode").onchange=()=>{$("intervention-mode-note").textContent=$("intervention-mode").value==="matched"?"Keep original row identities and unchanged root/innovation/emission draws. Explicitly changed noise laws and bypassed nodes are identified.":"Use a new keyed exogenous population with the same frozen graph and calibration. Distribution summaries describe these samples, not observational causal estimates.";};
@@ -82,12 +102,17 @@ $("intervention-add").onclick=()=>act("Adding explicit intervention…",async()=
   const node=Number($("intervention-node").value);let change;
   if($("intervention-kind").value==="hard") {
     const domain=selectedInterventionDomain(), discrete=domain && domain.kind!=="continuous";
-    if(interventionInfo.vector) {
+    if(selectedConverter()) {
+      change={version:"converter-hard-intervention-v1",node,capture:selectedConverter().name,category:$("intervention-category").value,location:$("intervention-converter-location").value};
+    } else if(interventionInfo.vector) {
       const values=JSON.parse($("intervention-values").value);
       if(!discrete && (!Array.isArray(values) || values.length!==1)) throw new Error("A vector variable clamp requires one numeric value.");
       change={version:"native-vector-hard-intervention-v1",node,variable:Number($("intervention-variable").value),value:discrete?null:values[0],category:discrete?$("intervention-category").value:null};
     } else
     change={version:"hard-causal-intervention-v1",node,channels:discrete?[]:JSON.parse($("intervention-channels").value),values:discrete?[]:JSON.parse($("intervention-values").value),category:discrete?$("intervention-category").value:null,location:discrete?"state":$("intervention-location").value};
+  } else if($("intervention-kind").value==="converter") {
+    if(!selectedConverter()) throw new Error("Select a named converter capture first.");
+    change={version:"converter-soft-intervention-v1",node,capture:selectedConverter().name,converter:JSON.parse($("intervention-converter-json").value)};
   } else if($("intervention-kind").value==="stage") {
     change={version:"stage-causal-intervention-v1",node,root:null,replace_pipeline:false,pipeline:null,domain:null,...JSON.parse($("intervention-stage-fields-json").value)};
   } else if($("intervention-kind").value==="domain") {

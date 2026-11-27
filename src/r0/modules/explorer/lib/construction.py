@@ -5,6 +5,7 @@ from typing import Any, cast
 
 from r0.modules import priors
 from r0.modules.explorer.lib.composed_examples import composed_examples, fitted_examples
+from r0.modules.explorer.lib.converted import converted_editor, converted_examples
 from r0.modules.explorer.lib.innovation_examples import innovation_examples
 from r0.modules.explorer.lib.native import (
     native_example,
@@ -75,6 +76,7 @@ def construction_examples() -> dict[str, Any]:
         **composed_examples(common, geometry, sampled_native_example()),
         **fitted_examples(),
         **network_examples(),
+        **converted_examples(),
         **{
             f"Numerical pipeline: {variant}": {
                 **geometry,
@@ -97,6 +99,11 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
 
     raw = json.loads(task.recipe_json)["recipe"]
     recipe = priors.recipe_from_dict(raw, limits=limits)
+    if isinstance(recipe, (priors.ConvertedCausalRecipe, priors.SampledConvertedGraph)):
+        return converted_editor(
+            recipe.recipe if isinstance(recipe, priors.SampledConvertedGraph) else recipe,
+            recipe.version,
+        )
     if isinstance(recipe, priors.NetworkRecipe):
         return network_editor(recipe)
     runtime = (

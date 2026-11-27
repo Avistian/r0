@@ -20,7 +20,11 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
     runtime = original.get("runtime", original)
     if "graph" in original:
         runtime = original["graph"]["runtime"]
-    if version in ("sampled-native-graph-v1", "sampled-native-vector-graph-v1"):
+    if version in (
+        "sampled-native-graph-v1",
+        "sampled-native-vector-graph-v1",
+        "sampled-converted-graph-v1",
+    ):
         runtime = original["recipe"]
     if runtime.get("version") not in (
         "functional-causal-v1",
@@ -32,13 +36,15 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
         "support-population-functional-causal-v1",
         "native-causal-v1",
         "native-vector-causal-v1",
+        "converted-causal-v1",
     ):
         raise ValueError("causal interventions require a frozen functional or native graph")
     native = runtime["version"] in ("native-causal-v1", "native-vector-causal-v1")
+    converted = runtime["version"] == "converted-causal-v1"
     vector = runtime["version"] == "native-vector-causal-v1"
     nodes: list[dict[str, Any]] = []
     for i, node in enumerate(runtime["nodes"]):
-        equation = node["equation"] if native else node
+        equation = node["equation"] if native or converted else node
         domain = node.get("domain")
         pipeline: dict[str, Any] = equation.get("pipeline") or {}
         nodes.append(
@@ -47,6 +53,7 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
                 "parents": equation["parents"],
                 "domain": domain,
                 "domains": node.get("domains"),
+                "converters": node.get("converters", []),
                 "root": equation.get("root"),
                 "pipeline": equation.get("pipeline"),
                 "function": equation["function"],
@@ -60,13 +67,17 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
         "nodes": nodes,
         "native": native,
         "vector": vector,
+        "converted": converted,
         "version": version,
         "notice": (
             "Original construction and fit archives remain unchanged. "
             "Interventions use frozen calibration. CPU only; partial coupled mechanisms "
             "are evaluated before clamping. Vector clamps select logical variables; "
             "all-variable clamps bypass the joint equation. Root/domain/pipeline changes "
-            "retain original archive and geometry."
+            "retain original archive and geometry. Converter captures precede structural noise; "
+            "capture-only clamps keep descendant representation, representation clamps retain "
+            "later noise and importance. Original-input converters "
+            "have no unique inverse representation."
         ),
     }
 

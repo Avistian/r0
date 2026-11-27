@@ -132,36 +132,41 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         view["native_construction"] = native["version"]
         if native["version"] == "causal-intervention-v1":
             native = native["base"]
-        if native["version"] in ("sampled-native-graph-v1", "sampled-native-vector-graph-v1"):
-            native = native["recipe"]
-        target_node = native["nodes"][native["target"][0]]
-        domain = (
-            target_node["domains"][native["target"][1]]
-            if native["version"] == "native-vector-causal-v1"
-            else target_node["domain"]
-        )
-        original_domain = domain
-        changes = record["recipe"].get("interventions", ())
-        target_node_index, target_variable = native["target"]
-        relevant = [
-            c
-            for c in changes
-            if c["node"] == target_node_index
-            and ("variable" not in c or c["variable"] == target_variable)
-        ]
-        for change in relevant:
-            if change.get("domain") is not None:
-                domain = change["domain"]
-        view["target_emission"] = domain["emission"]
-        if domain != original_domain:
-            view["original_target_emission"] = original_domain["emission"]
-            view["original_target_frequency_weights"] = original_domain.get("frequencies")
-            view["original_target_domain"] = original_domain
-            view["effective_target_domain"] = domain
-        if any(c.get("category") is not None for c in relevant):
-            view["original_target_emission"] = original_domain["emission"]
-            view["target_emission"] = "forced-category indicator"
-        view["target_frequency_weights"] = domain.get("frequencies")
+        if native["version"] in ("converted-causal-v1", "sampled-converted-graph-v1"):
+            from r0.modules.explorer.lib.converted import converted_target_view
+
+            view.update(converted_target_view(record))
+        else:
+            if native["version"] in ("sampled-native-graph-v1", "sampled-native-vector-graph-v1"):
+                native = native["recipe"]
+            target_node = native["nodes"][native["target"][0]]
+            domain = (
+                target_node["domains"][native["target"][1]]
+                if native["version"] == "native-vector-causal-v1"
+                else target_node["domain"]
+            )
+            original_domain = domain
+            changes = record["recipe"].get("interventions", ())
+            target_node_index, target_variable = native["target"]
+            relevant = [
+                c
+                for c in changes
+                if c["node"] == target_node_index
+                and ("variable" not in c or c["variable"] == target_variable)
+            ]
+            for change in relevant:
+                if change.get("domain") is not None:
+                    domain = change["domain"]
+            view["target_emission"] = domain["emission"]
+            if domain != original_domain:
+                view["original_target_emission"] = original_domain["emission"]
+                view["original_target_frequency_weights"] = original_domain.get("frequencies")
+                view["original_target_domain"] = original_domain
+                view["effective_target_domain"] = domain
+            if any(c.get("category") is not None for c in relevant):
+                view["original_target_emission"] = original_domain["emission"]
+                view["target_emission"] = "forced-category indicator"
+            view["target_frequency_weights"] = domain.get("frequencies")
         for feature, schema in zip(view["features"], task.feature_schema, strict=True):
             feature["kind"] = schema.kind
             feature["role"] = "native observed variable"
