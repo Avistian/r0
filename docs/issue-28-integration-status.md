@@ -1,20 +1,27 @@
 # Issue 28 integration status
 
+Latest complete source verification: `bdceb5a3824eac1997edc828c52d22f574dfe64d`,
+**3,778 passed, 1 skipped, 1 warning**, full `make check` with terminal exit0.
+See the [typed/convolution checkpoint](issue-28-typed-convolution-checkpoint.md)
+for its exact included/excluded scope. Later GP, typed UI, internal-DAG and
+topology work remains outside this result; #28 is incomplete.
+
+
 The accepted scope remains [the full specification](specs/0028-causal-network-generators.md),
 including every in-scope option in the recorded paper inventory. This checkpoint
 is incomplete. Scoped reviews below establish only the listed behavior. They do not establish
 scientific acceptance or whole-issue completion.
 
-## Latest completed source check
+## Previous generator-family source check
 
 Source `6c0cd82d1456ff15c7109247814e2d99c023ae60` passed full `make check`:
 3,600 passed, one skipped, one warning in 1,836.22 seconds; all static gates passed.
 The [generator-family checkpoint](issue-28-generator-families-checkpoint.md)
 records the precise inclusion boundary. Later typed policies, population envelopes
 and convolution workbench changes have separate scoped evidence and are not
-covered by this full run. The published checkpoint below remains separately named.
+covered by that earlier full run. The observation checkpoint below is retained as history.
 
-## Latest verified publication checkpoint
+## Previous observation publication checkpoint
 
 Source `3e7e17d9a7b0e991afba3a5d5b575a9d8f3d584d` passed full `make check`:
 3,516 passed, one skipped, one warning in 1,743.43 seconds; all static gates passed.
