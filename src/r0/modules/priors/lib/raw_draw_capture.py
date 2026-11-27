@@ -71,6 +71,18 @@ class RawDrawLedger:
         ):
             raise ValueError("raw draw retained record limit exceeded")
 
+    def admit_specs(self, draws: tuple[RawDrawSpec, ...], *, stream: str = "raw") -> None:
+        """Admit known retained costs before touching an RNG or creating snapshots."""
+        self._available()
+        validate_name(stream, "raw draw stream")
+        if type(draws) is not tuple or any(type(draw) is not RawDrawSpec for draw in draws):
+            raise ValueError("raw admission requires frozen draw declarations")
+        self._admit_additional(
+            len(draws),
+            sum(draw.numbers for draw in draws),
+            sum(draw.retained_bytes(stream) for draw in draws),
+        )
+
     def admit_draws(self, rng: np.random.Generator, draws: tuple[RawDrawSpec, ...]) -> None:
         """Admit a complete sequence without drawing, reserving or changing the ledger."""
         self._available()

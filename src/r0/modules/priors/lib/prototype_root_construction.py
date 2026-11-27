@@ -79,6 +79,16 @@ def admit_prototype_plan(plan: PrototypeRootPlan, limits: CausalLimits, *, batch
     )
 
 
+def preflight_raw(plan: PrototypeRootPlan, *, batch: bool) -> RawDrawLedger:
+    ledger = RawDrawLedger(limits=plan.raw_limits)
+    specs = bank_draw_specs(plan)
+    if batch:
+        specs += (plan.weights.draw_spec(plan.count, plan.reference_rows, _WEIGHT_OWNER),)
+    # Charge the longest eventual stream name before any RNG snapshot or clone.
+    ledger.admit_specs(specs, stream="prototype")
+    return ledger
+
+
 def realize_prototype_bank(
     plan: PrototypeRootPlan, rng: np.random.Generator, ledger: RawDrawLedger, limits: CausalLimits
 ) -> FrozenPrototypeRoot:
@@ -126,8 +136,8 @@ class SampledPrototypeRoot:
 
     def validate_replay(self, *, limits: CausalLimits = _DEFAULT_LIMITS) -> None:
         admit_prototype_plan(self.plan, limits, batch=False)
+        ledger = preflight_raw(self.plan, batch=False)
         rng = self.initial.restore(byte_limit=self.plan.raw_limits.state_bytes)
-        ledger = RawDrawLedger(limits=self.plan.raw_limits)
         with ledger.transactions({"prototype": rng}) as (streams, capture):
             root = realize_prototype_bank(self.plan, streams["prototype"], capture, limits)
             final = snapshot_generator(
@@ -141,7 +151,7 @@ def sample_prototype_root(
     plan: PrototypeRootPlan, *, rng: np.random.Generator, limits: CausalLimits = _DEFAULT_LIMITS
 ) -> SampledPrototypeRoot:
     admit_prototype_plan(plan, limits, batch=False)
-    ledger = RawDrawLedger(limits=plan.raw_limits)
+    ledger = preflight_raw(plan, batch=False)
     with ledger.transactions({"prototype": rng}) as (streams, capture):
         active = streams["prototype"]
         initial = snapshot_generator(active, byte_limit=plan.raw_limits.state_bytes)
@@ -219,6 +229,7 @@ class PrototypeBatchReference:
 
     def validate_replay(self, *, limits: CausalLimits = _DEFAULT_LIMITS) -> None:
         admit_prototype_plan(self.plan, limits, batch=True)
+        ledger = preflight_raw(self.plan, batch=True)
         streams: dict[str, np.random.Generator] = dict(
             zip(
                 ("prototype", "weights"),
@@ -226,7 +237,6 @@ class PrototypeBatchReference:
                 strict=True,
             )
         )
-        ledger = RawDrawLedger(limits=self.plan.raw_limits)
         with ledger.transactions(streams) as (active, capture):
             result = realize_prototype_batch(self.plan, active, capture, limits)
             final = tuple(
@@ -249,7 +259,7 @@ def sample_prototype_batch_reference(
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> PrototypeBatchReference:
     admit_prototype_plan(plan, limits, batch=True)
-    ledger = RawDrawLedger(limits=plan.raw_limits)
+    ledger = preflight_raw(plan, batch=True)
     with ledger.transactions({"prototype": prototype_rng, "weights": weights_rng}) as (
         active,
         capture,
