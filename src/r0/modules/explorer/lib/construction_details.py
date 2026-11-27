@@ -4,6 +4,28 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
+    if recipe.get("version") == "xgboost-fitted-functional-causal-v1":
+        return {
+            "kind": "independent-xgboost-shared-vector",
+            "notice": (
+                "CPU histogram trees fitted once on independent iid normal inputs. "
+                "Regression emits values; binary emits Bernoulli probabilities; multiclass "
+                "emits a softmax vector. These are structural outputs, not native task labels. "
+                "Next/replay preserve fitted functions. Reconstruct explicitly to refit. "
+                "Raw inputs, targets, backend seed, parameters and native model are archived. "
+                "Backend internal draws are not captured. This independent fitting lifecycle "
+                "is an r0 adaptation; source ancestor/support/batch variants are separate."
+            ),
+            "fits": [
+                {
+                    "node": f["node"],
+                    "actual_plan": f["realization"]["plan"],
+                    "backend_parameters": f["realization"]["backend_parameters"],
+                    "raw_draw_count": len(f["realization"]["raw"]),
+                }
+                for f in recipe["fits"]
+            ],
+        }
     if recipe.get("version") == "standalone-network-innovations-v1":
         from r0.modules.explorer.lib.networks import network_details
 

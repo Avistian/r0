@@ -63,6 +63,10 @@ def construct_graph(
             calibration_rng=streams[2],
             fit_rng=streams[3],
         )
+    if topology == "xgboost-fitted":
+        from r0.modules.generation.lib.xgboost_construction import construct_xgboost
+
+        return construct_xgboost(fields, seed=seed, limits=limits)
     if topology == "fitted":
         return construct_fitted(fields, seed=seed, limits=limits)
     if topology == "sampled-native-vector":
@@ -182,6 +186,7 @@ class GraphConstruction:
             return asdict(request.task())
         if controls.get("topology") in (
             "fitted",
+            "xgboost-fitted",
             "sampled-fitted",
             "population-fitted",
             "sampled-population-fitted",

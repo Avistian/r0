@@ -17,6 +17,7 @@ from r0.modules.explorer.lib.network_hyperprior_examples import network_hyperpri
 from r0.modules.explorer.lib.network_innovation_examples import network_innovation_examples
 from r0.modules.explorer.lib.networks import network_editor, network_examples
 from r0.modules.explorer.lib.source_root_examples import source_root_examples
+from r0.modules.explorer.lib.xgboost_examples import xgboost_examples
 
 
 def caller_limits(data: dict[str, Any]) -> priors.CausalLimits:
@@ -79,6 +80,7 @@ def construction_examples() -> dict[str, Any]:
         **innovation_examples(geometry),
         **composed_examples(common, geometry, sampled_native_example()),
         **fitted_examples(),
+        **xgboost_examples(),
         **network_examples(),
         **source_root_examples(),
         **network_hyperprior_examples(),
@@ -150,7 +152,12 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
             ],
         }
     fitted = isinstance(
-        runtime, (priors.FittedFunctionalCausalRecipe, priors.PopulationFittedGraph)
+        runtime,
+        (
+            priors.FittedFunctionalCausalRecipe,
+            priors.PopulationFittedGraph,
+            priors.XGBoostFittedGraph,
+        ),
     )
     if fitted:
         kind = (
@@ -196,6 +203,7 @@ def frozen_archive_version(version: object) -> bool:
     """Identify archive families whose task identity can advance without resampling."""
     return str(version).startswith("sampled-") or version in (
         "fitted-functional-causal-v1",
+        "xgboost-fitted-functional-causal-v1",
         "standalone-network-v1",
         "standalone-network-innovations-v1",
         "population-fitted-functional-causal-v1",
