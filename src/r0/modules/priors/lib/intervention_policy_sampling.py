@@ -2,7 +2,7 @@
 
 import json
 import math
-from dataclasses import asdict, replace
+from dataclasses import asdict, fields, replace
 
 import numpy as np
 import torch
@@ -12,6 +12,7 @@ from r0.modules.priors.lib.causal_intervention_records import (
     HardIntervention,
     SoftIntervention,
 )
+from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.frozen_function_decoding import frozen_function_from_dict
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
 from r0.modules.priors.lib.functional_node_evaluation import evaluate_functional_nodes
@@ -34,9 +35,35 @@ from r0.modules.priors.lib.raw_draw_spec import RawDrawSpec
 def admit_intervention_policy(request: InterventionPolicyRequest) -> None:
     if type(request) is not InterventionPolicyRequest:
         raise ValueError("sampling requires a frozen intervention policy request")
-    report = replace(request.base, limits=request.limits).admit(
-        evaluation_rows=request.reference_rows
+    effective = CausalLimits(
+        **{
+            field.name: min(
+                getattr(request.base.limits, field.name), getattr(request.limits, field.name)
+            )
+            for field in fields(CausalLimits)
+        }
     )
+    bounded = replace(request.base, limits=effective)
+    report = bounded.admit(
+        evaluation_rows=request.reference_rows if request.kind == "hard" else request.base.task.rows
+    )
+    # Admit every eligible change before sampling the subset. Numerical parameter
+    # replacement preserves family and geometry; zero clamps have the same shape
+    # as sampled constants. This conservative probe never replaces retained records.
+    possible: tuple[HardIntervention | SoftIntervention, ...] = tuple(
+        HardIntervention(
+            index,
+            tuple(range(request.base.nodes[index].function.output_width)),
+            (0.0,) * request.base.nodes[index].function.output_width,
+            location=request.location,
+        )
+        if request.kind == "hard"
+        else SoftIntervention(index, function=request.base.nodes[index].function)
+        for index in request.eligible
+    )
+    comparison = CausalInterventionRecipe(
+        bounded, possible, mode=request.mode, population=request.population
+    ).admit()
     _parameters, storage = function_record_cost(request, request.limits)
     widths = sum(n.function.input_width + n.function.output_width for n in request.base.nodes)
     # Reserve complete reference raw records plus parameter paths for every eligible
@@ -78,6 +105,7 @@ def admit_intervention_policy(request: InterventionPolicyRequest) -> None:
     working = (
         storage
         + report["estimated_working_bytes"]
+        + comparison["estimated_working_bytes"]
         + 128 * raw_numbers
         + 2048 * draws
         + 6 * request.raw_limits.state_bytes

@@ -110,3 +110,12 @@ remain required follow-ons. Existing manual typed interventions remain available
 this slice does not relabel them as sampled policies. Source assembly/postprocessing
 belongs to its existing sibling-ticket boundary. Hosted/GPU/scale/diversity evidence
 is not established by these library checks.
+
+Nested graph limits remain binding during policy admission: the reference graph
+and complete before/after comparison use the componentwise minimum of the
+original base limits and policy limits. Admission probes every eligible change
+before sampling a subset, using geometry-preserving constant clamps or original
+function parameters. This deliberately conservative check can refuse a request
+whose smaller sampled subset would fit; it never widens the base budget, silently
+reduces the count, or rewrites retained base records. Policy raw/receipt storage
+also remains bounded by the separate aggregate policy limits.
