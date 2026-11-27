@@ -7,32 +7,24 @@ scientific acceptance or whole-issue completion.
 
 ## Latest verified publication checkpoint
 
-Source `01a4a4c7dc20a43381c5b35070c49acea15a9d31` passed full `make check`:
-2,162 passed, one skipped, one warning, 926.69 seconds, with all static gates
-passing. The warning is sklearn's high-class-count diagnostic in the observed
-class-map regression fixture; its exact output remains in the suite log.
-This combines the previous parent/fitted/native checkpoint with parent/fitted
-explorer workflows, broad Kumo products, reviewed causal intervention APIs and
-asymmetric native priors. Original rejected candidates remain historical evidence.
+Source `076bc1369da7102ed10abc54df7ebc14760fdd91` passed full `make check`:
+2,276 passed, one skipped, one warning in 1,370.54 seconds; all static gates passed.
+The warning is sklearn's high-class-count diagnostic in the observed-class-map
+fixture. This checkpoint combines native vectors, stage/logical-variable
+interventions, seven standalone network families and five innovation families with
+the earlier parent/fitted/native work. Scoped evidence and remaining gaps follow.
 
-The exact-head receipt, runner and full output are retained locally under
-`docs/evidence/issue-28-combined-release/`. The [atomic delivery map](issue-28-atomic-delivery.md)
-links individual inventory IDs to scoped implementations and explicit gaps.
-Unlisted IDs remain unaudited by that map; no whole-issue completion follows.
-Heterogeneous native vectors, intervention explorer controls, additional stage
-interventions and standalone network variants are separate follow-on candidates.
-Hosted Colab, GPU, measured supported maxima and full paper-option coverage remain
-open. Training/evaluation CLI commands are absent, so smoke/eval-smoke remain
-NOT_AVAILABLE.
+The exact-head receipt and full output are retained locally in the frozen release
+worktree under `docs/evidence/issue-28-network-noise-release/`.
+The [atomic delivery map](issue-28-atomic-delivery.md) separates mapped behavior
+from unaudited requirements. Hosted/GPU, measured supported maxima and complete
+paper-option coverage remain open. Smoke/eval-smoke remain NOT_AVAILABLE because
+the training/evaluation CLI commands are absent. Later fitted-parameter, typed
+converter and resource-measurement candidates are outside this full-suite result.
 
 ## Combined checkpoint scoped evidence
 
-Frozen candidate `01a4a4c7dc20a43381c5b35070c49acea15a9d31` adds parent/fitted
-explorer workflows, source-specific Kumo products and mixed catalogs, explicit
-causal intervention pairs with the reviewed metadata repair, and asymmetric
-native Dirichlet priors. Its full `make check` passed as recorded above. The
-exact-head process receipt and log are ignored under
-`docs/evidence/issue-28-combined-release/`.
+Scoped evidence for predecessor `01a4a4c` (2,162 tests, one skip/warning):
 
 - Explorer: root-authored Chromium checks cover RF majority construction, large
   integer identities, two Next-task operations without changing frozen fit data,
@@ -54,9 +46,7 @@ exact-head process receipt and log are ignored under
 The first explorer test attempt overlapped a root cherry-pick and is INVALID
 verification because subprocesses read temporary conflict markers. Its failure
 is retained separately. The corrected frozen integration run passed 75 focused
-checks before the final metadata/asymmetric cherry-picks. All generated evidence
-remains ignored. Heterogeneous native vectors and intervention explorer controls
-are separate active work; they are not claimed by this candidate.
+checks before the final metadata/asymmetric cherry-picks. Evidence remains ignored; follow-on candidates are qualified below.
 
 ## Retained construction checkpoints
 
@@ -153,30 +143,51 @@ saving, reopening, exports and exact repeated-row reconstruction.
 Native core `83501d5` passed nine independent public-API arithmetic/roundtrip
 cases spanning softmax, argmax and threshold emissions. Standards rejected private
 test imports; `eed4876` repairs those tests through public entrypoints. Root reviewed
-the exact test-only delta; original rejection remains retained. Native explorer
-schema/CSV delivery, sampled domain priors, heterogeneous discrete vectors and
-native interventions remain open. See [native variables](native-causal-variables.md).
+the exact test-only delta; original rejection remains retained. That historical core review did not cover later explorer, sampled-domain, vector
+or intervention integrations; see the current checkpoint descriptions above. See [native variables](native-causal-variables.md).
 
-## Parallel implementation ownership
+## Current unpublished integration
 
-The current integration checkpoint is `b8d8234`, in
-`/tmp/r0-28-current-integration`. Its interrupted full-check source remains frozen. The successor native integration
-branch combines topology controls and the authored native categorical core;
-full-suite verification is scheduled on that successor.
-Three separate implementation worktrees extend it or its documented ancestors:
+Candidate `076bc13` combines heterogeneous native vectors, stage and logical-
+variable interventions, the guarded explorer, seven standalone network families
+and sampled non-Gaussian innovations. Its full suite passed as recorded above. Predecessor
+`31f6fd0` passed 2,223 tests, one skip and one warning in 1,374.02 seconds;
+that result does not cover later vector-intervention, innovation or UI changes.
 
-- Native categorical variables: typed outcomes, one-hot descendant inputs,
-  native targets, shared schemas and archive/inspection integration.
-- Topology workbench: attachment/motif construction controls, save/edit/reopen
-  and local-browser coverage; Colab shares the transport but hosted proof is separate.
-- Sampled numerical pipelines: converter plans, independently fitted stage
-  calibration, channel/node importance and structural-noise sampling with replay.
+- Native vectors: original unused adapter controls were rejected; `cb088fb`
+  repairs admission. Independent arithmetic, replay, malformed archives and browser
+  checks cover that bounded component.
+- Vector interventions: `5cd1b7e` passed independent review of all 21 files,
+  14 clamp/population/archive cases, four correlated-noise/emission oracles and
+  ten malformed records. Integration `c174327` passed 40 focused checks.
+- Network/vector traces: `26352a2` repairs missing architecture steps at root and
+  internal nodes. Two public regressions failed before repair; 44 focused checks
+  and independent noisy-pipeline/arithmetic/trace-link probes passed afterward.
+- Innovations: `f4bd521` adds five law families with factors, truncation and
+  signal-dependent scales. Independent checks cover ten family/factor archives,
+  15 raw-factor matrices, six tamper rejections and four-engine rollback.
+  Root Chromium checked three families with stage interventions, repeated rows,
+  save/reopen/export and failure preservation; the final ZIP was replay-checked.
+- Construction budgets: `0930474` repairs sampled intervention pairs using reduced
+  runtime limits for complete construction archives. Both v1/v2 pipeline cases
+  failed first; 23 focused checks and ten combination/archive probes then passed.
+  Independent review checked four geometry/parent variants and 16 strict caller
+  limit rejections. Explicit caller limits remain authoritative.
+- Network explorer: original `4557a24` malformed drafts were rejected; `bb5da1`
+  repairs them. Further review rejected unsupported curves; `67f3906` repairs
+  frozen raw-network curves. Both repairs have independent bounded acceptance.
+  Root `44ad4ec` corrects unsupported feature-count pair advertising, with browser
+  checks and independent seven-family arithmetic. Feature-extension/sparsity task
+  comparisons remain required, unsupported breadth, distinct from architecture edits.
+  `076bc13` clarifies standalone intervention applicability while preserving
+  network mechanisms inside causal graphs; independent Chromium review passed,
+  including saved-pair reopening and nonlinear intervention arithmetic.
 
-Parallel authorship is not independent verification. Each candidate needs its
-own scoped review before final integration; one full check is scheduled for each
-combined candidate. Generated logs, probes, receipts, archives and screenshots
-stay under gitignored `docs/evidence/`. Authored implementation documentation and
-reusable product verification scripts remain tracked.
+The assembled UI passed 29 focused cases before the final applicability change.
+Parallel authorship, scoped independent checks and full-suite results remain
+distinct. Generated evidence is gitignored. Fitted source-parameter sampling and
+typed categorical converters are separate candidates; their full source lifecycles,
+workflow integration and all other inventory obligations remain required.
 
 ## Remaining delivery obligations
 
