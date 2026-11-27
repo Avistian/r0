@@ -70,8 +70,17 @@ class FunctionalCausalRecipe:
     limits: CausalLimits = CausalLimits()
     version: str = "functional-causal-v1"
 
+    @property
+    def target_calibration_rows(self) -> int:
+        return 0
+
     def __post_init__(self) -> None:
-        if self.version != "functional-causal-v1" or type(self.task) is not LinearRecipe:
+        if (
+            self.version not in ("functional-causal-v1", "functional-causal-v2")
+            or self.version == "functional-causal-v2"
+            and not self.target_calibration_rows
+            or type(self.task) is not LinearRecipe
+        ):
             raise ValueError("functional graph requires its version and linear-v1 task controls")
         if type(self.limits) is not CausalLimits:
             raise ValueError("functional graph requires CausalLimits")
@@ -102,17 +111,29 @@ class FunctionalCausalRecipe:
         if set(self.observed) & set(self.target):
             raise ValueError("a declared target channel cannot be observed as a feature")
         self.admit()
-        functional_certificates(self.nodes)
+        _, readouts = functional_certificates(self.nodes)
+        if self.target_calibration_rows and any(readouts[i][j].order <= 2 for i, j in self.target):
+            raise ValueError("target normalization requires certified finite second moments")
 
-    def admit(self) -> dict[str, int]:
+    def admit(self, *, evaluation_rows: int | None = None) -> dict[str, int]:
         """Aggregate frozen records and all live graph/function/root buffers before arrays.
 
         Numeric metadata includes all nodes, root factors and retained activation fits.
         Working bytes are a conservative estimate, not a measured RSS or OS memory cap.
         """
+        if evaluation_rows is not None and (
+            type(evaluation_rows) is not int or not 1 <= evaluation_rows < 2**63
+        ):
+            raise ValueError("functional evaluation rows must be positive bounded integers")
         parameters, storage = function_record_cost(
             (self.task, self.nodes, self.observed, self.target, self.limits), self.limits
         )
+        if self.target_calibration_rows:
+            extra = 3 * len(self.target) + 1
+            parameters += extra
+            storage += 64 * extra + 1024
+            if parameters > self.limits.parameters:
+                raise ValueError("target calibration parameter limit exceeded")
         geometries = [function_geometry(node.function) for node in self.nodes]
         widest = max(max(widths) for widths, _, _ in geometries)
         total = sum(node.function.output_width for node in self.nodes)
@@ -122,6 +143,8 @@ class FunctionalCausalRecipe:
         roots = max((node.root.width for node in self.nodes if node.root), default=0)
         rows = max(
             self.task.rows,
+            self.target_calibration_rows,
+            evaluation_rows or 0,
             max(floor for _, _, floor in geometries),
             256 if any(n.exogenous.inputs.bound is not None for n in self.nodes) else 0,
         )
@@ -147,7 +170,7 @@ class FunctionalCausalRecipe:
                 6 * total
                 + 2 * fan_in
                 + 2 * self.task.features
-                + 4 * len(self.target)
+                + (8 if self.target_calibration_rows else 4) * len(self.target)
                 + max(work for _, work, _ in geometries)
                 + 40 * roots
                 + pipeline_work
@@ -167,3 +190,26 @@ class FunctionalCausalRecipe:
             "estimated_analysis_bytes": analysis_bytes,
             "estimated_working_bytes": working,
         }
+
+
+@dataclass(frozen=True, slots=True)
+class CalibratedFunctionalCausalRecipe(FunctionalCausalRecipe):
+    """Version two adds fixed target calibration without changing version-one records."""
+
+    calibration_rows: int = 256
+    version: str = "functional-causal-v2"
+
+    @property
+    def target_calibration_rows(self) -> int:
+        return self.calibration_rows
+
+    def __post_init__(self) -> None:
+        if (
+            self.version != "functional-causal-v2"
+            or type(self.calibration_rows) is not int
+            or not 32 <= self.calibration_rows <= 65536
+        ):
+            raise ValueError(
+                "functional target calibration requires version two and 32..65536 rows"
+            )
+        FunctionalCausalRecipe.__post_init__(self)

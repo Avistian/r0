@@ -14,7 +14,11 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
 from r0.modules.priors.lib.frozen_function_decoding import decode_admitted_function
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
-from r0.modules.priors.lib.functional_causal import FunctionalCausalNode, FunctionalCausalRecipe
+from r0.modules.priors.lib.functional_causal import (
+    CalibratedFunctionalCausalRecipe,
+    FunctionalCausalNode,
+    FunctionalCausalRecipe,
+)
 from r0.modules.priors.lib.inputs import InputDistribution
 from r0.modules.priors.lib.joint_root_base import JointRootBase
 from r0.modules.priors.lib.linear import LinearRecipe
@@ -122,8 +126,15 @@ def functional_recipe_from_dict(
     if type(limits) is not CausalLimits:
         raise ValueError("functional decoding requires caller-owned limits")
     admit_function_metadata(data, limits)
+    if type(data) is not dict:
+        raise ValueError("functional graph records must be objects")
     try:
-        fields = _record(data, FunctionalCausalRecipe)
+        kind = (
+            CalibratedFunctionalCausalRecipe
+            if data.get("version") == "functional-causal-v2"
+            else FunctionalCausalRecipe
+        )
+        fields = _record(data, kind)
         declared = CausalLimits(**_record(fields.get("limits", {}), CausalLimits))
         effective = CausalLimits(
             **{
@@ -163,6 +174,6 @@ def functional_recipe_from_dict(
         for key in ("observed", "target"):
             fields[key] = tuple(_array(ref) for ref in _array(fields[key]))
         fields["limits"] = effective
-        return FunctionalCausalRecipe(**fields)
+        return kind(**fields)
     except (TypeError, KeyError) as error:
         raise ValueError("malformed functional graph record") from error

@@ -11,11 +11,13 @@ from r0.modules.episodes import TaskType
 from r0.modules.explorer import ExplorerSession
 
 
+@pytest.mark.parametrize("calibrated", [False, True])
 @pytest.mark.parametrize("task_type", ["regression", "binary", "multiclass"])
 @pytest.mark.parametrize("family", ["uniform", "gaussian", "ball", "covariance"])
 def test_functional_graph_saves_reopens_and_replays(
     tmp_path: Path,
     family: str,
+    calibrated: bool,
     task_type: TaskType,
 ) -> None:
     base = (
@@ -30,7 +32,8 @@ def test_functional_graph_saves_reopens_and_replays(
             covariance_base="gaussian",
         )
     )
-    recipe = priors.FunctionalCausalRecipe(
+    kind = priors.CalibratedFunctionalCausalRecipe if calibrated else priors.FunctionalCausalRecipe
+    recipe = kind(
         priors.LinearRecipe(
             rows=16,
             context_rows=8,
@@ -67,7 +70,7 @@ def test_functional_graph_saves_reopens_and_replays(
     )
     graph = session.request("graph", {"indices": [15, 1, 15]})["graph"]
     assert graph["signal_max_error"] == graph["target_max_error"] == 0
-    assert json.loads(result["recipe_json"])["recipe"]["version"] == "functional-causal-v1"
+    assert json.loads(result["recipe_json"])["recipe"]["version"] == recipe.version
     reopened_session = ExplorerSession(tmp_path / "original")
     reopened = reopened_session.request("open", {"archive": result["archive"], "task_id": 0})
     assert reopened["view"] == result["view"]
