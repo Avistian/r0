@@ -91,6 +91,9 @@ from r0.modules.priors.lib.frozen_function_primitives import FrozenRFFFunction a
 from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenTreeFunction as FrozenTreeFunction,
 )
+from r0.modules.priors.lib.functional_causal import (
+    CalibratedFunctionalCausalRecipe as CalibratedFunctionalCausalRecipe,
+)
 from r0.modules.priors.lib.functional_causal import FunctionalCausalNode as FunctionalCausalNode
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe as FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_decoding import (

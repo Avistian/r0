@@ -12,6 +12,10 @@ from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_f
 from r0.modules.priors.lib.functional_analysis import functional_certificates
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_decoding import functional_recipe_from_dict
+from r0.modules.priors.lib.functional_target_calibration import (
+    fit_target_calibration,
+    target_calibration_from_dict,
+)
 from r0.modules.priors.lib.joint_root_base import draw_root_base
 from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
 from r0.modules.priors.lib.representatives import record_fingerprint
@@ -56,13 +60,15 @@ def functional_values(
     indices: Sequence[int] = (),
     readouts: list[torch.Tensor] | None = None,
     diagnostics: list[dict[str, Any]] | None = None,
+    rows: int | None = None,
 ) -> list[torch.Tensor]:
-    recipe.admit()
+    rows = recipe.task.rows if rows is None else rows
+    recipe.admit(evaluation_rows=rows)
     values: list[torch.Tensor] = []
     for index, node in enumerate(recipe.nodes):
         parents = [f"causal-{p}" for p in node.parents]
         if node.root is not None:
-            sample = draw_root_base(node.root, recipe.task.rows, rng("root-base", index))
+            sample = draw_root_base(node.root, rows, rng("root-base", index))
             inputs = torch.tensor(sample.values, dtype=torch.float64, device=device)
             parents = [f"root-{index}"]
             if add is not None:
@@ -82,9 +88,7 @@ def functional_values(
             diagnostics.extend({"node": index, **entry} for entry in function_diagnostics or ())
         _constant_diagnostic(output, index, "function", diagnostics)
         raw = torch.tensor(
-            sample_exogenous(
-                node.exogenous, recipe.task.rows, node.function.output_width, rng, index
-            ),
+            sample_exogenous(node.exogenous, rows, node.function.output_width, rng, index),
             dtype=torch.float64,
             device=device,
         )
@@ -188,6 +192,21 @@ def generate_functional_causal(
     functional_values(recipe, rng, device, readouts=values, diagnostics=diagnostics)
     inputs = torch.stack([values[i][:, j] for i, j in recipe.observed], dim=1)
     scores = torch.stack([values[i][:, j] for i, j in recipe.target], dim=1)
+    calibration = None
+    if recipe.target_calibration_rows:
+        independent: list[torch.Tensor] = []
+        functional_values(
+            recipe,
+            lambda *keys: rng("target-calibration-v1", *keys),
+            "cpu",
+            readouts=independent,
+            rows=recipe.target_calibration_rows,
+        )
+        raw = torch.stack([independent[i][:, j] for i, j in recipe.target], dim=1)
+        calibration = fit_target_calibration(
+            raw, record_fingerprint(([asdict(n) for n in recipe.nodes], recipe.target))
+        )
+        scores = calibration.apply(scores)
     _, certificates = functional_certificates(recipe.nodes)
     target_sources = frozenset[tuple[int, int]]().union(
         *(certificates[i][j].sources for i, j in recipe.target)
@@ -236,13 +255,16 @@ def generate_functional_causal(
         "innovation": "recorded exogenous laws; independently keyed root and structural streams",
         "sampling_provenance": "authored",
     }
+    if calibration is not None:
+        card["normalization"] = "fixed independent calibration"
+        card["calibration"] = asdict(calibration)
     return complete_task(
         recipe.task, asdict(recipe), card, inputs, scores, seed=seed, task_id=task_id, rng=rng
     )
 
 
 def functional_steps(
-    record: dict[str, Any], indices: Sequence[int], add: Callable[..., None]
+    record: dict[str, Any], card: dict[str, Any], indices: Sequence[int], add: Callable[..., None]
 ) -> torch.Tensor:
     recipe = functional_recipe_from_dict(record["recipe"])
     values: list[torch.Tensor] = []
@@ -255,12 +277,25 @@ def functional_steps(
         readouts=values,
     )
     scores = torch.stack([values[i][list(indices), j] for i, j in recipe.target], dim=1)
+    parameters: dict[str, Any] = {"target": recipe.target}
+    if recipe.target_calibration_rows:
+        calibration = target_calibration_from_dict(card.get("calibration"), len(recipe.target))
+        if (
+            calibration.rows != recipe.target_calibration_rows
+            or calibration.prefix_fingerprint
+            != record_fingerprint(([asdict(n) for n in recipe.nodes], recipe.target))
+        ):
+            raise ValueError("retained target calibration differs from its frozen graph")
+        scores = calibration.apply(scores)
+        parameters["calibration"] = card["calibration"]
     add(
         "signal",
         "Graph target channels",
         list(dict.fromkeys(f"readout-{i}" for i, _ in recipe.target)),
-        "select declared target channels",
+        "(declared target channels - fixed center) / fixed scale"
+        if recipe.target_calibration_rows
+        else "select declared target channels",
         scores,
-        {"target": recipe.target},
+        parameters,
     )
     return scores

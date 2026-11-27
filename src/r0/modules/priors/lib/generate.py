@@ -84,7 +84,7 @@ def recipe_from_dict(data: object) -> Recipe:
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
-    if version == "functional-causal-v1":
+    if version in ("functional-causal-v1", "functional-causal-v2"):
         return functional_recipe_from_dict(fields)
     if version in ("causal-v1", "causal-v2"):
         task = recipe_from_dict(fields.get("task", {}))
