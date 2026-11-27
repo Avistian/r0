@@ -66,6 +66,31 @@ from r0.modules.priors.lib.exogenous import ExogenousDistribution as ExogenousDi
 from r0.modules.priors.lib.exogenous import NoiseResponse as NoiseResponse
 from r0.modules.priors.lib.fourier import FourierRecipe as FourierRecipe
 from r0.modules.priors.lib.fourier import generate_fourier as generate_fourier
+from r0.modules.priors.lib.frozen_function_composites import (
+    FrozenDiscretizationFunction as FrozenDiscretizationFunction,
+)
+from r0.modules.priors.lib.frozen_function_composites import FrozenEMFunction as FrozenEMFunction
+from r0.modules.priors.lib.frozen_function_composites import FrozenMLPFunction as FrozenMLPFunction
+from r0.modules.priors.lib.frozen_function_composites import (
+    FrozenProductFunction as FrozenProductFunction,
+)
+from r0.modules.priors.lib.frozen_function_decoding import (
+    frozen_function_from_dict as frozen_function_from_dict,
+)
+from r0.modules.priors.lib.frozen_function_evaluation import FrozenFunction as FrozenFunction
+from r0.modules.priors.lib.frozen_function_evaluation import (
+    evaluate_frozen_function as evaluate_frozen_function,
+)
+from r0.modules.priors.lib.frozen_function_primitives import (
+    FrozenLinearFunction as FrozenLinearFunction,
+)
+from r0.modules.priors.lib.frozen_function_primitives import (
+    FrozenQuadraticFunction as FrozenQuadraticFunction,
+)
+from r0.modules.priors.lib.frozen_function_primitives import FrozenRFFFunction as FrozenRFFFunction
+from r0.modules.priors.lib.frozen_function_primitives import (
+    FrozenTreeFunction as FrozenTreeFunction,
+)
 from r0.modules.priors.lib.generate import Recipe as Recipe
 from r0.modules.priors.lib.generate import generate_task as generate_task
 from r0.modules.priors.lib.generate import recipe_from_dict as recipe_from_dict
