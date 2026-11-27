@@ -10,7 +10,8 @@ from pathlib import Path
 
 def verify() -> None:
     root = Path(__file__).resolve().parents[1]
-    receipt = json.loads((root / "docs/research/0028-spec-link-receipt.json").read_text())
+    receipt_path = root / "docs/evidence/issue-28/legacy-research/0028-spec-link-receipt.json"
+    receipt = json.loads(receipt_path.read_text())
     repository, commit, path = (receipt["repository"], receipt["spec_commit"], receipt["spec_path"])
     published = json.loads(
         subprocess.check_output(

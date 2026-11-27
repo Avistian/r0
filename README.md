@@ -76,3 +76,7 @@ Keep generated logs, receipts, screenshots and run outputs under `docs/evidence/
 which is ignored by Git. PRs should include concise results and reproduction
 commands. Authored fixtures required by tests and walkthroughs remain versioned
 under `tests/fixtures/`; they are inputs, not generated run outputs.
+
+Historical issue #28 artifacts formerly under `docs/research/` are retained locally
+in ignored `docs/evidence/issue-28/legacy-research/`. See the
+[evidence retention note](docs/issue-28-evidence-retention.md) for the migration.

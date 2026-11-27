@@ -1,8 +1,0 @@
-{
-  "verdict": "RESTORED_AND_VERIFIED",
-  "metadata": "/tmp/r0-28/docs/research/0028-raw-matrix-capture-spec-artifacts.json",
-  "output": "/tmp/r0-28-raw-matrix-public-recovery",
-  "source": "90de1cdcc26e8bc13cb40ac1808d7fe85f025308",
-  "manifest_entries": 96,
-  "archive_sha256": "86fa0586838c69bece699a5fbdf0601d10a0fd1e0ae9b0c9af650771e868cbbb"
-}

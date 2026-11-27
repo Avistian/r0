@@ -1,8 +1,0 @@
-{
-  "verdict": "RESTORED_AND_VERIFIED",
-  "metadata": "/tmp/r0-28/docs/research/0028-joint-operation-registry-spec-artifacts.json",
-  "output": "/tmp/r0-28-operation-registry-recovered",
-  "source": "de1bead86d51721fd84d84598b7bea2800ec8885",
-  "manifest_entries": 192,
-  "archive_sha256": "94c946a1058b5ebc6483c773cbfc9d7670fad15273b532c695dc8ee8323a4f9e"
-}

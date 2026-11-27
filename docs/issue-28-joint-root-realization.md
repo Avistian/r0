@@ -55,23 +55,23 @@ transactionality. Finite calibration samples do not certify population moments.
   resource caps; valid zero factors/radii; and actual overflow rollback/recovery.
 - Full `make check` at exact source HEAD: **1098 passed, 1 skipped**, 480.12s.
   Formatting, lint, typing, import boundaries, module tests and file-size gates passed.
-  [Retained full check](research/0028-joint-root-realization-check-7863295.txt).
+  [Retained full check](evidence/issue-28/legacy-research/0028-joint-root-realization-check-7863295.txt).
 - Independent Spec review: **ACCEPT component**, no blocking findings. Independent
   equations for seven function families; MLP standalone-fit equivalence and fixed-row
   chunk checks reuse the previously accepted MLP algebra. Literal base oracles, all32
   combinations, four covariance cases, corruptions, aliases, fault-injected post-fit
   rollback and genuine overflow recovery are retained.
-  [Spec report](research/0028-joint-root-realization-spec-report.md).
+  [Spec report](evidence/issue-28/legacy-research/0028-joint-root-realization-spec-report.md).
 - Independent Standards review: no hard violations; two nonblocking possible
   duplication findings, covering RNG transactions and base-sample decoding.
-  [Standards report](research/0028-joint-root-realization-standards.txt).
+  [Standards report](evidence/issue-28/legacy-research/0028-joint-root-realization-standards.txt).
 - Independent observed minimum admission thresholds for a bounded linear fixture:
   child/root/emission parameters 53/138/158 and working bytes 11748/32208/67264.
   Rejection below each aggregate threshold establishes gate behavior, not RSS.
 - Retained inputs, executed programs, attempts and public-program replay are in the
-  [spec archive metadata](research/0028-joint-root-realization-spec-artifacts.json);
-  [recovery receipt](research/0028-joint-root-realization-spec-recovery.json).
-  [Development log metadata](research/0028-joint-root-realization-development.json)
+  [spec archive metadata](evidence/issue-28/legacy-research/0028-joint-root-realization-spec-artifacts.json);
+  [recovery receipt](evidence/issue-28/legacy-research/0028-joint-root-realization-spec-recovery.json).
+  [Development log metadata](evidence/issue-28/legacy-research/0028-joint-root-realization-development.json)
   preserves author RED/GREEN, formatting/type repairs and full-check evidence.
 
 ## Remaining issue scope
@@ -92,7 +92,7 @@ Recover the archive into a new directory with:
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-joint-root-realization-spec-artifacts.json /tmp/root-evidence
+  docs/evidence/issue-28/legacy-research/0028-joint-root-realization-spec-artifacts.json /tmp/root-evidence
 ```
 
 At the exact source checkpoint, use its existing environment with the recovered

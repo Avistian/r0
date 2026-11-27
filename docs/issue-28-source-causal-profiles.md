@@ -114,19 +114,19 @@ The other 22 workflows save, reopen, regenerate and inspect their original rows.
 This is backend evidence, not actual browser or Colab evidence.
 
 Development logs and the two initial failed recipes are retained in the
-[development manifest](research/0028-source-causal-development.json), separately
+[development manifest](evidence/issue-28/legacy-research/0028-source-causal-development.json), separately
 from frozen-source verification below. The full #28 goal remains active.
 
 
 ## Frozen verification checkpoint
 
-At `c4081e1`, [full repository checks](research/0028-source-causal-check-c4081e1.txt)
+At `c4081e1`, [full repository checks](evidence/issue-28/legacy-research/0028-source-causal-check-c4081e1.txt)
 pass **679 tests, one skipped**, including all static gates. The skip is the existing
 CUDA case on this CPU-only environment. Smoke/eval-smoke remain NOT_AVAILABLE:
 this checkout exposes no train/eval CLI. Publication preserves these source/test
 bytes; later documentation, census and portable verifier programs are separate.
 
-[Independent spec review](research/0028-source-causal-spec-review.txt) passes 27
+[Independent spec review](evidence/issue-28/legacy-research/0028-source-causal-spec-review.txt) passes 27
 NumPy ancestral-calibration/generation cases: three modes, three placements and
 three noise probabilities, mixed widths 2/1/3/1, 32 calibration rows and 16 task
 rows. It checks stage statistics, shifts/indices, identities, parent propagation
@@ -144,19 +144,19 @@ mechanisms. Six plain policy records decode, and six standard/plain by
 regression/binary/multiclass explorer workflows save, open, replay and trace.
 Twelve old-profile fixtures produce **37 byte-identical files** against `de9262f`.
 
-[Raw spec evidence](research/0028-source-causal-spec-artifacts.json) retains original
+[Raw spec evidence](evidence/issue-28/legacy-research/0028-source-causal-spec-artifacts.json) retains original
 and final executions, exact inputs, fitted recipes, saved workflows, source/import
 hashes, custody and historical harness errors in six ordered ZIP byte parts.
 Concatenate without separators and verify the manifest SHA-256 before extraction.
 The baseline checkout is excluded and can be reconstructed from its Git revision.
 The three published `scripts/verify_source_causal_*.py` programs are byte-identical
 to final executed publication copies. Their cleanup and bounded rerun are described
-in the [publication qualifier](research/0028-source-causal-publication.txt); original
+in the [publication qualifier](evidence/issue-28/legacy-research/0028-source-causal-publication.txt); original
 programs, outputs and PASS report remain retained. No formatting-only identity is
 claimed. The wrong-keyword harness attempt and unused NumPy-branch overflow warning
 remain separate from product findings.
 
-[Standards review](research/0028-source-causal-standards.txt) finds no documented
+[Standards review](evidence/issue-28/legacy-research/0028-source-causal-standards.txt) finds no documented
 violations and one low-severity possible duplication heuristic in metadata cost
 accounting. It does not replace numerical verification.
 
@@ -170,14 +170,14 @@ and no failed or degenerate task was replaced.
 
 | Profile suffix | Valid / attempted | Summary and artifact manifest |
 | --- | --- | --- |
-| standard | 191 / 192 | [summary](research/0028-source-causal-census-standard.json), [artifacts](research/0028-source-causal-census-standard-artifacts.json) |
-| standard-refreshed | 192 / 192 | [summary](research/0028-source-causal-census-standard-refreshed.json), [artifacts](research/0028-source-causal-census-standard-refreshed-artifacts.json) |
-| standard-local | 192 / 192 | [summary](research/0028-source-causal-census-standard-local.json), [artifacts](research/0028-source-causal-census-standard-local-artifacts.json) |
-| standard-global | 188 / 192 | [summary](research/0028-source-causal-census-standard-global.json), [artifacts](research/0028-source-causal-census-standard-global-artifacts.json) |
-| plain | 184 / 192 | [summary](research/0028-source-causal-census-plain.json), [artifacts](research/0028-source-causal-census-plain-artifacts.json) |
-| plain-refreshed | 185 / 192 | [summary](research/0028-source-causal-census-plain-refreshed.json), [artifacts](research/0028-source-causal-census-plain-refreshed-artifacts.json) |
-| plain-local | 190 / 192 | [summary](research/0028-source-causal-census-plain-local.json), [artifacts](research/0028-source-causal-census-plain-local-artifacts.json) |
-| plain-global | 185 / 192 | [summary](research/0028-source-causal-census-plain-global.json), [artifacts](research/0028-source-causal-census-plain-global-artifacts.json) |
+| standard | 191 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-causal-census-standard.json), [artifacts](evidence/issue-28/legacy-research/0028-source-causal-census-standard-artifacts.json) |
+| standard-refreshed | 192 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-causal-census-standard-refreshed.json), [artifacts](evidence/issue-28/legacy-research/0028-source-causal-census-standard-refreshed-artifacts.json) |
+| standard-local | 192 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-causal-census-standard-local.json), [artifacts](evidence/issue-28/legacy-research/0028-source-causal-census-standard-local-artifacts.json) |
+| standard-global | 188 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-causal-census-standard-global.json), [artifacts](evidence/issue-28/legacy-research/0028-source-causal-census-standard-global-artifacts.json) |
+| plain | 184 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-causal-census-plain.json), [artifacts](evidence/issue-28/legacy-research/0028-source-causal-census-plain-artifacts.json) |
+| plain-refreshed | 185 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-causal-census-plain-refreshed.json), [artifacts](evidence/issue-28/legacy-research/0028-source-causal-census-plain-refreshed-artifacts.json) |
+| plain-local | 190 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-causal-census-plain-local.json), [artifacts](evidence/issue-28/legacy-research/0028-source-causal-census-plain-local-artifacts.json) |
+| plain-global | 185 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-causal-census-plain-global.json), [artifacts](evidence/issue-28/legacy-research/0028-source-causal-census-plain-global-artifacts.json) |
 
 Failures are explicit exponential or integer/ReLU/signed-power overflow. The pooled
 attempted recipes cover all **31 primitive kinds** (27 fixed plus four power

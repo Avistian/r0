@@ -97,7 +97,7 @@ across all five NumPy generators and three preference modes, six alias pairs,
 and a real later-root admission failure after an earlier root was fitted.
 
 Final full `make check` at source `de1bead`: **1180 passed, 1 skipped**, 484.52s;
-all static gates passed. [Full check](research/0028-joint-operation-registry-check-de1bead.txt).
+all static gates passed. [Full check](evidence/issue-28/legacy-research/0028-joint-operation-registry-check-de1bead.txt).
 
 Independent repaired Spec review: **ACCEPT component**. Final-source probes passed
 708 malformed container/field cases, 460 malformed scalar cases, 25 independent
@@ -106,7 +106,7 @@ Across 15 engine/mode combinations, isolated baseline/final processes produced
 identical public plan bytes, decision-ledger bytes and subsequent named RNG draws.
 The intentional event-free path-reuse rejection was separately confirmed.
 Preparatory `96d8711` evidence remains separate from final `de1bead` execution.
-[Final Spec report](research/0028-joint-operation-registry-spec-report.md).
+[Final Spec report](evidence/issue-28/legacy-research/0028-joint-operation-registry-spec-report.md).
 Standards source review: zero hard violations; original bookkeeping-copy advisory
 plus a repair-delta strict-record-validation duplication advisory. Both are
 nonblocking heuristics, not demonstrated correctness defects.
@@ -118,17 +118,17 @@ training or predictive-quality acceptance is claimed here. `make smoke` and
 
 ## Evidence and reproduction
 
-- [Historical Spec rejection](research/0028-joint-operation-registry-spec-reject.md)
-  and [old green suite](research/0028-joint-operation-registry-check-1110228.txt)
+- [Historical Spec rejection](evidence/issue-28/legacy-research/0028-joint-operation-registry-spec-reject.md)
+  and [old green suite](evidence/issue-28/legacy-research/0028-joint-operation-registry-check-1110228.txt)
   are retained alongside the repair; neither supersedes the other.
-- [Original Standards report](research/0028-joint-operation-registry-standards-original.txt)
-  and [repair-delta Standards report](research/0028-joint-operation-registry-standards-repair.txt)
+- [Original Standards report](evidence/issue-28/legacy-research/0028-joint-operation-registry-standards-original.txt)
+  and [repair-delta Standards report](evidence/issue-28/legacy-research/0028-joint-operation-registry-standards-repair.txt)
   distinguish the original scope from the later shape-validation change.
-- [Independent archive metadata](research/0028-joint-operation-registry-spec-artifacts.json)
+- [Independent archive metadata](evidence/issue-28/legacy-research/0028-joint-operation-registry-spec-artifacts.json)
   retains both review bundles, their input/program hashes, historical failures,
   final probes and a fresh replay of the exact public verifier programs.
-  [Recovery receipt](research/0028-joint-operation-registry-spec-recovery.json).
-- [Development metadata](research/0028-joint-operation-registry-development.json)
+  [Recovery receipt](evidence/issue-28/legacy-research/0028-joint-operation-registry-spec-recovery.json).
+- [Development metadata](evidence/issue-28/legacy-research/0028-joint-operation-registry-development.json)
   retains RED/GREEN, intermediate repairs, static checks and both full checks.
   Intermediate uncommitted source snapshots are not all retained.
 
@@ -136,10 +136,10 @@ Recover the archive into a new directory:
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-joint-operation-registry-spec-artifacts.json /tmp/registry-evidence
+  docs/evidence/issue-28/legacy-research/0028-joint-operation-registry-spec-artifacts.json /tmp/registry-evidence
 ```
 
-The [retained commands](research/0028-joint-operation-registry-reproduce.txt) identify
+The [retained commands](evidence/issue-28/legacy-research/0028-joint-operation-registry-reproduce.txt) identify
 all executions. At the pinned source checkout, run recovered `repaired/` probes
 with `R0_REVIEW_ROOT` pointing to the checkout and `R0_REVIEW_OUTPUT` pointing to
 a fresh output directory for each probe. The public copies under

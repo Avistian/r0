@@ -81,30 +81,30 @@ PYTHONDONTWRITEBYTECODE=1 /home/avist/Projects/r0/.venv/bin/python \
 
 The script resolves source archives and oracle programs relative to itself, extracts
 fresh sources and explicitly sets child `PYTHONPATH`; no original checkout is used.
-The [published archive](research/0028-prefix-raw-capture-spec-artifacts.json) retains
+The [published archive](evidence/issue-28/legacy-research/0028-prefix-raw-capture-spec-artifacts.json) retains
 both the original packet and exact-main independent verification, including all
 original executed programs, source archive identities, raw populations and commands.
-[Author logs](research/0028-prefix-raw-capture-development.json) preserve the earlier
+[Author logs](evidence/issue-28/legacy-research/0028-prefix-raw-capture-development.json) preserve the earlier
 failures and successful runs verbatim. Original temporary paths above identify the
 executed procedures; use the recovery command below for a separate checkout.
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-prefix-raw-capture-spec-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-prefix-raw-capture-spec-artifacts.json \
   /tmp/r0-prefix-capture-evidence --repo .
 PYTHONDONTWRITEBYTECODE=1 /home/avist/Projects/r0/.venv/bin/python \
   /tmp/r0-prefix-capture-evidence/publication-independent/replay.py \
   /tmp/r0-prefix-capture-replay
 ```
 
-The [candidate](research/0028-prefix-raw-capture-candidate-review.md) and
-[exact-main](research/0028-prefix-raw-capture-publication-review.md) reviews verify
+The [candidate](evidence/issue-28/legacy-research/0028-prefix-raw-capture-candidate-review.md) and
+[exact-main](evidence/issue-28/legacy-research/0028-prefix-raw-capture-publication-review.md) reviews verify
 180 configurations and 360 populations, 346 proposal batches, 77056 rejected
 proposals and 9280 unused accepted values. All original arrays/states and literal
 prefix equations agree. Across 132 compatibility objects, authored causal-v1/v2,
 functional generation, fixtures, keyed prefixes and inspection remain byte-identical.
-The [full check](research/0028-prefix-raw-capture-check-4f80f9c.txt) is parent evidence.
-The [original Standards finding](research/0028-prefix-raw-capture-standards-original.txt)
+The [full check](evidence/issue-28/legacy-research/0028-prefix-raw-capture-check-4f80f9c.txt) is parent evidence.
+The [original Standards finding](evidence/issue-28/legacy-research/0028-prefix-raw-capture-standards-original.txt)
 about missing reproduction instructions remains retained; the instructions above
 address it. The duplicate device/admission guard heuristic remains nonblocking.
 

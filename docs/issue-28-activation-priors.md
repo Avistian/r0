@@ -190,7 +190,7 @@ once executed; this checkpoint does not close the full active goal.
 
 ## Author census
 
-The [retained summary](research/0028-activation-priors-census.json) records 192/192
+The [retained summary](evidence/issue-28/legacy-research/0028-activation-priors-census.json) records 192/192
 valid tasks at `c92a551`: 64 per topology, each with 16 rows and 4 observed features.
 Across the attempted draws, modes were independent 71, Dirichlet 70 and
 homogeneous 51. Flag counts overlap: 72 disconnected targets, 10 inactive-ReLU,
@@ -217,7 +217,7 @@ The original verdict was CHANGES_REQUESTED: one documented evidence-retention
 breach and one heuristic concern. The GREEN table omitted its promised source
 revision, and the focused 17-test claim had no retained standalone output. The
 corrected table names `6380f64`; the historical focused execution remains explicitly
-qualified. The later [full-check output](research/0028-activation-priors-check-c92a551.txt)
+qualified. The later [full-check output](evidence/issue-28/legacy-research/0028-activation-priors-check-c92a551.txt)
 is retained verbatim for `c92a551`: **578 passed, 1 skipped**, with all earlier
 static gates passing. Exact command and environment:
 
@@ -242,7 +242,7 @@ and evidence are retained separately from the later scoped recheck.
 
 
 The repaired full `make check` at `ec06de3` passed **579 tests, 1 skipped**, with
-all static gates passing. Its [complete output](research/0028-activation-priors-check-ec06de3.txt)
+all static gates passing. Its [complete output](evidence/issue-28/legacy-research/0028-activation-priors-check-ec06de3.txt)
 is retained separately from the earlier pass. The skip is the existing GPU
 agreement check because CUDA is unavailable. The repaired focused log remains at
 `docs/evidence/issue-28/activation-priors-repaired-focused.log` (18 passed), using
@@ -258,11 +258,11 @@ repaired results and publication procedures without changing reviewed source.
 
 
 Scoped independent spec recheck **ACCEPT** at `ec06de3`: all 22 standalone probes
-and nine saved backend workflows pass. The [original 21/22 result](research/0028-activation-priors-original-review.json)
-remains separate from the [repaired 22/22 result](research/0028-activation-priors-recheck.json).
-The [receipt](research/0028-activation-priors-receipt.json) identifies exact source
+and nine saved backend workflows pass. The [original 21/22 result](evidence/issue-28/legacy-research/0028-activation-priors-original-review.json)
+remains separate from the [repaired 22/22 result](evidence/issue-28/legacy-research/0028-activation-priors-recheck.json).
+The [receipt](evidence/issue-28/legacy-research/0028-activation-priors-receipt.json) identifies exact source
 and base, imported module paths, command, interpreter and executed script hash.
-The [nine workflow records](research/0028-activation-priors-workflows.json) span all
+The [nine workflow records](evidence/issue-28/legacy-research/0028-activation-priors-workflows.json) span all
 three topology families and all three preference modes overall; they are not the
 full family-by-mode Cartesian product. Forward/layered Dirichlet combinations are
 not present in those nine records. Selected-row trace errors are zero.

@@ -24,7 +24,7 @@ checks passed. A root with bias `1e200`, base noise scale zero and response
 by zero. The mathematically finite deterministic task was rejected. This violates
 the zero-path promise and accepted decisions 3/13 about retaining valid extremes.
 The author identified the concern; the reviewer independently reproduced it
-against an archived frozen revision. The [original result](research/0028-exogenous-original-review.json)
+against an archived frozen revision. The [original result](evidence/issue-28/legacy-research/0028-exogenous-original-review.json)
 retains that attribution, passing probes and failure trace. An initial verifier
 NumPy-scalar descriptor error was a harness defect, retained separately by the
 reviewer, not an implementation finding.
@@ -33,7 +33,7 @@ RED `71c365d` adds three failures: the zero-scale case and two representable fin
 scales whose intermediate powers/products overflow. GREEN `684a3ec` masks zero
 structural scales before power evaluation and rescues nonfinite positive terms
 through their logarithms. Ordinary finite arithmetic stays unchanged; genuinely
-nonfinite final scales still reject. The [original regression output](research/0028-exogenous-overflow-red.txt)
+nonfinite final scales still reject. The [original regression output](evidence/issue-28/legacy-research/0028-exogenous-overflow-red.txt)
 is retained. All 12 authored exogenous tests pass on the repaired source; command:
 
 ```sh
@@ -42,9 +42,9 @@ UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
 python3 scripts/run_check.py pytest tests/priors/test_causal_exogenous.py --tb=short
 ```
 
-The first [full-check attempt](research/0028-exogenous-check-f75c9cd.txt) stopped on
+The first [full-check attempt](evidence/issue-28/legacy-research/0028-exogenous-check-f75c9cd.txt) stopped on
 formatting in an earlier activation-prior documentation example. `a7d24ad` fixes
-that documentation. Its [next attempt](research/0028-exogenous-check-a7d24ad-interrupted.txt)
+that documentation. Its [next attempt](evidence/issue-28/legacy-research/0028-exogenous-check-a7d24ad-interrupted.txt)
 passed static gates and 172 tests before the author interrupted it after finding
 the scale defect. Neither attempt is reported as a complete full-check pass.
 
@@ -54,32 +54,32 @@ The earlier overflow fixes passed, including mixed vectors and genuine final
 nonfinite-scale rejection. The new finding was symmetric underflow: bias
 `1e-200`, scale `1e200` and response `(0,1,2)` produced scale zero rather than
 `1e-200`. Its independently calculated 100-digit Decimal result, actual import
-paths and executed program hashes remain in the [receipt](research/0028-exogenous-underflow-review.json)
-and [probe report](research/0028-exogenous-underflow-probes.json). The original
+paths and executed program hashes remain in the [receipt](evidence/issue-28/legacy-research/0028-exogenous-underflow-review.json)
+and [probe report](evidence/issue-28/legacy-research/0028-exogenous-underflow-probes.json). The original
 combined artifact is retained locally; publication separates its report without
 changing its values to satisfy the text-file limit.
 
 RED `731b454` adds three underflow cases, covering power and coefficient-product
 underflow. Source repair `882637f` detects zero/subnormal intermediates before
 offset addition and reconstructs only affected positive terms in logarithms.
-The [RED result](research/0028-exogenous-underflow-red.txt) remains distinct from
+The [RED result](evidence/issue-28/legacy-research/0028-exogenous-underflow-red.txt) remains distinct from
 passing verification. The full check at `684a3ec` was interrupted when this defect
-was confirmed; its [partial output](research/0028-exogenous-check-684a3ec-interrupted.txt)
+was confirmed; its [partial output](evidence/issue-28/legacy-research/0028-exogenous-check-684a3ec-interrupted.txt)
 is not a completed pass.
 
 The first two repaired test attempts failed overly strict target comparisons:
-[exact equality](research/0028-exogenous-underflow-tolerance-attempt-01.txt), then
-[relative error near cancellation](research/0028-exogenous-underflow-tolerance-attempt-02.txt).
+[exact equality](evidence/issue-28/legacy-research/0028-exogenous-underflow-tolerance-attempt-01.txt), then
+[relative error near cancellation](evidence/issue-28/legacy-research/0028-exogenous-underflow-tolerance-attempt-02.txt).
 They remain retained. `a47b14e` propagates the independently asserted scale error
 through tanh's 1-Lipschitz bound. The scale assertion still has zero absolute
 tolerance, so losing `1e-200` to zero fails. The output bound scales with the
 innovation magnitude and is capped for large values. This is a numerical
 tolerance correction, not removal of the underflow check. The [15-case focused
-output](research/0028-exogenous-focused-a47b14e.txt) passes with the command above.
+output](evidence/issue-28/legacy-research/0028-exogenous-focused-a47b14e.txt) passes with the command above.
 
 Scoped standards review at `a47b14e` accepts the repair shape and error-bound
 rationale, finding no new hard violations or heuristics; it did not execute tests.
-The [three original standards reports](research/0028-exogenous-standards.md) retain
+The [three original standards reports](evidence/issue-28/legacy-research/0028-exogenous-standards.md) retain
 exact revisions, procedures and the remaining nonblocking registry heuristic.
 
 
@@ -100,7 +100,7 @@ It includes positive offsets hiding underflow, subnormal powers/products,
 coefficient overflow, mixed zero/nonzero channels and minimal final subnormals.
 These bounded checks do not certify every possible floating-point composition.
 
-The [receipt](research/0028-exogenous-recheck-receipt.json) identifies exact head,
+The [receipt](evidence/issue-28/legacy-research/0028-exogenous-recheck-receipt.json) identifies exact head,
 base, imports, commands and executed script hashes. Its ordered three probe parts
 retain all 135 check records without changing their values. To reconstruct the
 original report object, concatenate the arrays named in `checks_parts` in order,
@@ -125,7 +125,7 @@ python3 scripts/run_check.py python scripts/verify_causal_exogenous.py \
 ```
 
 At source `a47b14e`, complete `make check` passes **597 tests, 1 skipped**, with all
-preflight/static gates passing. The [complete output](research/0028-exogenous-check-a47b14e.txt)
+preflight/static gates passing. The [complete output](evidence/issue-28/legacy-research/0028-exogenous-check-a47b14e.txt)
 is retained verbatim. The skip is the existing GPU agreement check because CUDA
 is unavailable. Command/environment:
 

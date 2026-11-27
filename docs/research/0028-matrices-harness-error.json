@@ -1,4 +1,0 @@
-{
-  "status": "HARNESS_ERROR",
-  "reason": "Budget probe used a rounded-to-zero factor coefficient, so exact arithmetic fallback was correctly unnecessary. Replace probe with opposite overflowing nonzero products; raw original evidence retained."
-}

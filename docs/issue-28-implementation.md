@@ -97,7 +97,7 @@ authorized path. Draft [PR #125](https://github.com/Avistian/r0/pull/125) publis
 the specification. Issue #28 links the verified scope at `66e91e2`; fresh readback
 and the saved before/after bodies confirm the original issue body is unchanged.
 Reproduce using `python3 scripts/verify_issue28_spec_link.py` (read-only `gh api`
-access). Its [receipt](research/0028-spec-link-receipt.json) retains the exact body
+access). Its [receipt](evidence/issue-28/legacy-research/0028-spec-link-receipt.json) retains the exact body
 snapshots and observed published-file hash. The procedure compares published bytes
 with the pinned Git object, verifies the 19 numbered decisions and final paper-option
 condition, checks the sole appended section, then reads back the current issue.

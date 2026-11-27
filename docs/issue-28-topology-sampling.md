@@ -135,7 +135,7 @@ these three families.
 One P2 documentation finding: the handoff completion claim lacked a retained
 comparison procedure. No actionable code smell was reported. The finding is
 retained here; the subsequent `scripts/verify_issue28_spec_link.py` and
-`docs/research/0028-spec-link-receipt.json` supply exact inputs, GitHub readback
+`docs/evidence/issue-28/legacy-research/0028-spec-link-receipt.json` supply exact inputs, GitHub readback
 commands and assertions. Run `python3 scripts/verify_issue28_spec_link.py` from
 the checkout. This requires read-only tracker access, and intentionally fails if
 the live issue has since changed. The receipt was extracted without changing the
@@ -153,7 +153,7 @@ This resolves the P2 retention finding, without broadening the acceptance scope.
 ### Spec
 
 Independent review found no concrete defect in this partial slice. Its
-[results](research/0028-topology-verification.json) record 8,000 Bernoulli topology
+[results](evidence/issue-28/legacy-research/0028-topology-verification.json) record 8,000 Bernoulli topology
 draws, 18,000 redirection draws, 2,000 vector recipes, 300 paired convenience-profile
 draws and 100 classification draws. These support the stated laws and selected
 boundaries, not complete-distribution proof or resource-envelope acceptance.
@@ -172,7 +172,7 @@ report to stdout without overwriting the original evidence.
 
 ### Author census
 
-[The small CPU census](research/0028-topology-census.json) covers 64 tasks per family
+[The small CPU census](evidence/issue-28/legacy-research/0028-topology-census.json) covers 64 tasks per family
 at seed 28: 22 regression, 21 binary and 21 multiclass for each family, all with
 16 rows and four observed features. All 192 generated successfully; 29 forward,
 43 layered and 3 redirection tasks carried a disconnected-target flag. None were

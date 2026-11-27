@@ -91,11 +91,11 @@ retained and classified separately from product failures.
 
 ## Retained evidence and reproduction
 
-[Spec report](research/0028-joint-function-realization-spec-report.md),
-[standards report](research/0028-joint-function-realization-standards.txt),
-[full check](research/0028-joint-function-realization-check-c1ee89e.txt),
-[development history](research/0028-joint-function-realization-development.json),
-[archive metadata](research/0028-joint-function-realization-spec-artifacts.json)
+[Spec report](evidence/issue-28/legacy-research/0028-joint-function-realization-spec-report.md),
+[standards report](evidence/issue-28/legacy-research/0028-joint-function-realization-standards.txt),
+[full check](evidence/issue-28/legacy-research/0028-joint-function-realization-check-c1ee89e.txt),
+[development history](evidence/issue-28/legacy-research/0028-joint-function-realization-development.json),
+[archive metadata](evidence/issue-28/legacy-research/0028-joint-function-realization-spec-artifacts.json)
 and [reproduction notes](research/0028-joint-function-realization-reproduce.md)
 retain inputs, exact executed programs, raw outcomes and identities. Fresh replays
 repeat those cases and do not add coverage counts. Published final program copies
@@ -107,7 +107,7 @@ HEAD, tracked Python source hashes, actual import location and cached input hash
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-joint-function-realization-spec-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-joint-function-realization-spec-artifacts.json \
   /tmp/function-construction-evidence
 git worktree add --detach /tmp/function-construction-source \
   c1ee89e766194993c1a79fcc7400f7b2b48fefbe

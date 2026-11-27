@@ -128,7 +128,7 @@ Development checks include this example, ordered-stage arithmetic, readout-aware
 heavy-tail moments and ancestry, actual-input L2 admission, exact/minus-one resource
 limits, malformed records, JSON loading and nine saved workflows across the three
 converter variants and task types.
-[Raw development logs](research/0028-node-pipeline-development.json) retain the
+[Raw development logs](evidence/issue-28/legacy-research/0028-node-pipeline-development.json) retain the
 missing-API, readout-moment/ancestry, stage/trace and actual-input-normalization
 REDs and their subsequent GREEN runs. A later budget correction sums each node's
 pipeline reserve, because tracing can retain all node stages simultaneously.
@@ -144,7 +144,7 @@ python3 scripts/run_check.py pytest tests/priors/test_causal_pipeline.py \
   tests/explorer/test_pipeline_session.py
 ```
 
-The [standards review](research/0028-node-pipeline-standards.txt) finds no hard
+The [standards review](evidence/issue-28/legacy-research/0028-node-pipeline-standards.txt) finds no hard
 violations and two advisory duplication risks: evaluator finalization and
 converter-variant decisions shared between runtime and moment calculations.
 The scoped source review is separate from later publication additions.
@@ -153,12 +153,12 @@ The scoped source review is separate from later publication additions.
 
 Full `make check` at `ae9b3b8b64c226d1532e7cb7939ab99b907fc2ad` passes
 **770 tests, one skipped**, in 400.40 seconds, with all static gates passing.
-[Full output](research/0028-node-pipeline-check-ae9b3b8.txt).
+[Full output](evidence/issue-28/legacy-research/0028-node-pipeline-check-ae9b3b8.txt).
 The skip is the existing CUDA case on this CPU environment. Smoke/eval-smoke are
-NOT_AVAILABLE: the [current CLI help](research/0028-node-pipeline-cli-help.txt)
+NOT_AVAILABLE: the [current CLI help](evidence/issue-28/legacy-research/0028-node-pipeline-cli-help.txt)
 has no train/eval commands. Publication preserves the checked source/test bytes.
 
-The [independent spec review](research/0028-node-pipeline-spec-review.txt) gives
+The [independent spec review](evidence/issue-28/legacy-research/0028-node-pipeline-spec-review.txt) gives
 scoped ACCEPT with no implementation findings. Its 81 recorded checks include
 **50 independent numerical comparisons**, 20 expected malformed-record or
 compatibility rejections, nine saved workflows, moment checks and ancestry checks.
@@ -167,7 +167,7 @@ variants, signed/zero factors, L2, Gaussian roots, matrix descendants and
 affine-dependent innovation. Maximum absolute error is **8.88e-16**, within the
 predeclared `rtol=atol=2e-12`.
 
-The supplemental [audit](research/0028-node-pipeline-audit.json) independently
+The supplemental [audit](evidence/issue-28/legacy-research/0028-node-pipeline-audit.json) independently
 counts **87 parameters and 32,768 estimated bytes** for its mixed fixture.
 Pipeline reserves contribute 46 + 43 channels, plus 24 stochastic scratch channels.
 Exact budgets admit and minus-one budgets reject. It also checks readout/state
@@ -180,7 +180,7 @@ ids retain identical recipes, tasks, diagnostics, traces and statuses against
 or retried. Imported-source custody binds 76 baseline modules, 80 legacy candidate
 modules and 100 numerical/workflow modules to their pinned Git bytes.
 
-[Raw artifacts](research/0028-node-pipeline-spec-artifacts.json) retain 192 logical
+[Raw artifacts](evidence/issue-28/legacy-research/0028-node-pipeline-spec-artifacts.json) retain 192 logical
 files in nine ordered ZIP byte parts, including exact programs, inputs, outcomes,
 saved sessions and the complete original manifest. One byte-identical legacy
 capture uses `duplicate-paths.json` to reconstruct its second path. Verify part
@@ -188,7 +188,7 @@ and joined-archive hashes, extract, restore the duplicate and reconstruct the
 153 excluded baseline source files with Git before checking the full manifest.
 The local originals remain unchanged. Four final programs in
 [`scripts/verify_node_pipelines/`](../scripts/verify_node_pipelines/) are
-byte-identical to executed copies. [Reproduction instructions](research/0028-node-pipeline-reproduction.txt)
+byte-identical to executed copies. [Reproduction instructions](evidence/issue-28/legacy-research/0028-node-pipeline-reproduction.txt)
 require copying them into a fresh evidence directory because outputs are relative
 to the program location. The initial successful audit and its later portable
 revision are both retained; the final portable program was actually executed.

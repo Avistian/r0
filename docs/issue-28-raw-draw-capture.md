@@ -103,8 +103,8 @@ passed **1278 tests, one skipped, in 524.54 seconds**. Original `ccaf906` also
 passed its then-existing suite, but the independent uniform-bound REJECT still
 stands; the earlier green suite did not establish that contract.
 
-Independent [candidate review](research/0028-raw-matrix-capture-candidate-review.md)
-and [exact-main review](research/0028-raw-matrix-capture-publication-review.md)
+Independent [candidate review](evidence/issue-28/legacy-research/0028-raw-matrix-capture-candidate-review.md)
+and [exact-main review](evidence/issue-28/legacy-research/0028-raw-matrix-capture-publication-review.md)
 accept this bounded component: 255 baseline compatibility cases, 210 transcripts,
 1655 records and 19240 raw numbers; seven laws across five engines; literal
 matrix/point equations; nested failures; replay tampering and record budgets.
@@ -112,11 +112,11 @@ Standards found no documented violations; the original low-severity duplicate
 engine-list heuristic remains. The fixture type and sampler retain identical ASTs
 and outputs after their private-module move.
 
-[Original REJECT](research/0028-raw-matrix-capture-original-reject.md),
-[full check](research/0028-raw-matrix-capture-check-4100fe5.txt),
-[standards](research/0028-raw-matrix-capture-standards-original.txt),
-[repair delta](research/0028-raw-matrix-capture-standards-repaired.txt) and
-[author logs](research/0028-raw-matrix-capture-development.json) remain separate.
+[Original REJECT](evidence/issue-28/legacy-research/0028-raw-matrix-capture-original-reject.md),
+[full check](evidence/issue-28/legacy-research/0028-raw-matrix-capture-check-4100fe5.txt),
+[standards](evidence/issue-28/legacy-research/0028-raw-matrix-capture-standards-original.txt),
+[repair delta](evidence/issue-28/legacy-research/0028-raw-matrix-capture-standards-repaired.txt) and
+[author logs](evidence/issue-28/legacy-research/0028-raw-matrix-capture-development.json) remain separate.
 The archive retains immutable verifier programs verbatim, pinned source archives,
 commands, outputs, failures, environment and checksums. No formatted public program
 copy is substituted for the executed verifier.
@@ -125,7 +125,7 @@ Recover and replay using the already installed compatible environment:
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-raw-matrix-capture-spec-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-raw-matrix-capture-spec-artifacts.json \
   /tmp/r0-raw-matrix-evidence --repo .
 PYTHONDONTWRITEBYTECODE=1 python3 \
   /tmp/r0-raw-matrix-evidence/publication-independent/replay.py

@@ -177,7 +177,7 @@ substituted for P2's normal/uniform mixture or I2's multivariate mixture.
 | Stochastic-buffer admission | `6e2bd38` | `b86ff16` |
 
 Focused source at `b86ff16` passes 21 tests. The retained output is
-[complete focused output](research/0028-exogenous-focused-b86ff16.txt); command:
+[complete focused output](evidence/issue-28/legacy-research/0028-exogenous-focused-b86ff16.txt); command:
 
 ```sh
 UV_CACHE_DIR=/tmp/r0-28-uv-cache \
@@ -212,7 +212,7 @@ written after each family finishes.
 | redirection | 64 | 64 | 0 |
 
 All four input laws, both geometries and all sampled response strengths occur.
-The [summary and artifact hashes](research/0028-exogenous-census.json) count laws,
+The [summary and artifact hashes](evidence/issue-28/legacy-research/0028-exogenous-census.json) count laws,
 geometry and response strengths across every sampled node, including the failed
 task. Ball directions count as Gaussian law entries. The stored `0` and `0.0`
 strength keys both denote zero. Valid task flags overlap: disconnected 62,
@@ -220,7 +220,7 @@ inactive ReLU 19, saturation 23 and zero target dispersion 6. No valid flagged
 task was removed. These counts are not measured functional utility or coverage
 of the full paper inventory.
 
-The [failed example](research/0028-exogenous-failed-example.json), forward task 50,
+The [failed example](evidence/issue-28/legacy-research/0028-exogenous-failed-example.json), forward task 50,
 raises `nonfinite square activation output`; its full frozen recipe remains in
 the original JSONL and is reproducible from the recorded profile/seed/task ID.
 No failure was retried or substituted. Raw records and successful saved groups

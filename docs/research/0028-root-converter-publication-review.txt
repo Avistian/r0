@@ -1,9 +1,0 @@
-Publication supplement verdict: PASS. Independently verified the published scripts differ from the original frozen programs by exactly six import-separator blank lines; no executable statement changed. Ruff check and format --check passed on the actual repository paths using /tmp/r0-28/pyproject.toml. Product source/tests remain unchanged at c997bc2dc98db7611d7aa78552ee95467093301e.
-
-Executed the actual scripts under scripts/verify_root_converters into this new supplement directory. All 306 independent public-interface/numerical assertions passed again. Maximum absolute error remains 8.881784197001252e-16; all 17 expected rejection cases passed. Resource boundary remains 21 parameters and 162432 estimated bytes, with either limit one lower correctly rejected.
-
-Fresh baseline and candidate legacy captures each retain 168 proposals: 164 valid and four identical explicit numerical failures. Both canonical records.json files are byte-identical to each other and the original final captures, SHA256 03a5e4bd1334a6d0721b342491a8bcf124bd5bc4998c41395265608cbcd67969. No retries or dropped attempts.
-
-Source custody audit passed all 260 loaded-module receipts across three runs against pinned Git bytes. Executed script hashes match the retained executed-programs snapshots and published repository files. The original package's 611 manifest entries were rehashed without mismatch; it remains frozen, including the initial verifier harness error and subsequent successful attempts.
-
-This confirms the publication import-spacing correction only. The authored root-input/ACT-converter component retains its prior PASS verdict; full issue #28 remains incomplete. Saved explorer evidence remains API-level. Browser/Colab/GPU, measured RSS/throughput, complete sampled source profiles and scientific comparison are not established. Exact PRNG replay does not establish statistical independence or source RNG parity.

@@ -102,7 +102,7 @@ exact account of the integrated pinned code.
 
 The original local alias fixture's exact program and execution receipt were
 NOT_RETAINED. A fresh [standalone program](../../scripts/verify_converter_alias.py)
-and [execution receipt](0028-converter-alias.json) now reproduce the premise in
+and [execution receipt](../evidence/issue-28/legacy-research/0028-converter-alias.json) now reproduce the premise in
 the existing environment, with script hash, Python/Torch versions and all three
 variants. State `[[2],[4]]`, a basic column view, and replacement equal to one
 quarter of that view yield historical-view state and readout `[[0.5],[1.0]]`

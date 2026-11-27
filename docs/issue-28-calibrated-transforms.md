@@ -107,7 +107,7 @@ improve a distribution's moment order.
 
 ## Verification state
 
-[Development evidence](research/0028-calibrated-transforms-development.json)
+[Development evidence](evidence/issue-28/legacy-research/0028-calibrated-transforms-development.json)
 retains missing-API REDs, two representable-tail failures, their GREEN logs,
 the initial twelve passing targeted tests including six saved task workflows,
 and subsequent boundary/decoder REDs and eight passing transform regressions.
@@ -121,17 +121,17 @@ python3 scripts/run_check.py pytest tests/priors/test_calibrated_transforms.py \
   tests/explorer/test_transform_session.py
 ```
 
-The [original standards review](research/0028-calibrated-transforms-standards-original.txt)
+The [original standards review](evidence/issue-28/legacy-research/0028-calibrated-transforms-standards-original.txt)
 identified missing retained evidence for the development checks and alias fixture.
 The linked archive preserves the available raw logs; the research note explicitly
 marks the original alias receipt NOT_RETAINED and links a fresh retained execution.
-The [narrow standards delta](research/0028-calibrated-transforms-standards-delta.txt)
+The [narrow standards delta](evidence/issue-28/legacy-research/0028-calibrated-transforms-standards-delta.txt)
 resolves both findings and verifies artifact custody. Its scope is the evidence
 delta, not source correctness or overall acceptance.
 
 ## Independent numerical review and retained rejection
 
-The [original review](research/0028-calibrated-transforms-spec-reject.txt) rejects
+The [original review](evidence/issue-28/legacy-research/0028-calibrated-transforms-spec-reject.txt) rejects
 `bf3a4c535bb87bee5a4557a1e0c30f70a29fb82a`: subtraction rounded an interior point
 to the upper boundary. With calibration `[0, smallest binary64]`, `x=1e-30`,
 `a=smallest binary64`, `b=1e-308`, application returned `1.0`; the independent
@@ -139,7 +139,7 @@ to the upper boundary. With calibration `[0, smallest binary64]`, `x=1e-30`,
 at case 527 after 526 passes. The original and final frozen scripts reproduce
 that rejection. The interrupted full check on that source is explicitly NOT_PASS.
 
-The [repaired review](research/0028-calibrated-transforms-spec-review.txt) gives
+The [repaired review](evidence/issue-28/legacy-research/0028-calibrated-transforms-spec-review.txt) gives
 scoped PASS at `be0c793a043585b96b1825e659a10fd1f5deb7d1`:
 
 - **874 original numerical cases**, with unchanged equations, grid and tolerances,
@@ -163,12 +163,12 @@ accounted for explicitly; the original stop remains retained. The repaired decod
 now raises an intentional ValueError, covered by a separate regression. This
 harness stop and the real numerical defect remain separate historical events.
 
-[Raw evidence](research/0028-calibrated-transforms-spec-artifacts.json) preserves
+[Raw evidence](evidence/issue-28/legacy-research/0028-calibrated-transforms-spec-artifacts.json) preserves
 original stops, complete inputs/outputs, old and repaired runs, saved sessions,
 script/import hashes and custody. Six final programs under
 [`scripts/verify_calibrated_transforms/`](../scripts/verify_calibrated_transforms/)
 are byte-identical to executed copies; 96 imported modules were checked against
-the repaired Git source. [Reproduction instructions](research/0028-calibrated-transforms-reproduction.txt)
+the repaired Git source. [Reproduction instructions](evidence/issue-28/legacy-research/0028-calibrated-transforms-reproduction.txt)
 identify the Python environment, stream/output controls and baseline comparison.
 No upstream evaluator is used as the numerical oracle.
 
@@ -182,7 +182,7 @@ excluded and reconstructable from pinned revisions.
 
 Full `make check` at the repaired source passes **752 tests, one skipped**, in
 373.95 seconds, with all static gates passing.
-[Exact output](research/0028-calibrated-transforms-check-be0c793.txt).
+[Exact output](evidence/issue-28/legacy-research/0028-calibrated-transforms-check-be0c793.txt).
 The skip is the existing CUDA test on this CPU-only environment. Smoke/eval-smoke
 remain NOT_AVAILABLE because the train/eval CLI commands have not landed.
 Publication retains the checked source/test bytes and separately checks its

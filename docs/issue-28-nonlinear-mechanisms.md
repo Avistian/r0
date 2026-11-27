@@ -192,7 +192,7 @@ These are partial mappings, not completion marks on the inventory. The scalar
 
 ## Author nonlinear census
 
-The [retained summary](research/0028-nonlinear-census.json) identifies source head
+The [retained summary](evidence/issue-28/legacy-research/0028-nonlinear-census.json) identifies source head
 `fbb1aa8`. All 192 attempted tasks generated successfully: 64 per topology, with
 22 regression, 21 binary and 21 multiclass per family. Each has 16 rows and four
 observed features. No filtering or retries occurred. Flag counts overlap:
@@ -263,8 +263,8 @@ agreement because CUDA is unavailable. The local complete log is
 the independent probes establish browser/Colab behavior, GPU agreement, source
 hyperprior fidelity or full #28 completion.
 
-The [original review result](research/0028-nonlinear-original-review.json) and
-[scoped recheck](research/0028-nonlinear-recheck.json) retain exact heads, check
+The [original review result](evidence/issue-28/legacy-research/0028-nonlinear-original-review.json) and
+[scoped recheck](evidence/issue-28/legacy-research/0028-nonlinear-recheck.json) retain exact heads, check
 names, script hashes and failures. The identical portable program independently
 reproduced the original 81/3 result in an isolated local clone before passing
 84/0 on the repaired source. Raw reports remain in

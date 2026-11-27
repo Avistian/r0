@@ -118,11 +118,11 @@ slot and primitive catalogs. A worked identity pipeline on the independent sampl
 {-1,+1}, scale 2, reduces algebraically to `2*x/(2 + 0.0001*1.0001)`. Generation,
 JSON replay and row inspection agree for 16 and 32 task rows without refitting.
 A child-draw limit case verifies a rejected selection leaves the injected RNG and
-frozen record unchanged. [Development RED/GREEN logs](research/0028-source-activation-development.json)
+frozen record unchanged. [Development RED/GREEN logs](evidence/issue-28/legacy-research/0028-source-activation-development.json)
 retain their exact outputs and hashes as working-tree evidence, separately from
 frozen-source full checks. The offset repair has separate
-[RED](research/0028-source-activation-offset-red.txt) and
-[GREEN](research/0028-source-activation-offset-green.txt) logs. Final full checks at `d9193b8` pass **653 tests, one skipped**, including all static
+[RED](evidence/issue-28/legacy-research/0028-source-activation-offset-red.txt) and
+[GREEN](evidence/issue-28/legacy-research/0028-source-activation-offset-green.txt) logs. Final full checks at `d9193b8` pass **653 tests, one skipped**, including all static
 gates. Independent repaired-source review passes the bounded checks below; no whole-issue
 or scientific acceptance is claimed.
 
@@ -131,8 +131,8 @@ or scientific acceptance is claimed.
 
 The initial source `c7cf429` passes full repository checks (**652 tests, one
 skipped**, all static gates) but is **REJECT** under independent numerical review.
-The [retained report](research/0028-source-activation-spec-reject.txt) and
-[raw fixture/oracle evidence](research/0028-source-activation-reject-artifacts.json)
+The [retained report](evidence/issue-28/legacy-research/0028-source-activation-spec-reject.txt) and
+[raw fixture/oracle evidence](evidence/issue-28/legacy-research/0028-source-activation-reject-artifacts.json)
 show that magnitude scaling before centering distorted the standard deviation of
 `[1e16, 1e16+4]`. Its exact population standard deviation is 2, but the original
 inverse scale was about 9.93% wrong. Saved generation and trace replay reproduced
@@ -140,7 +140,7 @@ the wrong constants; their agreement did not establish mathematical correctness.
 
 The repair centers on a represented calibration value before scaling deviations,
 with an overflow branch for opposite-sign extremes. The regression retains the
-independent Decimal oracle's constants and tanh query output. Final [full repair checks](research/0028-source-activation-check-d9193b8.txt) pass
+independent Decimal oracle's constants and tanh query output. Final [full repair checks](evidence/issue-28/legacy-research/0028-source-activation-check-d9193b8.txt) pass
 653 tests, one skipped, including all static gates. The independent dynamic audit
 is retained separately below. The initial rejection is
 not erased by the passing original repository suite.
@@ -148,7 +148,7 @@ not erased by the passing original repository suite.
 
 ## Final independent verification and reproduction
 
-The [final spec review](research/0028-source-activation-spec-repair.txt) reports
+The [final spec review](evidence/issue-28/legacy-research/0028-source-activation-spec-repair.txt) reports
 **PASS** for the bounded selector/authored-wrapper increment at `d9193b8`:
 
 - Ten independent Decimal calibration fixtures, including original/negative large
@@ -170,9 +170,9 @@ The [final spec review](research/0028-source-activation-spec-repair.txt) reports
   classification. Two additional new calibrated binary/multiclass fixtures check
   analytic scores, JSON replay and original-row target traces.
 
-[Receipt](research/0028-source-activation-repair-receipt.json) binds four final
+[Receipt](evidence/issue-28/legacy-research/0028-source-activation-repair-receipt.json) binds four final
 executed programs and confirms 66 imported source-file hashes match the frozen
-revision. [Raw evidence manifest](research/0028-source-activation-repair-artifacts.json)
+revision. [Raw evidence manifest](evidence/issue-28/legacy-research/0028-source-activation-repair-artifacts.json)
 retains the exact 1,955,447-byte ZIP in three ordered binary parts. Concatenate with
 no separator and verify the manifest's SHA-256 before extracting into a new folder.
 The archive contains all per-case raw outputs, fixtures, saved recipes/arrays/traces,
@@ -193,11 +193,11 @@ PYTHONPATH=/path/to/d9193b8/src /path/to/python \
 
 Run selectors and coupled programs the same way. Run compatibility separately with
 the base and repaired source trees and compare their `compatibility.json` records.
-The record of that comparison is [retained here](research/0028-source-activation-compatibility.json).
+The record of that comparison is [retained here](evidence/issue-28/legacy-research/0028-source-activation-compatibility.json).
 
-[Initial standards review](research/0028-source-activation-standards.txt) found no
+[Initial standards review](evidence/issue-28/legacy-research/0028-source-activation-standards.txt) found no
 documented violations and one nonblocking ownership/duplication heuristic in
-activation working-channel accounting. Its [repair delta](research/0028-source-activation-standards-delta.txt)
+activation working-channel accounting. Its [repair delta](evidence/issue-28/legacy-research/0028-source-activation-standards-delta.txt)
 found no new findings and verified original evidence integrity. These reports did
 not rerun the suite or replace mathematical verification.
 

@@ -105,9 +105,9 @@ after execution; this paragraph does not claim those gates already passed.
 
 Independent review rejected `ec522ed`: `left=2**1023`, coefficient 4 and
 `right=2**-1023` should produce the finite projection 4, but the intermediate
-left/coefficient product overflowed. The [original report](research/0028-factorized-original-review.json),
-[exact input](research/0028-factorized-original-failure.json) and
-[revision receipt](research/0028-factorized-original-receipt.json) retain the
+left/coefficient product overflowed. The [original report](evidence/issue-28/legacy-research/0028-factorized-original-review.json),
+[exact input](evidence/issue-28/legacy-research/0028-factorized-original-failure.json) and
+[revision receipt](evidence/issue-28/legacy-research/0028-factorized-original-receipt.json) retain the
 failure. Ten earlier authored/validation probes passed; the reviewer stopped
 at the defect, so that review did not establish sampled-law, backend-workflow
 or legacy-profile acceptance.
@@ -130,10 +130,10 @@ Positive mathematical values that round to zero at float64 precision are distinc
 from losing a representable result in an intermediate calculation. This mechanism
 does not promise exact real arithmetic for all ordinary, well-scaled products.
 
-The [three failing regressions](research/0028-factorized-extreme-red.txt) and
-[repaired five-case output](research/0028-factorized-focused-repair.txt) remain
+The [three failing regressions](evidence/issue-28/legacy-research/0028-factorized-extreme-red.txt) and
+[repaired five-case output](evidence/issue-28/legacy-research/0028-factorized-focused-repair.txt) remain
 separate. The first full-check attempt was interrupted after this independent
-finding; its [output](research/0028-factorized-check-ec522ed-interrupted.txt) prints
+finding; its [output](evidence/issue-28/legacy-research/0028-factorized-check-ec522ed-interrupted.txt) prints
 602 passed and one skipped but exits unsuccessfully through Make with error 130.
 It is not a completed successful `make check`.
 
@@ -156,7 +156,7 @@ modes occur 64 independent / 63 Dirichlet / 65 homogeneous times.
 
 Overlapping valid flags are 61 disconnected targets, 27 inactive ReLU, 25
 saturation and three zero-target-dispersion cases. No valid draw was removed;
-no task was retried. The [summary and artifact hashes](research/0028-factorized-census.json)
+no task was retried. The [summary and artifact hashes](evidence/issue-28/legacy-research/0028-factorized-census.json)
 identify every original JSONL and successful saved group under the recorded local
 output directory. Exogenous counters cover explicitly recorded stochastic nodes;
 legacy Gaussian root nodes do not have that descriptor and are not counted there.
@@ -183,7 +183,7 @@ UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
 python3 scripts/run_check.py pytest tests/priors/test_causal_weights.py --tb=short
 ```
 
-The [original and scoped standards reports](research/0028-factorized-standards.md)
+The [original and scoped standards reports](evidence/issue-28/legacy-research/0028-factorized-standards.md)
 record no hard violations and resolve the new resource-accounting heuristic.
 The standards reviewer did not run tests or independently certify numerical
 correctness, performance or supported sizes. The profile-registry heuristic
@@ -194,7 +194,7 @@ required and incomplete.
 ## Full repository verification
 
 At `ec39b46`, complete `make check` passes **605 tests, 1 skipped**, with all
-preflight/static gates passing. The [complete output](research/0028-factorized-check-ec39b46.txt)
+preflight/static gates passing. The [complete output](evidence/issue-28/legacy-research/0028-factorized-check-ec39b46.txt)
 is retained verbatim. Command and environment:
 
 ```sh
@@ -238,9 +238,9 @@ forward profile, seed 28/task 50, regression and binary controls. All four previ
 profiles, all topology families and all three task types are covered. Failed
 outcomes are retained, not silently excluded from the denominator.
 
-The [receipt](research/0028-factorized-recheck-receipt.json) identifies commands,
+The [receipt](evidence/issue-28/legacy-research/0028-factorized-recheck-receipt.json) identifies commands,
 archives, script hashes and actual source revision before/after execution. The
-[check report](research/0028-factorized-recheck.json) and [artifact manifest](research/0028-factorized-recheck-artifacts.json)
+[check report](evidence/issue-28/legacy-research/0028-factorized-recheck.json) and [artifact manifest](evidence/issue-28/legacy-research/0028-factorized-recheck-artifacts.json)
 link ordered JSON parts for checks, rational cases, sampled records, RNG events
 and legacy outcomes. Arrays were split only to satisfy the per-file size policy;
 concatenation reconstructs every original value exactly. Original complete

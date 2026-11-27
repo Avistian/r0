@@ -1,9 +1,0 @@
-{
-  "source": "a6ab8c70902d9d474cea12e7cab2aadf67ca35f5",
-  "archive": "0028-joint-function-plans-spec.zip",
-  "bytes": 274569,
-  "sha256": "0804704ce4889a581a72ddfa42a01348efd975e85f57e5febe08ba8942c70ab0",
-  "manifest_sha256": "a2de0a5fc98647ec91a16e70b2f91245854e1d16df04c0b0e8b82257290de9c1",
-  "manifest_entries": 79,
-  "qualification": "Original independent artifacts and harness failures, final portable programs, cached attributed inputs, and executed portable outcomes. No refreshed upstream or whole-issue acceptance."
-}

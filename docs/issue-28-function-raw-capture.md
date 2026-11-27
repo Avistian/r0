@@ -66,8 +66,8 @@ uncaptured-helper cases, retaining eleven public transaction tests. Those eleven
 passed separately. The 1455-test run was not repeated at the test-only repair head;
 independent verification separately retains both captured and uncaptured modes.
 
-[Candidate review](research/0028-function-raw-capture-candidate-review.md) and
-[exact-main review](research/0028-function-raw-capture-publication-review.md)
+[Candidate review](evidence/issue-28/legacy-research/0028-function-raw-capture-candidate-review.md) and
+[exact-main review](evidence/issue-28/legacy-research/0028-function-raw-capture-publication-review.md)
 cover 280 cases and 1615 original NumPy calls, original/captured/uncaptured output
 and next-RNG equality, both covariance bases, both RFF branches, quadratic width23,
 every cheap product family in both positions, every MLP activation placement and
@@ -75,10 +75,10 @@ singleton discretization. All 160 core root cases also passed late-budget rollba
 The independent adversarial checks cover late validation, bindings, aliases,
 external mutation, aggregate state limits and 0/1/64/65 stream boundaries.
 
-[Full check](research/0028-function-raw-capture-check-a435427.txt),
-[original Standards finding](research/0028-function-raw-capture-standards-original.txt),
-[repair review](research/0028-function-raw-capture-standards-repaired.txt) and
-[author raw logs](research/0028-function-raw-capture-development.json) retain their
+[Full check](evidence/issue-28/legacy-research/0028-function-raw-capture-check-a435427.txt),
+[original Standards finding](evidence/issue-28/legacy-research/0028-function-raw-capture-standards-original.txt),
+[repair review](evidence/issue-28/legacy-research/0028-function-raw-capture-standards-repaired.txt) and
+[author raw logs](evidence/issue-28/legacy-research/0028-function-raw-capture-development.json) retain their
 separate identities. The low-severity duplicate root-draw recipe heuristic remains.
 The original oracle's class-name-mangling harness error remains in its sealed packet.
 
@@ -87,7 +87,7 @@ new directory using an existing Python 3.12.3 / NumPy 2.5.5 / Torch 2.15.0+cpu e
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-function-raw-capture-spec-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-function-raw-capture-spec-artifacts.json \
   /tmp/r0-function-capture-evidence --repo .
 PYTHONDONTWRITEBYTECODE=1 /home/avist/Projects/r0/.venv/bin/python \
   /tmp/r0-function-capture-evidence/publication-independent/replay.py \

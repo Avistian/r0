@@ -111,16 +111,16 @@ this additional rounding error. Frozen source is
 Full `make check` passes **868 tests, one skipped**, with all static gates;
 pytest took 464.14 seconds. The command uses the same environment above with
 `make check` replacing the focused invocation.
-[Raw output](research/0028-frozen-functions-check-cbbaff2.txt) and
-[development archive](research/0028-frozen-functions-development.json) retain
+[Raw output](evidence/issue-28/legacy-research/0028-frozen-functions-check-cbbaff2.txt) and
+[development archive](evidence/issue-28/legacy-research/0028-frozen-functions-development.json) retain
 52 files, including intermediate RED/GREEN, tooling failures, both interrupted
 checks and all standards reviews. Intermediate development snapshots are not all
 retained and are not independent exact-revision proof. The archive's per-file
 lengths/hashes were checked after packaging. Independent review uses separate
 pinned source exports and retained procedures; its final report follows below.
-The [CLI help](research/0028-frozen-functions-cli-help.txt) still lacks train/eval:
+The [CLI help](evidence/issue-28/legacy-research/0028-frozen-functions-cli-help.txt) still lacks train/eval:
 conditional `make smoke` and `make eval-smoke` are NOT_AVAILABLE.
-[Publication gates](research/0028-frozen-functions-publication-gates.txt) pass
+[Publication gates](evidence/issue-28/legacy-research/0028-frozen-functions-publication-gates.txt) pass
 checkout/hooks, tracked-file/artifact limits, formatting, lint and file-token caps.
 Publication preserves the frozen source and tests. Raw check output retains its
 original whitespace.
@@ -146,8 +146,8 @@ depth/activation-flag combinations occur. Admission cases independently derive
 resource totals and check rejection before conversion/allocation. The 258 source
 comparisons execute cached transform bodies only, with no source sampling/fitting;
 their provenance is qualified, not freshly verified upstream.
-[Report and exact commands](research/0028-frozen-functions-spec-report.md),
-[totals](research/0028-frozen-functions-spec-totals.json).
+[Report and exact commands](evidence/issue-28/legacy-research/0028-frozen-functions-spec-report.md),
+[totals](evidence/issue-28/legacy-research/0028-frozen-functions-spec-totals.json).
 
 Separately, **18 prior-r0 comparisons** are byte-equal between base and source:
 three existing profiles, two graph families and three task types, with seed 649,
@@ -157,23 +157,23 @@ preserve generated records and saved archive member hashes. This is bounded
 regression evidence, not a claim about every old profile. It is distinct from the
 cached upstream transform comparisons.
 
-The [initial standards review](research/0028-frozen-functions-standards-690297b.txt)
+The [initial standards review](evidence/issue-28/legacy-research/0028-frozen-functions-standards-690297b.txt)
 found zero documented violations and one nonblocking repeated-dispatch advisory.
 Three subsequent repair deltas found no new violations or advisories; the
-[last delta](research/0028-frozen-functions-standards-cbbaff2.txt) preserves that
+[last delta](evidence/issue-28/legacy-research/0028-frozen-functions-standards-cbbaff2.txt) preserves that
 scope distinction. Standards and numerical verdicts are separate.
 
 Ten exact, formatted and executed verification/custody programs are published in
 [scripts/verify_frozen_functions](../scripts/verify_frozen_functions).
-[Archive metadata](research/0028-frozen-functions-spec-artifacts.json) pins all
+[Archive metadata](evidence/issue-28/legacy-research/0028-frozen-functions-spec-artifacts.json) pins all
 482 original file identities, the original manifest itself and 461 files from
 the successful fresh replay. Source/base exports are reconstructed from Git.
 Recovery verified all **944 publication-manifest entries**;
-[receipt](research/0028-frozen-functions-spec-recovery.json).
+[receipt](evidence/issue-28/legacy-research/0028-frozen-functions-spec-recovery.json).
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-frozen-functions-spec-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-frozen-functions-spec-artifacts.json \
   /tmp/frozen-functions-verified --repo "$PWD"
 bash /tmp/frozen-functions-verified/replay.sh
 ```
@@ -191,9 +191,9 @@ The three independent rejections remain separate from subsequent repairs:
 
 | Source | Defect | Retained package | Verified original file identities |
 | --- | --- | --- | --- |
-| `690297b` | L1 first-center tie | [Metadata](research/0028-frozen-functions-reject-artifacts.json), [recovery](research/0028-frozen-functions-reject-recovery.json) | 2,573 |
-| `c58706e` | Accepted MLP activation rejected by JSON | [Metadata](research/0028-frozen-functions-second-reject-artifacts.json), [recovery](research/0028-frozen-functions-second-reject-recovery.json) | 368 |
-| `ed5b67a` | Two-axis quasi-distance tie | [Metadata](research/0028-frozen-functions-third-reject-artifacts.json), [recovery](research/0028-frozen-functions-third-reject-recovery.json) | 389 |
+| `690297b` | L1 first-center tie | [Metadata](evidence/issue-28/legacy-research/0028-frozen-functions-reject-artifacts.json), [recovery](evidence/issue-28/legacy-research/0028-frozen-functions-reject-recovery.json) | 2,573 |
+| `c58706e` | Accepted MLP activation rejected by JSON | [Metadata](evidence/issue-28/legacy-research/0028-frozen-functions-second-reject-artifacts.json), [recovery](evidence/issue-28/legacy-research/0028-frozen-functions-second-reject-recovery.json) | 368 |
+| `ed5b67a` | Two-axis quasi-distance tie | [Metadata](evidence/issue-28/legacy-research/0028-frozen-functions-third-reject-artifacts.json), [recovery](evidence/issue-28/legacy-research/0028-frozen-functions-third-reject-recovery.json) | 389 |
 
 Each archive retains the original review, fixtures, programs, logs and manifest.
 Pinned Git objects reconstruct source/base exports; every original manifest entry
@@ -203,7 +203,7 @@ Recovery verifies artifacts; it is not a new behavioral execution.
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-frozen-functions-reject-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-frozen-functions-reject-artifacts.json \
   /tmp/frozen-functions-rejection --repo "$PWD"
 ```
 

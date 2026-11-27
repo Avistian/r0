@@ -1,8 +1,0 @@
-{
-  "verdict": "RESTORED_AND_VERIFIED",
-  "metadata": "/tmp/r0-28/docs/research/0028-frozen-functions-third-reject-artifacts.json",
-  "output": "/tmp/r0-28-functions-third-reject-recovered",
-  "source": "ed5b67a406619f174335dece2ff382f0a6bf753e",
-  "manifest_entries": 390,
-  "archive_sha256": "e7c8225762ded674d96c5d2ea559d012732737dbdfa56228cd5c3c1cf6d57d23"
-}

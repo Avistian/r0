@@ -107,8 +107,8 @@ disposition records plus 140 specification anchors, not implementation counts.
 Source: `962f0ada62a4eda3e71c45fa45bab0c4f66eb8fe`.
 Baseline: `b7e755a0b1b505afcd8e2dd2e4ee9b85c9cf7261`.
 Full `make check` passes **809 tests, one skipped**, all static gates; the test run
-took 433.30 seconds. [Raw output](research/0028-standardization-check-962f0ad.txt).
-The existing CUDA skip remains. The [CLI help](research/0028-standardization-cli-help.txt)
+took 433.30 seconds. [Raw output](evidence/issue-28/legacy-research/0028-standardization-check-962f0ad.txt).
+The existing CUDA skip remains. The [CLI help](evidence/issue-28/legacy-research/0028-standardization-cli-help.txt)
 still has no train/eval commands, so smoke/eval-smoke are NOT_AVAILABLE.
 
 ```sh
@@ -116,7 +116,7 @@ UV_CACHE_DIR=/tmp/r0-28-uv-cache \
 UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv make check
 ```
 
-[Development records](research/0028-standardization-development.json) preserve
+[Development records](evidence/issue-28/legacy-research/0028-standardization-development.json) preserve
 raw RED/GREEN and typechecking failures. Intermediate snapshots were not retained;
 these are historical development evidence, not exact-revision acceptance claims.
 
@@ -124,7 +124,7 @@ these are historical development evidence, not exact-revision acceptance claims.
 
 Independent review finds **zero hard violations** and one nonblocking possible
 duplication: the exact-type activation admission list appears in both nodes and
-pipelines. [Unedited review](research/0028-standardization-standards.txt).
+pipelines. [Unedited review](evidence/issue-28/legacy-research/0028-standardization-standards.txt).
 No broader full-issue acceptance is implied by that scoped result.
 
 ## Spec
@@ -137,10 +137,10 @@ branches, moment gates, provenance, decoding, and three saved task-type workflow
 are checked through the public API. Maximum absolute error is 7.28e-12, within
 predeclared relative tolerance 3e-14 and absolute tolerance 1e-14 (zero for inverse
 scales); the largest absolute difference occurs on large-valued outputs.
-[Unedited report](research/0028-standardization-spec-review.txt),
-[totals](research/0028-standardization-spec-totals.json).
+[Unedited report](evidence/issue-28/legacy-research/0028-standardization-spec-review.txt),
+[totals](evidence/issue-28/legacy-research/0028-standardization-spec-totals.json).
 
-Independent [resource arithmetic](research/0028-standardization-resource-arithmetic.json)
+Independent [resource arithmetic](evidence/issue-28/legacy-research/0028-standardization-resource-arithmetic.json)
 checks three fitter sizes and direct input/output placements under both noise
 orders. For example, the two-channel fitter admits nine parameters / 1920 estimated
 bytes; the input-stage equation admits 13 / 9440 and output-stage equation 11 / 7744.
@@ -156,13 +156,13 @@ against pinned Git. Two verifier mistakes remain retained as HARNESS_ERROR:
 JSON list/tuple comparison and a removed implicit import re-export. Neither was a
 product rejection; corrected final programs execute successfully.
 
-[Artifacts](research/0028-standardization-spec-artifacts.json) retain the original
+[Artifacts](evidence/issue-28/legacy-research/0028-standardization-spec-artifacts.json) retain the original
 manifest, raw comparisons, earlier attempts and failed records. Duplicate data
 has explicit reconstruction; both source archives are reproducible from pinned
-Git using the [archive identities](research/0028-standardization-source-archives.json).
-[Execution instructions](research/0028-standardization-reproduction.txt) use the
+Git using the [archive identities](evidence/issue-28/legacy-research/0028-standardization-source-archives.json).
+[Execution instructions](evidence/issue-28/legacy-research/0028-standardization-reproduction.txt) use the
 five programs published in `scripts/verify_standardization/` and fresh output paths.
-[Recovery instructions](research/0028-standardization-artifact-recovery.txt) verify
+[Recovery instructions](evidence/issue-28/legacy-research/0028-standardization-artifact-recovery.txt) verify
 the retained archive without generating new tasks.
 
 Scoped review totals: Standards zero hard / one advisory; Spec zero product

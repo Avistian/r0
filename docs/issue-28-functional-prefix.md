@@ -54,17 +54,17 @@ is established by this component.
 
 ## Accepted checkpoint evidence
 
-- [Full check](research/0028-functional-prefix-check-97cd023.txt): **1258 passed, one skipped**, 525.59 seconds, with all static gates. Checked candidate `97cd0233726fed230a570435ab34dfbaf8e63556` has the same source/test trees as publication source `0ceb2c042c91a99df91b57043fb82c8da91e4721`.
-- [Candidate independent review](research/0028-functional-prefix-candidate-review.md) and [publication-source replay](research/0028-functional-prefix-publication-review.md): literal parent ordering, changed widths, converter captures versus noisy descendant states, reproducible population namespaces, malformed shapes/ancestry/rows, preallocation/resource rejection, moment gates and retained-metadata readmission. All 24 complete version-one/version-two snapshots match their baseline byte-for-byte, including recipe/card/trace/tensors and admission reports.
-- [Standards review](research/0028-functional-prefix-standards.txt): no documented violations or actionable heuristic findings. Tests were not run by that reviewer.
-- [Archive metadata](research/0028-functional-prefix-spec-artifacts.json) and [recovery receipt](research/0028-functional-prefix-spec-recovery.json): 1058 verified file identities. The original invalid-weight reviewer fixture and its correction remain retained; no product defect was found.
-- [Public verifier](../scripts/verify_functional_prefix) is a linted copy with an explicit 24-snapshot guard and reachable equivalent baseline. Its separate author replay passed on publication source. Original independent bytes and executions remain sealed separately. [Publication gates](research/0028-functional-prefix-publication-gates.txt) cover document/script checks; source/tests are unchanged by publication.
+- [Full check](evidence/issue-28/legacy-research/0028-functional-prefix-check-97cd023.txt): **1258 passed, one skipped**, 525.59 seconds, with all static gates. Checked candidate `97cd0233726fed230a570435ab34dfbaf8e63556` has the same source/test trees as publication source `0ceb2c042c91a99df91b57043fb82c8da91e4721`.
+- [Candidate independent review](evidence/issue-28/legacy-research/0028-functional-prefix-candidate-review.md) and [publication-source replay](evidence/issue-28/legacy-research/0028-functional-prefix-publication-review.md): literal parent ordering, changed widths, converter captures versus noisy descendant states, reproducible population namespaces, malformed shapes/ancestry/rows, preallocation/resource rejection, moment gates and retained-metadata readmission. All 24 complete version-one/version-two snapshots match their baseline byte-for-byte, including recipe/card/trace/tensors and admission reports.
+- [Standards review](evidence/issue-28/legacy-research/0028-functional-prefix-standards.txt): no documented violations or actionable heuristic findings. Tests were not run by that reviewer.
+- [Archive metadata](evidence/issue-28/legacy-research/0028-functional-prefix-spec-artifacts.json) and [recovery receipt](evidence/issue-28/legacy-research/0028-functional-prefix-spec-recovery.json): 1058 verified file identities. The original invalid-weight reviewer fixture and its correction remain retained; no product defect was found.
+- [Public verifier](../scripts/verify_functional_prefix) is a linted copy with an explicit 24-snapshot guard and reachable equivalent baseline. Its separate author replay passed on publication source. Original independent bytes and executions remain sealed separately. [Publication gates](evidence/issue-28/legacy-research/0028-functional-prefix-publication-gates.txt) cover document/script checks; source/tests are unchanged by publication.
 
 Recover the archive and verify every checksum from the repository root:
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-functional-prefix-spec-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-functional-prefix-spec-artifacts.json \
   /tmp/functional-prefix-recovered --repo .
 ```
 

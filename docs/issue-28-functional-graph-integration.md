@@ -34,7 +34,7 @@ Public tests in `tests/priors/test_functional_causal.py` include literal outputs
 
 `tests/explorer/test_functional_session.py` exercises the shared session's create/save/open/replay and selected-row inspection for four root bases across regression, binary and multiclass tasks. This is session-level evidence, not a browser or hosted Colab demonstration.
 
-The original source checkpoint passed `make check`: 1200 passed, 1 skipped in 525.48 seconds, with all static gates. Its independent SPEC REJECT below remains valid; the green suite did not cover that defect. The final repair passed **1215 tests, 1 skipped**, with all static gates, in 482.97 seconds. Independent bounded acceptance was replayed on publication source `6a70ecd2289ff4e9c208a0d7f0d09acebe5ada53`; its source and test trees equal the checked candidate `ae815a6`. [Development evidence](research/0028-functional-graph-development.json) retains genuine failing cases and fixture/type/lint corrections, separately from independent evidence. No GPU, throughput, RSS, browser or Colab claims are made.
+The original source checkpoint passed `make check`: 1200 passed, 1 skipped in 525.48 seconds, with all static gates. Its independent SPEC REJECT below remains valid; the green suite did not cover that defect. The final repair passed **1215 tests, 1 skipped**, with all static gates, in 482.97 seconds. Independent bounded acceptance was replayed on publication source `6a70ecd2289ff4e9c208a0d7f0d09acebe5ada53`; its source and test trees equal the checked candidate `ae815a6`. [Development evidence](evidence/issue-28/legacy-research/0028-functional-graph-development.json) retains genuine failing cases and fixture/type/lint corrections, separately from independent evidence. No GPU, throughput, RSS, browser or Colab claims are made.
 
 Next: finish calibration and sampled graph ownership integration; extend trace detail and workbench views; retain independent verification and resource evidence; then continue all remaining paper options, typed variables, interventions and delivery requirements. The full accepted specification remains active.
 
@@ -56,17 +56,17 @@ The admission repair makes root record validation array-free: it checks each ret
 
 ## Published evidence and reproduction
 
-- [Final full check](research/0028-functional-graph-check-ae815a6.txt): 1215 passed, one skipped; static gates passed. `make smoke` and `make eval-smoke` remain NOT_AVAILABLE because their train/eval CLI entry points are absent.
-- [Independent accepted repair](research/0028-functional-graph-admission-accepted.md) and [exact publication-source replay](research/0028-functional-graph-exact-main-independent.md): all eight programs passed. Coverage includes 32 literal function/root combinations, moment/ancestry and converter ordering, strict decoding and admission, 36 covariance cases, seven root emission combinations, eight materialization paths, twelve saved sessions, four affine arithmetic extremes, six legacy RNG comparisons, and diagnostics.
-- [Standards original review](research/0028-functional-graph-standards-original.txt), [diagnostic repair](research/0028-functional-graph-standards-repair.txt), and [admission repair](research/0028-functional-graph-standards-admission.txt): the missing checksum procedure was repaired; no new hard violations in either repair. Optional decoder-helper duplication remains.
-- [Archive metadata](research/0028-functional-graph-spec-artifacts.json) and [recovery receipt](research/0028-functional-graph-spec-recovery.json): 992 retained file identities, including both immutable historical REJECT bundles and separate independent/author executions.
+- [Final full check](evidence/issue-28/legacy-research/0028-functional-graph-check-ae815a6.txt): 1215 passed, one skipped; static gates passed. `make smoke` and `make eval-smoke` remain NOT_AVAILABLE because their train/eval CLI entry points are absent.
+- [Independent accepted repair](evidence/issue-28/legacy-research/0028-functional-graph-admission-accepted.md) and [exact publication-source replay](evidence/issue-28/legacy-research/0028-functional-graph-exact-main-independent.md): all eight programs passed. Coverage includes 32 literal function/root combinations, moment/ancestry and converter ordering, strict decoding and admission, 36 covariance cases, seven root emission combinations, eight materialization paths, twelve saved sessions, four affine arithmetic extremes, six legacy RNG comparisons, and diagnostics.
+- [Standards original review](evidence/issue-28/legacy-research/0028-functional-graph-standards-original.txt), [diagnostic repair](evidence/issue-28/legacy-research/0028-functional-graph-standards-repair.txt), and [admission repair](evidence/issue-28/legacy-research/0028-functional-graph-standards-admission.txt): the missing checksum procedure was repaired; no new hard violations in either repair. Optional decoder-helper duplication remains.
+- [Archive metadata](evidence/issue-28/legacy-research/0028-functional-graph-spec-artifacts.json) and [recovery receipt](evidence/issue-28/legacy-research/0028-functional-graph-spec-recovery.json): 992 retained file identities, including both immutable historical REJECT bundles and separate independent/author executions.
 - [Public verifier programs](../scripts/verify_functional_graph) are linted copies of the independent programs. Formatting, explicit failure checks and a reachable equivalent baseline commit differ from the sealed originals. The author reran these copies successfully; independent exact-source acceptance uses the sealed originals. Their execution evidence remains distinct.
 
 Recover the complete archive, verifying every part and file digest, from the repository root:
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-functional-graph-spec-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-functional-graph-spec-artifacts.json \
   /tmp/functional-graph-recovered --repo .
 ```
 
@@ -81,4 +81,4 @@ python scripts/verify_functional_graph/replay.py \
   --expected-head "$(git rev-parse HEAD)"
 ```
 
-The committed programs pin reachable historical baselines. Results describe the source actually checked by the driver, not automatically the accepted source above. The archive retains the exact source-specific runs. [Publication gates](research/0028-functional-graph-publication-gates.txt) cover document/script checks and artifact limits; publication changes no product source or tests.
+The committed programs pin reachable historical baselines. Results describe the source actually checked by the driver, not automatically the accepted source above. The archive retains the exact source-specific runs. [Publication gates](evidence/issue-28/legacy-research/0028-functional-graph-publication-gates.txt) cover document/script checks and artifact limits; publication changes no product source or tests.

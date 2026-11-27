@@ -92,12 +92,12 @@ predictive acceptance follows from this component's checks.
 
 ## Retained evidence and replay
 
-[Independent report](research/0028-joint-root-plans-spec-report.md),
+[Independent report](evidence/issue-28/legacy-research/0028-joint-root-plans-spec-report.md),
 [reproduction instructions](research/0028-joint-root-plans-reproduce.md),
-[standards review](research/0028-joint-root-plans-standards.txt),
-[full check](research/0028-joint-root-plans-check-bc96787.txt),
-[author history](research/0028-joint-root-plans-development.json) and
-[independent archive metadata](research/0028-joint-root-plans-spec-artifacts.json)
+[standards review](evidence/issue-28/legacy-research/0028-joint-root-plans-standards.txt),
+[full check](evidence/issue-28/legacy-research/0028-joint-root-plans-check-bc96787.txt),
+[author history](evidence/issue-28/legacy-research/0028-joint-root-plans-development.json) and
+[independent archive metadata](evidence/issue-28/legacy-research/0028-joint-root-plans-spec-artifacts.json)
 retain the exact inputs, programs, fixtures and raw outcomes. Fresh portable
 replays repeat existing cases and do not increase coverage counts.
 
@@ -109,7 +109,7 @@ copies are in `scripts/verify_joint_root_plans`.
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-joint-root-plans-spec-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-joint-root-plans-spec-artifacts.json \
   /tmp/root-plan-evidence
 ```
 

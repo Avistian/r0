@@ -103,10 +103,10 @@ these are traceability entries, not counts of completed algorithms.
 Source commit: `c997bc2dc98db7611d7aa78552ee95467093301e`.
 Baseline: `6ba0bc2813b777749c9944d93b404ef0348168c3`.
 The full `make check` passes **797 tests, one skipped**, all static gates, in
-427.52 seconds. [Raw output](research/0028-root-converter-check-c997bc2.txt).
+427.52 seconds. [Raw output](evidence/issue-28/legacy-research/0028-root-converter-check-c997bc2.txt).
 The nine newly added saved workflows cover every converter variant and task type;
 the existing nine pipeline workflows also remain green. The existing CUDA skip
-is retained. The [CLI help](research/0028-root-converter-cli-help.txt) still exposes
+is retained. The [CLI help](evidence/issue-28/legacy-research/0028-root-converter-cli-help.txt) still exposes
 no train/eval commands, so smoke/eval-smoke are NOT_AVAILABLE.
 
 ```sh
@@ -114,7 +114,7 @@ UV_CACHE_DIR=/tmp/r0-28-uv-cache \
 UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv make check
 ```
 
-[Development history](research/0028-root-converter-development.json) preserves
+[Development history](evidence/issue-28/legacy-research/0028-root-converter-development.json) preserves
 raw RED/GREEN and exploratory failures, including fixture/assertion mistakes.
 Intermediate snapshots were not retained; those logs are development history,
 not exact-revision acceptance evidence. The committed tests and full check above
@@ -124,7 +124,7 @@ provide the reproducible author check.
 
 Independent review finds **zero hard violations** and one nonblocking heuristic:
 the root-law and innovation-law decoder blocks duplicate their conversion shape.
-[Unedited report](research/0028-root-converter-standards.txt). The advisory remains
+[Unedited report](evidence/issue-28/legacy-research/0028-root-converter-standards.txt). The advisory remains
 visible; it is not a numerical or contract rejection.
 
 ## Spec
@@ -136,8 +136,8 @@ placements are reconstructed using independent NumPy equations and the documente
 stream identity. Standard activation fitting, all converter branches, moments,
 ancestry, frozen controls, and nine saved/reopened/replayed workflows are covered.
 Exact stream replay is not statistical proof of independence or upstream RNG parity.
-[Unedited report](research/0028-root-converter-spec-review.txt),
-[totals](research/0028-root-converter-spec-totals.json).
+[Unedited report](evidence/issue-28/legacy-research/0028-root-converter-spec-review.txt),
+[totals](evidence/issue-28/legacy-research/0028-root-converter-spec-totals.json).
 
 Independent resource arithmetic matches **21 parameters / 162,432 estimated bytes**,
 including the 256-row truncated-draw floor. Exact limits admit; either limit one
@@ -151,14 +151,14 @@ against both pinned Git bytes and the executed files. Eight published programs
 match the exact executed bytes after an independent publication follow-up.
 Ruff classified imports differently inside the repository, requiring six import
 separator blank lines; the reviewer re-executed the actual published scripts and
-retained a [separate report](research/0028-root-converter-publication-review.txt).
+retained a [separate report](evidence/issue-28/legacy-research/0028-root-converter-publication-review.txt).
 The original package stayed unchanged. The initial verifier NumPy-scalar input mistake
 is retained as HARNESS_ERROR, separate from product findings.
 
-[Artifact custody](research/0028-root-converter-spec-artifacts.json) identifies the
+[Artifact custody](evidence/issue-28/legacy-research/0028-root-converter-spec-artifacts.json) identifies the
 split ZIP, original manifest, duplicate-file reconstruction and Git-reconstructable
-baseline source. [Recovery instructions](research/0028-root-converter-artifact-recovery.txt)
-verify both original manifests after restoring the archive. [Reproduction commands](research/0028-root-converter-reproduction.txt)
+baseline source. [Recovery instructions](evidence/issue-28/legacy-research/0028-root-converter-artifact-recovery.txt)
+verify both original manifests after restoring the archive. [Reproduction commands](evidence/issue-28/legacy-research/0028-root-converter-reproduction.txt)
 use the existing environment and the published programs in
 `scripts/verify_root_converters/`. The archive retains original attempts at its
 root and the independently re-executed publication supplement under `publication/`.

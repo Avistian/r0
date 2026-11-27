@@ -53,7 +53,7 @@ checks, not browser or hosted Colab checks.
 Development checks exposed two decoder regressions: non-object graph records leaked
 `AttributeError` after version dispatch, and missing calibration cards leaked
 `KeyError` in inspection. Both now reject with `ValueError`; original failures remain
-in the [development archive](research/0028-functional-calibration-development.json). Intermediate uncommitted source states are not all retained; those historical runs alone are not a complete reconstruction of each intermediate revision.
+in the [development archive](evidence/issue-28/legacy-research/0028-functional-calibration-development.json). Intermediate uncommitted source states are not all retained; those historical runs alone are not a complete reconstruction of each intermediate revision.
 
 The candidate passed `make check`: **1255 passed, one skipped**, 526.98 seconds, with all static gates. Independent bounded review passed, then passed again on publication source `09cdbbab88de5cc9b04702bb7433aea47f8ae160`, whose source/test trees match checked candidate `ca50743`. No overall issue-28 completion,
 browser/Colab readiness, throughput, scale, scientific or GPU acceptance follows
@@ -65,17 +65,17 @@ commit remain separate work, guided by
 
 ## Retained evidence and reproduction
 
-- [Full check](research/0028-functional-calibration-check-ca50743.txt), [candidate independent review](research/0028-functional-calibration-candidate-review.md), and [publication-source independent replay](research/0028-functional-calibration-publication-review.md).
+- [Full check](evidence/issue-28/legacy-research/0028-functional-calibration-check-ca50743.txt), [candidate independent review](evidence/issue-28/legacy-research/0028-functional-calibration-candidate-review.md), and [publication-source independent replay](evidence/issue-28/legacy-research/0028-functional-calibration-publication-review.md).
 - Independent checks include a separate scalar NumPy oracle for nonlinear downstream values, structural noise and converter capture; changes in emitted rows/split/label noise; strict moment boundaries; multiclass targets; malformed metadata and admission; retained-constant inspection/session replay; `1e300`, `1e-300` and finite normalization despite overflowing subtraction. Twelve version-one cases across four roots and three task adapters match 129 retained baseline files byte-for-byte.
-- [Standards review](research/0028-functional-calibration-standards.txt): zero documented violations and one nonblocking repeated-version-check heuristic. No tests are attributed to that reviewer.
-- [Archive metadata](research/0028-functional-calibration-spec-artifacts.json) and [recovery receipt](research/0028-functional-calibration-spec-recovery.json): 2641 verified file identities. Original reviewer scripts, source snapshots, raw outputs, environment pins and the corrected archive-ID harness error remain immutable.
-- [Public programs](../scripts/verify_functional_calibration) are linted copies with a reachable equivalent baseline and an additional nonempty-baseline guard. Separate author replays passed on the candidate and publication source. Final repository lint then inserted two blank import-separator lines; token sequences are unchanged and these whitespace-only copies were not rerun. The executed copies remain in the archive. These copies do not replace the original independently executed bytes. [Publication gates](research/0028-functional-calibration-publication-gates.txt) cover the document/script delta; product source and tests are unchanged.
+- [Standards review](evidence/issue-28/legacy-research/0028-functional-calibration-standards.txt): zero documented violations and one nonblocking repeated-version-check heuristic. No tests are attributed to that reviewer.
+- [Archive metadata](evidence/issue-28/legacy-research/0028-functional-calibration-spec-artifacts.json) and [recovery receipt](evidence/issue-28/legacy-research/0028-functional-calibration-spec-recovery.json): 2641 verified file identities. Original reviewer scripts, source snapshots, raw outputs, environment pins and the corrected archive-ID harness error remain immutable.
+- [Public programs](../scripts/verify_functional_calibration) are linted copies with a reachable equivalent baseline and an additional nonempty-baseline guard. Separate author replays passed on the candidate and publication source. Final repository lint then inserted two blank import-separator lines; token sequences are unchanged and these whitespace-only copies were not rerun. The executed copies remain in the archive. These copies do not replace the original independently executed bytes. [Publication gates](evidence/issue-28/legacy-research/0028-functional-calibration-publication-gates.txt) cover the document/script delta; product source and tests are unchanged.
 
 From the repository root, recover every retained file and validate its checksum:
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-functional-calibration-spec-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-functional-calibration-spec-artifacts.json \
   /tmp/functional-calibration-recovered --repo .
 ```
 

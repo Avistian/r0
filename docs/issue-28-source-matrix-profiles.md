@@ -95,9 +95,9 @@ decoder and sampler. Actual browser/Colab acceptance remains separate and pendin
 
 The full `make check` run at `bb78d8174ebe322b7784027e425d16414525ede1`
 passes **738 tests, one skipped**, all static gates. The skip is the existing CUDA
-case on this CPU-only environment. [Full output](research/0028-source-matrix-check-bb78d81.txt).
+case on this CPU-only environment. [Full output](evidence/issue-28/legacy-research/0028-source-matrix-check-bb78d81.txt).
 
-[Development evidence](research/0028-source-matrix-development.json) retains RED
+[Development evidence](evidence/issue-28/legacy-research/0028-source-matrix-development.json) retains RED
 for the missing API and unsupported profiles, targeted GREEN, the original
 unfiltered saved-workflow failure and its complete sampled recipe. Twenty-three
 new backend identities save/reopen/replay successfully; the one exp-overflow case
@@ -106,14 +106,14 @@ matrix families, both noise orders, calibration replay, row/context independence
 corrupted bindings and exact parameter/working-byte boundaries. These checks do
 not substitute for the independent numerical evidence below.
 
-[Standards review](research/0028-source-matrix-standards.txt) finds no documented
+[Standards review](evidence/issue-28/legacy-research/0028-source-matrix-standards.txt) finds no documented
 violations and one advisory duplicated-stage-planning concern. The two paths
 currently agree on retained costs; future wrapper changes must keep their planning
 and accounting aligned. This is separate from mathematical acceptance.
 
 ## Independent spec and numerical verification
 
-The [independent review](research/0028-source-matrix-spec-review.txt) gives scoped
+The [independent review](evidence/issue-28/legacy-research/0028-source-matrix-spec-review.txt) gives scoped
 PASS with no implementation defect identified. Forty-five fixed cases independently
 reconstruct all five matrix families, kernel points, flattened transformations,
 ancestral fitting and query generation across mixed widths, placements, vector laws
@@ -141,7 +141,7 @@ eight observed features from seven channels; the original failure is retained,
 and the complete corrected two-feature fixture passes. Neither harness stop is
 reported as an implementation rejection or silently omitted.
 
-[Raw evidence](research/0028-source-matrix-spec-artifacts.json) retains 1,294 files
+[Raw evidence](evidence/issue-28/legacy-research/0028-source-matrix-spec-artifacts.json) retains 1,294 files
 in fourteen ordered ZIP byte parts, including original stopped runs, diagnoses,
 corrected complete runs, inputs, recipes, saved workflows, exact script/import
 hashes and custody. Concatenate parts without separators and verify the manifest
@@ -169,19 +169,19 @@ replaced. Failures are explicit exponential or integer/ReLU/signed-power overflo
 
 | Profile suffix | Valid / attempted | Summary and artifacts |
 | --- | --- | --- |
-| standard | 192 / 192 | [summary](research/0028-source-matrix-census-standard.json), [artifacts](research/0028-source-matrix-census-standard-artifacts.json) |
-| standard-refreshed | 191 / 192 | [summary](research/0028-source-matrix-census-standard-refreshed.json), [artifacts](research/0028-source-matrix-census-standard-refreshed-artifacts.json) |
-| standard-local | 192 / 192 | [summary](research/0028-source-matrix-census-standard-local.json), [artifacts](research/0028-source-matrix-census-standard-local-artifacts.json) |
-| standard-global | 191 / 192 | [summary](research/0028-source-matrix-census-standard-global.json), [artifacts](research/0028-source-matrix-census-standard-global-artifacts.json) |
-| plain | 185 / 192 | [summary](research/0028-source-matrix-census-plain.json), [artifacts](research/0028-source-matrix-census-plain-artifacts.json) |
-| plain-refreshed | 186 / 192 | [summary](research/0028-source-matrix-census-plain-refreshed.json), [artifacts](research/0028-source-matrix-census-plain-refreshed-artifacts.json) |
-| plain-local | 191 / 192 | [summary](research/0028-source-matrix-census-plain-local.json), [artifacts](research/0028-source-matrix-census-plain-local-artifacts.json) |
-| plain-global | 181 / 192 | [summary](research/0028-source-matrix-census-plain-global.json), [artifacts](research/0028-source-matrix-census-plain-global-artifacts.json) |
+| standard | 192 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-matrix-census-standard.json), [artifacts](evidence/issue-28/legacy-research/0028-source-matrix-census-standard-artifacts.json) |
+| standard-refreshed | 191 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-matrix-census-standard-refreshed.json), [artifacts](evidence/issue-28/legacy-research/0028-source-matrix-census-standard-refreshed-artifacts.json) |
+| standard-local | 192 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-matrix-census-standard-local.json), [artifacts](evidence/issue-28/legacy-research/0028-source-matrix-census-standard-local-artifacts.json) |
+| standard-global | 191 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-matrix-census-standard-global.json), [artifacts](evidence/issue-28/legacy-research/0028-source-matrix-census-standard-global-artifacts.json) |
+| plain | 185 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-matrix-census-plain.json), [artifacts](evidence/issue-28/legacy-research/0028-source-matrix-census-plain-artifacts.json) |
+| plain-refreshed | 186 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-matrix-census-plain-refreshed.json), [artifacts](evidence/issue-28/legacy-research/0028-source-matrix-census-plain-refreshed-artifacts.json) |
+| plain-local | 191 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-matrix-census-plain-local.json), [artifacts](evidence/issue-28/legacy-research/0028-source-matrix-census-plain-local-artifacts.json) |
+| plain-global | 181 / 192 | [summary](evidence/issue-28/legacy-research/0028-source-matrix-census-plain-global.json), [artifacts](evidence/issue-28/legacy-research/0028-source-matrix-census-plain-global-artifacts.json) |
 
 Every header/recipe identity and complete failed record is published. Successful
 raw recipes and task archives are explicitly LOCAL_ONLY, with hashes and
 reproducible controls retained. Timing and process peak RSS are NOT_MEASURED.
-The [occurrence counts](research/0028-source-matrix-census-coverage.json) cover all
+The [occurrence counts](evidence/issue-28/legacy-research/0028-source-matrix-census-coverage.json) cover all
 31 primitive kinds and all five matrix families across attempted recipes; these
 are pooled occurrence counts, not per-profile exhaustive coverage or efficacy.
 

@@ -146,9 +146,9 @@ and the twelve new profile/topology save/replay combinations. Full checks, indep
 ## Reproduction of development checks
 
 Retained raw logs, exact argument lists and environment selection:
-[categorical laws/admission](research/0028-shared-development-categorical.json),
-[matrix bindings](research/0028-shared-development-bindings.json), and
-[profile save/reopen/replay](research/0028-shared-development-profiles.json).
+[categorical laws/admission](evidence/issue-28/legacy-research/0028-shared-development-categorical.json),
+[matrix bindings](evidence/issue-28/legacy-research/0028-shared-development-bindings.json), and
+[profile save/reopen/replay](evidence/issue-28/legacy-research/0028-shared-development-profiles.json).
 These include uncommitted test additions during development; they do not claim
 immutable-revision suite coverage. Full-suite evidence is retained separately.
 
@@ -168,16 +168,16 @@ profile/topology checks. Actual browser/Colab execution is still outstanding.
 
 ## Frozen-checkpoint verification
 
-At `47630e8`, [full repository checks](research/0028-shared-check-47630e8.txt) pass
+At `47630e8`, [full repository checks](evidence/issue-28/legacy-research/0028-shared-check-47630e8.txt) pass
 **648 tests, one skipped**, including all static gates. The skip is the existing
 CUDA case on this CPU-only environment. Smoke/eval-smoke remain NOT_AVAILABLE:
 the checkout exposes no train/eval CLI. This is the initial, subsequently rejected source checkpoint; the repair and final
 verification appear below. Evidence and census-program changes are separate.
 
-The original [standards review](research/0028-shared-standards-initial.md) identified
+The original [standards review](evidence/issue-28/legacy-research/0028-shared-standards-initial.md) identified
 one P2 missing evidence-publication path and a nonblocking duplication heuristic
 for scalar versus singleton-shape weight-prior requests. Its
-[documentation-only follow-up](research/0028-shared-standards-delta.txt) confirms
+[documentation-only follow-up](evidence/issue-28/legacy-research/0028-shared-standards-delta.txt) confirms
 that all ten development logs match the originals and resolves the publication-path
 finding. Original historical source snapshots are not represented as verified.
 The follow-up does not rerun or broaden the source review.
@@ -202,17 +202,17 @@ remain in the valid denominator. These are coverage observations, not predictive
 quality or source-joint-prior acceptance.
 
 Published summaries:
-[shared](research/0028-shared-census-shared.json),
-[refreshed](research/0028-shared-census-refreshed.json),
-[local](research/0028-shared-census-local.json), and
-[global](research/0028-shared-census-global.json).
+[shared](evidence/issue-28/legacy-research/0028-shared-census-shared.json),
+[refreshed](evidence/issue-28/legacy-research/0028-shared-census-refreshed.json),
+[local](evidence/issue-28/legacy-research/0028-shared-census-local.json), and
+[global](evidence/issue-28/legacy-research/0028-shared-census-global.json).
 Each manifest retains every attempt's header/recipe hash, all complete failed
 records in ordered reconstructable byte parts, and hashes of the local raw JSONL
 and saved task archives:
-[shared manifest](research/0028-shared-census-artifacts-shared.json),
-[refreshed manifest](research/0028-shared-census-artifacts-refreshed.json),
-[local manifest](research/0028-shared-census-artifacts-local.json), and
-[global manifest](research/0028-shared-census-artifacts-global.json).
+[shared manifest](evidence/issue-28/legacy-research/0028-shared-census-artifacts-shared.json),
+[refreshed manifest](evidence/issue-28/legacy-research/0028-shared-census-artifacts-refreshed.json),
+[local manifest](evidence/issue-28/legacy-research/0028-shared-census-artifacts-local.json), and
+[global manifest](evidence/issue-28/legacy-research/0028-shared-census-artifacts-global.json).
 Successful raw recipes and archives remain local, explicitly LOCAL_ONLY in those
 manifests. Source/profile/seed/task controls and the census program reproduce them.
 
@@ -230,26 +230,26 @@ established by this census. The complete issue #28 goal remains active.
 ### Preserving subnormal categorical mass
 
 The initial source at `47630e8` is **SCOPED_REJECT** despite its passing full suite
-and broad compatibility checks. The [independent review](research/0028-shared-spec-reject.md)
+and broad compatibility checks. The [independent review](evidence/issue-28/legacy-research/0028-shared-spec-reject.md)
 found that construction unnecessarily required a representable binary64 probability
-view. Its [input](research/0028-shared-subnormal-input.json) has positive masses
+view. Its [input](evidence/issue-28/legacy-research/0028-shared-subnormal-input.json) has positive masses
 `[1.2247448713915892, 5e-324, 1.2247448713915892]`. An exact unit of 0.5 falls strictly
 inside the middle bin: the exact halfway mass is the first mass plus half of the
-positive middle mass. The [original rejection](research/0028-shared-subnormal-reject.json)
-and [source/verification receipt](research/0028-shared-spec-reject-receipt.json) remain
+positive middle mass. The [original rejection](evidence/issue-28/legacy-research/0028-shared-subnormal-reject.json)
+and [source/verification receipt](evidence/issue-28/legacy-research/0028-shared-spec-reject-receipt.json) remain
 retained; earlier passing checks do not erase this finding.
 
 Repair `639dd2a` removes the display requirement from construction. Exact mass
 selection and JSON replay preserve the middle bin, `log_probabilities` exposes a
 finite log probability for every positive represented mass (negative infinity for
 zero mass), and only the unrepresentable binary64 probability view raises an
-explicit error. [Regression RED](research/0028-shared-subnormal-red.txt) and
-[GREEN](research/0028-shared-subnormal-green.txt) are retained. Independent repair
+explicit error. [Regression RED](evidence/issue-28/legacy-research/0028-shared-subnormal-red.txt) and
+[GREEN](evidence/issue-28/legacy-research/0028-shared-subnormal-green.txt) are retained. Independent repair
 verification and final full-check results are retained separately below.
 
 All **768 retained census recipe identities** resample identically at `639dd2a`.
-The [identity-only receipt](research/0028-shared-census-identity-receipt.json),
-[individual outcomes](research/0028-shared-census-identity-artifacts.json), and
+The [identity-only receipt](evidence/issue-28/legacy-research/0028-shared-census-identity-receipt.json),
+[individual outcomes](evidence/issue-28/legacy-research/0028-shared-census-identity-artifacts.json), and
 [portable identity program](../scripts/verify_shared_census_identity.py) qualify
 reuse of the earlier census recipes, including the four failed-generation recipes.
 This is not a fresh generation census. The sole source-file delta from the census
@@ -258,11 +258,11 @@ is the categorical probability-view repair; generation/matrix code is unchanged.
 
 ### Final repaired-source verification
 
-At `639dd2a`, [full repository checks](research/0028-shared-check-639dd2a.txt)
+At `639dd2a`, [full repository checks](evidence/issue-28/legacy-research/0028-shared-check-639dd2a.txt)
 pass **649 tests, one skipped**, including all static gates. The skip remains the
 CUDA case. Smoke/eval-smoke are NOT_AVAILABLE, as above.
 
-The [independent repair review](research/0028-shared-spec-repair.txt) reports
+The [independent repair review](evidence/issue-28/legacy-research/0028-shared-spec-repair.txt) reports
 **PASS_SCOPED_REPAIR**: 33 categorical/admission/malformed probes, eight boundary
 and log-view probes, two extreme constructor/decoder checks, and 124 matrix probes
 (**167 total**). Matrix coverage comprises 96 controlled configurations, twelve
@@ -273,7 +273,7 @@ generated draw was retried. The receipt verifies all 141 tracked source files an
 63 imported module paths/hashes; the independent Decimal log-probability oracle's
 maximum observed absolute error is zero within these fixtures.
 
-[Raw evidence](research/0028-shared-repair-artifacts.json) includes all final raw
+[Raw evidence](evidence/issue-28/legacy-research/0028-shared-repair-artifacts.json) includes all final raw
 outputs, complete receipt, saved synthetic backend archives and original harness
 error logs in bounded ZIP bundles. Adjacent manifests contain exact member hashes;
 extract the bundles into one new directory to reconstruct the retained run layout.

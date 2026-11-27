@@ -142,7 +142,7 @@ coercion and typecheck issue were corrected; their failed logs remain retained.
 
 Frozen source: `be3643989df7349a295a62e242db9522a03cda5d`; comparison base:
 `800af3e4cd0888fcea5232df452490b65a7a3f0f`.
-[Standards review](research/0028-joint-plans-standards-be36439.txt) found no
+[Standards review](evidence/issue-28/legacy-research/0028-joint-plans-standards-be36439.txt) found no
 documented-rule breaches and two nonblocking P3 heuristics: repeated operation-path
 decoding and the converter-input helper's `_target` name. No source changes were
 made for these suggestions during the review freeze.
@@ -150,13 +150,13 @@ made for these suggestions during the review freeze.
 Full `make check` at that source passed **835 tests, one skipped**, including all
 static gates; pytest took 449.83 seconds. The command uses the environment above
 with `make check` replacing the focused test invocation.
-[Raw full output](research/0028-joint-plans-check-be36439.txt) and
-[author archive metadata](research/0028-joint-plans-development.json) retain
+[Raw full output](evidence/issue-28/legacy-research/0028-joint-plans-check-be36439.txt) and
+[author archive metadata](evidence/issue-28/legacy-research/0028-joint-plans-development.json) retain
 23 development/check/help/report files. The archive includes every file's length
 and SHA256 in `FILES.json`; all entries were read back and verified after packaging.
 Intermediate RED/GREEN and tooling failures remain separate from frozen-source
 acceptance. Raw logs are preserved byte-for-byte.
-[Publication gates](research/0028-joint-plans-publication-gates.txt) pass checkout,
+[Publication gates](evidence/issue-28/legacy-research/0028-joint-plans-publication-gates.txt) pass checkout,
 hooks, tracked-file and artifact-size checks, formatting, lint and file-token caps.
 Source/tests remain identical to the frozen source; these gates cover the added
 documentation and verifier programs without repeating the unchanged full suite.
@@ -167,9 +167,9 @@ converter variants/switches, both batch policies, arithmetic, generation/JSON/tr
 binding corruption, exact limits and late-failure rollback are covered. All 162
 legacy comparisons match the base byte-for-byte: 159 completed results and three
 unchanged numerical failures. Every imported module is fingerprinted per program.
-[Report](research/0028-joint-plans-spec-report.txt),
-[totals](research/0028-joint-plans-spec-totals.json),
-[exact reproduction and environment](research/0028-joint-plans-spec-reproduction.txt).
+[Report](evidence/issue-28/legacy-research/0028-joint-plans-spec-report.txt),
+[totals](evidence/issue-28/legacy-research/0028-joint-plans-spec-totals.json),
+[exact reproduction and environment](evidence/issue-28/legacy-research/0028-joint-plans-spec-reproduction.txt).
 
 Three verifier runtime mistakes (catalog transcription, local-preference semantics
 and a decoder-name typo), intermediate lint failures and their exact programs and
@@ -178,7 +178,7 @@ outputs remain retained. None is a product REJECT. The six final programs under
 The legacy fixture program extends the previous verifier with six context cases;
 the independent arithmetic checks do not call production helpers as their oracle.
 
-The current [CLI help](research/0028-joint-plans-cli-help.txt) exposes replay, oracle and
+The current [CLI help](evidence/issue-28/legacy-research/0028-joint-plans-cli-help.txt) exposes replay, oracle and
 diagnose-priors; train/eval commands are absent, so the conditional smoke targets
 remain NOT_AVAILABLE. An initial `python -m r0` help attempt failed because this
 package has no `__main__`; the corrected console-entrypoint output is retained.
@@ -189,7 +189,7 @@ made by this component.
 
 ## Retained reproduction
 
-[Archive metadata](research/0028-joint-plans-spec-artifacts.json) pins both parts,
+[Archive metadata](evidence/issue-28/legacy-research/0028-joint-plans-spec-artifacts.json) pins both parts,
 the complete archive and the original 1,174-entry manifest. The archive retains
 841 non-source files, with 578 duplicate paths restored through a map. Source and
 base tarballs/exports are reconstructed from pinned Git objects and checked against
@@ -197,12 +197,12 @@ their original byte hashes. Restore to a new directory from this repository:
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-joint-plans-spec-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-joint-plans-spec-artifacts.json \
   /tmp/joint-plans-recovered --repo "$PWD"
 ```
 
 This recovery was executed successfully for every original manifest entry;
-[receipt](research/0028-joint-plans-spec-recovery.json). Recovery verifies retained
+[receipt](evidence/issue-28/legacy-research/0028-joint-plans-spec-recovery.json). Recovery verifies retained
 artifacts; it does not count as fresh behavioral execution. For a fresh run, follow
 the restored `REPRODUCE.txt`, copying programs and exports into a new replay
 directory before running `RUN.sh`; keep retained outputs intact. Existing local

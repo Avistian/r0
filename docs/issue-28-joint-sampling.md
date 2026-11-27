@@ -123,13 +123,13 @@ independent product defect was found; that run is INCOMPLETE, not a suite pass.
 
 Source `662fb89e098126990c2b6d5a86a4e6c189fc0321` passes `make check`: **825 passed,
 one skipped**, all static gates, 447.43 seconds for pytest.
-[Raw full output](research/0028-joint-sampling-check-662fb89.txt).
+[Raw full output](evidence/issue-28/legacy-research/0028-joint-sampling-check-662fb89.txt).
 Run `UV_CACHE_DIR=/tmp/r0-28-uv-cache
 UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv make check` from this checkout.
 Training/evaluation smoke targets remain NOT_AVAILABLE: current
-[CLI help](research/0028-joint-sampling-cli-help.txt) has no train/eval commands.
+[CLI help](evidence/issue-28/legacy-research/0028-joint-sampling-cli-help.txt) has no train/eval commands.
 
-The fresh [independent specification report](research/0028-joint-sampling-spec-report.txt)
+The fresh [independent specification report](evidence/issue-28/legacy-research/0028-joint-sampling-spec-report.txt)
 accepts this component: 286 assertions, including 165 expected rejections.
 Every one of 156 legacy pairs matches the baseline `32c24ec`: 153 completed
 serialized records/generated outputs and three unchanged numerical failures.
@@ -139,9 +139,9 @@ outputs remain retained. It is not a product failure. These comparisons use the
 same fixture inputs across source heads; they do not establish source-library RNG
 parity or scientific usefulness.
 
-Standards retains the [original documentation rejection](research/0028-joint-sampling-standards-2812d23.txt),
-then accepts the [narrow repair and documentation remedy](research/0028-joint-sampling-standards-662fb89.txt).
-The [mirror receipt](research/0028-joint-sampling-standards-mirror-662fb89.txt) resolves
+Standards retains the [original documentation rejection](evidence/issue-28/legacy-research/0028-joint-sampling-standards-2812d23.txt),
+then accepts the [narrow repair and documentation remedy](evidence/issue-28/legacy-research/0028-joint-sampling-standards-662fb89.txt).
+The [mirror receipt](evidence/issue-28/legacy-research/0028-joint-sampling-standards-mirror-662fb89.txt) resolves
 its remaining local-log condition. There are no source-level hard findings; the
 nonblocking duplicated transaction-copy-list advisory remains. Neither delta
 acceptance nor local log mirroring is a whole-issue verdict.
@@ -149,8 +149,8 @@ acceptance nor local log mirroring is a whole-issue verdict.
 ## Retained reproduction
 
 Three exact executed programs live in [scripts/verify_joint_sampling](../scripts/verify_joint_sampling/).
-[Independent commands](research/0028-joint-sampling-spec-reproduction.txt),
-[totals](research/0028-joint-sampling-spec-totals.json) and both complete raw
+[Independent commands](evidence/issue-28/legacy-research/0028-joint-sampling-spec-reproduction.txt),
+[totals](evidence/issue-28/legacy-research/0028-joint-sampling-spec-totals.json) and both complete raw
 evidence archives retain their inputs, rejected records, outputs and environments.
 The accepted archive preserves 472 non-source logical files with 173 identical
 copies reconstructed through a map; Git reconstructs source exports and tar files.
@@ -161,17 +161,17 @@ Restore and verify from the repository root, using fresh output paths:
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-joint-sampling-spec-artifacts.json /tmp/joint-evidence-accepted
+  docs/evidence/issue-28/legacy-research/0028-joint-sampling-spec-artifacts.json /tmp/joint-evidence-accepted
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-joint-sampling-reject-artifacts.json /tmp/joint-evidence-rejected
+  docs/evidence/issue-28/legacy-research/0028-joint-sampling-reject-artifacts.json /tmp/joint-evidence-rejected
 ```
 
-Both restoration paths were executed: [accepted receipt](research/0028-joint-sampling-spec-recovery.json),
-[rejected receipt](research/0028-joint-sampling-reject-recovery.json).
+Both restoration paths were executed: [accepted receipt](evidence/issue-28/legacy-research/0028-joint-sampling-spec-recovery.json),
+[rejected receipt](evidence/issue-28/legacy-research/0028-joint-sampling-reject-recovery.json).
 The recovery program verifies archive parts, Git exports and every original
 manifest entry. Recovery is artifact verification; fresh behavioral execution uses
 the retained commands with the recovered source directory as `PYTHONPATH`.
-The [author development archive](research/0028-joint-sampling-development.json)
+The [author development archive](evidence/issue-28/legacy-research/0028-joint-sampling-development.json)
 separately retains initial failures, RED/GREEN logs and the interrupted full run.
 
 No predictive, GPU, hosted, browser or full issue-completion claim is made.

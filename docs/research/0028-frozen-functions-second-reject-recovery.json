@@ -1,8 +1,0 @@
-{
-  "verdict": "RESTORED_AND_VERIFIED",
-  "metadata": "/tmp/r0-28/docs/research/0028-frozen-functions-second-reject-artifacts.json",
-  "output": "/tmp/r0-28-functions-second-reject-recovered",
-  "source": "c58706ec044568cc6b449a428c32d93c9b5ca7a1",
-  "manifest_entries": 369,
-  "archive_sha256": "8809117745544dd0415cba887e8333bfa85f58967957d5d133cce52cf0802dcb"
-}

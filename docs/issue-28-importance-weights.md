@@ -97,12 +97,12 @@ CUDA behavior and complete browser/Colab acceptance are NOT_MEASURED/NOT_RUN.
 `make check` passes **613 tests, 1 skipped** with all static gates passing.
 It began at `fc0265b`; only the documentation commit `e6d8faa` landed while it ran.
 Package and test bytes are identical at those revisions. The
-[complete log](research/0028-importance-check-e6d8faa.txt) and
-[revision/context receipt](research/0028-importance-check-context.json) retain that
+[complete log](evidence/issue-28/legacy-research/0028-importance-check-e6d8faa.txt) and
+[revision/context receipt](evidence/issue-28/legacy-research/0028-importance-check-context.json) retain that
 qualification. The existing GPU agreement test is skipped because CUDA is absent;
 T7/T12 train/eval CLI commands remain unavailable, so smoke/eval-smoke are NOT_AVAILABLE.
 
-The [independent spec review](research/0028-importance-spec-review.md) accepts only
+The [independent spec review](evidence/issue-28/legacy-research/0028-importance-spec-review.md) accepts only
 this increment: **2,134 numerical checks**, 384 sampled recipes, four actual saved
 backend sessions, and all **315 legacy outcomes**. The numerical oracle evaluates
 Decimal exponential/square-root arithmetic independently of the implementation's
@@ -118,17 +118,17 @@ one declared forward example. Vector allocation ordering is source-reviewed.
 Four backend cases cover forward/layered/redirection at seed 28 and an additional
 explicit layered seed 0. The seed-28 layered graph has no nonroot projection and
 remains valid. An initial oracle incorrectly required a nonempty projection trace;
-that [harness error](research/0028-importance-harness-error.md) is retained separately.
+that [harness error](evidence/issue-28/legacy-research/0028-importance-harness-error.md) is retained separately.
 A second passing run verifies final import formatting; neither was a product rejection.
 
-[Standards review](research/0028-importance-standards.md) found no hard violations.
+[Standards review](evidence/issue-28/legacy-research/0028-importance-standards.md) found no hard violations.
 The existing repeated-profile-registry heuristic remains nonblocking.
 
-The [receipt](research/0028-importance-receipt.json) records exact revisions,
+The [receipt](evidence/issue-28/legacy-research/0028-importance-receipt.json) records exact revisions,
 immutable archive hashes, interpreter, commands, program hashes and outcomes.
-[Numeric details](research/0028-importance-numeric.json),
-[sampling diagnostics](research/0028-importance-sampled-laws.json), and the
-[ordered artifact manifest](research/0028-importance-artifacts.json) preserve the
+[Numeric details](evidence/issue-28/legacy-research/0028-importance-numeric.json),
+[sampling diagnostics](evidence/issue-28/legacy-research/0028-importance-sampled-laws.json), and the
+[ordered artifact manifest](evidence/issue-28/legacy-research/0028-importance-artifacts.json) preserve the
 reported checks, resource events and legacy outcomes. Split arrays reconstruct the
 original values exactly. Full raw records remain at
 `/tmp/importance-spec-e6d8faa/portable-run-02/`.
@@ -158,7 +158,7 @@ The fixed seed-28 census attempted 64 recipes for each of three graph families,
 cycling regression/binary/multiclass controls: **191 valid / 192 attempted**.
 Forward task 47 (multiclass) failed with nonfinite integer-power activation output;
 it was not retried, replaced or removed. The
-[summary and raw-artifact hashes](research/0028-importance-census.json) include its
+[summary and raw-artifact hashes](evidence/issue-28/legacy-research/0028-importance-census.json) include its
 full recipe as a header plus ordered node parts, with a verified reconstruction
 hash. Raw JSONL and saved groups remain at `/tmp/r0-28-importance-census-e6d8faa/`.
 Recipes are captured in memory before generation; JSONL is written only after a

@@ -113,11 +113,11 @@ function evaluation is the earlier [separate checkpoint](issue-28-frozen-functio
 
 ## Retained evidence and portable replay
 
-The [independent report](research/0028-joint-function-plans-spec-report.md),
-[standards report](research/0028-joint-function-plans-standards.txt),
-[full check](research/0028-joint-function-plans-check-a6ab8c7.txt),
-[development manifest](research/0028-joint-function-plans-development.json) and
-[independent archive metadata](research/0028-joint-function-plans-spec-artifacts.json)
+The [independent report](evidence/issue-28/legacy-research/0028-joint-function-plans-spec-report.md),
+[standards report](evidence/issue-28/legacy-research/0028-joint-function-plans-standards.txt),
+[full check](evidence/issue-28/legacy-research/0028-joint-function-plans-check-a6ab8c7.txt),
+[development manifest](evidence/issue-28/legacy-research/0028-joint-function-plans-development.json) and
+[independent archive metadata](evidence/issue-28/legacy-research/0028-joint-function-plans-spec-artifacts.json)
 retain the inputs, raw outcomes and historical harness failures. Portable replays
 repeat existing cases; they do not add coverage counts. The original artifact set
 remains byte-identical within the recovered bundle's `original/` directory.
@@ -126,7 +126,7 @@ Recover the evidence into a new directory:
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-joint-function-plans-spec-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-joint-function-plans-spec-artifacts.json \
   /tmp/function-plan-evidence
 ```
 

@@ -132,20 +132,20 @@ the four previous joint-plan/context test files: 44 cases pass. Type checking
 reports zero errors. Frozen source is
 `10d9b6c55107ff55c7e710f9adc01f96fc3c491b`, compared with base
 `1b214e44215e48ce964ea28818b1c5a14c9c14ca`.
-[Standards review](research/0028-joint-matrices-standards-10d9b6c.txt) found no
+[Standards review](evidence/issue-28/legacy-research/0028-joint-matrices-standards-10d9b6c.txt) found no
 documented-rule violations and one nonblocking repeated-family-switch heuristic.
 Full `make check` passed **853 tests, one skipped**, including all static gates;
 pytest took 452.53 seconds. The full command uses the environment above with
 `make check` replacing the focused invocation.
-[Raw output](research/0028-joint-matrices-check-10d9b6c.txt) and
-[author archive metadata](research/0028-joint-matrices-development.json) retain
+[Raw output](evidence/issue-28/legacy-research/0028-joint-matrices-check-10d9b6c.txt) and
+[author archive metadata](evidence/issue-28/legacy-research/0028-joint-matrices-development.json) retain
 25 development/check/report/help files. The archive contains per-file lengths and
 hashes in `FILES.json`; every entry was read back and verified after packaging.
 Raw logs preserve intermediate RED/GREEN and tooling failures unchanged.
-[Publication gates](research/0028-joint-matrices-publication-gates.txt) pass
+[Publication gates](evidence/issue-28/legacy-research/0028-joint-matrices-publication-gates.txt) pass
 checkout/hooks, tracked-file/artifact limits, formatting, lint and file-token caps.
 The documentation and verifier publication preserves frozen source/tests.
-The [CLI help](research/0028-joint-matrices-cli-help.txt) still lacks train/eval:
+The [CLI help](evidence/issue-28/legacy-research/0028-joint-matrices-cli-help.txt) still lacks train/eval:
 conditional `make smoke` and `make eval-smoke` are NOT_AVAILABLE.
 Independent specification review: **PASS_COMPONENT**, with 1,972 assertions and
 341 expected rejections. Its 192-configuration grid covers all families, all four
@@ -155,9 +155,9 @@ Literal arithmetic checks source raw order, factor-column orientation, signed lo
 scales, distances, flattened activation and all jitter stages. Eight retained
 branch fixtures reach generation, recipe JSON and numerical traces for every
 member. Exact/one-below gates cover every branch tree, plus late rollback.
-[Report](research/0028-joint-matrices-spec-report.txt),
-[totals](research/0028-joint-matrices-spec-totals.json),
-[commands and environment](research/0028-joint-matrices-spec-reproduction.txt).
+[Report](evidence/issue-28/legacy-research/0028-joint-matrices-spec-report.txt),
+[totals](evidence/issue-28/legacy-research/0028-joint-matrices-spec-totals.json),
+[commands and environment](evidence/issue-28/legacy-research/0028-joint-matrices-spec-reproduction.txt).
 
 All 162 fresh legacy comparisons match the base byte-for-byte: 159 completed
 results and three unchanged numerical failures. Two verifier runtime mistakes
@@ -169,7 +169,7 @@ the verifier uses isolated source exports rather than the working checkout.
 
 ## Retained reproduction
 
-[Archive metadata](research/0028-joint-matrices-spec-artifacts.json) pins both
+[Archive metadata](evidence/issue-28/legacy-research/0028-joint-matrices-spec-artifacts.json) pins both
 archive parts and the original 2,560-entry manifest. There are 667 retained
 non-source files, with 173 duplicate paths restored by a map. Source/base tarballs
 and exports are reconstructed from pinned Git objects and checked against their
@@ -177,12 +177,12 @@ original byte hashes. From this repository, restore to a new directory:
 
 ```sh
 python3 scripts/recover_joint_sampling.py \
-  docs/research/0028-joint-matrices-spec-artifacts.json \
+  docs/evidence/issue-28/legacy-research/0028-joint-matrices-spec-artifacts.json \
   /tmp/joint-matrices-recovered --repo "$PWD"
 ```
 
 Recovery was executed and every original manifest entry verified;
-[receipt](research/0028-joint-matrices-spec-recovery.json). This verifies retained
+[receipt](evidence/issue-28/legacy-research/0028-joint-matrices-spec-recovery.json). This verifies retained
 artifacts, not fresh behavioral execution. Follow the restored `REPRODUCE.txt`
 and `RUN.sh` for a fresh run in a new directory, preserving the retained outputs.
 The existing Python/NumPy/Torch environment is deliberately reused. Cached source

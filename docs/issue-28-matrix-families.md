@@ -150,7 +150,7 @@ acceptance.
 ## Verification at the frozen revision
 
 `make check` at `7eea0bd` passes **623 tests, 1 skipped**, with all static gates
-passing. The [complete log](research/0028-matrices-check-7eea0bd.txt) retains the
+passing. The [complete log](evidence/issue-28/legacy-research/0028-matrices-check-7eea0bd.txt) retains the
 exact output. Publication adds only documentation and verification programs;
 package and test bytes remain identical to that checked revision. Reproduce with
 `UV_CACHE_DIR=/tmp/r0-28-uv-cache UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv make check`.
@@ -158,7 +158,7 @@ The skip is the existing CUDA agreement check on this CPU-only environment.
 T7/T12 train/eval commands are absent from this checkout; smoke/eval-smoke remain
 NOT_AVAILABLE. These checks are not hosted CI or scientific acceptance.
 
-The [independent spec report](research/0028-matrices-spec-review.md) found no scoped
+The [independent spec report](evidence/issue-28/legacy-research/0028-matrices-spec-review.md) found no scoped
 implementation defect. Fraction/Decimal/analytic calculations pass **224 numerical
 checks**, covering worked geometry, zero/cancellation/extreme inputs, normalization,
 point assignments, raw-stage rejection, parameter accounting and arithmetic limits.
@@ -169,8 +169,8 @@ The independent sample contains **72 recipes**: **71 generated and replayed**, a
 one retained generation failure (mixed profile, forward graph, multiclass, seed 1,
 task 10; nonfinite square activation). All five matrix families, four transformed
 child families and three point-law/base combinations occur. The
-[outcomes](research/0028-matrices-outcomes.json) preserve its denominator and error;
-the [artifact manifest](research/0028-matrices-artifacts.json) retains the complete
+[outcomes](evidence/issue-28/legacy-research/0028-matrices-outcomes.json) preserve its denominator and error;
+the [artifact manifest](evidence/issue-28/legacy-research/0028-matrices-artifacts.json) retains the complete
 failed recipe through a header and ordered compact node arrays. Six actual saved
 backend workflows cover both profiles and all graph families, with zero maximum
 trace target error. This is backend evidence, not browser or Colab interaction.
@@ -185,14 +185,14 @@ environment, not a cross-platform determinism claim.
 
 The first oracle attempt incorrectly expected a factor exact-work rejection when
 its positive coefficient had rounded to zero, making fallback unnecessary. That
-[harness error](research/0028-matrices-harness-error.json) remains separate from the
+[harness error](evidence/issue-28/legacy-research/0028-matrices-harness-error.json) remains separate from the
 successful corrected run. No candidate source changed to satisfy that correction.
-[Standards review](research/0028-matrices-standards.md) found no hard violations;
+[Standards review](evidence/issue-28/legacy-research/0028-matrices-standards.md) found no hard violations;
 duplicated component-probability normalization is a nonblocking maintainability
 heuristic. Standards and numerical/spec findings are separate axes.
 
-The [receipt](research/0028-matrices-receipt.json) and
-[final package check](research/0028-matrices-final-package.json) bind the published
+The [receipt](evidence/issue-28/legacy-research/0028-matrices-receipt.json) and
+[final package check](evidence/issue-28/legacy-research/0028-matrices-final-package.json) bind the published
 programs to their independently executed bytes. The ordered artifact manifest
 preserves all 224 numeric records, admission events, legacy outcomes and the
 independent failed recipe; concatenation reconstructs each original value exactly.
@@ -232,11 +232,11 @@ Both retain all failures with no retry, replacement or selection filter.
   activation support appears in full. These are record counts, not numerical ranks
   or proof of complete source activation weighting. Valid flags overlap: 73
   disconnected, 20 inactive ReLU, 23 saturation and three zero target dispersion.
-  [Summary and raw hashes](research/0028-matrices-mixed-census.json).
+  [Summary and raw hashes](evidence/issue-28/legacy-research/0028-matrices-mixed-census.json).
 - **Gaussian-only: 190 valid / 192 attempted.** All 1,591 retained projections are
   normalized Gaussian constructions. Forward task 57 (regression) fails in signed
   power; task 58 (binary) fails in integer power. Both full failed recipes are
-  retained and reconstructible from the [summary and ordered parts](research/0028-matrices-gaussian-census.json).
+  retained and reconstructible from the [summary and ordered parts](evidence/issue-28/legacy-research/0028-matrices-gaussian-census.json).
 
 Raw JSONL and saved groups remain at `/tmp/r0-28-matrix-census-7eea0bd/` and
 `/tmp/r0-28-gaussian-matrix-census-7eea0bd/`. Timing and peak memory are NOT_MEASURED.
