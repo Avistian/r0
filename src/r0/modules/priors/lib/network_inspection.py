@@ -1,6 +1,5 @@
 """Original-row architecture stages, separate from surrounding generation process."""
 
-import json
 from collections.abc import Callable, Sequence
 from itertools import accumulate
 from typing import Any
@@ -10,6 +9,11 @@ import torch
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
 from r0.modules.priors.lib.network_evaluation import evaluate_network, evaluate_network_block
+from r0.modules.priors.lib.network_target_trace import (
+    network_target_steps,
+    network_trace_record,
+    validate_network_trace,
+)
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -131,13 +135,10 @@ def standalone_network_steps(
 ) -> dict[str, Any]:
     from r0.modules.priors.lib.network_recipe import generate_network, network_recipe_from_dict
 
-    record = json.loads(task.recipe_json)
+    record = network_trace_record(task)
     recipe = network_recipe_from_dict(record["recipe"], limits=limits or CausalLimits())
     replay = generate_network(recipe, seed=record["seed"], task_id=record["task_id"])
-    if not torch.equal(replay.inputs, task.inputs.cpu()) or not torch.equal(
-        replay.targets, task.targets.cpu()
-    ):
-        raise ValueError("saved network task disagrees with replay")
+    validate_network_trace(task, replay)
     parents = network_steps(
         recipe.function, replay.inputs, prefix="network", indices=indices, add=add
     )
@@ -149,19 +150,13 @@ def standalone_network_steps(
         replay.scores[list(indices)],
         {},
     )
-    add(
-        "targets",
-        "Task targets",
-        ["signal"],
-        "shared target adapter",
-        replay.targets[list(indices), None],
-        {},
-    )
+    target_error = network_target_steps(recipe.task, task, replay, indices, add)
     return {
         "version": "generation-graph-v1",
         "episode_id": task.episode_id,
         "rows": list(indices),
         "component_count": 0,
         "signal_max_error": 0.0,
+        "target_max_error": target_error,
         "architecture": "standalone network; frozen structural dropout",
     }
