@@ -32,16 +32,28 @@ class NumericalParameter:
             raise ValueError("numerical bounds must be ordered finite numbers")
         if self.mode not in ("meta", "local", "global"):
             raise ValueError("unsupported numerical sampling mode")
-        if self.scale not in ("linear", "log") or self.integer not in ("none", "round", "floor"):
+        if self.scale not in ("linear", "log") or self.integer not in (
+            "none",
+            "round",
+            "floor",
+            "source-clip-floor-v1",
+        ):
             raise ValueError("unsupported numerical scale or integer conversion")
         if self.scale == "log" and self.low <= 0:
             raise ValueError("log numerical bounds must be positive")
         if type(self.boundary_mass) is not bool:
             raise ValueError("boundary mass must be boolean")
-        if self.integer == "floor" and (
-            type(self.low) is not int or type(self.high) is not int or self.low >= self.high
+        if self.integer in ("floor", "source-clip-floor-v1") and (
+            type(self.low) is not int
+            or type(self.high) is not int
+            or (self.integer == "floor" and self.low == self.high)
         ):
-            raise ValueError("floor sampling requires distinct ordered integer bounds")
+            message = (
+                "floor sampling requires distinct ordered integer bounds"
+                if self.integer == "floor"
+                else "source floor sampling requires ordered integer bounds"
+            )
+            raise ValueError(message)
         if (
             type(self.shape) is not tuple
             or len(self.shape) > 8
@@ -74,6 +86,10 @@ def _values(request: NumericalParameter, units: tuple[float, ...]) -> tuple[floa
                 value = round(value)
             elif request.integer == "floor":
                 value = max(int(request.low), min(int(request.high) - 1, math.floor(value)))
+            elif request.integer == "source-clip-floor-v1":
+                # Source np.clip uses the upper bound even when high == low,
+                # so randint(2,2) returns 1 while still retaining its named draw.
+                value = min(int(request.high) - 1, max(int(request.low), math.floor(value)))
             values.append(value)
     return tuple(values)
 
