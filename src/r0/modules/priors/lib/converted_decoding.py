@@ -50,7 +50,7 @@ def converted_recipe_from_dict(data: object, *, limits: CausalLimits) -> Convert
         nodes: list[ConvertedCausalNode] = []
         for raw in raw_nodes:
             node = functional_record(raw, ConvertedCausalNode)
-            node["equation"] = functional_node_from_dict(node["equation"])
+            node["equation"] = functional_node_from_dict(node["equation"], limits=declared)
             node["converters"] = tuple(
                 categorical_converter_from_dict(c, limits=declared)
                 for c in functional_array(node.get("converters", ()))

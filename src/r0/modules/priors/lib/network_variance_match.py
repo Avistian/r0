@@ -12,12 +12,13 @@ from r0.modules.priors.lib.frozen_function_evaluation import (
 from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot, snapshot_generator
 from r0.modules.priors.lib.joint_function_admission import function_record_cost
 from r0.modules.priors.lib.joint_point_realization import frozen_matrix
-from r0.modules.priors.lib.joint_root_base import JointRootBase, draw_root_base
+from r0.modules.priors.lib.joint_root_base import JointRootBase
 from r0.modules.priors.lib.network_recipe import NetworkRecipe
 from r0.modules.priors.lib.network_sampling_records import SampledNetwork
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger
 from r0.modules.priors.lib.raw_draw_records import RawDrawRecord
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.source_root_base import functional_root_values
 from r0.modules.priors.lib.weight_geometry import Matrix, matrix_shape
 
 
@@ -115,17 +116,18 @@ class NetworkVarianceMatch:
         ledger = RawDrawLedger()
         with ledger.transactions({"calibration": rng}) as (streams, capture):
             root = self.base.root or JointRootBase("gaussian", self.base.function.input_width)
-            sample = draw_root_base(
+            sample = functional_root_values(
                 root,
                 self.rows,
                 streams["calibration"],
                 capture=capture,
                 owner=("network-variance-match",),
+                limits=self.base.limits,
             )
-        before = _scores(self.base, sample.values, self.before_inputs)
-        after = _scores(self.base, sample.values, self.after_inputs)
+        before = _scores(self.base, frozen_matrix(sample), self.before_inputs)
+        after = _scores(self.base, frozen_matrix(sample), self.after_inputs)
         if (
-            sample.values != self.population
+            frozen_matrix(sample) != self.population
             or before != self.before_scores
             or after != self.after_scores
             or _moments(before) != (self.before_mean, self.before_std)
@@ -175,16 +177,17 @@ def fit_network_variance_match(
     with ledger.transactions({"calibration": rng}) as (streams, capture):
         active = streams["calibration"]
         initial = snapshot_generator(active)
-        sample = draw_root_base(
+        sample = functional_root_values(
             base.root or JointRootBase("gaussian", base.function.input_width),
             rows,
             active,
             capture=capture,
             owner=("network-variance-match",),
+            limits=base.limits,
         )
         before, after = (
-            _scores(base, sample.values, before_inputs),
-            _scores(base, sample.values, after_inputs),
+            _scores(base, frozen_matrix(sample), before_inputs),
+            _scores(base, frozen_matrix(sample), after_inputs),
         )
         bm, bs = _moments(before)
         am, ast = _moments(after)
@@ -193,7 +196,7 @@ def fit_network_variance_match(
             before_inputs,
             after_inputs,
             rows,
-            sample.values,
+            frozen_matrix(sample),
             before,
             after,
             bm,
@@ -203,5 +206,5 @@ def fit_network_variance_match(
             initial,
             snapshot_generator(active),
             capture.freeze(),
-            record_fingerprint((sample.values, before, after)),
+            record_fingerprint((frozen_matrix(sample), before, after)),
         )

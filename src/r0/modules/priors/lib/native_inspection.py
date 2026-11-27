@@ -10,13 +10,13 @@ import torch
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
-from r0.modules.priors.lib.joint_root_base import draw_root_base
 from r0.modules.priors.lib.kumo_product_inspection import kumo_product_steps
 from r0.modules.priors.lib.native_decoding import native_recipe_from_dict
 from r0.modules.priors.lib.native_evaluation import evaluate_native_graph, native_rng
 from r0.modules.priors.lib.native_graph_decoding import native_graph_from_dict
 from r0.modules.priors.lib.network_inspection import network_steps
 from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
+from r0.modules.priors.lib.source_root_base import functional_root_values
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -54,11 +54,12 @@ def native_steps(
             else:
                 assert node.equation.root is not None
                 inputs = torch.tensor(
-                    draw_root_base(
+                    functional_root_values(
                         node.equation.root,
                         recipe.task.rows,
                         native_rng(record["seed"], record["task_id"], "root", i),
-                    ).values,
+                        limits=recipe.limits,
+                    ),
                     dtype=torch.float64,
                 )
                 parents = [f"root-{i}"]

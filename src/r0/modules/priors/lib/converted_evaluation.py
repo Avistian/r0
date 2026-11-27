@@ -7,6 +7,7 @@ import numpy as np
 import torch
 
 from r0.modules.priors.lib.categorical_converter import CategoricalEmission
+from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.converted_causal_records import (
     ConvertedCausalNode,
     ConvertedCausalRecipe,
@@ -18,6 +19,8 @@ from r0.modules.priors.lib.functional_node_evaluation import evaluate_functional
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline, PipelineEvaluation
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
 from r0.modules.priors.lib.representatives import record_fingerprint
+
+_DEFAULT_LIMITS = CausalLimits()
 
 
 @dataclass(frozen=True, slots=True)
@@ -145,6 +148,7 @@ def evaluate_converted_nodes(
     add: Callable[..., None] | None = None,
     indices: Sequence[int] = (),
     execution: ConverterInterventionExecution | None = None,
+    limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> ConvertedEvaluation:
     emissions: dict[tuple[int, str], CategoricalEmission] = {}
     uniforms: dict[tuple[int, str], torch.Tensor] = {}
@@ -176,6 +180,7 @@ def evaluate_converted_nodes(
         add=add,
         indices=indices,
         pipeline_factory=factory,
+        limits=limits,
         execution=execution,
     )
     return ConvertedEvaluation(tuple(states), tuple(readouts), emissions, uniforms)
@@ -213,4 +218,5 @@ def evaluate_converted(
         add=add,
         indices=indices,
         execution=execution,
+        limits=recipe.limits,
     )

@@ -76,7 +76,10 @@ def draw_arguments(
         "random": set(),
         "uniform": {"low", "high"},
         "student_t": {"df"},
+        "zipf": {"exponent"},
         "gamma": {"concentration"},
+        "gamma_vector": {"concentrations"},
+        "multinomial": {"trials", "probabilities"},
         "exponential": {"scale"},
         "integers": {"high"},
         "permutation": {"count"},
@@ -84,6 +87,29 @@ def draw_arguments(
     }
     if distribution not in expected or set(args) != expected[distribution]:
         raise ValueError("unsupported raw draw law or parameter fields")
+    if distribution in ("multinomial", "gamma_vector"):
+        key = "probabilities" if distribution == "multinomial" else "concentrations"
+        vector = args[key]
+        if (
+            not shape
+            or type(vector) is not tuple
+            or len(cast(tuple[Any, ...], vector)) != shape[-1]
+        ):
+            raise ValueError("raw vector law requires its final category dimension")
+        entries = cast(tuple[Any, ...], vector)
+        if distribution == "multinomial":
+            if (
+                type(args["trials"]) is not int
+                or not 1 <= args["trials"] < 2**31
+                or any(not finite_number(v) or not 0 <= v <= 1 for v in entries)
+                or not math.isclose(math.fsum(entries), 1.0, rel_tol=1e-12, abs_tol=1e-12)
+                or math.fsum(entries[:-1]) > 1.0
+            ):
+                raise ValueError(
+                    "raw multinomial requires bounded trials and normalized probabilities"
+                )
+        elif any(not finite_number(v) or v <= 0 for v in entries):
+            raise ValueError("raw vector Gamma concentrations must be positive and finite")
     if distribution == "uniform" and (
         not finite_number(args["low"])
         or not finite_number(args["high"])
@@ -92,6 +118,8 @@ def draw_arguments(
         raise ValueError("raw uniform bounds must be finite and ordered")
     if distribution == "student_t" and (not finite_number(args["df"]) or args["df"] <= 0):
         raise ValueError("raw Student-t degrees must be positive and finite")
+    if distribution == "zipf" and (not finite_number(args["exponent"]) or args["exponent"] <= 1):
+        raise ValueError("raw Zipf exponent must be finite and greater than one")
     if distribution == "exponential" and (not finite_number(args["scale"]) or args["scale"] <= 0):
         raise ValueError("raw exponential scale must be finite and positive")
     if distribution == "gamma" and (
@@ -134,8 +162,14 @@ def numpy_draw(
         values = rng.uniform(args["low"], args["high"], size=shape)
     elif distribution == "student_t":
         values = rng.standard_t(args["df"], size=shape)
+    elif distribution == "zipf":
+        values = rng.zipf(args["exponent"], size=shape)
     elif distribution == "exponential":
         values = rng.exponential(args["scale"], size=shape)
+    elif distribution == "multinomial":
+        values = rng.multinomial(args["trials"], args["probabilities"], size=shape[:-1])
+    elif distribution == "gamma_vector":
+        values = rng.gamma(args["concentrations"], size=shape)
     elif distribution == "gamma":
         values = rng.gamma(args["concentration"], size=shape)
     elif distribution == "integers":
@@ -170,7 +204,7 @@ class RawDrawRecord:
         if self.version != "raw-draw-v1" or type(self.sequence) is not int or self.sequence < 0:
             raise ValueError("raw draw requires its version and nonnegative sequence")
         draw_arguments(self.distribution, self.shape, self.parameters)
-        integer = self.distribution in ("integers", "permutation", "choice")
+        integer = self.distribution in ("integers", "permutation", "choice", "zipf", "multinomial")
         if (
             self.dtype != ("<i8" if integer else "<f8")
             or type(self.values) is not tuple
@@ -182,6 +216,16 @@ class RawDrawRecord:
             for v in self.values
         ):
             raise ValueError("raw draw values must be finite and match their numeric type")
+        if self.distribution == "zipf" and any(value < 1 for value in self.values):
+            raise ValueError("raw Zipf samples must be positive integers")
+        if self.distribution == "multinomial":
+            trials = dict(self.parameters)["trials"]
+            width = self.shape[-1]
+            if any(not 0 <= value <= trials for value in self.values) or any(
+                sum(self.values[start : start + width]) != trials
+                for start in range(0, len(self.values), width)
+            ):
+                raise ValueError("raw multinomial counts must be nonnegative and sum to trials")
         if self.generator not in ("PCG64", "PCG64DXSM", "Philox", "SFC64", "MT19937") or any(
             type(s) is not str or re.fullmatch(r"[0-9a-f]{64}", s) is None
             for s in (self.state_before, self.state_after)

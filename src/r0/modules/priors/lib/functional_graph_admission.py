@@ -5,6 +5,9 @@ from r0.modules.priors.lib.frozen_function_evaluation import function_geometry
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
 from r0.modules.priors.lib.joint_function_admission import function_record_cost
+from r0.modules.priors.lib.prototype_root_base import PrototypeRootBase
+from r0.modules.priors.lib.sampled_source_root_admission import admit_sampled_source_root
+from r0.modules.priors.lib.sampled_source_root_base import SampledSourceRootBase
 
 
 def validate_functional_nodes(
@@ -91,6 +94,27 @@ def admit_functional_graph(
         + 128 * parameters
         + 2 * (storage - 64 * parameters)
     )
+    # Replaying a sampled root's independent construction is additional live work.
+    # Include every root, conservatively retaining all metadata while replay runs.
+    for node in nodes:
+        root = node.root
+        if type(root) is PrototypeRootBase:
+            extra_parameters, extra_working = root.admit(rows, limits)
+            parameters += extra_parameters
+            working += extra_working
+        if type(root) is SampledSourceRootBase:
+            report = admit_sampled_source_root(
+                root.profile.profile,
+                root.law,
+                root.modes,
+                root.calibration_rows,
+                limits,
+                root.raw_limits,
+            )
+            parameters += report["parameters"]
+            working += report["estimated_working_bytes"]
+    if parameters > limits.parameters:
+        raise ValueError("aggregate sampled root graph parameter limit exceeded")
     if working > limits.working_bytes:
         raise ValueError("estimated functional graph working memory exceeds declared limit")
     return {

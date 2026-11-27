@@ -7,6 +7,17 @@ scientific acceptance or whole-issue completion.
 
 ## Latest verified publication checkpoint
 
+Source `dd52a7a70cf38d8cd95e717f9f15bd2ca805c89d` passed full `make check`:
+2,908 passed, one skipped, one warning in 1,696.40 seconds; all static gates passed.
+This adds repaired source-root/profile custody, frozen prototype banks, root-stage
+interventions and guarded local workflows. The [prototype checkpoint](issue-28-prototype-checkpoint.md)
+records scoped independent arithmetic/browser evidence and preserved failures.
+Batch-dependent prototypes, broader paper/beyond-paper options, XGBoost and other
+backend/lifecycle candidates, hosted/resource qualification and the newly identified
+standalone stochastic-target trace dependencies remain outstanding.
+
+## Previous neural-noise publication checkpoint
+
 Source `ceb5e4f66666fe90526640bd97c320d17ea95a5e` passed full `make check`:
 2,554 passed, one skipped, one warning in 1,455.55 seconds; all static gates passed.
 This adds independently reviewed sampled neural hyperpriors, internal neural noise
@@ -16,25 +27,8 @@ actual browser/numerical evidence and preserved rejection history. Source-root a
 prototype integration, XGBoost, wider paper coverage and hosted/resource evidence
 remain separate open work. No whole-issue acceptance is implied.
 
-## Previous network-view publication checkpoint
-
-Source `0935822ab78cb7b49f803f5a68b4a521a38e4d87` passed full `make check`:
-2,488 passed, one skipped, one warning in 1,415.62 seconds; static gates passed.
-The warning is sklearn's high-class-count diagnostic in the observed-class-map
-fixture. This adds network input views, independent variance matching, paired
-workflows and guarded edit/save/curve paths to the previous population/converter
-checkpoint. See the [network-view checkpoint](issue-28-network-view-checkpoint.md)
-for exact scope and retained rejection history.
-
-The first run passed all tests but failed its environment-integrity gate after
-an unrelated focused command changed editable metadata. That FAILED receipt is
-retained separately; the clean rerun on the same frozen source passed all gates.
-The [atomic delivery map](issue-28-atomic-delivery.md) separates mapped behavior
-from unaudited requirements. Hosted/GPU, complete measured envelopes and full
-paper-option coverage remain open. Smoke/eval-smoke remain NOT_AVAILABLE because
-training/evaluation CLI commands are absent. Neural hyperprior profiles,
-internal neural noise and source-specific root profiles remain later candidates
-outside this full-suite result.
+Earlier network-view publication and retained environment-integrity failure history
+are preserved in [the historical checkpoint ledger](issue-28-integration-history.md).
 
 ## Combined checkpoint scoped evidence
 

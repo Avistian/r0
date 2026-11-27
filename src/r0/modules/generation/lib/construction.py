@@ -29,6 +29,16 @@ def construct_graph(
         raise ValueError("construction seed must be an integer in [0, 2**63)")
     fields = _tuples(controls)
     topology = fields.pop("topology")
+    if topology == "prototype-root-network":
+        from r0.modules.generation.lib.prototype_root_construction import (
+            construct_prototype_network,
+        )
+
+        return construct_prototype_network(fields, seed=seed, limits=limits)
+    if topology == "source-root-network":
+        from r0.modules.generation.lib.source_root_construction import construct_source_root_network
+
+        return construct_source_root_network(fields, seed=seed, limits=limits)
     if topology == "network-innovations":
         from r0.modules.generation.lib.network_innovation_construction import (
             construct_network_innovations,
@@ -168,8 +178,12 @@ class GraphConstruction:
     def task_record(self) -> dict[str, Any]:
         """Return preconstruction row geometry; sampled native target type is not yet known."""
         controls = json.loads(self.controls_json)
-        if controls.get("topology") == "network-innovations":
-            return controls["source"]["task"]
+        while controls.get("topology") in (
+            "source-root-network",
+            "network-innovations",
+            "prototype-root-network",
+        ):
+            controls = controls["source"]
         if controls.get("topology") == "sampled-converted":
             request = priors.converted_request_from_dict(
                 controls["request"],

@@ -6,6 +6,7 @@ from typing import Any
 from r0.modules import priors as p
 from r0.modules.explorer.lib.network_hyperprior_examples import network_hyperprior_examples
 from r0.modules.explorer.lib.networks import network_examples
+from r0.modules.explorer.lib.source_root_examples import source_root_examples
 
 
 def network_innovation_examples() -> dict[str, Any]:
@@ -29,6 +30,13 @@ def network_innovation_examples() -> dict[str, Any]:
     # Existing scalar hyperprior variety composes directly, rather than being a
     # disconnected sampler catalog. Default source operational caps stay explicit.
     for name, source in network_hyperprior_examples().items():
+        examples["Noisy " + name] = {
+            "topology": "network-innovations",
+            "source": source,
+            "statistics": asdict(request),
+            "plan": None,
+        }
+    for name, source in source_root_examples().items():
         examples["Noisy " + name] = {
             "topology": "network-innovations",
             "source": source,

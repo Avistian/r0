@@ -128,6 +128,7 @@ def sample_converted_graph(
                         "cpu",
                         capture=capture,
                         owner=("converted", f"receiver:{index}", role),
+                        limits=request.limits,
                     )
                     receipts.append(
                         ParentCalibrationReceipt(index, role, parents, start, len(capture.freeze()))

@@ -7,9 +7,9 @@ import numpy as np
 import torch
 
 from r0.modules.priors.lib.causal_intervention_execution import InterventionExecution
+from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.exogenous import sample_exogenous
 from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_function
-from r0.modules.priors.lib.joint_root_base import draw_root_base
 from r0.modules.priors.lib.native_causal import FrequencyVariableDomain
 from r0.modules.priors.lib.native_vector_intervention_execution import (
     forced_variable,
@@ -20,6 +20,9 @@ from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.signal_noise import signal_noise_scale
+from r0.modules.priors.lib.source_root_base import functional_root_values
+
+_DEFAULT_LIMITS = CausalLimits()
 
 
 @dataclass(frozen=True, slots=True)
@@ -62,6 +65,7 @@ def evaluate_native_vector_graph(
         ),
         device,
         execution=execution,
+        limits=recipe.limits,
     )
 
 
@@ -74,6 +78,7 @@ def evaluate_native_vector_nodes(
     execution: InterventionExecution | None = None,
     capture: RawDrawLedger | None = None,
     owner: tuple[str, ...] = ("native",),
+    limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> NativeVectorEvaluation:
     """Evaluate an already admitted prefix; callers own resource and certificate checks."""
     states: list[torch.Tensor] = []
@@ -102,13 +107,14 @@ def evaluate_native_vector_nodes(
             continue
         if equation.root:
             inputs = torch.tensor(
-                draw_root_base(
+                functional_root_values(
                     equation.root,
                     rows,
                     rng("root", index),
                     capture=capture,
                     owner=(*owner, f"node:{index}", "root"),
-                ).values,
+                    limits=limits,
+                ),
                 dtype=torch.float64,
                 device=device,
             )

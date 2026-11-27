@@ -8,17 +8,20 @@ import numpy as np
 import torch
 
 from r0.modules.priors.lib.causal_intervention_execution import InterventionExecution
+from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.exogenous import sample_exogenous
 from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_function
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
-from r0.modules.priors.lib.joint_root_base import draw_root_base
 from r0.modules.priors.lib.kumo_product_inspection import kumo_product_steps
 from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
 from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger
 from r0.modules.priors.lib.signal_noise import signal_noise_scale
+from r0.modules.priors.lib.source_root_base import functional_root_values
+
+_DEFAULT_LIMITS = CausalLimits()
 
 
 def _constant_diagnostic(
@@ -57,6 +60,7 @@ def evaluate_functional_nodes(
     execution: InterventionExecution | None = None,
     pipeline_factory: Callable[[int, FunctionalCausalNode], PipelineEvaluation] | None = None,
     population_partitions: tuple[tuple[int, ...], ...] = (),
+    limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> list[torch.Tensor]:
     from r0.modules.priors.lib.population_exogenous import population_exogenous
 
@@ -80,19 +84,22 @@ def evaluate_functional_nodes(
         if node.root is not None:
             if population_partitions:
                 inputs = torch.tensor(
-                    population_exogenous(node, index, rows, rng, population_partitions, root=True),
+                    population_exogenous(
+                        node, index, rows, rng, population_partitions, root=True, limits=limits
+                    ),
                     dtype=torch.float64,
                     device=device,
                 )
             else:
-                sample = draw_root_base(
+                sample = functional_root_values(
                     node.root,
                     rows,
                     rng("root-base", index),
                     capture=capture,
                     owner=(*owner, f"node:{index}", "root"),
+                    limits=limits,
                 )
-                inputs = torch.tensor(sample.values, dtype=torch.float64, device=device)
+                inputs = torch.tensor(sample, dtype=torch.float64, device=device)
             if execution:
                 execution.record(index, root=inputs)
             parents = [f"root-{index}"]

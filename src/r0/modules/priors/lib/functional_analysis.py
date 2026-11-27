@@ -268,8 +268,36 @@ def functional_node_certificates(
     convert: Callable[[list[ChannelCertificate]], list[ChannelCertificate]] | None = None,
 ) -> tuple[list[ChannelCertificate], list[ChannelCertificate]]:
     """Analyze one equation with caller-supplied parent state certificates."""
+    from r0.modules.priors.lib.prototype_root_base import PrototypeRootBase
+    from r0.modules.priors.lib.source_root_base import SourceRootBase
+
     width = node.function.output_width
-    if node.root is not None:
+    if isinstance(node.root, PrototypeRootBase):
+        incoming = [
+            ChannelCertificate(
+                frozenset() if constant else frozenset(((index, width),)), math.inf, True
+            )
+            for constant in node.root.frozen.constant_channels
+        ]
+    elif isinstance(node.root, SourceRootBase):
+        incoming = []
+        for j, coordinate in enumerate(node.root.law.coordinates):
+            constant = coordinate.family == "gaussian" and coordinate.scale == 0
+            if coordinate.family == "categorical":
+                constant = sum(p > 0 for p in coordinate.probabilities) == 1
+            bounded = (
+                coordinate.family in ("unit_uniform", "symmetric_uniform", "categorical")
+                or (coordinate.family == "zipf" and coordinate.clip is not None)
+                or constant
+            )
+            incoming.append(
+                ChannelCertificate(
+                    frozenset() if constant else frozenset(((index, width + j),)),
+                    coordinate.moment_order,
+                    bounded,
+                )
+            )
+    elif node.root is not None:
         base = node.root
         bounded = base.family in ("uniform", "ball") or base.covariance_base == "uniform"
         incoming = []
