@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "procedure": "0028-standardization-artifact-recovery.txt",
+  "procedure_sha256": "8244d97d7fb799e992d368ed46b40fc0638da907e64c3974a8551de7cb8647d3",
+  "restored_directory": "/tmp/standardization-retained-1fa9t9mh",
+  "original_manifest_files": 552,
+  "archive_parts": 16,
+  "all_file_hashes_verified": true,
+  "meaning": "Artifact recovery and source reconstruction, not a new numerical execution."
+}

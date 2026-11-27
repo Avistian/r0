@@ -1,0 +1,16 @@
+Standards review — read-only source inspection
+Baseline: b7e755a0b1b505afcd8e2dd2e4ee9b85c9cf7261
+Candidate: 962f0ada62a4eda3e71c45fa45bab0c4f66eb8fe
+Diff: git diff b7e755a0b1b505afcd8e2dd2e4ee9b85c9cf7261...962f0ada62a4eda3e71c45fa45bab0c4f66eb8fe
+Commit: 962f0ad feat(priors): add frozen standalone standardization #28
+Preflight and final status: HEAD equals candidate; only untracked .venv. No checkout, index, source, or environment changes.
+
+Hard violations: none identified in the ten changed files.
+
+Nonblocking heuristic (1): possible Duplicated Code. src/r0/modules/priors/lib/causal_nodes.py:90–96 and src/r0/modules/priors/lib/node_pipeline.py:74–80 both expand the identical admission expression, “type(a) not in (CausalActivation, CalibratedActivation, CalibratedTransform, CalibratedStandardization)”. Subsequent activation additions must keep both lists aligned. Consider a shared internal exact-type admission predicate or tuple. Preserve exact-type validation; broad isinstance acceptance would change the current contract. This extends pre-existing duplication and is a maintainability judgement, not a documented-standard breach or blocker.
+
+Repository overrides and scope: CODING_STANDARDS.md normally requires context-only normalization, but accepted spec decision 12 explicitly authorizes independent calibration for frozen generator mechanisms. The implementation documents that adaptation and does not fit query rows implicitly. The priors lib boundary and public test imports follow src/r0/modules/README.md. Explicit frozen activation records follow the existing domain design; no speculative inheritance concern is raised. ADR 0006 remains a draft and supplies no additional completed rule beyond AGENTS.md’s clean-room restriction. No dependency/protected-path changes appear. Component documentation explicitly retains PENDING acceptance and outstanding issue-28 work rather than claiming overall delivery.
+
+Verification: inspected every diff hunk and relevant existing helper code against AGENTS.md, CODING_STANDARDS.md, module README, issue tracker/protocol-review guidance, requirements, applicable ADRs and accepted decision 12. Tool-enforced style/import checks omitted. Tests and full repository gates NOT_RUN by this reviewer; parent owns them. This is source review, not runtime, browser, Colab, scientific, or full-issue acceptance.
+
+Total: 0 hard violations; 1 nonblocking heuristic.

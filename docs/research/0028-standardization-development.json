@@ -1,0 +1,73 @@
+{
+  "status": "DEVELOPMENT_HISTORY_NOT_EXACT_REVISION_ACCEPTANCE",
+  "qualification": "Intermediate working snapshots were not retained. Raw RED/GREEN and typecheck records show development history; final committed-source checks and independent scripts provide reproducible acceptance evidence.",
+  "archive": "0028-standardization-development.zip",
+  "sha256": "45d62bb111279125327057ea2ae6c86442aabe4d044938277ec2d7968450f3f2",
+  "files": [
+    {
+      "path": "r0-28-standardize-card-green.log",
+      "bytes": 98,
+      "sha256": "35d283e550f304c7828b292285f152293e5c18342a059b238b6fba420f0984bd"
+    },
+    {
+      "path": "r0-28-standardize-card-red.log",
+      "bytes": 3831,
+      "sha256": "af278463df1bf0d07a49825d1112eebf8a4c7381980bc3d18991529d5cc03ca5"
+    },
+    {
+      "path": "r0-28-standardize-fit-green.log",
+      "bytes": 98,
+      "sha256": "7b0ddc0b4048defd352f92b4341837f207c70d0027eba8f89af2aee50355f0fb"
+    },
+    {
+      "path": "r0-28-standardize-fit-red.log",
+      "bytes": 963,
+      "sha256": "4f3caff985f535727555fcc0db197dae3055e925d3097059c3b6609ca776458d"
+    },
+    {
+      "path": "r0-28-standardize-moments-green.log",
+      "bytes": 98,
+      "sha256": "958a391c5e909b7160124e2c8e5a689a07f6a8d7712ab726fcecd99071aa303f"
+    },
+    {
+      "path": "r0-28-standardize-moments-red.log",
+      "bytes": 1558,
+      "sha256": "c2e323e67c01dd0176f4cb92705559daf3117574a7719859843f5b84b9696751"
+    },
+    {
+      "path": "r0-28-standardize-node-green.log",
+      "bytes": 98,
+      "sha256": "88d3e4508bb91705f65f4361c8dbbce4cf33100867a1250dced9ecb4f3825924"
+    },
+    {
+      "path": "r0-28-standardize-node-red.log",
+      "bytes": 4071,
+      "sha256": "b9cea36f4ec9aa824f808b7aaf454aaab78b061f2aefe94aaa5f3f90ce695224"
+    },
+    {
+      "path": "r0-28-standardize-pipeline-green.log",
+      "bytes": 98,
+      "sha256": "12ebd56af50dd556b0d34d363cf2e41ae73267599ef4ae15344a291ecf6ee3ac"
+    },
+    {
+      "path": "r0-28-standardize-pipeline-red.log",
+      "bytes": 2918,
+      "sha256": "507d8554d1d112755dfde4225a738536667091ea4d05a78bf803eea0b10a37ca"
+    },
+    {
+      "path": "r0-28-standardize-pyright-fixed.log",
+      "bytes": 37,
+      "sha256": "6d88a1b220adb7a3d62092b6e38431f0b3fe8babe9864fab90e5849766260332"
+    },
+    {
+      "path": "r0-28-standardize-pyright.log",
+      "bytes": 276,
+      "sha256": "074c325634af1ef1cef5657c7104c27020a2309ee56d985d9424d1a50086879b"
+    },
+    {
+      "path": "r0-28-standardize-workflows.log",
+      "bytes": 99,
+      "sha256": "25685bfdeb72debe4dc44f2dbfbecc34efaed0e2560a087fb7df83d65822858f"
+    }
+  ]
+}
