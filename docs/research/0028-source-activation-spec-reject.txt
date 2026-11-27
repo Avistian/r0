@@ -1,0 +1,20 @@
+REJECT — scoped source activation increment at c7cf429f794c5d653c395f6db2f6763970ff1166.
+
+[P1] Preserve near-constant channel variance during overflow-safe calibration.
+File: src/r0/modules/priors/lib/calibrated_activations.py:126-131.
+
+Accepted decision 13 requires: “Preserve valid extreme draws; expose domain restrictions and numerical failures without silently clipping values.” The increment additionally promises “Population standardization with mean and inverse `(std + 1e-4)^-1`.”
+
+An exactly represented binary64 calibration channel [10000000000000000, 10000000000000004] has mean 10000000000000002 and population std 2. Scaling the raw values by their maximum before computing variance rounds their difference and produces inverse std 0.4503396812408431 instead of 0.4999750012499375: 9.92756% relative error. The independently computed oracle uses Decimal precision 100 and the actual input float values. This is a silent change to a valid retained mechanism, beyond the documented arithmetic adaptation.
+
+A public tanh calibration with scale 1 and default_rng(0) retains the wrong constant. At query 10000000000000008, expected output is 2.999377735703738; actual is 2.999366518299876. JSON-restored authored generation repeats the actual output for every row and its internal trace error is zero, so replay agreement does not establish calibration correctness. Center before scaling (or use another accurate overflow-safe central-moment method), then check both near-constant large-offset channels and opposite-sign extremes.
+
+Stopped at the first real defect. Selector policy, malformed replay defense, atomicity, constant channels, old-profile compatibility, and other requested dynamic audits remain NOT_RUN. The pinned primary source was read and selector catalogs/slots statically agree. Wider #28 delivery is explicitly pending and is not rejected for being outside this increment.
+
+Evidence: probe.py (portable public APIs), report.json, raw.log, empty stderr.log, sample.f64le/query.f64le, recipe.json, trace.json, and imports.json. No harness errors or retries. Parent owns full checks.
+
+Reproduce:
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=/tmp/r0-28/src /home/avist/Projects/r0/.venv/bin/python /tmp/source-activation-spec-c7cf429/probe.py
+
+Primary source read:
+https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_activation.py

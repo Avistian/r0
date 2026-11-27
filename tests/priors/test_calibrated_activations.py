@@ -54,3 +54,20 @@ def test_frozen_standard_activation_replays_without_refitting_on_task_rows() -> 
         priors.ActivatedCausalNode(
             bias=(0.0, 0.0), noise_scale=(0.0, 0.0), output_activation=activation
         )
+
+
+def test_near_constant_large_offset_keeps_population_variance_and_function() -> None:
+    activation = priors.calibrate_source_activation(
+        priors.CausalActivation("tanh"),
+        np.array([[1e16], [1e16 + 4]]),
+        rng=np.random.default_rng(0),
+        scale=1.0,
+        calibration_id="independent-near-constant-1e16",
+    )
+    # Independent review's 100-digit Decimal oracle at c7cf429. The exact
+    # population mean/std are 10000000000000002 and 2, respectively.
+    assert activation.input_mean == (10000000000000002.0,)
+    assert activation.input_inverse_std == pytest.approx((0.4999750012499375,), rel=1e-14)
+    assert float(activation.apply(torch.tensor([[1e16 + 8]], dtype=torch.float64))[0, 0]) == (
+        pytest.approx(2.999377735703738, rel=1e-12, abs=1e-12)
+    )

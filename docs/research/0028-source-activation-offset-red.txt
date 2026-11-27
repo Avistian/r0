@@ -1,0 +1,26 @@
+.F                                                                       [100%]
+=================================== FAILURES ===================================
+____ test_near_constant_large_offset_keeps_population_variance_and_function ____
+
+    def test_near_constant_large_offset_keeps_population_variance_and_function() -> None:
+        activation = priors.calibrate_source_activation(
+            priors.CausalActivation("tanh"),
+            np.array([[1e16], [1e16 + 4]]),
+            rng=np.random.default_rng(0), scale=1.0,
+            calibration_id="independent-near-constant-1e16",
+        )
+        # Independent review's 100-digit Decimal oracle at c7cf429. The exact
+        # population mean/std are 10000000000000002 and 2, respectively.
+        assert activation.input_mean == (10000000000000002.0,)
+>       assert activation.input_inverse_std == pytest.approx((0.4999750012499375,), rel=1e-14)
+E       assert (0.4503396812408431,) == approx((0.499...5 ± 1.0e-12,))
+E         
+E         comparison failed. Mismatched elements: 1 / 1:
+E         Max absolute difference: 0.049635320009094375
+E         Max relative difference: 0.11021751374946959
+E         Index | Obtained           | Expected                    
+E         0     | 0.4503396812408431 | 0.4999750012499375 ± 1.0e-12
+
+tests/priors/test_calibrated_activations.py:69: AssertionError
+=========================== short test summary info ============================
+FAILED tests/priors/test_calibrated_activations.py::test_near_constant_large_offset_keeps_population_variance_and_function

@@ -1,0 +1,18 @@
+Standards review — c7cf429f794c5d653c395f6db2f6763970ff1166
+Comparison: git diff 97ff24d4d7040498233e1f9633fe67a9c6b44558...c7cf429f794c5d653c395f6db2f6763970ff1166
+
+Documented-standard violations: none found in this increment.
+
+The changed public tests use r0.modules.priors, consistent with src/r0/modules/README.md. New random draws use injected Generators, consistent with CODING_STANDARDS.md. Independent calibration freezes mechanism constants before task generation; it does not fit feature preprocessing on query rows. The diff adds no dependencies or protected-path changes. The listed draft ADRs supply no additional concrete coding rules. Tooling-enforced rules were excluded.
+
+Heuristic finding (nonblocking): possible Feature Envy / Duplicated Code in src/r0/modules/priors/lib/causal_nodes.py:75–84. The new node resource calculation reads a concrete activation subtype's storage and encodes its cost rule:
+
+    10 * len(a.input_mean)
+    for a in (self.input_activation, self.output_activation)
+    if isinstance(a, CalibratedActivation)
+
+The calibration implementation separately declares `extra_working_channels=10 * width` (calibrated_activations.py:173). A later calibration-buffer change therefore needs coordinated edits in both modules. Consider putting the working-channel rule on the activation descriptor, analogous to its existing parameter_count and validate_width behavior, with a shared width-based helper for admission before fitting. This is a design judgement, not a documented-standard breach or demonstrated incorrect resource estimate.
+
+Evidence limits: all six named selector/calibration/admission RED/GREEN logs exist. Their contents show missing-API REDs, an RNG-rollback RED, and subsequent passing output. Publication remains explicitly pending in docs/issue-28-source-activations.md; this review does not promote those local logs to published or exact-head verification. No tests or whole-suite checks were run by this reviewer. Tracked checkout content was untouched; the pre-existing untracked .venv was observed.
+
+Totals: 0 documented violations; 1 nonblocking heuristic finding.

@@ -90,8 +90,9 @@ sample was independent merely from its label. Profile integration must supply th
 separate reproducible stream and retain its provenance.
 
 Constant calibration channels remain valid: inverse standard deviation is 10000.
-Statistics scale magnitudes before computing population moments to avoid squaring
-extreme raw values. Evaluation handles subtraction overflow when multiplication by
+Statistics subtract a represented reference value before scaling deviations,
+preserving small spreads around large offsets. Opposite-sign subtraction overflow
+uses magnitude-scaled original values for those wide-spread channels. Evaluation handles subtraction overflow when multiplication by
 the inverse standard deviation yields a representable result. Genuine nonfinite
 stage results raise explicitly; no task is clipped, filtered or resampled.
 
@@ -120,3 +121,21 @@ A child-draw limit case verifies a rejected selection leaves the injected RNG an
 frozen record unchanged. Development RED/GREEN logs are retained in `/tmp` for
 publication with the final verification checkpoint. Full checks and independent
 review are still pending; no whole-issue or scientific acceptance is claimed.
+
+
+## Initial independent rejection and repair
+
+The initial source `c7cf429` passes full repository checks (**652 tests, one
+skipped**, all static gates) but is **REJECT** under independent numerical review.
+The [retained report](research/0028-source-activation-spec-reject.txt) and
+[raw fixture/oracle evidence](research/0028-source-activation-reject-artifacts.json)
+show that magnitude scaling before centering distorted the standard deviation of
+`[1e16, 1e16+4]`. Its exact population standard deviation is 2, but the original
+inverse scale was about 9.93% wrong. Saved generation and trace replay reproduced
+the wrong constants; their agreement did not establish mathematical correctness.
+
+The repair centers on a represented calibration value before scaling deviations,
+with an overflow branch for opposite-sign extremes. The regression retains the
+independent Decimal oracle's constants and tanh query output. Final repair checks
+and the other independent dynamic audits remain pending. The initial rejection is
+not erased by the passing original repository suite.

@@ -122,10 +122,18 @@ class CalibratedActivation(CausalActivation):
 
 def _statistics(value: torch.Tensor) -> tuple[tuple[float, ...], tuple[float, ...]]:
     _finite(value)
-    magnitude = value.abs().max(dim=0).values
+    # Subtract a represented sample value before scaling so a large common
+    # offset cannot quantize away a small but representable channel spread.
+    offset = value - value[0]
+    safe = torch.isfinite(offset).all(dim=0)
+    reference = torch.where(safe, value[0], torch.zeros_like(value[0]))
+    # Opposite-sign extremes can overflow subtraction; their spread is large,
+    # so magnitude scaling of the original values is safe from cancellation.
+    offset = torch.where(safe, offset, value)
+    magnitude = offset.abs().max(dim=0).values
     divisor = torch.where(magnitude == 0, torch.ones_like(magnitude), magnitude)
-    scaled = value / divisor
-    mean = _finite(scaled.mean(dim=0) * divisor)
+    scaled = offset / divisor
+    mean = _finite(reference + scaled.mean(dim=0) * divisor)
     std = _finite(scaled.std(dim=0, correction=0) * divisor)
     inverse = _finite(1 / (std + _EPSILON))
     return tuple(float(v) for v in mean), tuple(float(v) for v in inverse)
