@@ -1,0 +1,16 @@
+{
+  "source": "c1ee89e766194993c1a79fcc7400f7b2b48fefbe",
+  "base": "4c7c937cc67659d6bbb3365f12da749fb60705d4",
+  "bytes": 325113,
+  "sha256": "8b7eadc01f07a72b3912629b85deb100e0e80e85bb42853e7ba5339aff4eb7b3",
+  "parts": [
+    {
+      "path": "0028-joint-function-realization-spec.part01",
+      "bytes": 325113,
+      "sha256": "8b7eadc01f07a72b3912629b85deb100e0e80e85bb42853e7ba5339aff4eb7b3"
+    }
+  ],
+  "manifest_entries": 222,
+  "manifest_sha256": "a7cf7eab61bd4447d5d781a2bff02f5eca1b89ac6e8bc39b37ee28a16e529331",
+  "qualification": "Original independent component attempts, unchanged original files, portable appendix, cached attributed inputs, and exact public-program replay. No whole-issue, GPU/Colab/browser, RSS or scientific acceptance."
+}

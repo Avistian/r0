@@ -1,0 +1,16 @@
+Standards review
+SOURCE=c1ee89e766194993c1a79fcc7400f7b2b48fefbe
+BASE=4c7c937cc67659d6bbb3365f12da749fb60705d4
+STATUS=PASS_WITH_MAINTAINABILITY_NOTES
+
+Preflight and final readback: /tmp/r0-28; branch feat/issue-28-generators; HEAD equals SOURCE; only untracked entry is intentional .venv -> /home/avist/Projects/r0/.venv. Checkout, branch and symlink unchanged. Reviewed the three-dot diff and all seven commits, d65d146 through c1ee89e.
+
+Documented-standard breaches: none found. Sources inspected: factory AGENTS.md; checkout AGENTS.md, CODING_STANDARDS.md, src/r0/modules/README.md, docs/requirements.md, docs/agents/protocol-review.md, docs/agents/issue-tracker.md, CONTEXT.md, README.md and relevant ADRs. No CONTRIBUTING.md found. Factory TypeScript standards excluded. Tool-enforced checks excluded from findings.
+
+Heuristics (nonblocking judgement calls):
+
+1. Possible Duplicated Code: src/r0/modules/priors/lib/joint_discretization_decoding.py:22-44, joint_em_decoding.py:20-42, joint_mlp_decoding.py:23-45, joint_tree_decoding.py:16-32 and joint_rff_decoding.py:21-37 each implement record/array/matrix admission. Repeated hunk: `if type(value) not in (list, tuple) or len(value) != count:`. The copies already diverge: discretization/EM/MLP check missing required dataclass fields, while tree/Fourier only reject unknown fields and later index required keys. Extract shared private decoding primitives with a consistent required-field policy and family-specific diagnostic context; retain family geometry checks locally. This reduces schema drift and inconsistent malformed-input errors.
+
+2. Possible Duplicated Code: joint_tree_realization.py:130-159, joint_discretization_realization.py:113-144, joint_em_realization.py:155-186, joint_mlp_realization.py:146-201 and joint_function_realization.py:281-326 duplicate RNG snapshot, staging, unchanged-state check and commit. Repeated hunks include `raw, fit = copy.deepcopy(rng), copy.deepcopy(fit_rng)` and `rng.bit_generator.state = raw.bit_generator.state`. Consider one private transaction helper supporting an optional fit stream, keeping draw order and construction logic in each family. Future rollback/state-handling changes would then have one implementation.
+
+Scope: static Standards review only; tests NOT_RUN as assigned. No mathematical/spec verdict or full issue #28 acceptance claimed. Total: zero documented breaches, two maintainability heuristics; strongest concern is decoder validation drift.
