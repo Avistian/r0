@@ -6,6 +6,7 @@ function isStandaloneNetwork(recipe) { return ["standalone-network-innovations-v
 function networkArchitecture(recipe) { return recipe?.base?.network || recipe?.network; }
 function networkConstructionNote(example) {
   sourceRootConstructionNote(example);
+  observationConstructionNote(example);
   $("network-noise-controls-note").hidden = example.topology !== "network-innovations";
   $("network-hyperprior-controls-note").hidden = example.topology !== "network-hyperprior";
   $("network-controls-note").hidden = !["network", "network-authored"].includes(example.topology);

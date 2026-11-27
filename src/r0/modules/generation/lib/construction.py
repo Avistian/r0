@@ -29,6 +29,10 @@ def construct_graph(
         raise ValueError("construction seed must be an integer in [0, 2**63)")
     fields = _tuples(controls)
     topology = fields.pop("topology")
+    if topology == "network-observations":
+        from r0.modules.generation.lib.observation_construction import construct_observations
+
+        return construct_observations(fields, seed=seed, limits=limits)
     if topology == "prototype-root-network":
         from r0.modules.generation.lib.prototype_root_construction import (
             construct_prototype_network,

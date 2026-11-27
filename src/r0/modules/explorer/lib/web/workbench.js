@@ -7,7 +7,7 @@ function explorationLimits() {
 }
 function resetWorkbench() {
   mechanismDraft = null; mechanismInfo = null;
-  resetNetworkWorkbench();
+  resetNetworkWorkbench(); resetObservationDrafts();
   $("workbench-content").hidden = true;
   $("workbench-note").textContent = "The original dataset remains active while you create a linked mechanism edit.";
   $("edit-results").hidden = !current?.edit;
@@ -64,6 +64,7 @@ function causalStructure() {
 }
 function selectMechanismNode() {
   const index = Number($("mechanism-node").value), node = mechanismEquation(mechanismDraft.nodes[index]);
+  const observationDraft=observationNodeDraft(index);
   $("mechanism-pipeline-label").hidden=!node.pipeline;
   if(node.pipeline) $("mechanism-pipeline").value=pretty(node.pipeline);
   $("mechanism-domain-label").hidden=!(mechanismInfo.native||mechanismInfo.converted);
@@ -75,14 +76,16 @@ function selectMechanismNode() {
   $("mechanism-parents").value = pretty(node.parents);
   $("mechanism-noise").value = pretty(node.noise_scale);
   $("mechanism-function").value = pretty(node.function);
-  $("mechanism-node-info").textContent = pretty({...mechanismInfo.nodes[index], geometry:mechanismInfo.geometry, note:"Green highlights the selected node and its ancestors. Hidden channels are not selected as observed features or targets. Values and equations are available in the generation-process drill-down below."});
+  $("mechanism-node-info").textContent = pretty({...mechanismInfo.nodes[index], geometry:mechanismInfo.geometry, observation_selection:mechanismInfo.observation_selection, note:"Green highlights the selected node and its ancestors. Hidden channels are not selected as observed features or targets. Values and equations are available in the generation-process drill-down below."});
+  if(observationDraft)for(const [id,value] of Object.entries(observationDraft))$(id).value=value;
   causalStructure();
 }
 $("construction-family").onchange = () => {const example=constructionExamples[$("construction-family").value]; fillInnovationControls(example); fillConverterControls(example); $("construction-controls").value=pretty(example); $("construction-seed").disabled=["native","network-authored"].includes(example.topology); $("sampled-native-controls-note").hidden=!["sampled-native","sampled-native-vector"].includes(example.topology); $("parent-controls-note").hidden=!example.composition; $("fitted-controls-note").hidden=!["fitted","sampled-fitted"].includes(example.topology); $("sampled-fitted-controls-note").hidden=example.topology!=="sampled-fitted"; networkConstructionNote(example); $("population-fitted-controls-note").hidden=!["population-fitted","sampled-population-fitted"].includes(example.topology); $("sampled-population-controls-note").hidden=example.topology!=="sampled-population-fitted";};
 $("construct").onclick = () => act("Constructing, generating and saving mechanism…", async () => show(await request("construct", {controls:JSON.parse($("construction-controls").value), construction_seed:$("construction-seed").value, seed:$("seed").value, task_id:$("task-id").value, ...limits()})));
 $("mechanism-load").onclick = () => act("Verifying mechanism archive…", async () => {
-  mechanismInfo = await request("mechanism");
+  mechanismInfo = await request("mechanism", {...limits()});
   if (mechanismInfo.network) {showNetworkEditor(mechanismInfo); return;}
+  resetObservationDrafts();
   mechanismDraft = mechanismInfo.editable_recipe;
   $("workbench-content").hidden = false; $("workbench-note").textContent = mechanismInfo.notice;
   $("mechanism-node").replaceChildren(...mechanismInfo.nodes.map(n=>new Option(`Node ${n.index} · ${n.function}`,n.index)));
@@ -91,6 +94,7 @@ $("mechanism-load").onclick = () => act("Verifying mechanism archive…", async 
 });
 $("mechanism-node").onchange=selectMechanismNode;
 $("mechanism-apply").onclick=()=>act("Updating mechanism draft…",async()=>{
+  if(mechanismInfo.observation_selection){await applyObservationDraft();return;}
   const selected=mechanismDraft.nodes[Number($("mechanism-node").value)], node=mechanismEquation(selected);
   if(node.pipeline) node.pipeline=JSON.parse($("mechanism-pipeline").value);
   if(mechanismInfo.converted) selected.converters=JSON.parse($("mechanism-domain").value);

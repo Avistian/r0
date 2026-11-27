@@ -26,6 +26,11 @@ def main() -> int:
 
         print(json.dumps(causal_job(raw_request, Path(data["out"])), sort_keys=True))
         return 0
+    if raw_request.get("validation") in ("observation-editor", "observation-draft"):
+        from r0.modules.generation.lib.observation_construction import observation_editor
+
+        print(json.dumps(observation_editor(raw_request), allow_nan=False))
+        return 0
     if raw_request.get("validation") == "network-graph":
         from r0.modules.generation.lib.network_graph import network_graph
 

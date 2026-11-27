@@ -16,6 +16,7 @@ from r0.modules.explorer.lib.native import (
 from r0.modules.explorer.lib.network_hyperprior_examples import network_hyperprior_examples
 from r0.modules.explorer.lib.network_innovation_examples import network_innovation_examples
 from r0.modules.explorer.lib.networks import network_editor, network_examples
+from r0.modules.explorer.lib.observation_examples import observation_examples
 from r0.modules.explorer.lib.prototype_root_examples import prototype_root_examples
 from r0.modules.explorer.lib.source_root_examples import source_root_examples
 
@@ -81,6 +82,7 @@ def construction_examples() -> dict[str, Any]:
         **composed_examples(common, geometry, sampled_native_example()),
         **fitted_examples(),
         **network_examples(),
+        **observation_examples(),
         **source_root_examples(),
         **prototype_root_examples(),
         **network_hyperprior_examples(),
@@ -199,6 +201,7 @@ def frozen_archive_version(version: object) -> bool:
     return str(version).startswith("sampled-") or version in (
         "fitted-functional-causal-v1",
         "standalone-network-v1",
+        "network-observation-recipe-v1",
         "standalone-network-innovations-v1",
         "population-fitted-functional-causal-v1",
         "network-input-view-v1",

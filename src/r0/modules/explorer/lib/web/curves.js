@@ -5,6 +5,8 @@ function isGP() { return current?.view.recipe.recipe.version === "exact-gp-v1"; 
 function clearCurve() {
   curve = null;
   $("response-plot").replaceChildren(); $("curve-values").textContent = ""; $("curve-json").hidden = true;
+  const observed=isObservation(current?.view?.recipe?.recipe);
+  $("curve").hidden=observed;
   const noisy=isNoisyNetwork(); $("network-reference-label").hidden=!noisy;
   const gp = isGP(); $("gp-options").hidden = !gp;
   $("curve-title").textContent = gp ? "Conditional GP view" : "Response curve";
@@ -17,6 +19,7 @@ function clearCurve() {
   $("curve-note").textContent = gp
     ? "Uses the full observed feature range. Additional draws use the seed above; changing the query points changes their joint draw."
     : "The curve uses the full observed feature range. Select a row and evaluate to see the response.";
+  if(observed) {$("curve-title").textContent="Observation causal reference — pending"; $("curve-description").textContent="Selected hidden channels do not define a unique input-to-target function. A guarded causal reference with explicit state/readout clamps and fixed hidden roots/noise remains required. It will not be labeled a conditional mean. Use original-row traces and explicit interventions now."; $("curve-note").textContent="Reference curves are temporarily unavailable for this envelope; this remains required follow-on work.";}
 }
 function drawCurve() {
   if (!curve) return;

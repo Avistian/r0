@@ -4,6 +4,16 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
+    if recipe.get("version") == "network-observation-recipe-v1":
+        return {
+            "kind": "source-qualified-network-observations",
+            "notice": "Full source and selection receipt retained. Selected internal channels "
+            "are observations, not original network inputs. Pinned overlap may leak targets; "
+            "aliases preserve it explicitly. Frozen Next preserves source/selection draws. "
+            "Coordinate-root row-shape RNG behavior is source-dependent. Variable-width and "
+            "nonsequential observation policies and causal reference curves remain required.",
+            "receipt": recipe["observations"],
+        }
     if recipe.get("version") == "standalone-network-innovations-v1":
         from r0.modules.explorer.lib.networks import network_details
 

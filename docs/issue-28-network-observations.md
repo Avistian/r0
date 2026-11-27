@@ -3,8 +3,8 @@
 This component advances P1.graph.02–.09 in issue #28. It constructs a bounded
 channel catalog and an immutable selection receipt, with strict archive replay.
 The versioned observation recipe now retains this receipt through the generation
-dispatcher, task archives, traces and interventions. A guarded workbench workflow
-and hosted Colab verification remain required. Variable-width networks and nonsequential architectures remain explicit
+dispatcher, task archives, traces and interventions. A guarded local workbench and shared notebook callback now expose these
+workflows; actual hosted Colab verification remains required. Variable-width networks and nonsequential architectures remain explicit
 future extensions; this first source profile requires equal-width sequential,
 single-expert blocks without gates or skips. No failed request enlarges layers,
 resamples a network, substitutes a policy, or retries a selection.
@@ -67,7 +67,7 @@ The runtime supports existing generation, traces and recipe persistence, but its
 archive alone contains the frozen graph, **not this construction receipt**. Retain
 and reopen the component receipt separately for source selection provenance.
 Use the versioned task envelope below to retain source selection custody.
-Workbench controls and shared local/Colab workflows remain required follow-ups.
+The guarded workbench and shared callback delivery are described below.
 
 ## Pinned overlap materialization repair
 
@@ -116,8 +116,7 @@ does not claim universal prefix stability. A versioned prefix-stable extension
 remains required where the broader specification calls for it.
 
 Broad follow-up scope is unchanged: variable-width and nonsequential/gated/skip
-observation policies, source-qualified additional selection laws, interactive
-guarded workbench editing/inspection/export, and shared local/Colab workflows.
+observation policies, source-qualified additional selection laws, further policy controls and actual hosted Colab verification.
 The existing sequential profiles compose with sampled weights/hyperpriors,
 internal innovations/importance, coordinate roots and prototype roots; they do
 not silently substitute another architecture when a source is unsupported.
@@ -130,3 +129,35 @@ execution schema before slicing original rows. Implementation identity is bound
 to the recipe. Historical library/platform strings, positive thread counts and
 recognized CPU/CUDA provenance may differ from the current CPU replay environment;
 exact saved tensor replay is still mandatory.
+
+## Guarded workbench and shared notebook callback
+
+The explorer's construction menu exposes 16 observation presets: both P1
+policies with dense/individual-sparse/block-sparse sources, explicit alternative
+selection/target/order combinations, sampled internal noise and importance,
+source scalar weight laws with explicit equal widths, P1/P2 coordinate roots,
+a frozen independent prototype bank and editable authored affine equations.
+The dedicated controls edit policy, ordering and an exact separate selection
+seed. Complete source, task adapter and raw-limit controls remain visible in JSON.
+Restrictions are shown before construction: these profiles accept equal-width
+sequential single-expert layers without gates or skips. Unsupported requests
+reject without widening, retrying or substituting architectures.
+
+Construction, frozen Next/replay, receipt-derived graph preparation, original-row
+trace and observation draft validation use the bounded generation worker. The
+original archive and accepted editor diagram survive invalid drafts and timeouts;
+invalid editable text remains available for correction. Inspection displays the
+source receipt, catalog selection, original target references and explicit overlap
+aliases. Interventions address those compiled nodes. Saving graph edits creates
+linked authored functional equations, retaining the original receipt in the before
+archive; it does not invent sampled source provenance for the edited graph.
+Local HTTP and notebook callbacks share the same session actions, including
+save/reopen/export and decimal-string transport for IDs above 2^53. Local callback
+verification is distinct from hosted Colab execution, which remains NOT_RUN.
+
+Causal reference curves are explicitly unavailable in this workbench slice and
+remain required follow-on work. The intended reference semantics clamp selected
+state/readout channels simultaneously, fix hidden roots to an original row and
+choose zero or original structural innovations; this is not a conditional mean.
+The UI does not silently evaluate selected hidden channels as original network
+inputs. Broader architecture selection policies also remain required.
