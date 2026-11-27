@@ -1,0 +1,78 @@
+# Bounded standalone-network CPU measurements
+
+These measurements cover nine fixed configurations on a shared WSL2 ARM64 host,
+with one PyTorch thread per fresh worker. They qualify these particular sampled
+functions and sizes, not every seed, the Cartesian product of maxima, training
+throughput, GPU operation or 100 million task execution.
+
+The generator source was `343f3f117a2aec5b92a5aeb50e409f9d4c8e2258`, with no
+source-module diff. Each case samples a three-block network of widths (8, 8, 1),
+using named seed28 and raw seed29, then generates a regression task with seed28
+and task ID9007199254740993. The root is Gaussian and the context contains half
+the rows. The complete request and sampled function are in the retained archive.
+Python3.12.3, Linux6.6.87.2 WSL2, twelve visible CPUs; concurrent verification
+and agent work were active. Timing variation therefore includes shared-host load.
+
+## Measured cases
+
+All nine attempted cases passed; none was filtered or retried. Generation
+produced finite inputs, scores and targets. Saved arrays and recipe records
+matched after loading. Separately decoding the retained recipe and generating
+again reproduced the original arrays, partitions and exact recipe JSON.
+
+| Family | Rows | Features | Generate seconds | Regenerate seconds | Process peak MiB | Admission estimate MiB |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| dense | 1024 | 8 | 0.0179 | 0.0694 | 250.20 | 8.16 |
+| individual-sparse | 1024 | 8 | 0.0155 | 0.0626 | 250.47 | 8.16 |
+| block-sparse | 1024 | 8 | 0.0152 | 0.0562 | 250.32 | 8.16 |
+| skip | 1024 | 8 | 0.0167 | 0.0178 | 250.35 | 8.22 |
+| residual | 1024 | 8 | 0.0611 | 0.0208 | 250.76 | 9.26 |
+| irregular | 1024 | 8 | 0.0181 | 0.0593 | 252.48 | 8.66 |
+| gated | 1024 | 8 | 0.0641 | 0.0305 | 253.44 | 11.82 |
+| dense | 20000 | 8 | 0.2403 | 0.1827 | 288.44 | 157.85 |
+| dense | 16 | 256 | 0.1545 | 0.2281 | 257.31 | 26.88 |
+
+Generation timing includes replay validation of the sampled construction but
+excludes imports and initial construction. Regeneration timing includes recipe
+decoding and generation. The raw receipt additionally separates construction,
+save and load time. Process peak memory is Linux ru_maxrss for the entire worker:
+imports, construction, generation, multiple retained tasks, archive round-trip,
+regeneration and evidence copying. It is **not** the conservative tensor working
+estimate shown in the final column. Admission estimates are not process-memory
+caps; these results do not justify lowering them or accepting wider combinations.
+
+## Reproduction and retention
+
+Run from the checkout with its existing environment:
+
+```sh
+python3 scripts/run_check.py python scripts/measure_network_resources.py   docs/evidence/network-resources-fresh
+```
+
+The runner refuses an existing output directory, executes every fixed case once
+in a separate process with a180-second deadline, and retains failures/timeouts
+without retry. A complete summary requires both successful case assertions and
+successful worker exit. Interrupted runs retain their started record and completed
+case records; a missing summary is not success.
+
+Raw measurements are ignored under
+`docs/evidence/issue-28-resource-measurements/run-02/`. Each archive is retained in
+ordered chunks of at most900000bytes, with per-chunk and original-archive SHA256
+in its case result. Concatenate the listed chunks in order to reconstruct task.zip;
+copy task-receipt.json beside it as task.json. The original archive is validated
+before chunking. Each summary records generator head, source diff and runner hash.
+
+The first retained pass, run-01, checked archive save/load parity only. Run-02 adds
+actual regeneration and fixes aggregate child-exit handling. A separate adversarial
+runner probe supplies PASS receipts from nonzero child exits and confirms overall
+failure; it is not generator evidence. Historical harness failure is retained.
+No source-module behavior changed in this measurement slice.
+
+## Remaining qualification
+
+The20,000-row case has only eight input features; the256-feature case has only
+sixteen rows. Neither establishes a20,000-by256 workload or maximal network
+complexity. One seed per family does not establish across-seed performance or
+diversity. Root laws, native vectors, fitted lifecycles, typed converters, graph
+topologies, sustained bulk throughput and hosted/GPU execution need their own
+measurements. No predictive-quality claim follows from these checks.
