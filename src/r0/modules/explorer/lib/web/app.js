@@ -12,6 +12,7 @@ const format = value => {
 };
 
 async function request(action, data = {}) {
+  if(current && isObservation(current.view.recipe.recipe) && action === "graph") data={...limits(),...data};
   if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export", "mechanism", "network_draft", "observation_draft", "edit", "edit_export", "intervention_controls", "intervene", "intervention_graph", "intervention_export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
   if (["graph", "pair", "open_pair", "mechanism", "network_draft", "observation_draft", "edit", "intervention_controls"].includes(action)) data = {...data, ...explorationLimits()};
   if (window.r0request) return window.r0request(action, data);
