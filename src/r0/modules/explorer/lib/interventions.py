@@ -54,8 +54,8 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
         "notice": (
             "Original construction and fit archives remain unchanged. "
             "Interventions use frozen calibration. CPU only; partial coupled mechanisms "
-            "are evaluated before clamping. Native vector-family and additional "
-            "root/domain/pipeline-component soft changes remain pending."
+            "are evaluated before clamping. Root, pipeline and native emission stage changes "
+            "are available through versioned JSON. Native vector interventions remain pending."
         ),
     }
 

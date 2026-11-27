@@ -140,6 +140,16 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
             if native["version"] == "native-vector-causal-v1"
             else target_node["domain"]
         )
+        if record["recipe"]["version"] == "causal-intervention-v1":
+            for change in record["recipe"]["interventions"]:
+                if (
+                    change["version"] == "stage-causal-intervention-v1"
+                    and change["node"] == native["target"][0]
+                    and change.get("domain") is not None
+                ):
+                    view["original_target_emission"] = domain["emission"]
+                    view["original_target_frequency_weights"] = domain.get("frequencies")
+                    domain = change["domain"]
         view["target_emission"] = domain["emission"]
         if record["recipe"]["version"] == "causal-intervention-v1" and any(
             c.get("category") is not None and c["node"] == native["target"][0]
