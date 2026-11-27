@@ -10,6 +10,10 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenQuadraticFunction,
 )
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
+from r0.modules.priors.lib.joint_discretization_decoding import decode_joint_discretization
+from r0.modules.priors.lib.joint_discretization_realization import (
+    JointDiscretizationFunctionRealization,
+)
 from r0.modules.priors.lib.joint_function_admission import admit_matrix_function
 from r0.modules.priors.lib.joint_function_decoding import joint_function_plan_from_dict
 from r0.modules.priors.lib.joint_function_realization import JointMatrixFunctionRealization
@@ -28,7 +32,12 @@ def joint_function_realization_from_dict(
     *,
     decisions: JointSamplingRecord,
     limits: CausalLimits = _DEFAULT_LIMITS,
-) -> JointMatrixFunctionRealization | JointRFFFunctionRealization | JointTreeFunctionRealization:
+) -> (
+    JointMatrixFunctionRealization
+    | JointRFFFunctionRealization
+    | JointTreeFunctionRealization
+    | JointDiscretizationFunctionRealization
+):
     if type(decisions) is not JointSamplingRecord or type(limits) is not CausalLimits:
         raise ValueError(
             "function reconstruction requires frozen decisions and caller-owned limits"
@@ -36,6 +45,8 @@ def joint_function_realization_from_dict(
     admit_function_metadata(data, limits)
     if type(data) is not dict:
         raise ValueError("function realization must be a JSON object")
+    if data.get("version") == "joint-discretization-function-realization-v1":
+        return decode_joint_discretization(data, decisions, limits)
     if data.get("version") == "joint-rff-function-realization-v1":
         return decode_joint_rff(data, decisions, limits)
     if data.get("version") == "joint-tree-function-realization-v1":

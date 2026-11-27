@@ -117,6 +117,9 @@ from r0.modules.priors.lib.joint_converter_plans import (
 from r0.modules.priors.lib.joint_converter_plans import (
     sample_joint_converter as sample_joint_converter,
 )
+from r0.modules.priors.lib.joint_discretization_realization import (
+    JointDiscretizationFunctionRealization as JointDiscretizationFunctionRealization,
+)
 from r0.modules.priors.lib.joint_function_calibration import (
     FunctionCalibrationSample as FunctionCalibrationSample,
 )

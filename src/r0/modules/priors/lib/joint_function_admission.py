@@ -135,3 +135,32 @@ def admit_tree_function(
     if report["estimated_working_bytes"] > limits.working_bytes:
         raise ValueError("estimated tree fitting memory exceeds declared limit")
     return report
+
+
+def admit_discretization_function(
+    plan: JointFunctionPlan, decisions: JointSamplingRecord, limits: CausalLimits
+) -> dict[str, int]:
+    if plan.family != "disc":
+        raise ValueError("discretization realization requires a discretization plan")
+    i, o, rows = plan.input_width, plan.output_width, plan.calibration_rows
+    count = plan.center_count
+    assert count is not None
+    matrix = plan.matrices[0]
+    metadata, metadata_bytes = function_record_cost((plan, decisions, matrix), limits)
+    # Retain the sample, full permutation, matrix construction, targets and equation.
+    raw = rows * i + (rows if rows > 1 else 0) + matrix_realization_parameters(matrix)
+    frozen = count * (i + o) + i * o + 1
+    report = limits.admit_dimensions(
+        (max(i, o),),
+        ((),),
+        rows=max(rows, o),
+        calibration_rows=0,
+        features=i,
+        outputs=o,
+        extra_parameters=metadata + raw + frozen,
+        extra_working_channels=8 * (i + o) + 4 * count,
+    )
+    report["estimated_working_bytes"] += metadata_bytes - 64 * metadata + 256
+    if report["estimated_working_bytes"] > limits.working_bytes:
+        raise ValueError("estimated discretization fitting memory exceeds declared limit")
+    return report
