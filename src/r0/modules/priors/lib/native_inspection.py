@@ -16,6 +16,8 @@ from r0.modules.priors.lib.native_evaluation import evaluate_native_graph, nativ
 from r0.modules.priors.lib.native_graph_decoding import native_graph_from_dict
 from r0.modules.priors.lib.network_inspection import network_steps
 from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
+from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_steps
 from r0.modules.priors.lib.source_root_base import functional_root_values
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -48,7 +50,10 @@ def native_steps(
                 f"{node.equation.function.aggregation}(ordered encoded parent members)"
                 " + structural noise"
             )
-        if isinstance(node.equation.function, (FrozenKumoProductFunction, FrozenNetworkFunction)):
+        if isinstance(
+            node.equation.function,
+            (FrozenKumoProductFunction, FrozenNetworkFunction, FrozenRecursiveForestFunction),
+        ):
             if node.equation.parents:
                 inputs = torch.cat([result.states[p] for p in node.equation.parents], dim=1)
             else:
@@ -71,7 +76,20 @@ def native_steps(
                     inputs[selection],
                     asdict(node.equation.root),
                 )
-            if isinstance(node.equation.function, FrozenNetworkFunction):
+            if isinstance(node.equation.function, FrozenRecursiveForestFunction):
+                parents = recursive_function_steps(
+                    node.equation.function,
+                    inputs,
+                    prefix=f"recursive-{i}",
+                    parents=parents,
+                    indices=indices,
+                    add=add,
+                )
+                equation = (
+                    node.equation.function.output_semantics
+                    + " + explicitly declared structural noise"
+                )
+            elif isinstance(node.equation.function, FrozenNetworkFunction):
                 parents = network_steps(
                     node.equation.function,
                     inputs,

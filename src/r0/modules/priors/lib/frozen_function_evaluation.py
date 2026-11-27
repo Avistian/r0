@@ -30,6 +30,7 @@ from r0.modules.priors.lib.network_evaluation import (
     evaluate_network_block,
     network_geometry,
 )
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.weight_geometry import Matrix
 
@@ -45,6 +46,7 @@ type FrozenFunction = (
     | FrozenMLPFunction
     | FrozenParentFunction
     | FrozenFittedTreeFunction
+    | FrozenRecursiveForestFunction
     | FrozenNetworkBlockFunction
     | FrozenNetworkFunction
 )
@@ -61,6 +63,7 @@ _FUNCTION_TYPES = (
     FrozenMLPFunction,
     FrozenParentFunction,
     FrozenFittedTreeFunction,
+    FrozenRecursiveForestFunction,
     FrozenNetworkFunction,
     FrozenNetworkBlockFunction,
 )
@@ -70,6 +73,12 @@ _DEFAULT_LIMITS = CausalLimits()
 def function_geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, int]:
     if type(function) not in _FUNCTION_TYPES:
         raise ValueError("function geometry requires a frozen function record")
+    if type(function) is FrozenRecursiveForestFunction:
+        return (
+            (function.input_width, function.output_width),
+            256 * len(function.forest.trees) + 16 * function.input_width,
+            0,
+        )
     if type(function) is FrozenNetworkBlockFunction:
         b = function.block
         widths = (
@@ -219,6 +228,10 @@ def _mlp_activation(
 def _evaluate(
     function: FrozenFunction, inputs: torch.Tensor, diagnostics: list[dict[str, Any]] | None = None
 ) -> torch.Tensor:
+    if type(function) is FrozenRecursiveForestFunction:
+        from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_outputs
+
+        return recursive_function_outputs(function, inputs)[0]
     if type(function) is FrozenNetworkBlockFunction:
         return evaluate_network_block(
             function.block,
@@ -329,7 +342,7 @@ def admit_frozen_function(
     if type(rows) is not int or not 1 <= rows < 2**63:
         raise ValueError("function evaluation rows must be positive integers below 2**63")
     widths, working, floor = function_geometry(function)
-    return limits.admit_dimensions(
+    report = limits.admit_dimensions(
         widths,
         tuple(() for _ in widths),
         rows=rows,
@@ -340,6 +353,18 @@ def admit_frozen_function(
         extra_working_channels=working,
         row_floor=floor,
     )
+    from r0.modules.priors.lib.recursive_forest_function import recursive_function_members
+
+    for member in recursive_function_members(function):
+        extra = member.admit(rows, limits)
+        report["estimated_working_bytes"] += extra["estimated_working_bytes"]
+        report["parameters"] += extra["parameters"]
+    if (
+        report["estimated_working_bytes"] > limits.working_bytes
+        or report["parameters"] > limits.parameters
+    ):
+        raise ValueError("recursive function and composite aggregate workspace exceeds limits")
+    return report
 
 
 def evaluate_admitted_function(

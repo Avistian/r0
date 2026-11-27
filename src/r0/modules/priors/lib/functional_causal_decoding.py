@@ -238,7 +238,7 @@ def functional_node_from_dict(
     """Decode an equation after the enclosing record has passed metadata admission."""
     node = functional_record(raw, FunctionalCausalNode)
     node["parents"] = functional_array(node["parents"])
-    node["function"] = decode_admitted_function(node["function"])
+    node["function"] = decode_admitted_function(node["function"], limits=limits)
     if node.get("root") is not None:
         node["root"] = functional_root(node["root"], limits=limits)
     node["noise_scale"] = functional_array(node.get("noise_scale", ()))

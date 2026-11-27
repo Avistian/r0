@@ -22,6 +22,8 @@ from r0.modules.priors.lib.native_causal import NativeCausalNode
 from r0.modules.priors.lib.native_vector_records import NativeVectorNode
 from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
 from r0.modules.priors.lib.network_inspection import network_steps
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
+from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_steps
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -105,6 +107,17 @@ def intervention_steps(
                 parents = [f"intervention-{i}-function"]
             else:
                 parents = [f"intervention-{i}-function", f"intervention-{i}-exogenous"]
+            if role == "function" and isinstance(
+                effective_equation.function, FrozenRecursiveForestFunction
+            ):
+                parents = recursive_function_steps(
+                    effective_equation.function,
+                    execution.traces[i]["inputs"],
+                    prefix=f"intervention-recursive-{i}",
+                    parents=parents,
+                    indices=indices,
+                    add=add,
+                )
             add(
                 f"intervention-{i}-{role}",
                 f"Node {i}: {role}",

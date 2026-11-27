@@ -18,6 +18,8 @@ from r0.modules.priors.lib.kumo_product_inspection import kumo_product_steps
 from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
 from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
+from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_steps
 from r0.modules.priors.lib.signal_noise import signal_noise_scale
 from r0.modules.priors.lib.source_root_base import functional_root_values
 
@@ -168,6 +170,16 @@ def evaluate_functional_nodes(
             from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
             from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 
+            if isinstance(node.function, FrozenRecursiveForestFunction):
+                parents = recursive_function_steps(
+                    node.function,
+                    inputs,
+                    prefix=f"recursive-{index}",
+                    parents=parents,
+                    indices=indices,
+                    add=add,
+                )
+                equation = node.function.output_semantics
             if isinstance(node.function, FrozenNetworkFunction | FrozenNetworkBlockFunction):
                 from r0.modules.priors.lib.network_inspection import network_steps
 

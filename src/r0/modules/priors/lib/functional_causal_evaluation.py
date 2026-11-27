@@ -19,6 +19,7 @@ from r0.modules.priors.lib.functional_target_calibration import (
 )
 from r0.modules.priors.lib.joint_sampling_records import validate_path
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions
+from r0.modules.priors.lib.recursive_function_metadata import recursive_mechanism_metadata
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
@@ -263,6 +264,7 @@ def generate_functional_causal(
         "innovation": "recorded exogenous laws; independently keyed root and structural streams",
         "sampling_provenance": "authored",
     }
+    card.update(recursive_mechanism_metadata(tuple(n.function for n in recipe.nodes)))
     card.update(fitted_card(recipe.version))
     from r0.modules.priors.lib.fitted_population_graph import PopulationFittedGraph
 

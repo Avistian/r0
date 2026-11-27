@@ -12,6 +12,7 @@ from r0.modules.priors.lib.native_vector_evaluation import (
     native_vector_rng,
 )
 from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
+from r0.modules.priors.lib.recursive_function_metadata import recursive_mechanism_metadata
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.training_features import TrainingFeature
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -88,6 +89,7 @@ def generate_native_vector(
         encode(
             {
                 "family": "native_vector",
+                **recursive_mechanism_metadata(tuple(n.equation.function for n in recipe.nodes)),
                 "version": recipe.version,
                 "target_origin": "native-variable-v1",
                 "target": recipe.target,
