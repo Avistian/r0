@@ -70,7 +70,7 @@ def _admit_replacement(
             raise ValueError("GP comparison replacement aggregate limit exceeded")
 
 
-def _validate_controls(
+def gp_comparison_controls(
     request: GPColumnRequest, replacement: GPColumnTarget, mode: str, fresh_seed: int | None
 ) -> None:
     if (replacement.input_width, replacement.outputs) != (
@@ -101,7 +101,7 @@ def compare_gp_columns(
     ):
         raise ValueError("GP comparison requires exact population and replacement target")
     _admit(original.request, limits)
-    _validate_controls(original.request, replacement, mode, fresh_seed)
+    gp_comparison_controls(original.request, replacement, mode, fresh_seed)
     _admit_replacement(original.request, replacement, limits)
     validate_gp_population(original, limits=limits)
     draw = original.draw
@@ -141,9 +141,10 @@ def compare_gp_columns(
     )
 
 
-def gp_column_comparison_from_dict(
+def gp_comparison_metadata(
     data: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
-) -> GPColumnComparison:
+) -> tuple[GPColumnRequest, GPColumnTarget]:
+    """Validate complete comparison geometry and controls without replay."""
     from r0.modules.priors.lib.gp_column_decoding import gp_population_metadata
     from r0.modules.priors.lib.gp_column_metadata import (
         gp_draw_metadata,
@@ -157,7 +158,7 @@ def gp_column_comparison_from_dict(
     request = gp_population_metadata(raw["original"], limits=limits)
     _admit(request, limits)
     replacement = gp_target_metadata(raw["replacement"])
-    _validate_controls(request, replacement, raw["mode"], raw["fresh_seed"])
+    gp_comparison_controls(request, replacement, raw["mode"], raw["fresh_seed"])
     gp_draw_metadata(raw["draw"], request)
     for key in ("centers", "scales"):
         gp_vector_metadata(raw[key], request.outputs)
@@ -166,6 +167,14 @@ def gp_column_comparison_from_dict(
     for key in ("original_scores", "replacement_raw", "replacement_scores"):
         gp_matrix_metadata(raw[key], request.rows, request.outputs)
     _admit_replacement(request, replacement, limits)
+    return request, replacement
+
+
+def gp_column_comparison_from_dict(
+    data: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
+) -> GPColumnComparison:
+    _, replacement = gp_comparison_metadata(data, limits=limits)
+    raw = gp_fields(data, GPColumnComparison)
     expected = compare_gp_columns(
         gp_column_population_from_dict(raw["original"], limits=limits),
         replacement,

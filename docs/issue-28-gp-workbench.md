@@ -39,9 +39,7 @@ features as joint GP columns rather than incorrectly calling them irrelevant;
 its public test was RED before the repair and GREEN afterward. Browser results
 remain tied to the preceding source; independent review is pending.
 
-Still required: explicit target
-edit/comparison controls and paired persistence;
-hybrid DAG roots; broader population/location catalog coverage; Colab/shared
+Still required beyond the target-edit delivery below: hybrid DAG roots; broader population/location catalog coverage; Colab/shared
 callback coverage; resource/diversity qualification. This checkpoint is not
 complete issue #28 or complete workbench acceptance. The source-related core
 contract is in [GP column populations](issue-28-gp-column-populations.md).
@@ -82,6 +80,51 @@ Replay and evaluation stay in the bounded worker. Failed queries and timeouts
 preserve the original active task and saved archive. Original population identity,
 frozen target and calibration constants remain visible in the reference artifact.
 Generic task-pair, mechanism-editor and DAG-policy controls are marked unavailable
-for this finite-population family. Target editing/comparison controls with paired
-persistence, hybrid graphs, full covariance interactive views and hosted Colab
+for this finite-population family. Dedicated comparison-environment curves/further linked edits, hybrid graphs,
+full covariance interactive views and hosted Colab
 verification remain REQUIRED follow-ons, not excluded scope.
+
+
+## Target equation comparison environments
+
+`generate_gp_column_pair` exposes every authored linear, full quadratic and tanh
+neural parameter through `GPColumnTarget`. Its two `GPColumnTargetRecipe` sides
+retain the complete original `GPColumnPopulation`, replacement target, comparison
+mode/fresh seed, selected feature draw, independent calibration and before/after
+scores. This versioned environment is separate from an original population: it
+never forges population identity or the original sampling request to disguise an edit.
+
+Matched mode reproduces original feature and adapter streams exactly on the
+before side. Fresh mode retains original locations/kernels but draws fresh feature
+innovations under its separate exact seed. Both sides share those inputs and the
+same freshly keyed observation-noise, class-uniform and split streams. Fresh before
+is therefore the original equation on the fresh environment, not the active baseline.
+Each target uses the original independent marginal calibration inputs; replacement
+centers/scales are fitted once there. No query fitting occurs, and a bias-only change
+may cancel after this normalization. This is a target-equation comparison, not a
+conditional feature posterior or a general DAG do-operator.
+
+The explorer offers all three target families, editable complete parameter JSON,
+matched/fresh controls and explicitly authored deterministic r0 starting drafts.
+Its guarded save action preserves the original active archive and any previous
+comparison on malformed controls, resource failure or timeout. Both actual comparison
+sides appear in the shared panels; repeated-original-row traces retain full covariance
+row dependencies. The existing generic pair container (`save_causal_pair` and
+`load_causal_pair`, a historical API name) binds both environment ZIPs with a distinct
+`gp-target-edit` card. Reopen, exact-identity replay, task export and paired ZIP export
+use the same guarded local/notebook callback. Actual hosted Colab remains NOT_RUN.
+
+Metadata validates outer task geometry, exact identities, mode/fresh seed, complete
+source/target shapes and combined admission before source replay. Admission reserves
+the existing comparison/replay budget plus four task-buffer sets (two retained sides
+and two validation copies), including inputs, scores, probabilities, targets and split
+indices. Parameter and working-byte caps use the same formula in typed construction
+and strict decoding. Supplied derived arrays are still checked against numerical replay;
+metadata admission is not a substitute for provenance validation.
+
+Comparison envelopes are fixed-identity environments. Their Next control is disabled
+and named accordingly; original population Next retains its new-population meaning.
+Dedicated reference curves and further linked edits for an already reopened comparison
+remain REQUIRED follow-ons, explicitly separate from the available original-population
+reference and original-to-replacement editor. Hybrid roots, full covariance interactive
+views, broad population catalogs and resource/diversity qualification remain required.

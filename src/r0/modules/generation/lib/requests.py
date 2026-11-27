@@ -118,8 +118,20 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
     )
 
     selected = selected_recipe(request, task_id)
-    from r0.modules.priors import GPColumnPopulation, GPColumnRecipe
+    from r0.modules.priors import GPColumnPopulation, GPColumnRecipe, GPColumnTargetRecipe
 
+    if isinstance(selected, GPColumnTargetRecipe):
+        if any(
+            type(record.get(k)) is not int or record[k] != v
+            for k, v in (("seed", request.seed), ("task_id", task_id))
+        ):
+            return False
+        if json.dumps(record.get("recipe"), sort_keys=True, allow_nan=False) != json.dumps(
+            asdict(selected), sort_keys=True, allow_nan=False
+        ) or record.get("sampling") != sampling_record(request):
+            return False
+        recipe_from_dict(record["recipe"], limits=request.causal_limits or selected.request.limits)
+        return True
     if isinstance(selected, GPColumnRecipe):
         if any(
             type(record.get(key)) is not int or record[key] != identity

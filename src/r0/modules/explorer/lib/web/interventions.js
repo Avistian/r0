@@ -65,8 +65,9 @@ function showIntervention() {
   if(!pair) return;
   $("intervention-path").value=pair.path;
   $("intervention-result-note").textContent=`${pair.card.mode==="matched"?"Matched units: unchanged exogenous draws are checked.":"Fresh population: equal row positions are not the same units."} Baseline remains active. Both panels use the same original row positions and shared axes.`;
+  if(pair.card.kind==="gp-target-edit") $("intervention-result-note").textContent=`${pair.card.mode==="matched"?"Original retained feature innovations.":"Fresh shared innovations at fixed original locations and kernels; before is the original target on this fresh environment."} Both sides share adapter streams and independent calibration inputs. The active baseline is unchanged. This is a target-equation comparison, not conditional GP inference.`;
   $("intervention-card").textContent=pretty(pair.card);
-  const views=[current.view,pair.after], xs=views.flatMap(v=>v.rows.map(r=>r.inputs[0])), ys=views.flatMap(v=>v.rows.map(r=>r.target));
+  const views=[pair.before || current.view,pair.after], xs=views.flatMap(v=>v.rows.map(r=>r.inputs[0])), ys=views.flatMap(v=>v.rows.map(r=>r.target));
   ["before","after"].forEach((side,i)=>{
     const {svg,x,y}=plotFrame(`intervention-${side}-plot`,`${side} intervention`,"x0","Target value / declared category index",Math.min(...xs),Math.max(...xs),Math.min(...ys),Math.max(...ys));
     for(const row of views[i].rows) {

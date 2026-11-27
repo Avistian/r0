@@ -27,6 +27,7 @@ def network_graph(data: dict[str, Any]) -> dict[str, Any]:
             "converted-causal-v1",
             "prototype-batch-network-realized-v1",
             "gp-column-recipe-v1",
+            "gp-column-target-recipe-v1",
             "network-observation-recipe-v1",
             "standalone-network-innovations-v1",
             "standalone-network-v1",

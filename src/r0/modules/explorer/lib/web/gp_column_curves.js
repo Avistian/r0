@@ -32,14 +32,15 @@ $("gp-target-metric").onchange=()=>{if(curve?.kind==="gp_column_target_reference
 for(const id of ["gp-target-lower","gp-target-upper"])$(id).onchange=clearCurve;
 
 function gpColumnAvailability(){
+  gpTargetEditAvailability();
   for(const id of ["pair-create","mechanism-load","intervention-load","policy-create"]){
     const button=$(id);
-    if(isGPColumns()){button.disabled=true;button.dataset.unavailable="true";button.dataset.gpUnavailable="true";}
+    if(isGPColumns() || isGPTargetEnvironment()){button.disabled=true;button.dataset.unavailable="true";button.dataset.gpUnavailable="true";}
     else if(button.dataset.gpUnavailable==="true"){button.disabled=false;button.dataset.unavailable="false";delete button.dataset.gpUnavailable;}
   }
   if(isGPColumns()){
-    $("pair-policy-note").textContent="Finite-GP target editing and paired persistence remain required follow-ons. Generic feature-count/noise pairs are unavailable here; the retained population cannot be treated as an independently evaluable iid function.";
-    $("workbench-intro").textContent="Use the generation graph and frozen target reference to inspect this retained finite population. Target-mechanism editing and paired persistence remain required follow-ons; generic DAG editing is unavailable.";
+    $("pair-policy-note").textContent="Use the dedicated GP target editor for matched/fresh equation comparisons. Generic feature-count/noise pairs are unavailable here; the retained population cannot be treated as an independently evaluable iid function.";
+    $("workbench-intro").textContent="Use the generation graph and frozen target reference to inspect this retained finite population. Use the dedicated GP target editor below for paired edits; generic DAG editing is unavailable.";
     $("intervention-notice").textContent="General DAG interventions and sampled policies require a causal graph. Finite-GP hybrid graph integration remains required; the target reference evaluates only the retained target equation.";
   }
 }

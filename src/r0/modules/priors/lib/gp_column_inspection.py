@@ -3,14 +3,15 @@
 import json
 from collections.abc import Callable, Sequence
 from dataclasses import asdict
-from typing import Any, cast
+from typing import Any
 
 import torch
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
-from r0.modules.priors.lib.gp_column_decoding import gp_column_recipe_from_dict, gp_payload_equal
+from r0.modules.priors.lib.gp_column_decoding import gp_column_recipe_from_dict
 from r0.modules.priors.lib.gp_column_output import generate_gp_columns
 from r0.modules.priors.lib.gp_column_population import GPColumnPopulation, gp_stream
+from r0.modules.priors.lib.gp_task_validation import validate_gp_task
 from r0.modules.priors.lib.target_inspection import target_steps
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -27,53 +28,7 @@ def gp_column_steps(
     if not isinstance(recipe.source, GPColumnPopulation):
         raise ValueError("GP trace requires the retained realized population")
     expected = generate_gp_columns(recipe, seed=record["seed"], task_id=record["task_id"])
-    expected_record = json.loads(expected.recipe_json)
-    if set(record) != set(expected_record) or any(
-        not gp_payload_equal(v, expected_record[k]) for k, v in record.items() if k != "execution"
-    ):
-        raise ValueError("GP task provenance differs from replay")
-    execution = cast(dict[str, Any], record["execution"])
-    if (
-        type(execution) is not dict
-        or set(execution) != set(expected_record["execution"])
-        or execution.get("implementation") != recipe.version
-        or execution.get("device") not in ("cpu", "cuda")
-        or any(type(execution[k]) is not str for k in ("python", "numpy", "torch"))
-        or type(execution["cpu_threads"]) is not int
-        or execution["cpu_threads"] < 1
-        or any(execution[k] is not None and type(execution[k]) is not str for k in ("cuda", "gpu"))
-    ):
-        raise ValueError("GP execution metadata schema differs")
-    if not gp_payload_equal(json.loads(task.mechanism_json), json.loads(expected.mechanism_json)):
-        raise ValueError("GP mechanism metadata differs from replay")
-    for field in (
-        "source_task_id",
-        "episode_id",
-        "task_type",
-        "classes",
-        "feature_schema",
-        "target_origin",
-    ):
-        if not gp_payload_equal(getattr(task, field), getattr(expected, field)):
-            raise ValueError("GP task semantic metadata differs")
-    for field in (
-        "inputs",
-        "targets",
-        "scores",
-        "probabilities",
-        "context_indices",
-        "query_indices",
-    ):
-        actual, wanted = getattr(task, field), getattr(expected, field)
-        if actual is None or wanted is None:
-            if actual is not wanted:
-                raise ValueError("GP task probabilities differ")
-        elif (
-            actual.dtype != wanted.dtype
-            or actual.layout != wanted.layout
-            or not torch.equal(actual.cpu(), wanted)
-        ):
-            raise ValueError("GP task tensor differs from original population replay")
+    validate_gp_task(task, expected, recipe.version)
     p = recipe.source
     selected = list(indices)
     add(
