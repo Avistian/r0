@@ -82,13 +82,42 @@ preflight without changing its formulas.
 
 ## Evidence status at source freeze
 
-Fourteen new public behavior checks cover sharing/JSON, nested rollback, stale
+The initial 14 public behavior checks covered sharing/JSON, nested rollback, stale
 handles, duplicate roles, external RNG mutation with five NumPy bit generators,
 both global policies, three exact/below-bound aggregate caps, forced identities
 and operation/metadata validation. Nine existing sampler checks also pass.
-RED/GREEN logs are retained under `/tmp/r0-28-joint-*.log`; the retained test file
-provides the executed behavior checks. An initial regression command named a
-nonexistent categorical test file and ran no tests; its corrected command passed.
+RED/GREEN logs are retained locally under the Git-ignored
+`docs/evidence/issue-28/joint-sampling/`; the retained test file provides the
+executed behavior checks. An initial regression command named a nonexistent
+categorical test file and ran no tests; its corrected command passed.
+
+The 23-check regression command was executed from `/tmp/r0-28` with the existing
+Python 3.12.3 virtualenv and NumPy 2.5.5, without installation or synchronization:
+
+```sh
+UV_CACHE_DIR=/tmp/r0-28-uv-cache \
+UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
+python3 scripts/run_check.py pytest tests/priors/test_joint_sampling.py \
+  tests/priors/test_parameter_preferences.py tests/priors/test_categorical_preferences.py
+```
+
+The wrapper verifies that imports resolve to this checkout. The corrected raw log
+is `docs/evidence/issue-28/joint-sampling/r0-28-joint-regression-corrected.log`.
+The nine inherited checks are the latter two files; the first contains 14 new
+cases. These initial results concern source `2812d23b390a44f5b817c4a2a112de369861ee56`.
+
+Independent review REJECTED that source: a JSON string supplied as an operation
+path was coerced into individual characters, changing the ownership hierarchy.
+The corrected decoder requires a list/tuple before conversion. Two new public
+regressions reject both string and dictionary paths; the same command now passes
+25 cases (16 joint, nine inherited). Raw RED and GREEN logs are
+`r0-28-joint-path-type-red.log` and `r0-28-joint-path-type-green.log` in the same
+local evidence directory. The original malformed input and accepted wrong result
+are retained by the independent verifier. This correction does not erase REJECT.
+
+The first full check stopped at Markdown-example formatting. Its corrected run
+passed static gates, then was deliberately terminated during pytest after the
+independent product defect was found; that run is INCOMPLETE, not a suite pass.
 
 Full repository checks, fresh independent specification and standards reviews,
 and exact-head legacy-output comparison: PENDING. No predictive, GPU, hosted,

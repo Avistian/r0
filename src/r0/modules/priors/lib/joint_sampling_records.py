@@ -180,6 +180,8 @@ def joint_sampling_from_dict(data: dict[str, Any]) -> JointSamplingRecord:
     events: list[JointDecision] = []
     for raw in fields["events"]:
         event = dict(raw)
+        if type(event["operation"]) not in (list, tuple):
+            raise ValueError("joint operation path must be an array")
         if not 1 <= len(event["operation"]) <= 16:
             raise ValueError("joint operation path depth must be 1..16")
         event["operation"] = tuple(event["operation"])

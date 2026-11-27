@@ -3,6 +3,7 @@
 import copy
 import json
 from dataclasses import asdict, replace
+from typing import Any
 
 import numpy as np
 import pytest
@@ -216,3 +217,14 @@ def test_joint_decode_rejects_reopened_operations_and_bounds_ownership_metadata(
         event = priors.JointDecision(("node",), "identity", "forced_identity", reason="disabled")
         with pytest.raises(ValueError, match=field):
             replace(event, **kwargs)
+
+
+@pytest.mark.parametrize("malformed", ["graph", {"graph": True}])
+def test_joint_decoder_does_not_coerce_nonarray_operation_paths(malformed: Any) -> None:
+    context = priors.JointSamplingContext(np.random.default_rng(128))
+    with context.transaction("graph") as graph:
+        graph.forced_identity("target", reason="target-warp-disabled")
+    raw = json.loads(json.dumps(asdict(context.freeze())))
+    raw["events"][0]["operation"] = malformed
+    with pytest.raises(ValueError, match="array"):
+        priors.joint_sampling_from_dict(raw)
