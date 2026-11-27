@@ -143,6 +143,8 @@ def explain_generation(
             ),
         },
     )
+    causal = card["version"] in ("causal-v1", "causal-v2", "functional-causal-v1")
+    observed_step = nodes.pop(0) if causal else None
     if card["version"] == "functional-causal-v1":
         signal = functional_steps(record, indices, add)
     elif card["version"] in ("causal-v1", "causal-v2"):
@@ -155,6 +157,10 @@ def explain_generation(
             next(node for node in nodes if node["id"] == f"component-{i}")["component"] = i
     else:
         signal = analytic_steps(card, inputs, add)
+    if observed_step is not None:
+        # The renderer lays out nodes in emission order. Observations depend on
+        # readouts produced inside the causal graph, not the other way round.
+        nodes.append(observed_step)
     expected = task.scores.detach().cpu()[list(indices)]
     if not torch.allclose(signal, expected, rtol=1e-10, atol=1e-10):
         raise ValueError("reconstructed signal differs from saved values beyond 1e-10 tolerance")

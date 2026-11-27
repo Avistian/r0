@@ -272,7 +272,8 @@ actual browser/Colab and measured resources. [RR:67–122; JS:100–154; I:28–
 
 ## Provenance
 
-Cached primary code, local SHA256 checked, no fresh upstream verification:
+Cached primary code; [checksum procedure](0028-joint-graph-source-check.md).
+No fresh upstream verification:
 `/tmp/r0-28-source-read/I2func.py`:
 `ff2939197b353f6d11a3fbaf0e27586998bdf93527dad11f24698ff296ce2f6c`;
 `/tmp/node-pipeline-sampling-research/_points.py`:
