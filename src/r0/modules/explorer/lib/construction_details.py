@@ -29,6 +29,19 @@ def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
             ],
             "backend_randomness": "seeds/version retained; internal backend draws not captured",
         }
+    if recipe.get("version") in ("native-vector-causal-v1", "sampled-native-vector-graph-v1"):
+        runtime = recipe.get("recipe", recipe)
+        return {
+            "kind": "native-vector",
+            "notice": (
+                "One joint score equation per node; ordered logical variables emit continuous "
+                "values or one-hot categorical state. Score width, variable count and encoded "
+                "width are distinct. This heterogeneous layout is an r0 extension, not a "
+                "claim of exact TabAbax reproduction."
+            ),
+            "domains": [[d["kind"] for d in n["domains"]] for n in runtime["nodes"]],
+            "composition": recipe.get("request", {}).get("composition"),
+        }
     composition = recipe.get("composition", recipe.get("request", {}).get("composition"))
     if composition is None:
         return None

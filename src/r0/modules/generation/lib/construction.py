@@ -29,16 +29,28 @@ def construct_graph(
     topology = fields.pop("topology")
     if topology == "fitted":
         return construct_fitted(fields, seed=seed, limits=limits)
+    if topology == "sampled-native-vector":
+        request = priors.native_vector_request_from_dict(
+            {**fields, "limits": asdict(limits)}, limits=limits
+        )
+        streams = [np.random.default_rng(s) for s in np.random.SeedSequence(seed).spawn(4)]
+        return priors.sample_native_vector_graph(
+            request,
+            named_rng=streams[0],
+            raw_rng=streams[1],
+            calibration_rng=streams[2],
+            fit_rng=streams[3],
+        )
     if topology == "sampled-native":
         return construct_native(fields, seed=seed, limits=limits)
     task = priors.recipe_from_dict(fields.pop("task"))
     if type(task) is not priors.LinearRecipe:
         raise ValueError("graph construction requires linear task controls")
-    if topology == "native":
+    if topology in ("native", "native-vector"):
         native = priors.recipe_from_dict(
             {"task": asdict(task), "limits": asdict(limits), **fields}, limits=limits
         )
-        if type(native) is not priors.NativeCausalRecipe:
+        if type(native) not in (priors.NativeCausalRecipe, priors.NativeVectorRecipe):
             raise ValueError("native construction requires an authored native recipe")
         return native
     raw_composition = fields.pop("composition", None)
@@ -127,7 +139,7 @@ class GraphConstruction:
         controls = json.loads(self.controls_json)
         if controls.get("topology") == "fitted":
             return controls["skeleton"]["task"]
-        if controls.get("topology") != "sampled-native":
+        if controls.get("topology") not in ("sampled-native", "sampled-native-vector"):
             return controls["task"]
         observed = controls["observed"]
         if type(observed) is not list:

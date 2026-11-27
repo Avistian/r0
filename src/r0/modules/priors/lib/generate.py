@@ -38,6 +38,12 @@ from r0.modules.priors.lib.native_causal import NativeCausalRecipe
 from r0.modules.priors.lib.native_decoding import native_recipe_from_dict
 from r0.modules.priors.lib.native_evaluation import generate_native_causal
 from r0.modules.priors.lib.native_graph_decoding import native_graph_from_dict
+from r0.modules.priors.lib.native_vector_decoding import (
+    native_vector_graph_from_dict,
+    native_vector_recipe_from_dict,
+)
+from r0.modules.priors.lib.native_vector_output import generate_native_vector
+from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
 from r0.modules.priors.lib.node_pipeline import pipeline_from_dict
 from r0.modules.priors.lib.parameter_preferences import parameter_preferences_from_dict
 from r0.modules.priors.lib.polynomial import PolynomialRecipe
@@ -48,6 +54,8 @@ from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
 from r0.modules.priors.lib.sampled_graph_decoding import sampled_graph_from_dict
 from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
 from r0.modules.priors.lib.sampled_native_output import generate_sampled_native
+from r0.modules.priors.lib.sampled_native_vector_graph import SampledNativeVectorGraph
+from r0.modules.priors.lib.sampled_native_vector_output import generate_sampled_native_vector
 from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
 from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.sampling import BaseRecipe, generate_base_task
@@ -69,6 +77,8 @@ type Recipe = (
     | SampledParentGraph
     | SampledTopologyGraph
     | SampledGeometryGraph
+    | NativeVectorRecipe
+    | SampledNativeVectorGraph
     | NativeCausalRecipe
     | SampledNativeGraph
 )
@@ -117,6 +127,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         from r0.modules.priors.lib.causal_intervention_decoding import intervention_from_dict
 
         return intervention_from_dict(fields, limits=limits)
+    if version == "native-vector-causal-v1":
+        return native_vector_recipe_from_dict(fields, limits=limits)
+    if version == "sampled-native-vector-graph-v1":
+        return native_vector_graph_from_dict(fields, limits=limits)
     if version == "sampled-native-graph-v1":
         return native_graph_from_dict(fields, limits=limits)
     if version == "native-causal-v1":
@@ -213,6 +227,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
                     SampledFunctionalGraph,
                     SampledTopologyGraph,
                     SampledGeometryGraph,
+                    NativeVectorRecipe,
+                    SampledNativeVectorGraph,
                     NativeCausalRecipe,
                     SampledNativeGraph,
                 ),
@@ -272,6 +288,10 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
         from r0.modules.priors.lib.causal_intervention_generation import generate_intervened
 
         return generate_intervened(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, SampledNativeVectorGraph):
+        return generate_sampled_native_vector(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, NativeVectorRecipe):
+        return generate_native_vector(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, SampledNativeGraph):
         return generate_sampled_native(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NativeCausalRecipe):

@@ -121,6 +121,10 @@ class NativeDomainPlan:
     version: str = "native-domain-plan-v1"
 
     @property
+    def asymmetric_draws(self) -> int:
+        return self.cardinality if self.frequency_law == "asymmetric-dirichlet" else 0
+
+    @property
     def score_width(self) -> int:
         if self.kind == "continuous":
             return self.prior.continuous_width

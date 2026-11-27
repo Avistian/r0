@@ -130,9 +130,14 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         view["target_origin"] = task.target_origin
         native = record["recipe"]
         view["native_construction"] = native["version"]
-        if native["version"] == "sampled-native-graph-v1":
+        if native["version"] in ("sampled-native-graph-v1", "sampled-native-vector-graph-v1"):
             native = native["recipe"]
-        domain = native["nodes"][native["target"][0]]["domain"]
+        target_node = native["nodes"][native["target"][0]]
+        domain = (
+            target_node["domains"][native["target"][1]]
+            if native["version"] == "native-vector-causal-v1"
+            else target_node["domain"]
+        )
         view["target_emission"] = domain["emission"]
         view["target_frequency_weights"] = domain.get("frequencies")
         for feature, schema in zip(view["features"], task.feature_schema, strict=True):

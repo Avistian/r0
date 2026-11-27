@@ -14,6 +14,7 @@ from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
 from r0.modules.priors.lib.functional_steps import functional_steps
 from r0.modules.priors.lib.graph_functions import analytic_steps, composite_steps, gp_steps
 from r0.modules.priors.lib.native_inspection import native_steps
+from r0.modules.priors.lib.native_vector_inspection import native_vector_steps
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.signals import component_inputs, multiply_signals
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -91,6 +92,13 @@ def explain_generation(
         if component is not None:
             raise ValueError("interventions do not have composite children")
         return {**intervention_steps(task, indices, add, limits=limits), "nodes": nodes}
+    if record["recipe"].get("version") in (
+        "native-vector-causal-v1",
+        "sampled-native-vector-graph-v1",
+    ):
+        if component is not None:
+            raise ValueError("native vector graphs do not have composite children")
+        return {**native_vector_steps(task, indices, add, limits=limits), "nodes": nodes}
 
     if record["recipe"].get("version") in ("native-causal-v1", "sampled-native-graph-v1"):
         if component is not None:

@@ -43,7 +43,7 @@ function causalStructure() {
     group.append(element("rect",{x:20+i*180,y:105,width:150,height:85,rx:10,fill:i===selected?"#d9eee7":ancestors.has(i)?"#eef7f3":"#f1f4f6",stroke:"#78928a"}));
     const observed = mechanismDraft.observed.filter(([n]) => n===i).map(([,c]) => c), targets = (mechanismInfo.native ? [mechanismDraft.target] : mechanismDraft.target).filter(([n]) => n===i).map(([,c])=>c);
     const hidden = info.width - new Set([...observed,...targets]).size;
-    for (const [j,text] of [`Node ${i} · ${info.width} channels`,`Observed: ${observed.join(",") || "none"}`,`Target: ${targets.join(",") || "none"} · hidden ${hidden}`].entries()) group.append(element("text",{x:30+i*180,y:126+j*22,"font-size":11,fill:"#23443b"},text));
+    for (const [j,text] of [`Node ${i} · ${info.width} ${mechanismInfo.vector ? "variables" : "channels"}`,`Observed: ${observed.join(",") || "none"}`,`Target: ${targets.join(",") || "none"} · hidden ${hidden}`].entries()) group.append(element("text",{x:30+i*180,y:126+j*22,"font-size":11,fill:"#23443b"},text));
     group.onclick = () => {$("mechanism-node").value=String(i); selectMechanismNode();};
     group.onkeydown = event => {if (["Enter"," "].includes(event.key)) {event.preventDefault();group.onclick();}};
     svg.append(group);
@@ -56,14 +56,14 @@ function selectMechanismNode() {
   $("mechanism-pipeline-label").hidden=!node.pipeline;
   if(node.pipeline) $("mechanism-pipeline").value=pretty(node.pipeline);
   $("mechanism-domain-label").hidden=!mechanismInfo.native;
-  if(mechanismInfo.native) $("mechanism-domain").value=pretty(mechanismDraft.nodes[index].domain);
+  if(mechanismInfo.native) $("mechanism-domain").value=pretty(mechanismDraft.nodes[index].domains || mechanismDraft.nodes[index].domain);
   $("mechanism-parents").value = pretty(node.parents);
   $("mechanism-noise").value = pretty(node.noise_scale);
   $("mechanism-function").value = pretty(node.function);
   $("mechanism-node-info").textContent = pretty({...mechanismInfo.nodes[index], geometry:mechanismInfo.geometry, note:"Green highlights the selected node and its ancestors. Hidden channels are not selected as observed features or targets. Values and equations are available in the generation-process drill-down below."});
   causalStructure();
 }
-$("construction-family").onchange = () => {const example=constructionExamples[$("construction-family").value]; $("construction-controls").value=pretty(example); $("construction-seed").disabled=example.topology==="native"; $("sampled-native-controls-note").hidden=example.topology!=="sampled-native"; $("parent-controls-note").hidden=!example.composition; $("fitted-controls-note").hidden=example.topology!=="fitted";};
+$("construction-family").onchange = () => {const example=constructionExamples[$("construction-family").value]; $("construction-controls").value=pretty(example); $("construction-seed").disabled=example.topology==="native"; $("sampled-native-controls-note").hidden=!["sampled-native","sampled-native-vector"].includes(example.topology); $("parent-controls-note").hidden=!example.composition; $("fitted-controls-note").hidden=example.topology!=="fitted";};
 $("construct").onclick = () => act("Constructing, generating and saving graph…", async () => show(await request("construct", {controls:JSON.parse($("construction-controls").value), construction_seed:$("construction-seed").value, seed:$("seed").value, task_id:$("task-id").value, ...limits()})));
 $("mechanism-load").onclick = () => act("Verifying mechanism archive…", async () => {
   mechanismInfo = await request("mechanism"); mechanismDraft = mechanismInfo.editable_recipe;
@@ -76,7 +76,7 @@ $("mechanism-node").onchange=selectMechanismNode;
 $("mechanism-apply").onclick=()=>act("Updating mechanism draft…",async()=>{
   const selected=mechanismDraft.nodes[Number($("mechanism-node").value)], node=mechanismEquation(selected);
   if(node.pipeline) node.pipeline=JSON.parse($("mechanism-pipeline").value);
-  if(mechanismInfo.native) selected.domain=JSON.parse($("mechanism-domain").value);
+  if(mechanismInfo.native) selected[selected.domains ? "domains" : "domain"]=JSON.parse($("mechanism-domain").value);
   node.parents=JSON.parse($("mechanism-parents").value); node.noise_scale=JSON.parse($("mechanism-noise").value); node.function=JSON.parse($("mechanism-function").value);
   $("mechanism-recipe").value=pretty(mechanismDraft); $("workbench-note").textContent="Draft changed. Generate the edit to validate dimensions and save a linked comparison.";
 });

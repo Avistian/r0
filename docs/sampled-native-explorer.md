@@ -47,8 +47,7 @@ run the explorer and Chromium on independently owned local ports first. Generate
 logs, screenshots, receipts and downloads belong under ignored `docs/evidence/`.
 
 Hosted Colab execution, exhaustive prior combinations and full-suite acceptance
-remain separate verification. Heterogeneous variables per node,
-further disclosed source laws, and native intervention-pair
+remain separate verification. Further disclosed source laws and native intervention-pair
 APIs remain required broader #28 work. JSON controls do not complete those items.
 
 Asymmetric Dirichlet is an explicit JSON opt-in: set a domain's `version` to
@@ -58,3 +57,7 @@ each reachable category count). Entries are absolute concentrations; the scalar
 concentration interval is unused for this branch. This r0 extension supports
 native parent constructions and the same typed inspection/export/reopen path.
 See [the native law contract](sampled-native-graphs.md) for scope and provenance.
+
+The [heterogeneous vector presets](issue-28-native-vectors.md) expose ordered
+per-variable domains, joint score equations and encoded state spans. They preserve
+typed logical readouts and support the same archive and authored-edit lifecycle.

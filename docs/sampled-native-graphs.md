@@ -102,10 +102,10 @@ out-of-budget constructions fail explicitly without retry or category deletion.
 
 ## Remaining scope
 
-Each node currently contains one vector continuous variable or one scalar
-binary/categorical variable. The indexed `domain:0` ownership seam leaves room
-for ordered heterogeneous variables, but that extension remains required #28
-work. Other remaining work includes additional disclosed source-specific frequency laws when available, and native
+The scalar native family contains one continuous vector or one scalar discrete
+variable per node. The separate [heterogeneous vector family](issue-28-native-vectors.md)
+now supplies ordered mixed variables under a joint equation without changing
+scalar archive semantics. Remaining work includes additional disclosed source-specific frequency laws when available, and native
 intervention-pair APIs. The current sampled-native JSON controls and shared
 workbench are described in [Sampled native explorer](sampled-native-explorer.md);
 hosted notebook execution remains separately unverified. Neither a source's mixture

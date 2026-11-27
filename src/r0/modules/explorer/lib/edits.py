@@ -63,7 +63,10 @@ def create_edit(
 ) -> SavedEdit:
     record = json.loads(before.recipe_json)
     recipe = priors.recipe_from_dict(data["recipe"], limits=limits)
-    if not isinstance(recipe, (priors.FunctionalCausalRecipe, priors.NativeCausalRecipe)):
+    if not isinstance(
+        recipe,
+        (priors.FunctionalCausalRecipe, priors.NativeCausalRecipe, priors.NativeVectorRecipe),
+    ):
         raise ValueError("mechanism edits require a frozen authored functional or native graph")
     request = RunRequest(
         recipe=recipe,

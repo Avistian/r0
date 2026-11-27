@@ -73,3 +73,45 @@ def sampled_native_example() -> dict[str, Any]:
     controls = asdict(request)
     controls.pop("limits")
     return {"topology": "sampled-native", **controls}
+
+
+def native_vector_example(*, parent: bool = False) -> dict[str, Any]:
+    continuous = priors.NativeDomainPrior(kinds=("continuous",))
+    binary = priors.NativeDomainPrior(
+        kinds=("binary",),
+        emissions=("threshold",),
+        frequency_laws=("uniform",),
+        threshold_laws=("uniform-quantile",),
+    )
+    category = priors.NativeDomainPrior(
+        kinds=("categorical",),
+        cardinalities=(3,),
+        emissions=("softmax",),
+        frequency_laws=("dirichlet",),
+    )
+    other = priors.NativeDomainPrior(
+        kinds=("categorical",),
+        cardinalities=(5,),
+        emissions=("softmax",),
+        frequency_laws=("dirichlet",),
+    )
+    functions = priors.JointFunctionPrior(
+        functions="lin", matrix=priors.JointMatrixPrior(families=("gaussian",))
+    )
+    request = priors.NativeVectorGraphRequest(
+        parents=((), (0,)),
+        domains=((continuous, binary, category), (other, continuous, binary)),
+        observed=((0, 0), (0, 1), (0, 2), (1, 1)),
+        target=(1, 0),
+        calibration_rows=16,
+        root_prior=priors.JointRootPrior(families=("gaussian",), function=functions),
+        function_prior=functions,
+        composition=priors.ParentCompositionPrior(
+            source="extension", mode="aggregate", aggregation="sum"
+        )
+        if parent
+        else None,
+    )
+    controls = asdict(request)
+    controls.pop("limits")
+    return {"topology": "sampled-native-vector", **controls}

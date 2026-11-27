@@ -351,6 +351,13 @@ from .lib.native_domain_prior import AsymmetricNativeDomainPrior as AsymmetricNa
 from .lib.native_graph_decoding import (
     native_domain_prior_from_dict as native_domain_prior_from_dict,
 )
+from .lib.native_vector_decoding import (
+    native_vector_request_from_dict as native_vector_request_from_dict,
+)
+from .lib.native_vector_records import NativeVectorNode as NativeVectorNode
+from .lib.native_vector_records import NativeVectorRecipe as NativeVectorRecipe
+from .lib.native_vector_request import NativeVectorGraphRequest as NativeVectorGraphRequest
+from .lib.native_vector_sampling import sample_native_vector_graph as sample_native_vector_graph
 from .lib.node_pipeline import CausalNodePipeline as CausalNodePipeline
 from .lib.node_pipeline import NumericalConverter as NumericalConverter
 from .lib.pairs import TaskPair as TaskPair
@@ -390,6 +397,7 @@ from .lib.sampled_functional_graph import (
 from .lib.sampled_graph_decoding import (
     sampled_graph_from_dict as sampled_graph_from_dict,
 )
+from .lib.sampled_native_vector_graph import SampledNativeVectorGraph as SampledNativeVectorGraph
 from .lib.sampled_topology_graph import (
     SampledTopologyGraph as SampledTopologyGraph,
 )

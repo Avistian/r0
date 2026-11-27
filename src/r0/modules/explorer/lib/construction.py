@@ -5,7 +5,11 @@ from typing import Any, cast
 
 from r0.modules import priors
 from r0.modules.explorer.lib.composed_examples import composed_examples, fitted_examples
-from r0.modules.explorer.lib.native import native_example, sampled_native_example
+from r0.modules.explorer.lib.native import (
+    native_example,
+    native_vector_example,
+    sampled_native_example,
+)
 
 
 def caller_limits(data: dict[str, Any]) -> priors.CausalLimits:
@@ -63,6 +67,8 @@ def construction_examples() -> dict[str, Any]:
         },
         "Native mixed graph (authored)": native_example(),
         "Native mixed graph (sampled domains)": sampled_native_example(),
+        "Native heterogeneous vector graph": native_vector_example(),
+        "Native vector parent composition": native_vector_example(parent=True),
         **composed_examples(common, geometry, sampled_native_example()),
         **fitted_examples(),
         **{
@@ -89,16 +95,17 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
     recipe = priors.recipe_from_dict(raw, limits=limits)
     runtime = (
         recipe.recipe
-        if isinstance(recipe, priors.SampledNativeGraph)
+        if isinstance(recipe, (priors.SampledNativeGraph, priors.SampledNativeVectorGraph))
         else getattr(recipe, "runtime", recipe)
     )
-    if isinstance(runtime, priors.NativeCausalRecipe):
+    if isinstance(runtime, (priors.NativeCausalRecipe, priors.NativeVectorRecipe)):
         return {
             "kind": "mechanism-edit",
             "construction": recipe.version,
             "editable_recipe": asdict(runtime),
             "geometry": None,
             "native": True,
+            "vector": isinstance(runtime, priors.NativeVectorRecipe),
             "notice": (
                 "Native direct targets. Editing equations or domains creates a linked "
                 "authored graph, not a causal intervention. Frequency weights shift logits; "
@@ -113,7 +120,11 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
                     "encoded_width": node.state_width,
                     "score_width": node.equation.function.output_width,
                     "function": node.equation.function.version,
-                    "domain": asdict(node.domain),
+                    "domain": (
+                        [asdict(d) for d in node.domains]
+                        if isinstance(node, priors.NativeVectorNode)
+                        else asdict(node.domain)
+                    ),
                 }
                 for i, node in enumerate(runtime.nodes)
             ],

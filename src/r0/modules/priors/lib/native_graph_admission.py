@@ -19,13 +19,17 @@ from r0.modules.priors.lib.joint_root_admission import (
 from r0.modules.priors.lib.joint_root_plans import JointRootPlan
 from r0.modules.priors.lib.native_domain_prior import NativeDomainPlan
 from r0.modules.priors.lib.native_graph_request import NativeGraphRequest
+from r0.modules.priors.lib.native_vector_request import (
+    NativeVectorDomainPlan,
+    NativeVectorGraphRequest,
+)
 from r0.modules.priors.lib.parent_composition_plans import ParentFunctionPlan
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
 
 
 def admit_native_construction(
-    request: NativeGraphRequest,
-    domains: tuple[NativeDomainPlan, ...],
+    request: NativeGraphRequest | NativeVectorGraphRequest,
+    domains: tuple[NativeDomainPlan | NativeVectorDomainPlan, ...],
     mechanisms: tuple[JointRootPlan | JointFunctionPlan | ParentFunctionPlan, ...],
     registry: JointOperationRegistry,
 ) -> RawDrawLimits:
@@ -73,7 +77,12 @@ def admit_native_construction(
         parameters += 4 * report["parameters"]
         working += 4 * report["estimated_working_bytes"]
         work_channels = max(work_channels, function_evaluation_channels(function))
-    total = sum(d.score_width + d.state_width + 2 for d in domains)
+    total = sum(
+        d.score_width
+        + d.state_width
+        + (2 * len(d.variables) if isinstance(d, NativeVectorDomainPlan) else 2)
+        for d in domains
+    )
     fan_in = max(sum(domains[p].state_width for p in parents) for parents in request.parents)
     rows = max(request.rows, request.calibration_rows, 256)
     working += 16 * rows * (48 * total + 4 * fan_in + work_channels + 8)
@@ -83,9 +92,7 @@ def admit_native_construction(
     working += 32 * min(request.raw_limits.state_bytes, 1024**2)
     parameters += 128 * len(domains)
     # Asymmetric vectors retain one independently parameterized Gamma record per category.
-    asymmetric_draws = sum(
-        d.cardinality for d in domains if d.frequency_law == "asymmetric-dirichlet"
-    )
+    asymmetric_draws = sum(d.asymmetric_draws for d in domains)
     if asymmetric_draws > request.raw_limits.draws or asymmetric_draws > request.raw_limits.numbers:
         raise ValueError("asymmetric frequency raw draw limit exceeded before materialization")
     parameters += 32 * asymmetric_draws
