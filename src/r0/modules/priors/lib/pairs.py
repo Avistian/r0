@@ -8,10 +8,15 @@ import numpy as np
 import torch
 from numpy.typing import NDArray
 
+from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.compositions import CompositeRecipe
 from r0.modules.priors.lib.generate import Recipe, generate_task, recipe_from_dict
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.native_causal import NativeCausalRecipe
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
+from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
+from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.training_task import TrainingTask
 
 _FIELDS = {
@@ -31,6 +36,10 @@ class TaskPair:
 
 def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> Recipe:
     """Construct one explicit change; preserve all other recipe controls."""
+    if isinstance(recipe, NativeCausalRecipe):
+        raise ValueError(
+            "native graph pairs require domain/equation interventions, not adapter controls"
+        )
     if intervention not in _FIELDS:
         raise ValueError("unsupported pair intervention")
     controls = recipe if isinstance(recipe, LinearRecipe) else recipe.task
@@ -49,6 +58,8 @@ def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> R
             for component in recipe.components
         )
         return replace(recipe, task=changed, components=components)
+    if isinstance(recipe, (SampledFunctionalGraph, SampledTopologyGraph, SampledGeometryGraph)):
+        return recipe.with_task(changed)
     return changed if isinstance(recipe, LinearRecipe) else replace(recipe, task=changed)
 
 
@@ -61,6 +72,7 @@ def generate_pair(
     task_id: int,
     device: str = "cpu",
     allow_estimated_variance: bool = False,
+    limits: CausalLimits | None = None,
 ) -> TaskPair:
     """Generate two coupled variants; neither failures nor changed properties are hidden."""
     _variance_control(recipe, intervention, allow_estimated_variance)
@@ -76,6 +88,7 @@ def generate_pair(
                 after,
                 intervention=intervention,
                 allow_estimated_variance=allow_estimated_variance,
+                limits=limits,
             )
         ),
     )
@@ -87,10 +100,11 @@ def compare_pair(
     *,
     intervention: str,
     allow_estimated_variance: bool = False,
+    limits: CausalLimits | None = None,
 ) -> dict[str, Any]:
     """Verify a saved pair through the same interface used by local/notebook inspection."""
     records = [json.loads(task.recipe_json) for task in (before, after)]
-    recipes = [recipe_from_dict(record["recipe"]) for record in records]
+    recipes = [recipe_from_dict(record["recipe"], limits=limits) for record in records]
     controls = [recipe if isinstance(recipe, LinearRecipe) else recipe.task for recipe in recipes]
     if intervention not in _FIELDS:
         raise ValueError("unsupported pair intervention")

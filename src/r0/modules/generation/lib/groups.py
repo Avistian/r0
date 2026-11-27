@@ -72,6 +72,16 @@ def _entries(task: TrainingTask) -> Iterable[tuple[str, bytes]]:
         "predictor.json",
         _json(
             {
+                **(
+                    {"feature_schema": [asdict(f) for f in task.feature_schema]}
+                    if task.feature_schema
+                    else {}
+                ),
+                **(
+                    {"target_origin": task.target_origin}
+                    if task.target_origin != "adapter-v1"
+                    else {}
+                ),
                 "task_type": task.task_type,
                 "classes": task.classes,
                 "feature_names": [f"x{i}" for i in range(task.inputs.shape[1])],

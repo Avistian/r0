@@ -37,12 +37,15 @@ class RawDrawLimits:
 
 def state_digest(rng: np.random.Generator, limit: int = 1024**2) -> str:
     """Hash trusted live state only. No record ever contains or unpickles a pickle."""
-    if type(rng) is not np.random.Generator or type(rng.bit_generator).__name__ not in (
-        "PCG64",
-        "PCG64DXSM",
-        "Philox",
-        "SFC64",
-        "MT19937",
+    # State publication relies on the concrete NumPy setter contract. A subclass
+    # may impersonate an engine name while overriding setters or deepcopy and
+    # cause a partially published multi-stream transaction.
+    if type(rng) is not np.random.Generator or type(rng.bit_generator) not in (
+        np.random.PCG64,
+        np.random.PCG64DXSM,
+        np.random.Philox,
+        np.random.SFC64,
+        np.random.MT19937,
     ):
         raise ValueError("raw draws require a supported injected NumPy generator")
     raw = pickle.dumps(rng.bit_generator.state)
@@ -69,6 +72,7 @@ def draw_arguments(
         raise ValueError("raw draw parameters must have distinct names")
     expected: dict[str, set[str]] = {
         "normal": set(),
+        "cauchy": set(),
         "random": set(),
         "uniform": {"low", "high"},
         "student_t": {"df"},
@@ -114,6 +118,8 @@ def numpy_draw(
     args = draw_arguments(distribution, shape, parameters)
     if distribution == "normal":
         values = rng.normal(size=shape)
+    elif distribution == "cauchy":
+        values = rng.standard_cauchy(size=shape)
     elif distribution == "random":
         values = rng.random(size=shape)
     elif distribution == "uniform":

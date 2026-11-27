@@ -38,6 +38,9 @@ from r0.modules.priors.lib.categorical_preferences import (
     categorical_preferences_from_dict as categorical_preferences_from_dict,
 )
 from r0.modules.priors.lib.categorical_sampling import CategoricalSampler as CategoricalSampler
+from r0.modules.priors.lib.cauchy_graph import CauchyGraph as CauchyGraph
+from r0.modules.priors.lib.cauchy_graph import CauchyGraphPrior as CauchyGraphPrior
+from r0.modules.priors.lib.cauchy_graph import sample_cauchy_graph as sample_cauchy_graph
 from r0.modules.priors.lib.causal import ActivatedCausalNode as ActivatedCausalNode
 from r0.modules.priors.lib.causal import CausalNode as CausalNode
 from r0.modules.priors.lib.causal import CausalRecipe as CausalRecipe
@@ -88,22 +91,6 @@ from r0.modules.priors.lib.frozen_function_primitives import FrozenRFFFunction a
 from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenTreeFunction as FrozenTreeFunction,
 )
-from r0.modules.priors.lib.functional_causal import (
-    CalibratedFunctionalCausalRecipe as CalibratedFunctionalCausalRecipe,
-)
-from r0.modules.priors.lib.functional_causal import FunctionalCausalNode as FunctionalCausalNode
-from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe as FunctionalCausalRecipe
-from r0.modules.priors.lib.functional_causal_decoding import (
-    functional_recipe_from_dict as functional_recipe_from_dict,
-)
-from r0.modules.priors.lib.functional_causal_evaluation import PrefixEvaluation as PrefixEvaluation
-from r0.modules.priors.lib.functional_causal_evaluation import (
-    evaluate_functional_prefix as evaluate_functional_prefix,
-)
-from r0.modules.priors.lib.functional_causal_evaluation import (
-    sample_functional_prefix as sample_functional_prefix,
-)
-from r0.modules.priors.lib.functional_prefix import FunctionalPrefix as FunctionalPrefix
 from r0.modules.priors.lib.generate import Recipe as Recipe
 from r0.modules.priors.lib.generate import generate_task as generate_task
 from r0.modules.priors.lib.generate import recipe_from_dict as recipe_from_dict
@@ -111,142 +98,6 @@ from r0.modules.priors.lib.generation_graph import explain_generation as explain
 from r0.modules.priors.lib.gp_conditioning import condition_gp as condition_gp
 from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe as GroupedLinearRecipe
 from r0.modules.priors.lib.inputs import InputDistribution as InputDistribution
-from r0.modules.priors.lib.joint_activation_plans import JointActivationPlan as JointActivationPlan
-from r0.modules.priors.lib.joint_activation_plans import (
-    joint_activation_plan_from_dict as joint_activation_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_activation_plans import (
-    sample_joint_activation as sample_joint_activation,
-)
-from r0.modules.priors.lib.joint_converter_plans import (
-    JointConverterPlan as JointConverterPlan,
-)
-from r0.modules.priors.lib.joint_converter_plans import (
-    JointNumericalConverterPrior as JointNumericalConverterPrior,
-)
-from r0.modules.priors.lib.joint_converter_plans import (
-    joint_converter_plan_from_dict as joint_converter_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_converter_plans import (
-    sample_joint_converter as sample_joint_converter,
-)
-from r0.modules.priors.lib.joint_discretization_realization import (
-    JointDiscretizationFunctionRealization as JointDiscretizationFunctionRealization,
-)
-from r0.modules.priors.lib.joint_em_realization import (
-    JointEMFunctionRealization as JointEMFunctionRealization,
-)
-from r0.modules.priors.lib.joint_function_calibration import (
-    FunctionCalibrationSample as FunctionCalibrationSample,
-)
-from r0.modules.priors.lib.joint_function_decoding import (
-    joint_function_plan_from_dict as joint_function_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_function_plans import JointFunctionPlan as JointFunctionPlan
-from r0.modules.priors.lib.joint_function_prior import JointFunctionPrior as JointFunctionPrior
-from r0.modules.priors.lib.joint_function_realization import (
-    JointMatrixFunctionRealization as JointMatrixFunctionRealization,
-)
-from r0.modules.priors.lib.joint_function_realization import (
-    JointProductFunctionRealization as JointProductFunctionRealization,
-)
-from r0.modules.priors.lib.joint_function_realization import (
-    materialize_joint_function as materialize_joint_function,
-)
-from r0.modules.priors.lib.joint_function_realization_decoding import (
-    joint_function_realization_from_dict as joint_function_realization_from_dict,
-)
-from r0.modules.priors.lib.joint_function_sampling import (
-    sample_joint_function as sample_joint_function,
-)
-from r0.modules.priors.lib.joint_matrix_decoding import (
-    joint_matrix_realization_from_dict as joint_matrix_realization_from_dict,
-)
-from r0.modules.priors.lib.joint_matrix_plans import JointMatrixPlan as JointMatrixPlan
-from r0.modules.priors.lib.joint_matrix_plans import JointMatrixPrior as JointMatrixPrior
-from r0.modules.priors.lib.joint_matrix_plans import (
-    joint_matrix_plan_from_dict as joint_matrix_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_matrix_plans import sample_joint_matrix as sample_joint_matrix
-from r0.modules.priors.lib.joint_matrix_realization import (
-    JointMatrixRealization as JointMatrixRealization,
-)
-from r0.modules.priors.lib.joint_matrix_realization import (
-    materialize_joint_matrix as materialize_joint_matrix,
-)
-from r0.modules.priors.lib.joint_mlp_realization import (
-    JointMLPFunctionRealization as JointMLPFunctionRealization,
-)
-from r0.modules.priors.lib.joint_operation_registry import (
-    JointOperationRegistry as JointOperationRegistry,
-)
-from r0.modules.priors.lib.joint_operation_registry import JointOperationSpan as JointOperationSpan
-from r0.modules.priors.lib.joint_operation_registry import (
-    JointRegistryLimits as JointRegistryLimits,
-)
-from r0.modules.priors.lib.joint_plan_calibration import (
-    fit_joint_activation as fit_joint_activation,
-)
-from r0.modules.priors.lib.joint_plan_calibration import fit_joint_converter as fit_joint_converter
-from r0.modules.priors.lib.joint_point_plans import JointPointPlan as JointPointPlan
-from r0.modules.priors.lib.joint_point_plans import (
-    joint_point_plan_from_dict as joint_point_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_point_plans import sample_joint_points as sample_joint_points
-from r0.modules.priors.lib.joint_point_realization import (
-    materialize_joint_points as materialize_joint_points,
-)
-from r0.modules.priors.lib.joint_registry_decoding import (
-    joint_operation_registry_from_dict as joint_operation_registry_from_dict,
-)
-from r0.modules.priors.lib.joint_rff_realization import (
-    JointRFFFunctionRealization as JointRFFFunctionRealization,
-)
-from r0.modules.priors.lib.joint_root_base import JointRootBase as JointRootBase
-from r0.modules.priors.lib.joint_root_decoding import (
-    joint_root_plan_from_dict as joint_root_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_root_emission import JointRootEmission as JointRootEmission
-from r0.modules.priors.lib.joint_root_emission import (
-    sample_joint_root_values as sample_joint_root_values,
-)
-from r0.modules.priors.lib.joint_root_plans import JointRootPlan as JointRootPlan
-from r0.modules.priors.lib.joint_root_plans import JointRootPrior as JointRootPrior
-from r0.modules.priors.lib.joint_root_plans import sample_joint_root as sample_joint_root
-from r0.modules.priors.lib.joint_root_realization import (
-    JointRootRealization as JointRootRealization,
-)
-from r0.modules.priors.lib.joint_root_realization import (
-    materialize_joint_root as materialize_joint_root,
-)
-from r0.modules.priors.lib.joint_root_realization_decoding import (
-    joint_root_emission_from_dict as joint_root_emission_from_dict,
-)
-from r0.modules.priors.lib.joint_root_realization_decoding import (
-    joint_root_realization_from_dict as joint_root_realization_from_dict,
-)
-from r0.modules.priors.lib.joint_sampling import JointSamplingContext as JointSamplingContext
-from r0.modules.priors.lib.joint_sampling_records import JointDecision as JointDecision
-from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord as JointSamplingRecord
-from r0.modules.priors.lib.joint_sampling_records import (
-    joint_sampling_from_dict as joint_sampling_from_dict,
-)
-from r0.modules.priors.lib.joint_streams import JointStreamLimits as JointStreamLimits
-from r0.modules.priors.lib.joint_tree_realization import (
-    JointTreeFunctionRealization as JointTreeFunctionRealization,
-)
-from r0.modules.priors.lib.joint_weight_plans import (
-    JointWeightPlan as JointWeightPlan,
-)
-from r0.modules.priors.lib.joint_weight_plans import (
-    joint_weight_plan_from_dict as joint_weight_plan_from_dict,
-)
-from r0.modules.priors.lib.joint_weight_plans import (
-    materialize_joint_weights as materialize_joint_weights,
-)
-from r0.modules.priors.lib.joint_weight_plans import (
-    sample_joint_weights as sample_joint_weights,
-)
 from r0.modules.priors.lib.kernel_points import KernelPointCloud as KernelPointCloud
 from r0.modules.priors.lib.kernels import GibbsKernel as GibbsKernel
 from r0.modules.priors.lib.kernels import RationalQuadraticKernel as RationalQuadraticKernel
@@ -286,6 +137,15 @@ from r0.modules.priors.lib.representatives import GeneratedTask as GeneratedTask
 from r0.modules.priors.lib.representatives import Proposal as Proposal
 from r0.modules.priors.lib.representatives import record_fingerprint as record_fingerprint
 from r0.modules.priors.lib.representatives import sample_proposal as sample_proposal
+from r0.modules.priors.lib.sampled_functional_graph import (
+    SampledFunctionalGraph as SampledFunctionalGraph,
+)
+from r0.modules.priors.lib.sampled_graph_decoding import (
+    sampled_graph_from_dict as sampled_graph_from_dict,
+)
+from r0.modules.priors.lib.sampled_topology_graph import (
+    SampledTopologyGraph as SampledTopologyGraph,
+)
 from r0.modules.priors.lib.signals import evaluate_signal as evaluate_signal
 from r0.modules.priors.lib.smooth import SmoothRecipe as SmoothRecipe
 from r0.modules.priors.lib.source_activation_law import (
@@ -310,6 +170,15 @@ from r0.modules.priors.lib.source_matrix import SourceMatrixCausalRecipe as Sour
 from r0.modules.priors.lib.source_matrix_sampling import (
     with_source_matrices as with_source_matrices,
 )
+from r0.modules.priors.lib.topology_graph_decoding import (
+    topology_graph_from_dict as topology_graph_from_dict,
+)
+from r0.modules.priors.lib.topology_graph_request import (
+    TopologyGraphRequest as TopologyGraphRequest,
+)
+from r0.modules.priors.lib.topology_graph_sampling import (
+    sample_topology_graph as sample_topology_graph,
+)
 from r0.modules.priors.lib.training_task import TrainingTask as TrainingTask
 from r0.modules.priors.lib.transformed_weights import GaussianWeights as GaussianWeights
 from r0.modules.priors.lib.transformed_weights import NormalizedWeights as NormalizedWeights
@@ -322,3 +191,254 @@ from r0.modules.priors.lib.weight_matrices import ImportanceWeights as Importanc
 from r0.modules.priors.lib.weight_matrices import LaplaceKernelWeights as LaplaceKernelWeights
 from r0.modules.priors.lib.weight_vectors import PolynomialWeightVector as PolynomialWeightVector
 from r0.modules.priors.lib.weight_vectors import UniformWeightVector as UniformWeightVector
+
+from .lib.functional_causal import (
+    CalibratedFunctionalCausalRecipe as CalibratedFunctionalCausalRecipe,
+)
+from .lib.functional_causal import FunctionalCausalNode as FunctionalCausalNode
+from .lib.functional_causal import FunctionalCausalRecipe as FunctionalCausalRecipe
+from .lib.functional_causal_decoding import (
+    functional_recipe_from_dict as functional_recipe_from_dict,
+)
+from .lib.functional_causal_evaluation import PrefixEvaluation as PrefixEvaluation
+from .lib.functional_causal_evaluation import (
+    evaluate_functional_prefix as evaluate_functional_prefix,
+)
+from .lib.functional_causal_evaluation import (
+    sample_functional_prefix as sample_functional_prefix,
+)
+from .lib.functional_prefix import FunctionalPrefix as FunctionalPrefix
+from .lib.joint_api import (
+    FeatureGroup as FeatureGroup,
+)
+from .lib.joint_api import (
+    FunctionCalibrationSample as FunctionCalibrationSample,
+)
+from .lib.joint_api import GeometryGraphRequest as GeometryGraphRequest
+from .lib.joint_api import (
+    JointActivationPlan as JointActivationPlan,
+)
+from .lib.joint_api import (
+    JointConverterPlan as JointConverterPlan,
+)
+from .lib.joint_api import (
+    JointDecision as JointDecision,
+)
+from .lib.joint_api import (
+    JointDiscretizationFunctionRealization as JointDiscretizationFunctionRealization,
+)
+from .lib.joint_api import (
+    JointEMFunctionRealization as JointEMFunctionRealization,
+)
+from .lib.joint_api import (
+    JointFunctionPlan as JointFunctionPlan,
+)
+from .lib.joint_api import (
+    JointFunctionPrior as JointFunctionPrior,
+)
+from .lib.joint_api import (
+    JointGraphNodePlan as JointGraphNodePlan,
+)
+from .lib.joint_api import (
+    JointGraphNoise as JointGraphNoise,
+)
+from .lib.joint_api import (
+    JointGraphPlan as JointGraphPlan,
+)
+from .lib.joint_api import (
+    JointGraphRequest as JointGraphRequest,
+)
+from .lib.joint_api import (
+    JointMatrixFunctionRealization as JointMatrixFunctionRealization,
+)
+from .lib.joint_api import (
+    JointMatrixPlan as JointMatrixPlan,
+)
+from .lib.joint_api import (
+    JointMatrixPrior as JointMatrixPrior,
+)
+from .lib.joint_api import (
+    JointMatrixRealization as JointMatrixRealization,
+)
+from .lib.joint_api import (
+    JointMLPFunctionRealization as JointMLPFunctionRealization,
+)
+from .lib.joint_api import (
+    JointNumericalConverterPrior as JointNumericalConverterPrior,
+)
+from .lib.joint_api import (
+    JointObservationPlan as JointObservationPlan,
+)
+from .lib.joint_api import (
+    JointObservationRealization as JointObservationRealization,
+)
+from .lib.joint_api import (
+    JointOperationRegistry as JointOperationRegistry,
+)
+from .lib.joint_api import (
+    JointOperationSpan as JointOperationSpan,
+)
+from .lib.joint_api import (
+    JointPlanOwner as JointPlanOwner,
+)
+from .lib.joint_api import (
+    JointPointPlan as JointPointPlan,
+)
+from .lib.joint_api import (
+    JointProductFunctionRealization as JointProductFunctionRealization,
+)
+from .lib.joint_api import (
+    JointRegistryLimits as JointRegistryLimits,
+)
+from .lib.joint_api import (
+    JointRFFFunctionRealization as JointRFFFunctionRealization,
+)
+from .lib.joint_api import (
+    JointRootBase as JointRootBase,
+)
+from .lib.joint_api import (
+    JointRootEmission as JointRootEmission,
+)
+from .lib.joint_api import (
+    JointRootPlan as JointRootPlan,
+)
+from .lib.joint_api import (
+    JointRootPrior as JointRootPrior,
+)
+from .lib.joint_api import (
+    JointRootRealization as JointRootRealization,
+)
+from .lib.joint_api import (
+    JointSamplingContext as JointSamplingContext,
+)
+from .lib.joint_api import (
+    JointSamplingRecord as JointSamplingRecord,
+)
+from .lib.joint_api import (
+    JointStreamLimits as JointStreamLimits,
+)
+from .lib.joint_api import (
+    JointTreeFunctionRealization as JointTreeFunctionRealization,
+)
+from .lib.joint_api import (
+    JointWeightPlan as JointWeightPlan,
+)
+from .lib.joint_api import (
+    JointWidthPlan as JointWidthPlan,
+)
+from .lib.joint_api import (
+    JointWidthPrior as JointWidthPrior,
+)
+from .lib.joint_api import NativeCausalNode as NativeCausalNode
+from .lib.joint_api import NativeCausalRecipe as NativeCausalRecipe
+from .lib.joint_api import ObservationChannelLayout as ObservationChannelLayout
+from .lib.joint_api import SampledGeometryGraph as SampledGeometryGraph
+from .lib.joint_api import TrainingFeature as TrainingFeature
+from .lib.joint_api import VariableDomain as VariableDomain
+from .lib.joint_api import allocate_observation_channels as allocate_observation_channels
+from .lib.joint_api import (
+    fit_joint_activation as fit_joint_activation,
+)
+from .lib.joint_api import (
+    fit_joint_converter as fit_joint_converter,
+)
+from .lib.joint_api import geometry_graph_from_dict as geometry_graph_from_dict
+from .lib.joint_api import (
+    joint_activation_plan_from_dict as joint_activation_plan_from_dict,
+)
+from .lib.joint_api import (
+    joint_converter_plan_from_dict as joint_converter_plan_from_dict,
+)
+from .lib.joint_api import (
+    joint_function_plan_from_dict as joint_function_plan_from_dict,
+)
+from .lib.joint_api import (
+    joint_function_realization_from_dict as joint_function_realization_from_dict,
+)
+from .lib.joint_api import (
+    joint_matrix_plan_from_dict as joint_matrix_plan_from_dict,
+)
+from .lib.joint_api import (
+    joint_matrix_realization_from_dict as joint_matrix_realization_from_dict,
+)
+from .lib.joint_api import (
+    joint_operation_registry_from_dict as joint_operation_registry_from_dict,
+)
+from .lib.joint_api import (
+    joint_point_plan_from_dict as joint_point_plan_from_dict,
+)
+from .lib.joint_api import (
+    joint_root_emission_from_dict as joint_root_emission_from_dict,
+)
+from .lib.joint_api import (
+    joint_root_plan_from_dict as joint_root_plan_from_dict,
+)
+from .lib.joint_api import (
+    joint_root_realization_from_dict as joint_root_realization_from_dict,
+)
+from .lib.joint_api import (
+    joint_sampling_from_dict as joint_sampling_from_dict,
+)
+from .lib.joint_api import (
+    joint_weight_plan_from_dict as joint_weight_plan_from_dict,
+)
+from .lib.joint_api import (
+    materialize_joint_function as materialize_joint_function,
+)
+from .lib.joint_api import (
+    materialize_joint_matrix as materialize_joint_matrix,
+)
+from .lib.joint_api import (
+    materialize_joint_observations as materialize_joint_observations,
+)
+from .lib.joint_api import (
+    materialize_joint_points as materialize_joint_points,
+)
+from .lib.joint_api import (
+    materialize_joint_root as materialize_joint_root,
+)
+from .lib.joint_api import (
+    materialize_joint_weights as materialize_joint_weights,
+)
+from .lib.joint_api import sample_geometry_graph as sample_geometry_graph
+from .lib.joint_api import (
+    sample_joint_activation as sample_joint_activation,
+)
+from .lib.joint_api import (
+    sample_joint_converter as sample_joint_converter,
+)
+from .lib.joint_api import (
+    sample_joint_function as sample_joint_function,
+)
+from .lib.joint_api import (
+    sample_joint_graph as sample_joint_graph,
+)
+from .lib.joint_api import (
+    sample_joint_graph_plan as sample_joint_graph_plan,
+)
+from .lib.joint_api import (
+    sample_joint_matrix as sample_joint_matrix,
+)
+from .lib.joint_api import (
+    sample_joint_observations as sample_joint_observations,
+)
+from .lib.joint_api import (
+    sample_joint_points as sample_joint_points,
+)
+from .lib.joint_api import (
+    sample_joint_root as sample_joint_root,
+)
+from .lib.joint_api import (
+    sample_joint_root_values as sample_joint_root_values,
+)
+from .lib.joint_api import (
+    sample_joint_weights as sample_joint_weights,
+)
+from .lib.joint_api import (
+    sample_joint_widths as sample_joint_widths,
+)
+from .lib.structural_graph import StructuralGraph as StructuralGraph
+from .lib.structural_graph import sample_structural_graph as sample_structural_graph
+from .lib.structural_graph_algorithm import GraphRewrite as GraphRewrite
+from .lib.structural_graph_prior import AttachmentGraphPrior as AttachmentGraphPrior
+from .lib.structural_graph_prior import MotifGraphPrior as MotifGraphPrior

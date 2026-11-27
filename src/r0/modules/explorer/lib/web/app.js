@@ -12,7 +12,8 @@ const format = value => {
 };
 
 async function request(action, data = {}) {
-  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
+  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export", "mechanism", "edit", "edit_export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
+  if (["graph", "pair", "open_pair", "mechanism", "edit"].includes(action)) data = {...data, ...explorationLimits()};
   if (window.r0request) return window.r0request(action, data);
   const response = await fetch("/api", {
     method: "POST", headers: {"Content-Type": "application/json", "X-r0-explorer": window.r0token},
@@ -41,7 +42,7 @@ async function act(message, work) {
   }
 }
 
-function taskControls(recipe) { return recipe.task || recipe; }
+function taskControls(recipe) { return recipe.request?.task || recipe.task || recipe; }
 function parseRecipe() {
   return JSON.parse($("recipe").value, (key, value) => {
     if (key === "split" && typeof value === "number" && !Number.isSafeInteger(value)) throw new Error("Write large split identifiers as quoted decimal strings to preserve every digit.");
@@ -57,6 +58,7 @@ function fillControls(recipe) {
 }
 function updateRecipe(changed) {
   const recipe = parseRecipe(), task = taskControls(recipe);
+  if (recipe.version?.startsWith("sampled-")) throw new Error("Sampled archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
   const fields = {rows: "rows", context: "context_rows", features: "features", active: "active_features", classes: "classes"};
   if (fields[changed]) task[fields[changed]] = number(changed);
   if (changed === "difficulty") task[task.task_type === "regression" ? "noise_ratio" : "separation"] = number("difficulty");
@@ -79,7 +81,7 @@ function updateRecipe(changed) {
   }
   fillControls(recipe);
 }
-function limits() { return {device: $("device").value, max_seconds: number("seconds"), max_bytes: number("bytes") * 1024 ** 2}; }
+function limits() { return {...explorationLimits(), device: $("device").value, max_seconds: number("seconds"), max_bytes: number("bytes") * 1024 ** 2}; }
 async function generate() {
   const result = await request("generate", {recipe: parseRecipe(), seed: $("seed").value, task_id: $("task-id").value, ...limits()});
   show(result);
@@ -207,7 +209,7 @@ function show(result) {
   $("replay-record").value = result.recipe_json; $("seed").value = view.recipe.seed; $("task-id").value = view.recipe.task_id;
   $("curve-row").value = 0; $("curve-row").max = view.total_rows - 1;
   $("gp-approximate").checked = false;
-  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair();
+  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair(); resetWorkbench();
 }
 async function inspectRow(index) {
   await act("Loading row…", async () => {

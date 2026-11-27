@@ -1,6 +1,7 @@
 """Run a generation coordinator in a killable process group."""
 
 import json
+import math
 import os
 import signal
 import subprocess
@@ -9,6 +10,7 @@ import time
 from contextlib import suppress
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any, cast
 
 from r0.modules.generation.lib.requests import RunRequest
 
@@ -36,6 +38,29 @@ def run_guarded(
     sync_path enables `sync PATH` persistence after failures/groups, intended for a
     mounted Modal Volume v2. Provider durability still requires target-runtime proof.
     """
+    return run_guarded_document(
+        asdict(request), out, workers=workers, retry_failed=retry_failed, sync_path=sync_path
+    )
+
+
+def run_guarded_document(
+    request: dict[str, Any],
+    out: Path,
+    *,
+    workers: int = 1,
+    retry_failed: bool = False,
+    sync_path: Path | None = None,
+) -> JobResult:
+    """Decode and replay a raw request only inside the timeout-protected worker."""
+    if type(request) is not dict:
+        raise ValueError("guarded request must be an object")
+    seconds = request.get("max_seconds")
+    if (
+        type(seconds) not in (int, float)
+        or not math.isfinite(cast(float, seconds))
+        or cast(float, seconds) <= 0
+    ):
+        raise ValueError("guarded request needs a finite positive timeout")
     if os.name != "posix":
         raise ValueError("guarded generation requires POSIX process groups")
     if type(workers) is not int or not 1 <= workers <= 16:
@@ -44,7 +69,7 @@ def run_guarded(
         raise ValueError("output must be inside the requested persistence mount")
     payload = json.dumps(
         {
-            "request": asdict(request),
+            "request": request,
             "out": str(out.resolve()),
             "workers": workers,
             "retry_failed": retry_failed,
@@ -69,7 +94,7 @@ def run_guarded(
     )
     timed_out = False
     try:
-        stdout, stderr = process.communicate(payload, timeout=request.max_seconds)
+        stdout, stderr = process.communicate(payload, timeout=seconds)
     except subprocess.TimeoutExpired:
         timed_out = True
         with suppress(ProcessLookupError):

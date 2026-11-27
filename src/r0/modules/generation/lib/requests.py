@@ -5,7 +5,9 @@ import math
 from dataclasses import asdict, dataclass, replace
 from typing import Any
 
+from r0.modules.generation.lib.construction import GraphConstruction
 from r0.modules.priors import (
+    CausalLimits,
     LinearRecipe,
     Recipe,
     TrainingTask,
@@ -36,8 +38,12 @@ class RunRequest:
     group_size: int = 64
     device: str = "cpu"
     sampling: RecipeSampling | None = None
+    causal_limits: CausalLimits | None = None
+    construction: GraphConstruction | None = None
 
     def __post_init__(self) -> None:
+        if self.causal_limits is not None and type(self.causal_limits) is not CausalLimits:
+            raise ValueError("run exploration limits require caller-owned CausalLimits")
         if any(
             type(v) is not int
             for v in (self.seed, self.count, self.start, self.group_size, self.max_bytes)
@@ -53,6 +59,13 @@ class RunRequest:
             math.isfinite(self.max_seconds) and self.max_seconds > 0
         ):
             raise ValueError("max_seconds must be finite and positive")
+        if self.construction is not None:
+            if type(self.construction) is not GraphConstruction or self.sampling is not None:
+                raise ValueError("graph construction cannot also use recipe sampling")
+            if json.loads(self.construction.controls_json).get("task") != json.loads(
+                json.dumps(asdict(self.recipe))
+            ):
+                raise ValueError("construction task controls differ from the run recipe")
         if self.sampling is not None:
             if type(self.sampling) is not RecipeSampling or not isinstance(
                 self.recipe, LinearRecipe
@@ -63,6 +76,8 @@ class RunRequest:
 
 
 def selected_recipe(request: RunRequest, task_id: int) -> Recipe:
+    if request.construction is not None:
+        return request.construction.build(request.causal_limits or CausalLimits())
     if request.sampling is None:
         return request.recipe
     assert isinstance(request.recipe, LinearRecipe)
@@ -105,8 +120,15 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
 
 def request_from_dict(data: dict[str, Any]) -> RunRequest:
     fields = dict(data)
-    recipe = recipe_from_dict(fields.pop("recipe"))
+    raw_limits = fields.pop("causal_limits", None)
+    limits = None if raw_limits is None else CausalLimits(**raw_limits)
+    recipe = recipe_from_dict(fields.pop("recipe"), limits=limits or CausalLimits())
     sampling = fields.pop("sampling", None)
+    construction = fields.pop("construction", None)
     return RunRequest(
-        recipe, sampling=None if sampling is None else RecipeSampling(**sampling), **fields
+        recipe,
+        sampling=None if sampling is None else RecipeSampling(**sampling),
+        causal_limits=limits,
+        construction=None if construction is None else GraphConstruction(**construction),
+        **fields,
     )

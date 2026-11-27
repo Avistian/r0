@@ -11,7 +11,7 @@ import numpy as np
 import torch
 
 from r0.modules.generation.lib.groups import verify_group
-from r0.modules.priors import TrainingTask
+from r0.modules.priors import TrainingFeature, TrainingTask
 
 
 def _tensors(archive: zipfile.ZipFile, name: str) -> dict[str, torch.Tensor]:
@@ -69,4 +69,9 @@ def _load_task(archive: zipfile.ZipFile, task_id: int) -> TrainingTask:
         context_indices=context,
         query_indices=query,
         classes=tuple(metadata["classes"]),
+        feature_schema=tuple(
+            TrainingFeature(f["kind"], tuple(f["vocabulary"]))
+            for f in metadata.get("feature_schema", ())
+        ),
+        target_origin=metadata.get("target_origin", "adapter-v1"),
     )

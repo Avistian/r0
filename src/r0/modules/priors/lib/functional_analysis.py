@@ -173,73 +173,82 @@ def functional_certificates(
     states: list[list[ChannelCertificate]] = []
     readouts: list[list[ChannelCertificate]] = []
     for index, node in enumerate(nodes):
-        width = node.function.output_width
-        incoming: list[ChannelCertificate] = [c for p in node.parents for c in states[p]]
-        if node.root is not None:
-            base = node.root
-            bounded = base.family in ("uniform", "ball") or base.covariance_base == "uniform"
-            incoming = []
-            for j in range(base.width):
-                sources = (
-                    {k for k, weight in enumerate(base.factor[j]) if weight != 0}
-                    if base.factor is not None
-                    else set(range(base.width))
-                    if base.family == "ball"
-                    else {j}
-                )
-                incoming.append(
-                    ChannelCertificate(
-                        frozenset((index, width + k) for k in sources),
-                        math.inf,
-                        bounded or not sources,
-                    )
-                )
-        output = function_certificates(node.function, incoming)
-        before = output
-        captured: dict[int, ChannelCertificate] = {}
-        if node.pipeline:
-            pipeline = node.pipeline
-            for stage in pipeline.stages:
-                before = _activation(before, stage)
-            if pipeline.channel_importance:
-                before = [
-                    c if factor != 0 else ChannelCertificate()
-                    for c, factor in zip(before, pipeline.channel_importance, strict=True)
-                ]
-            if pipeline.l2:
-                before = _activation(before, pipeline.l2)
-            before = list(before)
-            for converter in pipeline.converters:
-                channel = converter.channel
-                warped = _activation([before[channel]], converter.transform)[0]
-                captured[channel] = before[channel] if converter.captures_raw else warped
-                if converter.changes_state:
-                    before[channel] = warped
-        noise: list[ChannelCertificate] = []
-        response = node.noise_response
-        for j, sources in enumerate(node.exogenous.channel_sources(width)):
-            if (
-                not node.noise_scale
-                or node.noise_scale[j] == 0
-                or not sources
-                or (response.offset == response.strength == 0)
-            ):
-                noise.append(ChannelCertificate())
-                continue
-            law = node.exogenous.inputs
-            bounded = (
-                law.bound is not None
-                or law.distribution == "uniform"
-                or node.exogenous.geometry == "ball"
-            )
-            dependencies = frozenset((index, k) for k in sources)
-            order = node.exogenous.moment_order
-            if response.strength:
-                dependencies |= output[j].sources
-                order = min(order, output[j].order / response.power)
-                bounded = bounded and output[j].bounded
-            noise.append(ChannelCertificate(dependencies, order, bounded))
-        state = [_sum([value, innovation]) for value, innovation in zip(before, noise, strict=True)]
+        state, readout = functional_node_certificates(
+            node, index, [c for p in node.parents for c in states[p]]
+        )
         states.append(state)
-        readouts.append([captured.get(j, c) for j, c in enumerate(state)])
+        readouts.append(readout)
     return states, readouts
+
+
+def functional_node_certificates(
+    node: "FunctionalCausalNode", index: int, incoming: list[ChannelCertificate]
+) -> tuple[list[ChannelCertificate], list[ChannelCertificate]]:
+    """Analyze one equation with caller-supplied parent state certificates."""
+    width = node.function.output_width
+    if node.root is not None:
+        base = node.root
+        bounded = base.family in ("uniform", "ball") or base.covariance_base == "uniform"
+        incoming = []
+        for j in range(base.width):
+            sources = (
+                {k for k, weight in enumerate(base.factor[j]) if weight != 0}
+                if base.factor is not None
+                else set(range(base.width))
+                if base.family == "ball"
+                else {j}
+            )
+            incoming.append(
+                ChannelCertificate(
+                    frozenset((index, width + k) for k in sources),
+                    math.inf,
+                    bounded or not sources,
+                )
+            )
+    output = function_certificates(node.function, incoming)
+    before = output
+    captured: dict[int, ChannelCertificate] = {}
+    if node.pipeline:
+        pipeline = node.pipeline
+        for stage in pipeline.stages:
+            before = _activation(before, stage)
+        if pipeline.channel_importance:
+            before = [
+                c if factor != 0 else ChannelCertificate()
+                for c, factor in zip(before, pipeline.channel_importance, strict=True)
+            ]
+        if pipeline.l2:
+            before = _activation(before, pipeline.l2)
+        before = list(before)
+        for converter in pipeline.converters:
+            channel = converter.channel
+            warped = _activation([before[channel]], converter.transform)[0]
+            captured[channel] = before[channel] if converter.captures_raw else warped
+            if converter.changes_state:
+                before[channel] = warped
+    noise: list[ChannelCertificate] = []
+    response = node.noise_response
+    for j, sources in enumerate(node.exogenous.channel_sources(width)):
+        if (
+            not node.noise_scale
+            or node.noise_scale[j] == 0
+            or not sources
+            or (response.offset == response.strength == 0)
+        ):
+            noise.append(ChannelCertificate())
+            continue
+        law = node.exogenous.inputs
+        bounded = (
+            law.bound is not None
+            or law.distribution == "uniform"
+            or node.exogenous.geometry == "ball"
+        )
+        dependencies = frozenset((index, k) for k in sources)
+        order = node.exogenous.moment_order
+        if response.strength:
+            dependencies |= output[j].sources
+            order = min(order, output[j].order / response.power)
+            bounded = bounded and output[j].bounded
+        noise.append(ChannelCertificate(dependencies, order, bounded))
+    state = [_sum([value, innovation]) for value, innovation in zip(before, noise, strict=True)]
+    return state, [captured.get(j, c) for j, c in enumerate(state)]

@@ -129,6 +129,10 @@ def _run(
     config = json.loads(json.dumps(asdict(request), sort_keys=True))
     if request.sampling is None:
         config.pop("sampling")
+    if request.causal_limits is None:
+        config.pop("causal_limits")
+    if request.construction is None:
+        config.pop("construction")
     config["format"] = "generation-run-v1" if request.sampling is None else "generation-run-v2"
     header = out / "run.json"
     if header.exists():

@@ -7,10 +7,16 @@ from pathlib import Path
 from typing import Any, cast
 
 from r0.modules.explorer.lib.comparisons import SavedPair, create_pair, open_pair, pair_bundle
+from r0.modules.explorer.lib.construction import (
+    caller_limits,
+    construction_examples,
+    mechanism_editor,
+)
 from r0.modules.explorer.lib.curves import inspect_curve, inspect_gp_curve
+from r0.modules.explorer.lib.edits import SavedEdit, create_edit, open_edit
 from r0.modules.explorer.lib.exports import replay_bundle
 from r0.modules.explorer.lib.inspection import inspect_rows, inspect_task
-from r0.modules.explorer.lib.saved import load_saved, run_saved
+from r0.modules.explorer.lib.saved import load_saved, run_saved, run_saved_document
 from r0.modules.generation import RecipeSampling, RunRequest
 from r0.modules.priors import (
     Combination,
@@ -76,6 +82,7 @@ class ExplorerSession:
         self.archive: str | None = None
         self.run: dict[str, Any] | None = None
         self.pair: SavedPair | None = None
+        self.edit: SavedEdit | None = None
 
     def _view(self) -> dict[str, Any]:
         view = None if self.task is None else inspect_task(self.task)
@@ -84,6 +91,14 @@ class ExplorerSession:
         return {
             "view": view,
             "recipe_json": None if self.task is None else self.task.recipe_json,
+            "edit": None
+            if self.edit is None
+            else {
+                "path": self.edit.path,
+                "card": self.edit.document["card"],
+                "after": _identity_numbers(inspect_task(self.edit.after), for_browser=True),
+                "after_archive": self.edit.document["after_archive"],
+            },
             "archive": self.archive,
             "run": self.run,
             "pair": None
@@ -108,16 +123,48 @@ class ExplorerSession:
         self.task = task
         self.archive = str(path.resolve().relative_to(self.output_dir))
         self.pair = None
+        self.edit = None
 
     def request(self, action: str, data: dict[str, Any]) -> dict[str, Any]:
+        if action == "construction_examples":
+            return {"examples": construction_examples()}
+        if action == "construct":
+            normalized = _identity_numbers(data, for_browser=False)
+            seed = normalized["construction_seed"]
+            if isinstance(seed, str) and seed.isdecimal():
+                seed = int(seed)
+            request = {
+                "recipe": normalized["controls"]["task"],
+                "construction": {
+                    "controls_json": json.dumps(normalized["controls"], allow_nan=False),
+                    "seed": seed,
+                },
+                "seed": normalized["seed"],
+                "start": normalized["task_id"],
+                "count": 1,
+                "group_size": 1,
+                "max_seconds": data.get("max_seconds", 60),
+                "max_bytes": data.get("max_bytes", 256 * 1024**2),
+                "device": data.get("device", "cpu"),
+                "causal_limits": asdict(caller_limits(data)),
+            }
+            self.task, self.archive, self.run = run_saved_document(self.output_dir, request)
+            self.pair, self.edit = None, None
+            return self._view()
+        if action == "open_edit":
+            edit = open_edit(self.output_dir, data["path"])
+            self.task, self.archive, self.edit = edit.before, edit.document["before_archive"], edit
+            self.pair, self.run = None, None
+            return self._view()
         if action == "examples":
             return {"examples": recipe_examples(), "output_dir": str(self.output_dir)}
         if action == "view":
             return self._view()
         if action == "open_pair":
-            pair = open_pair(self.output_dir, data["path"])
+            pair = open_pair(self.output_dir, data["path"], limits=caller_limits(data))
             self.task, self.archive = pair.before, pair.document["before_archive"]
             self.run, self.pair = pair.document["before_run"], pair
+            self.edit = None
             return self._view()
         if action == "open":
             self._open(
@@ -136,7 +183,27 @@ class ExplorerSession:
                 raise ValueError("recipe record must be an object")
             record = _identity_numbers(record, for_browser=False)
             device = data.get("device", record.get("execution", {}).get("device", "cpu"))
-            recipe = recipe_from_dict(record["recipe"])
+            if (
+                "sampling" not in record
+                and "sampling" not in data
+                and str(record["recipe"].get("version", "")).startswith("sampled-")
+            ):
+                request = {
+                    "recipe": record["recipe"],
+                    "seed": record["seed"],
+                    "start": record["task_id"],
+                    "count": 1,
+                    "group_size": 1,
+                    "device": device,
+                    "max_seconds": data.get("max_seconds", 60),
+                    "max_bytes": data.get("max_bytes", 256 * 1024**2),
+                }
+                if "causal_limits" in data:
+                    request["causal_limits"] = asdict(caller_limits(data))
+                self.task, self.archive, self.run = run_saved_document(self.output_dir, request)
+                self.pair, self.edit = None, None
+                return self._view()
+            recipe = recipe_from_dict(record["recipe"], limits=caller_limits(data))
             sampling = None
             if "sampling" in record and "record" not in data and "record_json" not in data:
                 # A direct request uses the same top-level fields as a fresh record.
@@ -171,9 +238,11 @@ class ExplorerSession:
                 max_bytes=data.get("max_bytes", 256 * 1024**2),
                 device=device,
                 sampling=sampling,
+                causal_limits=caller_limits(data) if "causal_limits" in data else None,
             )
             self.task, self.archive, self.run = run_saved(self.output_dir, request)
             self.pair = None
+            self.edit = None
             return self._view()
         if self.task is None:
             raise ValueError("generate or open a dataset first")
@@ -181,12 +250,35 @@ class ExplorerSession:
             raise ValueError(
                 "The active dataset changed in another view. Reopen or replay this dataset first."
             )
+        if action == "mechanism":
+            return mechanism_editor(self.task, limits=caller_limits(data))
+        if action == "edit":
+            if self.archive is None:
+                raise ValueError("save the active dataset before editing")
+            edit = create_edit(
+                self.output_dir, self.task, self.archive, data, limits=caller_limits(data)
+            )
+            self.edit = edit
+            return self._view()
         if action == "pair":
             if self.archive is None:
                 raise ValueError("save the active dataset before comparing")
             pair = create_pair(self.output_dir, self.task, self.archive, self.run, data)
             self.pair = pair
             return self._view()
+        if action == "edit_export":
+            if self.edit is None:
+                raise ValueError("create or open an edit first")
+            edit_id = self.edit.after.episode_id
+            if data.get("expected_edit_id", edit_id) != edit_id:
+                raise ValueError("The active edit changed in another view. Reopen it first.")
+            pair = SavedPair(self.edit.before, self.edit.after, self.edit.document, self.edit.path)
+            bundle = pair_bundle(pair, max_bytes=data.get("max_bytes", 256 * 1024**2))
+            return {
+                "name": "mechanism-edit.zip",
+                "data": base64.b64encode(bundle).decode("ascii"),
+                "mime": "application/zip",
+            }
         if action == "pair_export":
             if self.pair is None:
                 raise ValueError("create or open a comparison first")
@@ -209,6 +301,7 @@ class ExplorerSession:
                 data["indices"],
                 component=data.get("component"),
                 column_start=data.get("column_start", 0),
+                limits=caller_limits(data),
             )
             return {"graph": _identity_numbers(graph, for_browser=True)}
         if action == "gp_curve":

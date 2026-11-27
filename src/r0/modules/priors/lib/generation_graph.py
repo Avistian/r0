@@ -9,8 +9,10 @@ import torch
 
 from r0.modules.priors.lib.causal import causal_rng
 from r0.modules.priors.lib.causal_inspection import causal_steps
+from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng, functional_steps
 from r0.modules.priors.lib.graph_functions import analytic_steps, composite_steps, gp_steps
+from r0.modules.priors.lib.native_inspection import native_steps
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.signals import component_inputs, multiply_signals
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -32,15 +34,19 @@ def explain_generation(
     *,
     component: int | None = None,
     column_start: int = 0,
+    limits: CausalLimits | None = None,
 ) -> dict[str, Any]:
     """Return selectable graph nodes for 1..16 original rows, without altering the task.
 
     Expand a composite's child with ``component``. Values show up to 32 columns
     starting at ``column_start`` (clamped for narrower nodes), with explicit indices
     and full shapes. Parameter lists show their first 32 items at each level; full
-    parameters remain in mechanism_json. GP nodes reconstruct the original joint
+    parameters remain in mechanism_json. For frozen functional graphs, pass caller-owned
+    limits to authorize exploration caps above the defaults. GP nodes reconstruct the original joint
     draw, not an interpolation or a newly sampled extension. All work runs on CPU.
     """
+    if limits is not None and type(limits) is not CausalLimits:
+        raise ValueError("inspection requires caller-owned causal limits")
     if not 1 <= len(indices) <= 16:
         raise ValueError("select 1..16 original rows")
     if any(type(i) is not int or not 0 <= i < len(task.inputs) for i in indices):
@@ -77,6 +83,11 @@ def explain_generation(
                 "parameters": _preview(parameters),
             }
         )
+
+    if record["recipe"].get("version") == "native-causal-v1":
+        if component is not None:
+            raise ValueError("native graphs do not have composite children")
+        return {**native_steps(task, indices, add, limits=limits), "nodes": nodes}
 
     components = card.get("components", [])
     if component is not None:
@@ -125,13 +136,29 @@ def explain_generation(
             )
         )
         if card["version"]
-        in ("causal-v1", "causal-v2", "functional-causal-v1", "functional-causal-v2")
+        in (
+            "causal-v1",
+            "causal-v2",
+            "functional-causal-v1",
+            "functional-causal-v2",
+            "sampled-functional-graph-v1",
+            "sampled-topology-graph-v1",
+            "sampled-geometry-graph-v1",
+        )
         else [],
         "select declared converter readouts"
         if "pipelines" in card
         else "select declared causal node channels"
         if card["version"]
-        in ("causal-v1", "causal-v2", "functional-causal-v1", "functional-causal-v2")
+        in (
+            "causal-v1",
+            "causal-v2",
+            "functional-causal-v1",
+            "functional-causal-v2",
+            "sampled-functional-graph-v1",
+            "sampled-topology-graph-v1",
+            "sampled-geometry-graph-v1",
+        )
         else "independent per-column input streams",
         inputs,
         {
@@ -141,7 +168,15 @@ def explain_generation(
             **(
                 {"observed_channels": card["observed"]}
                 if card["version"]
-                in ("causal-v1", "causal-v2", "functional-causal-v1", "functional-causal-v2")
+                in (
+                    "causal-v1",
+                    "causal-v2",
+                    "functional-causal-v1",
+                    "functional-causal-v2",
+                    "sampled-functional-graph-v1",
+                    "sampled-topology-graph-v1",
+                    "sampled-geometry-graph-v1",
+                )
                 else {}
             ),
         },
@@ -151,10 +186,19 @@ def explain_generation(
         "causal-v2",
         "functional-causal-v1",
         "functional-causal-v2",
+        "sampled-functional-graph-v1",
+        "sampled-topology-graph-v1",
+        "sampled-geometry-graph-v1",
     )
     observed_step = nodes.pop(0) if causal else None
-    if card["version"] in ("functional-causal-v1", "functional-causal-v2"):
-        signal = functional_steps(record, card, indices, add)
+    if card["version"] in (
+        "functional-causal-v1",
+        "functional-causal-v2",
+        "sampled-functional-graph-v1",
+        "sampled-topology-graph-v1",
+        "sampled-geometry-graph-v1",
+    ):
+        signal = functional_steps(record, card, indices, add, limits=limits)
     elif card["version"] in ("causal-v1", "causal-v2"):
         signal = causal_steps(card, len(task.inputs), indices, add)
     elif card["version"] == "exact-gp-v1":
@@ -172,11 +216,22 @@ def explain_generation(
     expected = task.scores.detach().cpu()[list(indices)]
     if not torch.allclose(signal, expected, rtol=1e-10, atol=1e-10):
         raise ValueError("reconstructed signal differs from saved values beyond 1e-10 tolerance")
-    controls = record["recipe"].get("task", record["recipe"])
+    controls = (
+        record["recipe"]["request"]["task"]
+        if card["version"]
+        in ("sampled-functional-graph-v1", "sampled-topology-graph-v1", "sampled-geometry-graph-v1")
+        else record["recipe"].get("task", record["recipe"])
+    )
 
     def rng(stream: str) -> np.random.Generator:
         recipe = record["recipe"]
-        if recipe["version"] in ("functional-causal-v1", "functional-causal-v2"):
+        if recipe["version"] in (
+            "functional-causal-v1",
+            "functional-causal-v2",
+            "sampled-functional-graph-v1",
+            "sampled-topology-graph-v1",
+            "sampled-geometry-graph-v1",
+        ):
             return functional_rng(record["seed"], record["task_id"], stream)
         if recipe["version"] in ("causal-v1", "causal-v2"):
             return causal_rng(record["seed"], record["task_id"], stream)

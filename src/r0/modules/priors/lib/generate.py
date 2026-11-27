@@ -21,6 +21,7 @@ from r0.modules.priors.lib.fourier import FourierRecipe
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_decoding import functional_recipe_from_dict
 from r0.modules.priors.lib.functional_causal_evaluation import generate_functional_causal
+from r0.modules.priors.lib.geometry_graph_decoding import geometry_graph_from_dict
 from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe
 from r0.modules.priors.lib.inputs import InputDistribution
 from r0.modules.priors.lib.kernels import (
@@ -32,20 +33,37 @@ from r0.modules.priors.lib.kernels import (
 )
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.matrix_preference_prior import CausalMatrixPrior
+from r0.modules.priors.lib.native_causal import NativeCausalRecipe
+from r0.modules.priors.lib.native_decoding import native_recipe_from_dict
+from r0.modules.priors.lib.native_evaluation import generate_native_causal
 from r0.modules.priors.lib.node_pipeline import pipeline_from_dict
 from r0.modules.priors.lib.parameter_preferences import parameter_preferences_from_dict
 from r0.modules.priors.lib.polynomial import PolynomialRecipe
 from r0.modules.priors.lib.preference_binding import PreferenceBinding
 from r0.modules.priors.lib.quadratic import QuadraticRecipe
+from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
+from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
+from r0.modules.priors.lib.sampled_graph_decoding import sampled_graph_from_dict
+from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.sampling import BaseRecipe, generate_base_task
 from r0.modules.priors.lib.smooth import SmoothRecipe
 from r0.modules.priors.lib.source_activation_sampling import source_activation_selections_from_dict
 from r0.modules.priors.lib.source_causal import SourceCausalRecipe
 from r0.modules.priors.lib.source_causal_prior import SourceActivationPrior, SourceStageBinding
 from r0.modules.priors.lib.source_matrix import SourceMatrixCausalRecipe
+from r0.modules.priors.lib.topology_graph_decoding import topology_graph_from_dict
 from r0.modules.priors.lib.training_task import TrainingTask
 
-type Recipe = BaseRecipe | CompositeRecipe | CausalRecipe | FunctionalCausalRecipe
+type Recipe = (
+    BaseRecipe
+    | CompositeRecipe
+    | CausalRecipe
+    | FunctionalCausalRecipe
+    | SampledFunctionalGraph
+    | SampledTopologyGraph
+    | SampledGeometryGraph
+    | NativeCausalRecipe
+)
 
 
 def _kernel_from_dict(data: dict[str, Any]) -> Kernel:
@@ -78,14 +96,25 @@ def _expression_from_dict(value: Any) -> int | Combination:
     return Combination(**fields)
 
 
-def recipe_from_dict(data: object) -> Recipe:
-    """Decode JSON/TOML recipe fields without mutating the caller's record."""
+def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Recipe:
+    """Decode JSON/TOML fields; caller limits bound frozen functional graph decoding."""
+    limits = CausalLimits() if limits is None else limits
+    if type(limits) is not CausalLimits:
+        raise ValueError("recipe decoding requires caller-owned causal limits")
     if not isinstance(data, dict):
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
+    if version == "native-causal-v1":
+        return native_recipe_from_dict(fields, limits=limits)
+    if version == "sampled-geometry-graph-v1":
+        return geometry_graph_from_dict(fields, limits=limits)
+    if version == "sampled-topology-graph-v1":
+        return topology_graph_from_dict(fields, limits=limits)
+    if version == "sampled-functional-graph-v1":
+        return sampled_graph_from_dict(fields, limits=limits)
     if version in ("functional-causal-v1", "functional-causal-v2"):
-        return functional_recipe_from_dict(fields)
+        return functional_recipe_from_dict(fields, limits=limits)
     if version in ("causal-v1", "causal-v2"):
         task = recipe_from_dict(fields.get("task", {}))
         if not isinstance(task, LinearRecipe):
@@ -156,7 +185,18 @@ def recipe_from_dict(data: object) -> Recipe:
         for item in fields["components"]:
             component = dict(item)
             child = recipe_from_dict(component.pop("recipe"))
-            if isinstance(child, (CompositeRecipe, CausalRecipe, FunctionalCausalRecipe)):
+            if isinstance(
+                child,
+                (
+                    CompositeRecipe,
+                    CausalRecipe,
+                    FunctionalCausalRecipe,
+                    SampledFunctionalGraph,
+                    SampledTopologyGraph,
+                    SampledGeometryGraph,
+                    NativeCausalRecipe,
+                ),
+            ):
                 raise ValueError("nest combinations in expression, not in component recipes")
             component["recipe"] = child
             if "axes" in component:
@@ -208,7 +248,17 @@ def recipe_from_dict(data: object) -> Recipe:
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
-    if isinstance(recipe, FunctionalCausalRecipe):
+    if isinstance(recipe, NativeCausalRecipe):
+        return generate_native_causal(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(
+        recipe,
+        (
+            FunctionalCausalRecipe,
+            SampledFunctionalGraph,
+            SampledTopologyGraph,
+            SampledGeometryGraph,
+        ),
+    ):
         return generate_functional_causal(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, CausalRecipe):
         return generate_causal(recipe, seed=seed, task_id=task_id, device=device)
