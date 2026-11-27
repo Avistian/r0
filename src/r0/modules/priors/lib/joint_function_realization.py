@@ -4,6 +4,7 @@ import copy
 from dataclasses import dataclass
 
 import numpy as np
+from numpy.typing import NDArray
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.frozen_function_primitives import (
@@ -21,6 +22,10 @@ from r0.modules.priors.lib.joint_rff_realization import (
     materialize_joint_rff,
 )
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
+from r0.modules.priors.lib.joint_tree_realization import (
+    JointTreeFunctionRealization,
+    materialize_joint_tree,
+)
 
 _DEFAULT_LIMITS = CausalLimits()
 
@@ -83,14 +88,31 @@ def materialize_joint_function(
     decisions: JointSamplingRecord,
     *,
     rng: np.random.Generator,
+    fit_rng: np.random.Generator | None = None,
+    calibration: NDArray[np.float64] | None = None,
+    calibration_id: str = "",
     limits: CausalLimits = _DEFAULT_LIMITS,
-) -> JointMatrixFunctionRealization | JointRFFFunctionRealization:
-    """Realize linear, quadratic and Fourier plans; fitted families follow separately."""
+) -> JointMatrixFunctionRealization | JointRFFFunctionRealization | JointTreeFunctionRealization:
+    """Freeze supported constructions; tree fits use caller-owned calibration samples.
+
+    The graph fitter must establish sample independence and ancestral provenance.
+    This helper binds retained numerical inputs and stages its injected RNGs.
+    """
     if type(plan) is not JointFunctionPlan or type(decisions) is not JointSamplingRecord:
         raise ValueError("function realization requires a frozen plan and decisions")
     if type(rng) is not np.random.Generator or type(limits) is not CausalLimits:
         raise ValueError("function realization requires an injected RNG and frozen limits")
     plan.validate(decisions)
+    if plan.family == "tree":
+        return materialize_joint_tree(
+            plan,
+            decisions,
+            rng=rng,
+            fit_rng=fit_rng,
+            calibration=calibration,
+            calibration_id=calibration_id,
+            limits=limits,
+        )
     if plan.family == "gp":
         return materialize_joint_rff(plan, decisions, rng=rng, limits=limits)
     admit_matrix_function(plan, decisions, limits)

@@ -17,6 +17,8 @@ from r0.modules.priors.lib.joint_matrix_decoding import joint_matrix_realization
 from r0.modules.priors.lib.joint_rff_decoding import decode_joint_rff
 from r0.modules.priors.lib.joint_rff_realization import JointRFFFunctionRealization
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
+from r0.modules.priors.lib.joint_tree_decoding import decode_joint_tree
+from r0.modules.priors.lib.joint_tree_realization import JointTreeFunctionRealization
 
 _DEFAULT_LIMITS = CausalLimits()
 
@@ -26,7 +28,7 @@ def joint_function_realization_from_dict(
     *,
     decisions: JointSamplingRecord,
     limits: CausalLimits = _DEFAULT_LIMITS,
-) -> JointMatrixFunctionRealization | JointRFFFunctionRealization:
+) -> JointMatrixFunctionRealization | JointRFFFunctionRealization | JointTreeFunctionRealization:
     if type(decisions) is not JointSamplingRecord or type(limits) is not CausalLimits:
         raise ValueError(
             "function reconstruction requires frozen decisions and caller-owned limits"
@@ -36,6 +38,8 @@ def joint_function_realization_from_dict(
         raise ValueError("function realization must be a JSON object")
     if data.get("version") == "joint-rff-function-realization-v1":
         return decode_joint_rff(data, decisions, limits)
+    if data.get("version") == "joint-tree-function-realization-v1":
+        return decode_joint_tree(data, decisions, limits)
     if set(data) - {field.name for field in dataclass_fields(JointMatrixFunctionRealization)}:
         raise ValueError("function realization contains unknown fields")
     if data.get("version") != "joint-matrix-function-realization-v1":

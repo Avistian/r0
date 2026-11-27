@@ -106,3 +106,32 @@ def admit_rff_function(
     if report["estimated_working_bytes"] > limits.working_bytes:
         raise ValueError("estimated Fourier working memory exceeds declared limit")
     return report
+
+
+def admit_tree_function(
+    plan: JointFunctionPlan, decisions: JointSamplingRecord, limits: CausalLimits
+) -> dict[str, int]:
+    if plan.family != "tree":
+        raise ValueError("tree realization requires a tree plan")
+    i, o, rows = plan.input_width, plan.output_width, plan.calibration_rows
+    values = dict(plan.parameters)
+    trees, depth = int(values["trees"]), int(values["depth"])
+    leaves = trees * 2**depth * o
+    metadata, metadata_bytes = function_record_cost((plan, decisions), limits)
+    # Sample, masses, two retained index tables, raw leaves and the frozen tree.
+    raw = rows * i + i + 2 * trees * depth + leaves
+    frozen = 1 + 2 * trees * depth + leaves
+    report = limits.admit_dimensions(
+        (max(i, o),),
+        ((),),
+        rows=rows,
+        calibration_rows=0,
+        features=i,
+        outputs=o,
+        extra_parameters=metadata + raw + frozen,
+        extra_working_channels=8 * i + 4 * trees * depth + 4 * trees * o,
+    )
+    report["estimated_working_bytes"] += metadata_bytes - 64 * metadata + 256
+    if report["estimated_working_bytes"] > limits.working_bytes:
+        raise ValueError("estimated tree fitting memory exceeds declared limit")
+    return report

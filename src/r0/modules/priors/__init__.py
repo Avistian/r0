@@ -117,6 +117,9 @@ from r0.modules.priors.lib.joint_converter_plans import (
 from r0.modules.priors.lib.joint_converter_plans import (
     sample_joint_converter as sample_joint_converter,
 )
+from r0.modules.priors.lib.joint_function_calibration import (
+    FunctionCalibrationSample as FunctionCalibrationSample,
+)
 from r0.modules.priors.lib.joint_function_decoding import (
     joint_function_plan_from_dict as joint_function_plan_from_dict,
 )
@@ -175,6 +178,9 @@ from r0.modules.priors.lib.joint_sampling_records import JointDecision as JointD
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord as JointSamplingRecord
 from r0.modules.priors.lib.joint_sampling_records import (
     joint_sampling_from_dict as joint_sampling_from_dict,
+)
+from r0.modules.priors.lib.joint_tree_realization import (
+    JointTreeFunctionRealization as JointTreeFunctionRealization,
 )
 from r0.modules.priors.lib.joint_weight_plans import (
     JointWeightPlan as JointWeightPlan,
