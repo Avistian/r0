@@ -166,3 +166,26 @@ def test_later_capture_failure_preserves_prior_records_and_rng_position() -> Non
         priors.materialize_joint_matrix(plan, context.freeze(), rng=rng, capture=capture)
     assert capture.freeze() == before
     np.testing.assert_array_equal(rng.random(8), control.random(8))
+
+
+@pytest.mark.parametrize("bounds", [(-0.25, 0.75), (-2.0, -1.0), (0.0, 1.0), (-3, -1)])
+def test_raw_uniform_capture_accepts_real_bounds_and_replays_literal_draws(
+    bounds: tuple[float, float],
+) -> None:
+    capture = priors.RawDrawLedger()
+    rng = np.random.default_rng(37)
+    control = copy.deepcopy(rng)
+    expected = control.uniform(*bounds, size=(7,))
+    with capture.transaction(rng) as (staged_rng, staged):
+        actual = staged.draw(
+            staged_rng,
+            owner=("population",),
+            role="uniform",
+            distribution="uniform",
+            shape=(7,),
+            parameters=(("low", bounds[0]), ("high", bounds[1])),
+        )
+    np.testing.assert_array_equal(actual, expected)
+    record = capture.freeze()[0]
+    np.testing.assert_array_equal(record.replay(np.random.default_rng(37)), expected)
+    np.testing.assert_array_equal(rng.random(8), control.random(8))
