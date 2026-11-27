@@ -93,7 +93,7 @@ def policy_steps(
                     [],
                     draw.distribution,
                     torch.tensor([draw.values], dtype=torch.float64),
-                    metadata,
+                    {**metadata, "scope": "intervention environment; not an emitted dataset row"},
                 )
                 policy_draws.append(identifier)
         values = change.values if isinstance(change, HardIntervention) else (float(change.node),)

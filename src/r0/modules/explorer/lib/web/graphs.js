@@ -105,11 +105,11 @@ function drawGenerationGraph(graph) {
   $("graph-downloads").append(json); $("graph-values").textContent=pretty(graph);
   selectGraphNode(graph.nodes.some(node=>node.id==="target")?"target":graph.nodes.at(-1).id);
 }
-function matrixContext(node, rowCount = node.values.length) {
+function matrixContext(node, rowCount = node.values.length, originalRows = generationGraph.rows) {
   const p = node.parameters, columns = node.column_indices;
-  let rowLabels = generationGraph.rows, columnLabels = columns, rowHeading = "Original row", columnHeading = "Column";
+  let rowLabels = originalRows, columnLabels = columns, rowHeading = "Original row", columnHeading = "Column";
   let count = `${rowCount} of ${node.shape[0]} selected rows · ${columns.length} of ${node.shape[1]} columns`;
-  let axes = `Original row order: ${generationGraph.rows.join(", ")}`;
+  let axes = `Original row order: ${originalRows.join(", ")}`;
   if (p.support_indices_shown) {
     rowLabels = p.support_indices_shown; rowHeading = "Support row";
     count = `${rowCount} of ${p.full_shape[0]} support rows · ${columns.length} of ${p.full_shape[1]} output columns`;
@@ -122,6 +122,10 @@ function matrixContext(node, rowCount = node.values.length) {
     rowLabels = node.values.map((_, i) => i); rowHeading = "Matrix row";
     count = `${rowCount} of ${node.shape[0]} matrix rows · ${columns.length} of ${node.shape[1]} columns`;
     axes = p.axes;
+  } else if (p.scope?.includes("not an emitted dataset row") || node.values.length !== originalRows.length) {
+    rowLabels = node.values.map((_, i) => i); rowHeading = "Shared draw";
+    count = `${rowCount} shared construction / environment rows · ${columns.length} columns`;
+    axes = p.scope || "Shared values; not indexed by selected dataset rows.";
   }
   return {count, axes, rowLabels, columnLabels, rowHeading, columnHeading};
 }
