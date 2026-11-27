@@ -12,8 +12,8 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.causal_pipeline import CausalPipelineRecipe
 from r0.modules.priors.lib.causal_preferred import PreferredCausalRecipe
 from r0.modules.priors.lib.causal_sampled import SampledCausalRecipe
+from r0.modules.priors.lib.composition_decoding import expression_from_dict
 from r0.modules.priors.lib.compositions import (
-    Combination,
     CompositeRecipe,
     FunctionComponent,
     generate_composite,
@@ -27,6 +27,7 @@ from r0.modules.priors.lib.functional_causal_decoding import functional_recipe_f
 from r0.modules.priors.lib.functional_causal_evaluation import generate_functional_causal
 from r0.modules.priors.lib.geometry_graph_decoding import geometry_graph_from_dict
 from r0.modules.priors.lib.gp_column_output import GPColumnRecipe, generate_gp_columns
+from r0.modules.priors.lib.hyperprior_graph import HyperpriorGraph, generate_hyperprior_graph
 from r0.modules.priors.lib.inputs import InputDistribution
 from r0.modules.priors.lib.intervention_policy_records import SampledInterventionPolicy
 from r0.modules.priors.lib.linear import LinearRecipe
@@ -100,6 +101,7 @@ type Recipe = (
     | RealizedPrototypeBatchNetworkRecipe
     | NetworkRecipe
     | NetworkObservationRecipe
+    | HyperpriorGraph
     | RecursivePopulationIntervention
     | RecursivePopulationRecipe
     | NetworkInputView
@@ -121,14 +123,6 @@ type Recipe = (
     | NativeCausalRecipe
     | SampledNativeGraph
 )
-
-
-def _expression_from_dict(value: Any) -> int | Combination:
-    if type(value) is int:
-        return value
-    fields = dict(value)
-    fields["children"] = tuple(_expression_from_dict(child) for child in fields["children"])
-    return Combination(**fields)
 
 
 def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Recipe:
@@ -155,6 +149,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         )
 
         return network_observation_recipe_from_dict(fields, limits=limits)
+    if version == "sampled-hyperprior-graph-v1":
+        from r0.modules.priors.lib.hyperprior_graph_decoding import hyperprior_graph_from_dict
+
+        return hyperprior_graph_from_dict(fields, limits=limits)
     population = population_recipe_from_dict(fields, limits=limits)
     if population is not None:
         return population
@@ -313,7 +311,7 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
                 component["axes"] = tuple(component["axes"])
             components.append(FunctionComponent(**component))
         fields["components"] = tuple(components)
-        fields["expression"] = _expression_from_dict(fields.get("expression", 0))
+        fields["expression"] = expression_from_dict(fields.get("expression", 0))
         return CompositeRecipe(**fields)
     return base_recipe_from_dict(fields)
 
@@ -322,6 +320,8 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
     """Generate the selected family without substituting another mechanism."""
     if isinstance(recipe, GPColumnRecipe):
         return generate_gp_columns(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, HyperpriorGraph):
+        return generate_hyperprior_graph(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkObservationRecipe):
         return generate_network_observations(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(
