@@ -3,6 +3,7 @@
 from typing import Any, cast
 
 from r0.modules.priors.lib.activation_sampling import activation_prior_from_dict
+from r0.modules.priors.lib.base_recipe_decoding import base_recipe_from_dict
 from r0.modules.priors.lib.categorical_preferences import categorical_preferences_from_dict
 from r0.modules.priors.lib.causal import CausalRecipe, causal_node_from_dict, generate_causal
 from r0.modules.priors.lib.causal_graph import CausalGraph, CausalGraphPrior
@@ -21,22 +22,12 @@ from r0.modules.priors.lib.converted_causal_records import ConvertedCausalRecipe
 from r0.modules.priors.lib.converted_decoding import converted_recipe_from_dict
 from r0.modules.priors.lib.converted_graph_decoding import converted_graph_from_dict
 from r0.modules.priors.lib.converted_output import generate_converted
-from r0.modules.priors.lib.exact_gp import GaussianProcessRecipe
-from r0.modules.priors.lib.fourier import FourierRecipe
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_decoding import functional_recipe_from_dict
 from r0.modules.priors.lib.functional_causal_evaluation import generate_functional_causal
 from r0.modules.priors.lib.geometry_graph_decoding import geometry_graph_from_dict
-from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe
 from r0.modules.priors.lib.inputs import InputDistribution
 from r0.modules.priors.lib.intervention_policy_records import SampledInterventionPolicy
-from r0.modules.priors.lib.kernels import (
-    GibbsKernel,
-    Kernel,
-    RationalQuadraticKernel,
-    SpectralKernel,
-    StationaryKernel,
-)
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.matrix_preference_prior import CausalMatrixPrior
 from r0.modules.priors.lib.native_causal import NativeCausalRecipe
@@ -54,6 +45,10 @@ from r0.modules.priors.lib.network_input_view import (
     generate_network_view,
     network_view_from_dict,
 )
+from r0.modules.priors.lib.network_observation_recipe import (
+    NetworkObservationRecipe,
+    generate_network_observations,
+)
 from r0.modules.priors.lib.network_recipe import (
     NetworkRecipe,
     generate_network,
@@ -61,13 +56,17 @@ from r0.modules.priors.lib.network_recipe import (
 )
 from r0.modules.priors.lib.node_pipeline import pipeline_from_dict
 from r0.modules.priors.lib.parameter_preferences import parameter_preferences_from_dict
-from r0.modules.priors.lib.polynomial import PolynomialRecipe
 from r0.modules.priors.lib.preference_binding import PreferenceBinding
 from r0.modules.priors.lib.prototype_batch_network import (
     PrototypeBatchNetworkRecipe,
     RealizedPrototypeBatchNetworkRecipe,
 )
-from r0.modules.priors.lib.quadratic import QuadraticRecipe
+from r0.modules.priors.lib.recursive_population_dispatch import (
+    generate_population_recipe,
+    population_recipe_from_dict,
+)
+from r0.modules.priors.lib.recursive_population_intervention import RecursivePopulationIntervention
+from r0.modules.priors.lib.recursive_population_records import RecursivePopulationRecipe
 from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
 from r0.modules.priors.lib.sampled_converted_output import generate_sampled_converted
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
@@ -80,7 +79,6 @@ from r0.modules.priors.lib.sampled_native_vector_output import generate_sampled_
 from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
 from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.sampling import BaseRecipe, generate_base_task
-from r0.modules.priors.lib.smooth import SmoothRecipe
 from r0.modules.priors.lib.source_activation_sampling import source_activation_selections_from_dict
 from r0.modules.priors.lib.source_causal import SourceCausalRecipe
 from r0.modules.priors.lib.source_causal_prior import SourceActivationPrior, SourceStageBinding
@@ -93,6 +91,9 @@ type Recipe = (
     PrototypeBatchNetworkRecipe
     | RealizedPrototypeBatchNetworkRecipe
     | NetworkRecipe
+    | NetworkObservationRecipe
+    | RecursivePopulationIntervention
+    | RecursivePopulationRecipe
     | NetworkInputView
     | CausalInterventionRecipe
     | SampledInterventionPolicy
@@ -112,28 +113,6 @@ type Recipe = (
     | NativeCausalRecipe
     | SampledNativeGraph
 )
-
-
-def _kernel_from_dict(data: dict[str, Any]) -> Kernel:
-    fields = dict(data)
-    for key in (
-        "axes",
-        "feature_scales",
-        "frequencies",
-        "centers",
-        "transition_scales",
-        "length_slopes",
-        "amplitude_slopes",
-    ):
-        if key in fields:
-            fields[key] = tuple(fields[key])
-    if fields.get("kind") == "gibbs":
-        return GibbsKernel(**fields)
-    if fields.get("kind") == "rational_quadratic":
-        return RationalQuadraticKernel(**fields)
-    if fields.get("kind") == "spectral":
-        return SpectralKernel(**fields)
-    return StationaryKernel(**fields)
 
 
 def _expression_from_dict(value: Any) -> int | Combination:
@@ -158,6 +137,15 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
     ):
         raise ValueError("prototype batch archive requires an explicit version")
     version = fields.get("version", "linear-v1")
+    if version == "network-observation-recipe-v1":
+        from r0.modules.priors.lib.network_observation_recipe_decoding import (
+            network_observation_recipe_from_dict,
+        )
+
+        return network_observation_recipe_from_dict(fields, limits=limits)
+    population = population_recipe_from_dict(fields, limits=limits)
+    if population is not None:
+        return population
     if version == "network-input-view-v2":
         from r0.modules.priors.lib.matched_network_view import matched_view_from_dict
 
@@ -315,49 +303,15 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         fields["components"] = tuple(components)
         fields["expression"] = _expression_from_dict(fields.get("expression", 0))
         return CompositeRecipe(**fields)
-    if version == "linear-v1":
-        if "class_offsets" in fields:
-            fields["class_offsets"] = tuple(fields["class_offsets"])
-        return LinearRecipe(**fields)
-    if version in (
-        "fourier-v1",
-        "polynomial-v1",
-        "quadratic-v1",
-        "grouped-linear-v1",
-        "smooth-v1",
-        "exact-gp-v1",
-    ):
-        task = recipe_from_dict(fields.get("task", {}))
-        if not isinstance(task, LinearRecipe):
-            raise ValueError("task controls must use linear-v1 settings")
-        fields["task"] = task
-        if version in (
-            "polynomial-v1",
-            "quadratic-v1",
-            "grouped-linear-v1",
-            "smooth-v1",
-            "exact-gp-v1",
-        ):
-            fields["inputs"] = InputDistribution(**fields.get("inputs", {}))
-            if version == "exact-gp-v1":
-                if "kernels" in fields:
-                    fields["kernels"] = tuple(_kernel_from_dict(k) for k in fields["kernels"])
-                return GaussianProcessRecipe(**fields)
-            if version == "smooth-v1":
-                return SmoothRecipe(**fields)
-            if version == "grouped-linear-v1":
-                return GroupedLinearRecipe(**fields)
-            return (
-                PolynomialRecipe(**fields)
-                if version == "polynomial-v1"
-                else QuadraticRecipe(**fields)
-            )
-        return FourierRecipe(**fields)
-    raise ValueError(f"unsupported recipe version: {version!r}")
+    return base_recipe_from_dict(fields)
 
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, NetworkObservationRecipe):
+        return generate_network_observations(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, (RecursivePopulationRecipe, RecursivePopulationIntervention)):
+        return generate_population_recipe(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, SampledConvertedGraph):
         return generate_sampled_converted(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, ConvertedCausalRecipe):

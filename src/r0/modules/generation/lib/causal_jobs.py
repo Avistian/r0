@@ -25,7 +25,7 @@ def causal_job(request: dict[str, Any], out: Path) -> dict[str, Any]:
         raise ValueError("causal comparison storage limit must be at least 64 KiB")
     limits = CausalLimits(**request.get("causal_limits", {}))
     out.mkdir(parents=True, exist_ok=False)
-    if kind == "create":
+    if kind in ("create", "sample_policy"):
         before_path = Path(request["before_archive"])
         if before_path.stat().st_size > budget:
             raise ValueError("original archive exceeds input storage limit")
@@ -33,19 +33,26 @@ def causal_job(request: dict[str, Any], out: Path) -> dict[str, Any]:
         record = json.loads(before.recipe_json)
         if before.episode_id != request["before_episode_id"]:
             raise ValueError("original dataset identity changed")
-        changes = json.loads(request["interventions_json"])
-        recipe = recipe_from_dict(
-            {
-                "version": "causal-intervention-v1",
-                "base": record["recipe"],
-                "interventions": changes,
-                "mode": request["mode"],
-                "population": request["population"],
-            },
-            limits=limits,
-        )
-        if not isinstance(recipe, CausalInterventionRecipe):
-            raise ValueError("causal comparison requires an intervention recipe")
+        if kind == "sample_policy":
+            from r0.modules.generation.lib.intervention_policy_construction import (
+                construct_intervention_policy,
+            )
+
+            recipe = construct_intervention_policy(record, request["policy_json"], limits=limits)
+        else:
+            changes = json.loads(request["interventions_json"])
+            recipe = recipe_from_dict(
+                {
+                    "version": "causal-intervention-v1",
+                    "base": record["recipe"],
+                    "interventions": changes,
+                    "mode": request["mode"],
+                    "population": request["population"],
+                },
+                limits=limits,
+            )
+            if not isinstance(recipe, CausalInterventionRecipe):
+                raise ValueError("causal comparison requires an intervention recipe")
         after = generate_task(recipe, seed=record["seed"], task_id=record["task_id"])
         card = compare_causal_pair(before, after, limits=limits)
         pair = TaskPair(before, after, json.dumps(card, sort_keys=True))
@@ -85,7 +92,7 @@ def causal_job(request: dict[str, Any], out: Path) -> dict[str, Any]:
         if bundle.stat().st_size > budget:
             raise ValueError("causal comparison download exceeds total storage limit")
         summary["download"] = str(bundle)
-    elif kind not in ("create", "open"):
+    elif kind not in ("create", "sample_policy", "open"):
         raise ValueError("unsupported causal comparison action")
     if len(json.dumps(summary, allow_nan=False).encode()) > budget:
         raise ValueError("causal comparison response exceeds output limit")

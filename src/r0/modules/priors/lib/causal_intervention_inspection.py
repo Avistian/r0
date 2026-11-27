@@ -18,10 +18,17 @@ from r0.modules.priors.lib.converter_intervention_inspection import (
     converted_trace_order,
     converted_trace_parents,
 )
+from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
+from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
+from r0.modules.priors.lib.intervention_parent_trace import intervention_parent_steps
 from r0.modules.priors.lib.native_causal import NativeCausalNode
 from r0.modules.priors.lib.native_vector_records import NativeVectorNode
 from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
 from r0.modules.priors.lib.network_inspection import network_steps
+from r0.modules.priors.lib.network_observation_recipe import NetworkObservationRecipe
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
+from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_steps
+from r0.modules.priors.lib.representatives import encode
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -44,6 +51,14 @@ def intervention_steps(
     ):
         raise ValueError("saved intervention task differs from original-row replay")
     runtime = causal_runtime(recipe.base)
+    selection: dict[str, Any] = {}
+    if isinstance(recipe.base, NetworkObservationRecipe):
+        assert isinstance(runtime, FunctionalCausalRecipe)
+        selection = recipe.base.selection_card(runtime)
+        if encode(json.loads(task.mechanism_json).get("observation_selection")) != encode(
+            selection
+        ):
+            raise ValueError("intervention observation metadata differs from retained selection")
     selected = list(indices)
     for i, node in enumerate(runtime.nodes):
         equation = (
@@ -105,6 +120,41 @@ def intervention_steps(
                 parents = [f"intervention-{i}-function"]
             else:
                 parents = [f"intervention-{i}-function", f"intervention-{i}-exogenous"]
+            if role == "function":
+                from r0.modules.priors.lib.feature_conv_inspection import feature_conv_steps
+                from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+                from r0.modules.priors.lib.feature_conv_sampling_records import SampledFeatureConv1D
+
+                if isinstance(
+                    effective_equation.function, (FrozenFeatureConv1D, SampledFeatureConv1D)
+                ):
+                    parents = feature_conv_steps(
+                        effective_equation.function,
+                        execution.traces[i]["inputs"],
+                        prefix=f"convolution-{i}",
+                        parents=parents,
+                        indices=indices,
+                        add=add,
+                    )
+            if role == "function" and isinstance(effective_equation.function, FrozenParentFunction):
+                parents = intervention_parent_steps(
+                    effective_equation.function,
+                    execution.traces[i]["inputs"],
+                    node=i,
+                    indices=indices,
+                    add=add,
+                )
+            if role == "function" and isinstance(
+                effective_equation.function, FrozenRecursiveForestFunction
+            ):
+                parents = recursive_function_steps(
+                    effective_equation.function,
+                    execution.traces[i]["inputs"],
+                    prefix=f"intervention-recursive-{i}",
+                    parents=parents,
+                    indices=indices,
+                    add=add,
+                )
             add(
                 f"intervention-{i}-{role}",
                 f"Node {i}: {role}",
@@ -166,4 +216,5 @@ def intervention_steps(
         "rows": selected,
         "component_count": 0,
         "intervention": execution.metadata(),
+        **({"observation_selection": selection} if selection else {}),
     }

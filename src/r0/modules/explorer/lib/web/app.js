@@ -12,8 +12,9 @@ const format = value => {
 };
 
 async function request(action, data = {}) {
-  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export", "mechanism", "network_draft", "edit", "edit_export", "intervention_controls", "intervene", "intervention_graph", "intervention_export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
-  if (["graph", "pair", "open_pair", "mechanism", "network_draft", "edit"].includes(action)) data = {...data, ...explorationLimits()};
+  if(current && isObservation(current.view.recipe.recipe) && action === "graph") data={...limits(),...data};
+  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export", "mechanism", "network_draft", "observation_draft", "edit", "edit_export", "intervention_controls", "intervene", "intervention_graph", "intervention_export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
+  if (["graph", "pair", "open_pair", "mechanism", "network_draft", "observation_draft", "edit", "intervention_controls"].includes(action)) data = {...data, ...explorationLimits()};
   if (window.r0request) return window.r0request(action, data);
   const response = await fetch("/api", {
     method: "POST", headers: {"Content-Type": "application/json", "X-r0-explorer": window.r0token},
@@ -38,11 +39,11 @@ async function act(message, work) {
     $("status").textContent = error.message;
   } finally {
     busy = false;
-    document.querySelectorAll("button").forEach(button => button.disabled = false);
+    document.querySelectorAll("button").forEach(button => button.disabled = button.dataset.unavailable === "true");
   }
 }
 
-function taskControls(recipe) { return recipe.request?.source?.task || recipe.source?.task || recipe.recipe?.task || recipe.request?.task || recipe.task || recipe; }
+function taskControls(recipe) { return recipe.request?.base?.task || recipe.request?.source?.task || recipe.source?.task || recipe.recipe?.task || recipe.request?.task || recipe.task || recipe; }
 function parseRecipe() {
   return JSON.parse($("recipe").value, (key, value) => {
     if (key === "split" && typeof value === "number" && !Number.isSafeInteger(value)) throw new Error("Write large split identifiers as quoted decimal strings to preserve every digit.");
@@ -66,7 +67,7 @@ function updateRecipe(changed) {
     recipe=recipe.request || recipe;
   }
   const task = taskControls(recipe);
-  if (recipe.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(recipe.version) || (isStandaloneNetwork(recipe) && !isPrototypeBatch(recipe))) throw new Error("Frozen construction archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
+  if (recipe.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(recipe.version) || isObservation(recipe) || isConvolutionRecipe(recipe) || (isStandaloneNetwork(recipe) && !isPrototypeBatch(recipe))) throw new Error("Frozen construction archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
   const fields = {rows: "rows", context: "context_rows", features: "features", active: "active_features", classes: "classes"};
   if (fields[changed]) task[fields[changed]] = number(changed);
   if (changed === "difficulty") task[task.task_type === "regression" ? "noise_ratio" : "separation"] = number("difficulty");
@@ -93,7 +94,7 @@ function limits() { return {...explorationLimits(), device: $("device").value, m
 async function generate() {
   const stored=current?.view?.recipe?.recipe;
   const batch=stored?.version==="prototype-batch-network-realized-v1" && $("recipe").value===pretty(stored);
-  const frozen=stored && !isPrototypeBatch(stored) && (stored.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(stored.version) || isStandaloneNetwork(stored)) && $("recipe").value===pretty(stored);
+  const frozen=stored && !isPrototypeBatch(stored) && (stored.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(stored.version) || isStandaloneNetwork(stored) || isObservation(stored) || isConvolutionRecipe(stored)) && $("recipe").value===pretty(stored);
   const identity={seed:$("seed").value,task_id:$("task-id").value};
   const candidate=parseRecipe();
   let taskOverride=false;
@@ -209,7 +210,7 @@ function show(result) {
   current = result; const view = result.view;
   $("empty").hidden = true; $("results").hidden = false;
   $("next").textContent=isPrototypeBatch(view.recipe.recipe) ? "Next population" : "Next task";
-  $("family-title").textContent = isPrototypeBatch(view.recipe.recipe) ? "standalone network · batch prototype population" : view.recipe.recipe.version === "standalone-network-innovations-v1" ? "standalone network · internal innovations" : view.family;
+  $("family-title").textContent = isPrototypeBatch(view.recipe.recipe) ? "standalone network · batch prototype population" : view.recipe.recipe.version === "standalone-network-innovations-v1" ? "standalone network · internal innovations" : isObservation(view.recipe.recipe) ? "network observations · selected channels" : view.family;
   $("task-title").textContent = view.task_type === "regression" ? "Regression dataset" : `${view.classes.length}-class dataset`;
   $("metrics").replaceChildren();
   for (const [label, value] of [["TOTAL ROWS", view.total_rows], ["FEATURES", view.features.length], ["CONTEXT ROWS", view.split_counts.context], ["QUERY ROWS", view.split_counts.query]]) {

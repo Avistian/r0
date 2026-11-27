@@ -4,6 +4,26 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
+    if recipe.get("version") == "sampled-intervention-policy-v1":
+        request = recipe["request"]
+        return {
+            "kind": "sampled-intervention-policy",
+            "profile": request["profile"],
+            "selected": recipe["selected"],
+            "bounds": recipe["bounds"],
+            "parameter_laws": request["parameter_laws"],
+            "bounds_lifecycle": request["bounds_lifecycle"]
+            if request["kind"] == "hard"
+            else "not-used-soft",
+            "mode": request["mode"],
+            "population": request["population"],
+            "policy_raw_draw_count": len(recipe["raw"]),
+            "reference_raw_draw_count": len(recipe["reference_raw"]),
+            "notice": "Selection, values and calibration remain frozen on Next/replay. "
+            "Next changes query identities, not the intervention environment. "
+            "Source selection and explicit r0 parameter laws are distinct. "
+            "The complete receipt and all raw draws remain in the saved recipe.",
+        }
     if recipe.get("version") == "xgboost-fitted-functional-causal-v1":
         return {
             "kind": "independent-xgboost-shared-vector",
@@ -43,6 +63,18 @@ def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
             "temperature conventions are named r0 reconstructions, not uniquely specified "
             "paper laws. The bank is inspected here; edit the source/request to construct "
             "a linked new population. Internal network innovations remain a required follow-on.",
+        }
+    if recipe.get("version") == "network-observation-recipe-v1":
+        return {
+            "kind": "source-qualified-network-observations",
+            "notice": "Full source and selection receipt retained. Selected internal channels "
+            "are observations, not original network inputs. Pinned overlap may leak targets; "
+            "aliases preserve it explicitly. Frozen Next preserves source/selection draws. "
+            "Coordinate-root row-shape RNG behavior is source-dependent. P1 profiles retain "
+            "equal-width sequential limits; r0 general selects propagated DAG block states. "
+            "Causal references clamp "
+            "observed channels while fixing hidden roots and structural innovations.",
+            "receipt": recipe["observations"],
         }
     if recipe.get("version") == "standalone-network-innovations-v1":
         from r0.modules.explorer.lib.networks import network_details

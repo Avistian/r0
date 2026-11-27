@@ -81,7 +81,7 @@ function drawInterventionTrace() {
   $("intervention-trace-json").textContent=pretty({side,rows:graph.rows,...stage});
 }
 $("intervention-load").onclick=()=>act("Preparing intervention controls…",async()=>{
-  interventionInfo=await request("intervention_controls");
+  interventionInfo=await request("intervention_controls", {...limits()});
   $("intervention-controls").hidden=false;$("intervention-notice").textContent=interventionInfo.notice;
   $("intervention-node").replaceChildren(...interventionInfo.nodes.map(n=>new Option(`Node ${n.index} · ${n.domains ? "joint vector" : (n.domain?.kind || "numerical")}`,n.index)));
   $("intervention-json").value="[]";selectInterventionNode();
@@ -136,4 +136,22 @@ $("intervention-stage").onchange=drawInterventionTrace;
 $("intervention-export").onclick=()=>act("Verifying and exporting causal pair…",async()=>{
   const result=await request("intervention_export",{expected_intervention_id:current.intervention.after_id,...limits()});
   download(result.name,new Blob([Uint8Array.from(atob(result.data),c=>c.charCodeAt(0))],{type:result.mime}));
+});
+
+$("policy-draft").onclick=()=>act("Preparing explicit sampled policy…",async()=>{
+  const draft={streams:[3,5,7],kind:$("policy-kind").value,profile:$("policy-profile").value,bounds_lifecycle:$("policy-lifecycle").value};
+  if(draft.bounds_lifecycle==="independent-calibration-r0") draft.reference_rows=64;
+  if(draft.profile==="explicit-policy-r0-v1") Object.assign(draft,{mode:"matched",location:"state_and_readout",count:1});
+  if(draft.kind==="soft") draft.parameter_laws=[];
+  $("policy-json").value=pretty(draft);
+});
+$("policy-create").onclick=()=>act("Sampling, verifying and saving retained intervention policy…",async()=>{
+  const result=await request("sample_intervention_policy",{policy_json:$("policy-json").value,...limits()});
+  current=result;interventionTrace=null;$("intervention-traces").hidden=true;showIntervention();
+});
+
+$("policy-activate").onclick=()=>act("Opening retained sampled policy result…",async()=>{
+  if(current?.intervention?.after?.recipe?.recipe?.version!=="sampled-intervention-policy-v1") throw new Error("Create a sampled policy comparison first.");
+  const pair=current.intervention;
+  show(await request("open",{archive:`${pair.path}/after.zip`,task_id:pair.after.recipe.task_id}));
 });

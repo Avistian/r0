@@ -136,7 +136,10 @@ def compare_policy_pair(before: TrainingTask, after: TrainingTask, *, limits: Ca
     replay = generate_policy_task(recipe, seed=record["seed"], task_id=record["task_id"])
     validate_policy_task(after, replay)
     plain = generate_intervened(recipe.runtime, seed=record["seed"], task_id=record["task_id"])
-    comparison = compare_causal_pair(before, plain, limits=limits)
+    # The full policy decoder already admitted reference and comparison work
+    # against caller, policy and nested base caps. Reconstruct the plain replay
+    # with its original declaration: narrowing that record changes its identity.
+    comparison = compare_causal_pair(before, plain, limits=recipe.request.base.limits)
     return {
         **comparison,
         "sampled_policy": json.loads(after.mechanism_json)["sampled_policy"],

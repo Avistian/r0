@@ -3,6 +3,8 @@
 from dataclasses import dataclass
 
 from r0.modules.priors.lib.activation_sampling import finite_number
+from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+from r0.modules.priors.lib.feature_conv_sampling_records import SampledFeatureConv1D
 from r0.modules.priors.lib.fitted_tree_records import FrozenFittedTreeFunction
 from r0.modules.priors.lib.frozen_function_composites import (
     FrozenDiscretizationFunction,
@@ -17,6 +19,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenTreeFunction,
 )
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.xgboost_vector import FrozenXGBoostVector
 
@@ -32,7 +35,10 @@ type ParentMember = (
     | FrozenMLPFunction
     | FrozenFittedTreeFunction
     | FrozenXGBoostVector
+    | FrozenRecursiveForestFunction
     | FrozenNetworkFunction
+    | FrozenFeatureConv1D
+    | SampledFeatureConv1D
 )
 _MEMBER_TYPES = (
     FrozenLinearFunction,
@@ -46,7 +52,10 @@ _MEMBER_TYPES = (
     FrozenMLPFunction,
     FrozenFittedTreeFunction,
     FrozenXGBoostVector,
+    FrozenRecursiveForestFunction,
     FrozenNetworkFunction,
+    FrozenFeatureConv1D,
+    SampledFeatureConv1D,
 )
 
 

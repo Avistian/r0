@@ -7,6 +7,7 @@ from typing import Any, cast
 from r0.modules import priors
 from r0.modules.explorer.lib.composed_examples import composed_examples, fitted_examples
 from r0.modules.explorer.lib.converted import converted_editor, converted_examples
+from r0.modules.explorer.lib.convolution_examples import convolution_examples
 from r0.modules.explorer.lib.innovation_examples import innovation_examples
 from r0.modules.explorer.lib.native import (
     native_example,
@@ -16,6 +17,7 @@ from r0.modules.explorer.lib.native import (
 from r0.modules.explorer.lib.network_hyperprior_examples import network_hyperprior_examples
 from r0.modules.explorer.lib.network_innovation_examples import network_innovation_examples
 from r0.modules.explorer.lib.networks import network_editor, network_examples
+from r0.modules.explorer.lib.observation_examples import observation_examples
 from r0.modules.explorer.lib.prototype_root_examples import prototype_root_examples
 from r0.modules.explorer.lib.source_root_examples import source_root_examples
 from r0.modules.explorer.lib.xgboost_examples import xgboost_examples
@@ -82,7 +84,9 @@ def construction_examples() -> dict[str, Any]:
         **composed_examples(common, geometry, sampled_native_example()),
         **fitted_examples(),
         **xgboost_examples(),
+        **convolution_examples(),
         **network_examples(),
+        **observation_examples(),
         **source_root_examples(),
         **prototype_root_examples(),
         **network_hyperprior_examples(),
@@ -204,9 +208,15 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
 def frozen_archive_version(version: object) -> bool:
     """Identify archive families whose task identity can advance without resampling."""
     return str(version).startswith("sampled-") or version in (
+        "functional-causal-v1",
+        "functional-causal-v2",
+        "native-causal-v1",
+        "native-vector-causal-v1",
+        "converted-causal-v1",
         "fitted-functional-causal-v1",
         "xgboost-fitted-functional-causal-v1",
         "standalone-network-v1",
+        "network-observation-recipe-v1",
         "standalone-network-innovations-v1",
         "population-fitted-functional-causal-v1",
         "network-input-view-v1",

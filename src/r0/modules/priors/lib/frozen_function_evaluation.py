@@ -8,6 +8,8 @@ import torch
 
 from r0.modules.priors.lib.causal_activations import CausalActivation, activation_diagnostic
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+from r0.modules.priors.lib.feature_conv_sampling_records import SampledFeatureConv1D
 from r0.modules.priors.lib.fitted_tree_evaluation import evaluate_fitted_tree
 from r0.modules.priors.lib.fitted_tree_records import FrozenFittedTreeFunction
 from r0.modules.priors.lib.frozen_function_composites import (
@@ -30,6 +32,7 @@ from r0.modules.priors.lib.network_evaluation import (
     evaluate_network_block,
     network_geometry,
 )
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.weight_geometry import Matrix
 from r0.modules.priors.lib.xgboost_vector import FrozenXGBoostVector
@@ -47,9 +50,12 @@ type FrozenFunction = (
     | FrozenMLPFunction
     | FrozenParentFunction
     | FrozenFittedTreeFunction
+    | FrozenRecursiveForestFunction
     | FrozenNetworkBlockFunction
     | FrozenXGBoostVector
     | FrozenNetworkFunction
+    | FrozenFeatureConv1D
+    | SampledFeatureConv1D
 )
 
 _FUNCTION_TYPES = (
@@ -65,7 +71,10 @@ _FUNCTION_TYPES = (
     FrozenParentFunction,
     FrozenFittedTreeFunction,
     FrozenXGBoostVector,
+    FrozenRecursiveForestFunction,
     FrozenNetworkFunction,
+    FrozenFeatureConv1D,
+    SampledFeatureConv1D,
     FrozenNetworkBlockFunction,
 )
 _DEFAULT_LIMITS = CausalLimits()
@@ -74,6 +83,18 @@ _DEFAULT_LIMITS = CausalLimits()
 def function_geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, int]:
     if type(function) not in _FUNCTION_TYPES:
         raise ValueError("function geometry requires a frozen function record")
+    if type(function) is SampledFeatureConv1D:
+        return function_geometry(function.function)
+    if type(function) is FrozenFeatureConv1D:
+        from r0.modules.priors.lib.feature_conv_graph import convolution_geometry
+
+        return convolution_geometry(function)
+    if type(function) is FrozenRecursiveForestFunction:
+        return (
+            (function.input_width, function.output_width),
+            256 * len(function.forest.trees) + 16 * function.input_width,
+            0,
+        )
     if type(function) is FrozenNetworkBlockFunction:
         b = function.block
         widths = (
@@ -226,6 +247,17 @@ def _mlp_activation(
 def _evaluate(
     function: FrozenFunction, inputs: torch.Tensor, diagnostics: list[dict[str, Any]] | None = None
 ) -> torch.Tensor:
+    if type(function) is SampledFeatureConv1D:
+        function.validate_replay()
+        return _evaluate(function.function, inputs, diagnostics)
+    if type(function) is FrozenFeatureConv1D:
+        from r0.modules.priors.lib.feature_conv_evaluation import evaluate_admitted_feature_conv1d
+
+        return evaluate_admitted_feature_conv1d(function, inputs)
+    if type(function) is FrozenRecursiveForestFunction:
+        from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_outputs
+
+        return recursive_function_outputs(function, inputs)[0]
     if type(function) is FrozenNetworkBlockFunction:
         return evaluate_network_block(
             function.block,
@@ -338,17 +370,43 @@ def admit_frozen_function(
     if type(rows) is not int or not 1 <= rows < 2**63:
         raise ValueError("function evaluation rows must be positive integers below 2**63")
     widths, working, floor = function_geometry(function)
-    return limits.admit_dimensions(
+    from r0.modules.priors.lib.feature_conv_function_admission import convolution_record_adjustment
+
+    metadata, storage_adjustment = convolution_record_adjustment(function, limits)
+    parameters = function.parameter_count if metadata is None else metadata
+    report = limits.admit_dimensions(
         widths,
         tuple(() for _ in widths),
         rows=rows,
         calibration_rows=0,
         features=function.input_width,
         outputs=function.output_width,
-        extra_parameters=function.parameter_count,
+        extra_parameters=parameters,
         extra_working_channels=working,
         row_floor=floor,
     )
+    from r0.modules.priors.lib.feature_conv_function_admission import convolution_replay_cost
+
+    replay_parameters, replay_work = convolution_replay_cost(function, limits)
+    report["parameters"] += replay_parameters
+    report["estimated_working_bytes"] += replay_work
+    if report["parameters"] > limits.parameters:
+        raise ValueError("sampled convolution aggregate parameter limit exceeded")
+    report["estimated_working_bytes"] += storage_adjustment
+    if report["estimated_working_bytes"] > limits.working_bytes:
+        raise ValueError("convolution complete metadata and working storage exceed limits")
+    from r0.modules.priors.lib.recursive_forest_function import recursive_function_members
+
+    for member in recursive_function_members(function):
+        extra = member.admit(rows, limits)
+        report["estimated_working_bytes"] += extra["estimated_working_bytes"]
+        report["parameters"] += extra["parameters"]
+    if (
+        report["estimated_working_bytes"] > limits.working_bytes
+        or report["parameters"] > limits.parameters
+    ):
+        raise ValueError("recursive function and composite aggregate workspace exceeds limits")
+    return report
 
 
 def evaluate_admitted_function(

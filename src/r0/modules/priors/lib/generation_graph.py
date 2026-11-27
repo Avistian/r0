@@ -1,7 +1,7 @@
 """Reconstruct a bounded generation graph from saved parameters and random streams."""
 
 import json
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from typing import Any, cast
 
 import numpy as np
@@ -17,6 +17,7 @@ from r0.modules.priors.lib.native_inspection import native_steps
 from r0.modules.priors.lib.native_vector_inspection import native_vector_steps
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.signals import component_inputs, multiply_signals
+from r0.modules.priors.lib.target_inspection import target_steps as target_steps
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -49,15 +50,22 @@ def explain_generation(
     """
     if limits is not None and type(limits) is not CausalLimits:
         raise ValueError("inspection requires caller-owned causal limits")
+    record = json.loads(task.recipe_json)
+    raw = record.get("recipe", {})
+    if raw.get("version") == "network-observation-recipe-v1" or (
+        raw.get("version") == "causal-intervention-v1"
+        and raw.get("base", {}).get("version") == "network-observation-recipe-v1"
+    ):
+        from r0.modules.priors.lib.observation_task_validation import validate_observation_task
+
+        validate_observation_task(task, record, limits=limits or CausalLimits())
     if not 1 <= len(indices) <= 16:
         raise ValueError("select 1..16 original rows")
     if any(type(i) is not int or not 0 <= i < len(task.inputs) for i in indices):
         raise ValueError("invalid original row index")
     if type(column_start) is not int or not 0 <= column_start <= 4095:
         raise ValueError("column_start must be 0..4095")
-    record = json.loads(task.recipe_json)
     card = json.loads(task.mechanism_json)
-    inputs = task.inputs.detach().cpu()[list(indices)].clone()
     nodes: list[dict[str, Any]] = []
 
     def add(
@@ -86,6 +94,15 @@ def explain_generation(
             }
         )
 
+    from r0.modules.priors.lib.population_task_semantics import is_population_task_record
+
+    if is_population_task_record(record, card):
+        from r0.modules.priors.lib.recursive_population_inspection import recursive_population_steps
+
+        if component is not None:
+            raise ValueError("recursive populations do not have composite children")
+        return {**recursive_population_steps(task, indices, add, limits=limits), "nodes": nodes}
+    inputs = task.inputs.detach().cpu()[list(indices)].clone()
     if record["recipe"].get("version") in ("converted-causal-v1", "sampled-converted-graph-v1"):
         from r0.modules.priors.lib.converted_inspection import converted_steps
 
@@ -197,6 +214,7 @@ def explain_generation(
             "causal-v2",
             "functional-causal-v1",
             "standalone-network-innovations-v1",
+            "network-observation-recipe-v1",
             "fitted-functional-causal-v1",
             "xgboost-fitted-functional-causal-v1",
             "sampled-fitted-functional-causal-v1",
@@ -219,6 +237,7 @@ def explain_generation(
             "causal-v2",
             "functional-causal-v1",
             "standalone-network-innovations-v1",
+            "network-observation-recipe-v1",
             "fitted-functional-causal-v1",
             "xgboost-fitted-functional-causal-v1",
             "sampled-fitted-functional-causal-v1",
@@ -245,6 +264,7 @@ def explain_generation(
                     "causal-v2",
                     "functional-causal-v1",
                     "standalone-network-innovations-v1",
+                    "network-observation-recipe-v1",
                     "fitted-functional-causal-v1",
                     "xgboost-fitted-functional-causal-v1",
                     "sampled-fitted-functional-causal-v1",
@@ -266,6 +286,7 @@ def explain_generation(
         "causal-v2",
         "functional-causal-v1",
         "standalone-network-innovations-v1",
+        "network-observation-recipe-v1",
         "fitted-functional-causal-v1",
         "xgboost-fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
@@ -282,6 +303,7 @@ def explain_generation(
     if card["version"] in (
         "functional-causal-v1",
         "standalone-network-innovations-v1",
+        "network-observation-recipe-v1",
         "fitted-functional-causal-v1",
         "xgboost-fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
@@ -329,6 +351,7 @@ def explain_generation(
         if recipe["version"] in (
             "functional-causal-v1",
             "standalone-network-innovations-v1",
+            "network-observation-recipe-v1",
             "fitted-functional-causal-v1",
             "xgboost-fitted-functional-causal-v1",
             "sampled-fitted-functional-causal-v1",
@@ -373,76 +396,14 @@ def explain_generation(
         "version": "generation-graph-v1",
         "episode_id": task.episode_id,
         "rows": list(indices),
+        **(
+            {"observation_selection": card["observation_selection"]}
+            if "observation_selection" in card
+            else {}
+        ),
         "component": None,
         "component_count": len(components),
         "nodes": nodes,
         "signal_max_error": float((signal - expected).abs().max()),
         "target_max_error": float((targets - original_targets).abs().max()),
     }
-
-
-def target_steps(
-    controls: dict[str, Any],
-    signal: torch.Tensor,
-    indices: Sequence[int],
-    rng: Callable[[str], np.random.Generator],
-    add: Callable[..., None],
-) -> torch.Tensor:
-    if controls["task_type"] == "regression":
-        noise = torch.tensor(rng("noise").normal(size=controls["rows"])[list(indices)])
-        add(
-            "noise",
-            "Replayed observation noise",
-            [],
-            "noise_ratio * original standard normal draw",
-            noise * controls["noise_ratio"],
-            {"noise_ratio": controls["noise_ratio"], "stream": "noise"},
-        )
-        targets = signal[:, 0] + controls["noise_ratio"] * noise
-        add(
-            "target",
-            "Regression target",
-            ["signal", "noise"],
-            "signal + observation noise",
-            targets,
-            {},
-        )
-        return targets
-    logits = controls["separation"] * signal + torch.tensor(
-        controls["class_offsets"] or [0.0] * signal.shape[1], dtype=torch.float64
-    )
-    add(
-        "logits",
-        "Class separation and offsets",
-        ["signal"],
-        "separation * signal + class_offsets",
-        logits,
-        {"separation": controls["separation"], "class_offsets": controls["class_offsets"]},
-    )
-    if controls["task_type"] == "binary":
-        positive = torch.sigmoid(logits[:, 0])
-        probabilities = torch.stack((1 - positive, positive), dim=1)
-        formula = "[1 - sigmoid(logit), sigmoid(logit)]"
-    else:
-        probabilities = torch.softmax(logits, dim=1)
-        formula = "softmax(logits)"
-    add("probabilities", "Class probabilities", ["logits"], formula, probabilities, {})
-    uniforms = torch.tensor(rng("labels").uniform(size=controls["rows"])[list(indices)])
-    add(
-        "labels",
-        "Replayed label draws",
-        [],
-        "original uniform(0,1) draws",
-        uniforms,
-        {"stream": "labels"},
-    )
-    targets = torch.sum(uniforms[:, None] >= probabilities.cumsum(dim=1)[:, :-1], dim=1)
-    add(
-        "target",
-        "Sampled class",
-        ["probabilities", "labels"],
-        "number of cumulative class probabilities <= uniform draw",
-        targets,
-        {},
-    )
-    return targets
