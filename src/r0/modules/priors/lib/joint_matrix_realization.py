@@ -1,6 +1,5 @@
 """Admitted, atomic matrix batches with source-order raw realizations."""
 
-import copy
 from dataclasses import dataclass
 
 import numpy as np
@@ -11,6 +10,7 @@ from r0.modules.priors.lib.joint_point_realization import frozen_matrix, materia
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
 from r0.modules.priors.lib.joint_weight_plans import JointWeightPlan, materialize_joint_weights
 from r0.modules.priors.lib.kernel_points import KernelPointCloud
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transaction, recorded_draw
 from r0.modules.priors.lib.transformed_weights import (
     GaussianWeights,
     NormalizedWeights,
@@ -202,6 +202,7 @@ def materialize_joint_matrix(
     *,
     rng: np.random.Generator,
     limits: CausalLimits = _DEFAULT_LIMITS,
+    capture: RawDrawLedger | None = None,
 ) -> JointMatrixRealization:
     if type(plan) is not JointMatrixPlan:
         raise ValueError("matrix realization requires a frozen joint plan")
@@ -210,67 +211,141 @@ def materialize_joint_matrix(
         raise ValueError("matrix realization requires injected RNG and frozen limits")
     b, n, m = plan.batch, plan.rows, plan.columns
     admit_matrix_realization(plan, limits)
-    staged = copy.deepcopy(rng)
-    sources: list[SimpleWeights | TransformedWeights] = []
-    cloud = None
-    if plan.family == "gaussian":
-        sources = [GaussianWeights(frozen_matrix(a)) for a in staged.normal(size=(b, n, m))]
-    elif plan.family == "importance":
-        assert plan.weights is not None
-        weights = materialize_joint_weights(plan.weights, decisions, rng=staged, limits=limits)
-        sources = [
-            ImportanceWeights(frozen_matrix(a), weights[i * n : (i + 1) * n])
-            for i, a in enumerate(staged.normal(size=(b, n, m)))
-        ]
-    elif plan.family == "factorized":
-        assert plan.weights is not None
-        k = min(n, m)
-        left = staged.normal(size=(b, n, k))
-        weights = materialize_joint_weights(plan.weights, decisions, rng=staged, limits=limits)
-        right = staged.normal(size=(b, k, m))
-        sources = [
-            ImportanceFactorizedWeights(frozen_matrix(u), frozen_matrix(v), w)
-            for u, v, w in zip(left, right, weights, strict=True)
-        ]
-    elif plan.family == "kernel":
-        assert plan.points is not None
-        assert plan.distance is not None
-        cloud = materialize_joint_points(plan.points, decisions, rng=staged, limits=limits)
-        points = cloud.materialize()
-        signs = np.sign(staged.normal(size=(b, n, m)))
-        for i, sign in enumerate(signs):
-            segment = points[i * (n + m) : (i + 1) * (n + m)]
-            sources.append(
-                LaplaceKernelWeights(
-                    left_points=segment[:n],
-                    right_points=segment[n:],
-                    signs=frozen_matrix(sign),
-                    distance_scale=plan.distance,
+    with raw_transaction(rng, capture) as (staged, capture):
+        sources: list[SimpleWeights | TransformedWeights] = []
+        cloud = None
+        if plan.family == "gaussian":
+            sources = [
+                GaussianWeights(frozen_matrix(a))
+                for a in recorded_draw(
+                    staged,
+                    capture,
+                    owner=plan.operation,
+                    role="matrix-normals",
+                    distribution="normal",
+                    shape=(b, n, m),
+                    parameters=(),
+                )
+            ]
+        elif plan.family == "importance":
+            assert plan.weights is not None
+            weights = materialize_joint_weights(
+                plan.weights, decisions, rng=staged, limits=limits, capture=capture
+            )
+            sources = [
+                ImportanceWeights(frozen_matrix(a), weights[i * n : (i + 1) * n])
+                for i, a in enumerate(
+                    recorded_draw(
+                        staged,
+                        capture,
+                        owner=plan.operation,
+                        role="matrix-normals",
+                        distribution="normal",
+                        shape=(b, n, m),
+                        parameters=(),
+                    )
+                )
+            ]
+        elif plan.family == "factorized":
+            assert plan.weights is not None
+            k = min(n, m)
+            left = recorded_draw(
+                staged,
+                capture,
+                owner=plan.operation,
+                role="left-factor",
+                distribution="normal",
+                shape=(b, n, k),
+                parameters=(),
+            )
+            weights = materialize_joint_weights(
+                plan.weights, decisions, rng=staged, limits=limits, capture=capture
+            )
+            right = recorded_draw(
+                staged,
+                capture,
+                owner=plan.operation,
+                role="right-factor",
+                distribution="normal",
+                shape=(b, k, m),
+                parameters=(),
+            )
+            sources = [
+                ImportanceFactorizedWeights(frozen_matrix(u), frozen_matrix(v), w)
+                for u, v, w in zip(left, right, weights, strict=True)
+            ]
+        elif plan.family == "kernel":
+            assert plan.points is not None
+            assert plan.distance is not None
+            cloud = materialize_joint_points(
+                plan.points, decisions, rng=staged, limits=limits, capture=capture
+            )
+            points = cloud.materialize()
+            signs = np.sign(
+                recorded_draw(
+                    staged,
+                    capture,
+                    owner=plan.operation,
+                    role="kernel-sign-normals",
+                    distribution="normal",
+                    shape=(b, n, m),
+                    parameters=(),
                 )
             )
-    elif plan.family == "transformed":
-        assert plan.child is not None
-        assert plan.activation is not None
-        child = materialize_joint_matrix(plan.child, decisions, rng=staged, limits=limits)
-        cloud = child.point_cloud
-        sources = [
-            TransformedWeights(
-                child=member,
-                activation=plan.activation.activation,
-                jitter=frozen_matrix(noise),
+            for i, sign in enumerate(signs):
+                segment = points[i * (n + m) : (i + 1) * (n + m)]
+                sources.append(
+                    LaplaceKernelWeights(
+                        left_points=segment[:n],
+                        right_points=segment[n:],
+                        signs=frozen_matrix(sign),
+                        distance_scale=plan.distance,
+                    )
+                )
+        elif plan.family == "transformed":
+            assert plan.child is not None
+            assert plan.activation is not None
+            child = materialize_joint_matrix(
+                plan.child, decisions, rng=staged, limits=limits, capture=capture
             )
-            for member, noise in zip(child.matrices, staged.normal(size=(b, n, m)), strict=True)
-        ]
-    jitter = staged.normal(size=(b, n, m))
-    result = JointMatrixRealization(
-        plan,
-        tuple(
-            NormalizedWeights(source=s, jitter=frozen_matrix(j))
-            for s, j in zip(sources, jitter, strict=True)
-        ),
-        point_cloud=cloud,
-    )
-    result.validate(decisions)
-    result.materialize()
-    rng.bit_generator.state = staged.bit_generator.state
-    return result
+            cloud = child.point_cloud
+            sources = [
+                TransformedWeights(
+                    child=member,
+                    activation=plan.activation.activation,
+                    jitter=frozen_matrix(noise),
+                )
+                for member, noise in zip(
+                    child.matrices,
+                    recorded_draw(
+                        staged,
+                        capture,
+                        owner=plan.operation,
+                        role="transform-jitter",
+                        distribution="normal",
+                        shape=(b, n, m),
+                        parameters=(),
+                    ),
+                    strict=True,
+                )
+            ]
+        jitter = recorded_draw(
+            staged,
+            capture,
+            owner=plan.operation,
+            role="normalization-jitter",
+            distribution="normal",
+            shape=(b, n, m),
+            parameters=(),
+        )
+        result = JointMatrixRealization(
+            plan,
+            tuple(
+                NormalizedWeights(source=s, jitter=frozen_matrix(j))
+                for s, j in zip(sources, jitter, strict=True)
+            ),
+            point_cloud=cloud,
+        )
+        result.validate(decisions)
+        result.materialize()
+        return result

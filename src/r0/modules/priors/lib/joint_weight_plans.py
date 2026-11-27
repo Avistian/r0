@@ -1,6 +1,5 @@
 """Shared polynomial weight parameters with separately materialized innovations."""
 
-import copy
 from dataclasses import dataclass, replace
 from typing import Any
 
@@ -13,6 +12,7 @@ from r0.modules.priors.lib.joint_sampling import JointSamplingContext
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord, validate_path
 from r0.modules.priors.lib.matrix_preference_prior import vector_requests
 from r0.modules.priors.lib.parameter_preferences import NumericalParameter
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transaction, recorded_draw
 from r0.modules.priors.lib.weight_vectors import (
     PolynomialWeightVector,
     UniformWeightVector,
@@ -174,6 +174,7 @@ def materialize_joint_weights(
     *,
     rng: np.random.Generator,
     limits: CausalLimits = _DEFAULT_LIMITS,
+    capture: RawDrawLedger | None = None,
 ) -> tuple[WeightVector, ...]:
     """Admit the full output batch before arrays and atomically commit its RNG.
 
@@ -195,24 +196,50 @@ def materialize_joint_weights(
         extra_parameters=plan.realization_parameter_count,
         extra_working_channels=4 * plan.width,
     )
-    staged_rng = copy.deepcopy(rng)
-    vectors: tuple[WeightVector, ...]
-    if plan.family == "polynomial":
-        draws = staged_rng.normal(size=(plan.batch, plan.width))
-        vectors = tuple(
-            PolynomialWeightVector(
-                tuple(float(v) for v in row),
-                decay=decay,
-                log_noise_scale=scale,
-                permutation=tuple(int(i) for i in staged_rng.permutation(plan.width)),
+    with raw_transaction(rng, capture) as (staged_rng, capture):
+        vectors: tuple[WeightVector, ...]
+        if plan.family == "polynomial":
+            draws = recorded_draw(
+                staged_rng,
+                capture,
+                owner=plan.operation,
+                role="weight-normals",
+                distribution="normal",
+                shape=(plan.batch, plan.width),
+                parameters=(),
             )
-            for row, decay, scale in zip(draws, plan.decays, plan.scales, strict=True)
-        )
-    else:
-        draws = staged_rng.random(size=(plan.batch, plan.width))
-        vectors = tuple(UniformWeightVector(tuple(float(v) for v in row)) for row in draws)
-    rng.bit_generator.state = staged_rng.bit_generator.state
-    return vectors
+            vectors = tuple(
+                PolynomialWeightVector(
+                    tuple(float(v) for v in row),
+                    decay=decay,
+                    log_noise_scale=scale,
+                    permutation=tuple(
+                        int(i)
+                        for i in recorded_draw(
+                            staged_rng,
+                            capture,
+                            owner=plan.operation,
+                            role="weight-permutation",
+                            distribution="permutation",
+                            shape=(plan.width,),
+                            parameters=(("count", plan.width),),
+                        )
+                    ),
+                )
+                for row, decay, scale in zip(draws, plan.decays, plan.scales, strict=True)
+            )
+        else:
+            draws = recorded_draw(
+                staged_rng,
+                capture,
+                owner=plan.operation,
+                role="weight-uniforms",
+                distribution="random",
+                shape=(plan.batch, plan.width),
+                parameters=(),
+            )
+            vectors = tuple(UniformWeightVector(tuple(float(v) for v in row)) for row in draws)
+        return vectors
 
 
 def joint_weight_plan_from_dict(
