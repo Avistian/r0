@@ -1,5 +1,0 @@
-[feat/issue-28-generators de1bead] fix(priors): reject malformed containers in joint registry ledgers
- Date: Fri Nov 27 10:19:39 2026 +0100
- 3 files changed, 154 insertions(+)
- create mode 100644 src/r0/modules/priors/lib/joint_ledger_shape.py
- create mode 100644 tests/priors/test_joint_registry_ledger_shapes.py

@@ -1,8 +1,0 @@
-Interpreter: /home/avist/Projects/r0/.venv/bin/python3
-r0 source: /tmp/r0-28-operation-registry/src/r0/__init__.py
-Expected package: /tmp/r0-28-operation-registry/src/r0
-[feat/issue-28-operation-registry 804b40c] feat(priors): retain complete joint operation ownership
- 5 files changed, 420 insertions(+), 3 deletions(-)
- create mode 100644 src/r0/modules/priors/lib/joint_operation_registry.py
- create mode 100644 src/r0/modules/priors/lib/joint_registry_decoding.py
- create mode 100644 tests/priors/test_joint_operation_registry.py
