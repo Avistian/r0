@@ -285,12 +285,14 @@ def test_pinned_overlap_alias_node_budget(monkeypatch: pytest.MonkeyPatch) -> No
         rng=np.random.default_rng(2),
     )
     task = p.LinearRecipe(rows=16, context_rows=8, features=2, signal_features=2, active_features=2)
-    from r0.modules.priors.lib import network_observation_runtime
+    original = p.FrozenLinearFunction.__post_init__
 
-    def forbidden(*args: object, **kwargs: object) -> None:
-        raise AssertionError("alias allocated before node cap")
+    def reject_alias(function: p.FrozenLinearFunction) -> None:
+        if len(function.matrix) == 1 and len(function.matrix[0]) == 4:
+            raise AssertionError("alias allocated before node cap")
+        original(function)
 
-    monkeypatch.setattr(network_observation_runtime, "FrozenLinearFunction", forbidden)
+    monkeypatch.setattr(p.FrozenLinearFunction, "__post_init__", reject_alias)
     with pytest.raises(ValueError, match="alias geometry"):
         receipt.runtime(task)
 
