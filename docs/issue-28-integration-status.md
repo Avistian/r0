@@ -7,20 +7,44 @@ scientific acceptance or whole-issue completion.
 
 ## Latest verified publication checkpoint
 
-Source `076bc1369da7102ed10abc54df7ebc14760fdd91` passed full `make check`:
-2,276 passed, one skipped, one warning in 1,370.54 seconds; all static gates passed.
-The warning is sklearn's high-class-count diagnostic in the observed-class-map
-fixture. This checkpoint combines native vectors, stage/logical-variable
-interventions, seven standalone network families and five innovation families with
-the earlier parent/fitted/native work. Scoped evidence and remaining gaps follow.
+Source `3e7e17d9a7b0e991afba3a5d5b575a9d8f3d584d` passed full `make check`:
+3,516 passed, one skipped, one warning in 1,743.43 seconds; all static gates passed.
+This adds retained XGBoost fitting/graph/workbench paths, batch prototype populations,
+repaired stochastic-target traces, source-qualified observation envelopes and
+causal reference curves. The general-architecture observation profile is included
+as a library interface. Its additional workbench presets, broader convolution and
+recursive-forest graph integration, and sampled intervention policies are later
+candidates, outside this exact-source full-suite result.
 
-The exact-head receipt and full output are retained locally in the frozen release
-worktree under `docs/evidence/issue-28-network-noise-release/`.
-The [atomic delivery map](issue-28-atomic-delivery.md) separates mapped behavior
-from unaudited requirements. Hosted/GPU, measured supported maxima and complete
-paper-option coverage remain open. Smoke/eval-smoke remain NOT_AVAILABLE because
-the training/evaluation CLI commands are absent. Later fitted-parameter, typed
-converter and resource-measurement candidates are outside this full-suite result.
+The [observation checkpoint](issue-28-observation-checkpoint.md) records included
+behavior, scoped numerical/browser evidence and remaining work. Full paper and
+beyond-paper variety, lifecycle combinations, complete local/Colab delivery and
+resource/scientific qualification remain required. This is not whole #28 acceptance.
+
+## Previous source-root and prototype publication checkpoint
+
+Source `dd52a7a70cf38d8cd95e717f9f15bd2ca805c89d` passed full `make check`:
+2,908 passed, one skipped, one warning in 1,696.40 seconds; all static gates passed.
+This adds repaired source-root/profile custody, frozen prototype banks, root-stage
+interventions and guarded local workflows. The [prototype checkpoint](issue-28-prototype-checkpoint.md)
+records scoped independent arithmetic/browser evidence and preserved failures.
+At that revision, batch-dependent prototypes, broader paper/beyond-paper options,
+XGBoost and other backend/lifecycle candidates, hosted/resource qualification and
+standalone stochastic-target trace dependencies remained outstanding.
+
+## Previous neural-noise publication checkpoint
+
+Source `ceb5e4f66666fe90526640bd97c320d17ea95a5e` passed full `make check`:
+2,554 passed, one skipped, one warning in 1,455.55 seconds; all static gates passed.
+This adds independently reviewed sampled neural hyperpriors, internal neural noise
+and guarded local workbench delivery across seven architectures. See the
+[neural-noise checkpoint](issue-28-neural-noise-checkpoint.md) for source semantics,
+actual browser/numerical evidence and preserved rejection history. Source-root and
+prototype integration, XGBoost, wider paper coverage and hosted/resource evidence
+remain separate open work. No whole-issue acceptance is implied.
+
+Earlier network-view publication and retained environment-integrity failure history
+are preserved in [the historical checkpoint ledger](issue-28-integration-history.md).
 
 ## Combined checkpoint scoped evidence
 
@@ -50,33 +74,8 @@ checks before the final metadata/asymmetric cherry-picks. Evidence remains ignor
 
 ## Retained construction checkpoints
 
-| Source checkpoint | Result and limits |
-| --- | --- |
-| `723ceef` | Previous parent/fitted/native full checkpoint: 2,050 passed, one skipped, one warning, 804.46 seconds. |
-| `665db66` | Explicit sampled graph candidate rejected for partial RNG publication with impersonating bit-generator subclasses. |
-| `d56da97` | Concrete engine admission repair; scoped specification continuation passed. Full check: 1,705 passed, one skipped. |
-| `6579ade` | Shared archive candidate rejected for source identity changing with episode partitions. |
-| `d3f545b` | Source identity repaired; next review found missing caller-limit propagation through shared decoding and inspection. Full check: 1,740 passed, one skipped. |
-| `ebc2cc0` | Shared exploration-limit propagation repaired; scoped archive review passed. No separate full-suite claim for this exact head. |
-| `557bec8` | Cauchy topology sampler passed scoped independent specification and standards reviews. Full check: 1,749 passed, one skipped. |
-| `7bbb608` | Complete topology/mechanism envelope passed scoped specification review. Full check: 1,755 passed, one skipped. Standards found a test importing a private decoder. |
-| `ea25257` | Test now calls the public decoder; narrow standards repair accepted. |
-| `a22eb63` | Latent-width and observation components passed 36 independent checks; standards found logs outside the required ignored evidence directory. Full check: 1,770 passed, one skipped. |
-| `60f13ba` | Converter input-channel allocation added; 17 focused tests and static checks passed. Evidence-location repair independently accepted. |
-| `756ec20` | Complete geometry archive independently checked across eight function families, 24 archive mutations, three resplits and six rollback cases. |
-| `16bfd23` | Combined geometry and structural sampler checkpoint: full check 1,804 passed, one skipped, 661.80 seconds. |
-| `103db8b` | Workbench review rejected parent-side pair reconstruction before the guarded worker and attempt receipt. Original failure evidence retained. |
-| `3411bf9` | Pair reconstruction and comparison moved inside guarded worker. Independent backend and Chromium checks passed; failed timeout preserves active dataset and previous pair. Local construction/edit/reopen/export checked. Standards: no hard findings, P3 lifecycle duplication open. |
-| `e668a1a` | Attachment/motif geometry integration independently checked: 684 budget configurations, 10 archive cases, 40 rollbacks; Cauchy archive unchanged byte-for-byte. |
-| `b8d8234` | Combined workbench/topology successor, with legacy generated evidence removed from tracking. Full check terminated with exit143 at86percent before its summary; no exact-head full-suite pass. Original log retained unchanged. |
-| `606aa5e` | Combined authored-native and topology workbench checkpoint; full check passed 1,852 tests, one skipped, in 689.98 seconds. Generated evidence migrated to ignored local storage with byte verification. Published successor `058465e` changes verification documentation only. |
-| `39ae972` | Sampled numerical pipelines passed independent stage arithmetic, but subsequent public workbench composition rejected converter allocation: half-open channel spans were incorrectly interpreted as start plus width. Original failures retained. |
-| `d11390d` | Both allocation and validation now use half-open spans. Two public regressions failed before repair; 36 focused checks and six public workbench flows passed afterward. Independent six-case assignment/replay review passed. |
-| `30468e7` | Authored native explorer independently checked for typed CSV labels, vocabulary editing, construction/export in Chromium and unchanged legacy archives. Hosted Colab not run. |
-| `738670c` | Combined repaired numerical pipelines and native explorer checkpoint: full check passed 1,893 tests, one skipped, in 716.96 seconds. |
-| `be03845` | Sampled native-domain graphs initially rejected because a malformed domain leaked AttributeError before validation. Original rejection retained. |
-| `c7495bd` | Native decoder repaired. Independent bounded review passed 15 emission/frequency/cutpoint combinations, eight function families, five RNG engines, typed ancestor calibration, raw replay, limits and archive corruption checks. This is not whole-issue acceptance. |
-| `30a8cb3` | Sampled-native integration atop `738670c`; public exports preserved. Focused native, pipeline and explorer checks passed. Research-only successor `123c0b7` adds fitted-tree source contracts. Full integrated suite remains pending. |
+The [historical construction ledger](issue-28-construction-checkpoints.md) retains
+every earlier source hash, result, rejection and qualification.
 
 ## Parent, fitted-tree and sampled-native follow-on review
 
@@ -146,48 +145,38 @@ test imports; `eed4876` repairs those tests through public entrypoints. Root rev
 the exact test-only delta; original rejection remains retained. That historical core review did not cover later explorer, sampled-domain, vector
 or intervention integrations; see the current checkpoint descriptions above. See [native variables](native-causal-variables.md).
 
-## Current unpublished integration
+## Fitted-parameter and typed-converter checkpoint
 
-Candidate `076bc13` combines heterogeneous native vectors, stage and logical-
-variable interventions, the guarded explorer, seven standalone network families
-and sampled non-Gaussian innovations. Its full suite passed as recorded above. Predecessor
-`31f6fd0` passed 2,223 tests, one skip and one warning in 1,374.02 seconds;
-that result does not cover later vector-intervention, innovation or UI changes.
+Source `66a09ee` adds reviewed fitted parameter laws, the typed converter library
+and reproducible CPU measurements to the [vector/network checkpoint](issue-28-vector-network-checkpoint.md).
+At this historical checkpoint, later population and converter workflows were
+outside its result; they now have the separate checkpoint linked above. Network
+input views remain a later candidate.
 
-- Native vectors: original unused adapter controls were rejected; `cb088fb`
-  repairs admission. Independent arithmetic, replay, malformed archives and browser
-  checks cover that bounded component.
-- Vector interventions: `5cd1b7e` passed independent review of all 21 files,
-  14 clamp/population/archive cases, four correlated-noise/emission oracles and
-  ten malformed records. Integration `c174327` passed 40 focused checks.
-- Network/vector traces: `26352a2` repairs missing architecture steps at root and
-  internal nodes. Two public regressions failed before repair; 44 focused checks
-  and independent noisy-pipeline/arithmetic/trace-link probes passed afterward.
-- Innovations: `f4bd521` adds five law families with factors, truncation and
-  signal-dependent scales. Independent checks cover ten family/factor archives,
-  15 raw-factor matrices, six tamper rejections and four-engine rollback.
-  Root Chromium checked three families with stage interventions, repeated rows,
-  save/reopen/export and failure preservation; the final ZIP was replay-checked.
-- Construction budgets: `0930474` repairs sampled intervention pairs using reduced
-  runtime limits for complete construction archives. Both v1/v2 pipeline cases
-  failed first; 23 focused checks and ten combination/archive probes then passed.
-  Independent review checked four geometry/parent variants and 16 strict caller
-  limit rejections. Explicit caller limits remain authoritative.
-- Network explorer: original `4557a24` malformed drafts were rejected; `bb5da1`
-  repairs them. Further review rejected unsupported curves; `67f3906` repairs
-  frozen raw-network curves. Both repairs have independent bounded acceptance.
-  Root `44ad4ec` corrects unsupported feature-count pair advertising, with browser
-  checks and independent seven-family arithmetic. Feature-extension/sparsity task
-  comparisons remain required, unsupported breadth, distinct from architecture edits.
-  `076bc13` clarifies standalone intervention applicability while preserving
-  network mechanisms inside causal graphs; independent Chromium review passed,
-  including saved-pair reopening and nonlinear intervention arithmetic.
+- Fitted parameters: `fe66402` passed independent NumPy law/final-state checks,
+  reconstructed sklearn predictions, classifier-rule oracles, malformed record
+  rejection, rollback and Chromium workflows. The combined `343f3f1` passed
+  44 focused checks, four saved fitted-intervention cases and browser workflows.
+  Parameter-law fidelity is distinct from backend and lifecycle fidelity.
+- Typed converters: `c53d5ad` was rejected because nested neighbor_func geometry
+  escaped admission. Repair `1b7a11e` charges hidden dimensions, workspace and
+  row floors before evaluation, including sampled prefixes. Later workflow checks
+  found an incompatible trace header; `55613ac` restores the shared envelope.
+  Independent continuation passed all seven modes' arithmetic, raw replay,
+  calibration/ancestral fits, tamper/rollback and four authored/sampled trace cases.
+  Original failures remain retained. Repaired explorer/intervention candidate C
+  is qualified separately by the later population/converter checkpoint.
+- [CPU measurements](issue-28-network-resource-measurements.md) cover nine fixed
+  cases, including 20,000 rows with eight features and 256 features with 16 rows.
+  All passed generation, archive round-trip and regeneration; independent review
+  verified a multipart archive. Process peak RSS includes imports and replay.
+  These are shared-host cases, not maximum-combination or bulk-throughput proof.
 
-The assembled UI passed 29 focused cases before the final applicability change.
-Parallel authorship, scoped independent checks and full-suite results remain
-distinct. Generated evidence is gitignored. Fitted source-parameter sampling and
-typed categorical converters are separate candidates; their full source lifecycles,
-workflow integration and all other inventory obligations remain required.
+Full source `66a09ee61c9760009d5a1bb0a9291b5979f6bc9f` passed 2,322 tests, one
+skip and one warning in 1,144.64 seconds. Static gates passed. Exact-head receipt
+and logs remain ignored in the release worktree under
+`docs/evidence/issue-28-fitted-converter-release/`. No later source is qualified
+by this result; no whole-issue completion follows.
 
 ## Remaining delivery obligations
 

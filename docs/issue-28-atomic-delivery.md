@@ -13,6 +13,14 @@ explicit semantic/lifecycle gap. `PENDING` identifies missing implementation.
 Raw review records and worked examples are retained in ignored `docs/evidence/`;
 [retention limits](issue-28-evidence-retention.md) apply to fresh clones.
 
+The [source-root and prototype checkpoint](issue-28-prototype-checkpoint.md)
+adds scoped frozen-bank and source-profile delivery with full-suite evidence.
+Batch-dependent populations and complete source/beyond-paper coverage remain open.
+The earlier [neural-noise publication checkpoint](issue-28-neural-noise-checkpoint.md)
+records full-suite and independent evidence for its scoped seven-family delivery.
+It does not close unlisted inventory IDs or the remaining source-root/prototype,
+backend/lifecycle, hosted and measured-envelope requirements.
+
 ## Parent composition
 
 Common delivery contract: `ParentCompositionPrior` / `FrozenParentFunction`,
@@ -57,11 +65,11 @@ mobile rendering. Hosted Colab remains NOT_RUN.
 | A1.structure.07 | `NativeGraphRequest`, `NativeCausalRecipe` softmax emission | SCOPED; actual integer categories, one-hot descendants and typed saved tasks; not complete TabAbax prior reproduction. |
 | A1.structure.09 | `NativeDomainPrior` symmetric Dirichlet frequency weights | PARTIAL; symmetric and explicit asymmetric concentration vectors retain Gamma draws and logit offsets, not guaranteed marginal category frequencies; full source-law reproduction remains open. |
 | K1.structure.16 | Native argmax emission | SCOPED; deterministic first-class tie policy; complete Kumo prior is not reproduced. |
-| M1.tree.05 | `FittedTreePlan(family="gbdt", task="classification")` | PARTIAL; frozen synthetic fitted classifier exists; source-specific mixed fit populations/lifecycles remain open. |
+| M1.tree.05 | `FittedTreePlan(family="gbdt", task="classification")` | PARTIAL; frozen synthetic fitted classifier exists; explicit mixed-independent and support/batch lifecycles exist; source/backend equivalence remains open. |
 | M1.tree.06 | `FittedTreePlan(family="gbdt", task="regression")` | PARTIAL; frozen synthetic fitted regressor exists; source-specific fitting laws remain open. |
 | I1.function.07 | XGBoost multi-output fitted-noise layer | PENDING; sklearn GBDT is not a substitute. |
 | I1.code.09 | XGBoost histogram multi-output regressor | PENDING; no backend implementation or comparison. |
-| OP.function.02 | Fitted XGBoost structural regressor | PENDING; support-only fitting lifecycle also remains separate. |
+| OP.function.02 | Fitted XGBoost structural regressor | PENDING; support-only lifecycle exists for the implemented sklearn backends; XGBoost is not substituted. |
 
 Native contracts and limitations are documented in
 [sampled native graphs](sampled-native-graphs.md). Public fitted-tree exports,
@@ -100,28 +108,47 @@ clamp/population/archive cases and four correlated-noise/emission cases. Sampled
 construction-budget repair `0930474` separately preserves explicit caller limits.
 Stochastic assignments and further component-level variants remain required.
 
+## Typed categorical converter library
+
+The [typed converter contract](issue-28-categorical-converters.md) retains named
+category captures separately from descendant representation. All entries below
+are PARTIAL: authored/sampled generation, replay and original-row traces have
+bounded independent acceptance, including local explorer and intervention
+workflows at repaired `487c6df`. Hosted Colab remains unverified. Shared primitives
+do not establish complete I2 reproduction.
+
+| Inventory ID | Mode | State |
+| --- | --- | --- |
+| I2.category.01 | neighbor_id | PARTIAL; unchanged numerical state, typed capture. |
+| I2.category.02 | neighbor_disc | PARTIAL; retained center representation. |
+| I2.category.03 | neighbor_func | PARTIAL; admitted post-function representation. |
+| I2.category.04 | neighbor_int | PARTIAL; retained integer representation. |
+| I2.category.05 | softmax_id | PARTIAL; unchanged state, sampled typed capture. |
+| I2.category.06 | softmax_disc | PARTIAL; sampled embedding representation. |
+| I2.category.07 | softmax_int | PARTIAL; sampled integer representation. |
+
+Nested post-function admission and shared trace-header defects have separately
+reviewed repairs, including the capture-only stochastic-uniform dependency;
+original rejection evidence remains retained. Source selectors,
+every composition and unlisted category IDs are not closed by this table.
+
 ## Explicit next gaps
 
 **A lot of variety, including intentional extensions beyond the papers, remains
-required:** broad family catalogs, configurable parameter laws, meaningful
-combinations and across-seed structural/functional diversity. Preset counts and
-shared operators do not substitute for those requirements.
+required:** broad families, configurable laws, combinations and across-seed
+structural/functional diversity. Preset counts do not substitute for those requirements.
 
-Checkpoint `076bc13` contains seven standalone network families, heterogeneous
-native vectors, intervention workflows and five sampled innovation families.
-Its full suite passed 2,276 tests; independent applicability review passed. Network editor
-draft and response-curve rejections have separately reviewed repairs. The original
-failures remain retained. Feature-extension and sparsity task-only comparisons
-remain unsupported required breadth; architecture edits are distinct.
+Checkpoint `a65fbb9` adds explicit fitted population lifecycles, sampled-parameter
+composition and repaired typed-converter workflows. Full check passed 2,428 tests,
+one skip and one warning; see the
+[qualified checkpoint](issue-28-population-converter-checkpoint.md).
+Network input views and matching/save guards are included in source0935822's
+2,488-test checkpoint; see [scoped evidence](issue-28-network-view-checkpoint.md).
+Neural hyperprior/noise and source-root profiles remain later candidates.
+Source-specific neural/noise/root profiles, XGBoost and every unimplemented
+inventory option remain required.
 
-Additional source-specific neural profiles, all categorical converter
-representations, fitted-tree populations/lifecycles and XGBoost remain required.
-Fitted parameter sampling and typed converter work proceed separately; no in-flight
-candidate closes those obligations. Generic innovation laws do not establish every
-paper's noise or root distribution.
-
-Hosted execution, measured supported maxima, throughput and full structural and
-functional diversity qualification remain unaccepted. Source `076bc13`
-passed 2,276 tests with one skip and one warning. Earlier `01a4a4c` and
-`31f6fd0` results remain historical; none qualifies later candidates. Unlisted inventory
+Nine bounded CPU cases have measurements; this does not establish maximal
+combinations, sustained throughput, hosted/GPU or scientific acceptance. Original
+rejections and earlier full-suite results remain historical evidence. Unlisted
 IDs remain NOT_AUDITED; no whole-issue completion percentage is inferred.
