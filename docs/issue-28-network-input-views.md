@@ -2,9 +2,9 @@
 
 This candidate adds a versioned input view around an unchanged standalone network
 archive. It is the library foundation for required irrelevant-feature and
-input-sparsity comparisons. Pair creation, comparison verification, original-row
-trace integration, explorer/Colab controls and optional independent variance
-matching remain required before this feature is delivered.
+input-sparsity comparisons. Raw pair creation, comparison verification and original-row traces are implemented
+in the follow-on library candidate. Explorer/Colab controls and optional independent
+variance matching remain required before this feature is delivered.
 
 NetworkInputView stores the complete original NetworkRecipe, explicit task
 controls and sorted active input indices. Original network columns retain their
@@ -32,3 +32,27 @@ Initial public checks cover unchanged original draws, scores, targets and splits
 for Gaussian/uniform/ball roots, common appended columns, exact archive decode
 and generation, a literal masked affine oracle, and malformed mask/count rejection.
 They do not qualify the still-pending comparison or explorer workflows.
+
+
+## Raw comparisons and original-row traces
+
+The shared paired_recipe/generate_pair/compare_pair APIs now accept feature
+extension and input-count changes. Shrinking a mask takes its first sorted active
+coordinates; expanding adds the lowest unused original coordinates. Masks are
+nested. Extra columns never become network inputs. Removing original coordinates
+or claiming a mask count different from the task controls rejects.
+
+Feature-extension pairs require exact common columns, scores, targets,
+probabilities and splits. Sparsity pairs require exact observed inputs and splits,
+the same frozen network/root and nested masks; score changes are permitted and
+zero-dispersion cases remain valid. This raw protocol reports
+network_input_mask_uncontrolled; no expected-variance equality is claimed.
+Requesting estimated variance currently rejects until that separate protocol lands.
+
+Pair verification decodes both recipes and regenerates both sides, checking
+arrays, identities, mechanism records and declared implementation versions.
+The original before archive is retained exactly. Frozen-network identity is
+checked independently of view metadata. Original-row traces show observed
+coordinates, the explicit zero mask, every network stage and target adaptation,
+with repeated row ordering preserved. These are input comparisons, not causal
+interventions on a sampled graph.

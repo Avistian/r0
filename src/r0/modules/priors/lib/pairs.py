@@ -15,6 +15,13 @@ from r0.modules.priors.lib.generate import Recipe, generate_task, recipe_from_di
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.native_causal import NativeCausalRecipe
 from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
+from r0.modules.priors.lib.network_input_view import NetworkInputView
+from r0.modules.priors.lib.network_recipe import NetworkRecipe
+from r0.modules.priors.lib.network_view_pairs import (
+    input_mask,
+    network_input_pair,
+    network_pair_equalities,
+)
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
@@ -63,6 +70,8 @@ def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> R
     if value == getattr(controls, field):
         raise ValueError("pair intervention must change the selected value")
     changed = replace(controls, **{field: value})
+    if isinstance(recipe, (NetworkRecipe, NetworkInputView)):
+        return network_input_pair(recipe, changed, intervention=intervention)
     if intervention == "sparsity" and isinstance(recipe, CompositeRecipe):
         components = tuple(
             component
@@ -146,6 +155,11 @@ def compare_pair(
         "query_indices": torch.equal(before.query_indices, after.query_indices),
         "classes": before.classes == after.classes,
     }
+    network_pair = all(isinstance(r, (NetworkRecipe, NetworkInputView)) for r in recipes)
+    if isinstance(recipes[0], (NetworkRecipe, NetworkInputView)) and isinstance(
+        recipes[1], (NetworkRecipe, NetworkInputView)
+    ):
+        equalities.update(network_pair_equalities(before, after, recipes[0], recipes[1]))
     if intervention == "irrelevant":
         equalities["targets"] = torch.equal(before.targets, after.targets)
         equalities["probabilities"] = (
@@ -160,6 +174,12 @@ def compare_pair(
         required.pop("scores")
         required.pop("mechanism")
         active = [set(json.loads(task.mechanism_json)["active"]) for task in (before, after)]
+        if network_pair:
+            active = [
+                set(input_mask(r))
+                for r in recipes
+                if isinstance(r, (NetworkRecipe, NetworkInputView))
+            ]
         required["nested_active_features"] = active[0] < active[1] or active[1] < active[0]
     failed = [name for name, same in required.items() if not same]
     if failed:
@@ -196,6 +216,10 @@ def _variance_control(recipe: Recipe, intervention: str, allow_estimate: bool) -
         raise ValueError("allow_estimated_variance must be a boolean")
     if intervention != "sparsity":
         return "unchanged_mechanism"
+    if isinstance(recipe, (NetworkRecipe, NetworkInputView)):
+        if allow_estimate:
+            raise ValueError("network independent variance matching is not implemented yet")
+        return "network_input_mask_uncontrolled"
     if isinstance(recipe, LinearRecipe):
         return "analytic_unit_variance"
     if not allow_estimate:
