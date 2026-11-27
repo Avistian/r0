@@ -24,6 +24,39 @@ interventions are separate follow-on work. Hosted Colab, GPU, measured supported
 maxima and full paper-option coverage remain open. Training/evaluation CLI
 commands are absent, so smoke/eval-smoke remain NOT_AVAILABLE.
 
+## Combined candidate under verification
+
+Frozen candidate `01a4a4c7dc20a43381c5b35070c49acea15a9d31` adds parent/fitted
+explorer workflows, source-specific Kumo products and mixed catalogs, explicit
+causal intervention pairs with the reviewed metadata repair, and asymmetric
+native Dirichlet priors. Its full `make check` is RUNNING; no full-suite pass is
+claimed yet. The exact-head process receipt and log are ignored under
+`docs/evidence/issue-28-combined-release/`.
+
+- Explorer: root-authored Chromium checks cover RF majority construction, large
+  integer identities, two Next-task operations without changing frozen fit data,
+  replay, repeated row inspection, weighted-parent editing, save/reopen/download,
+  ZIP integrity and mobile rendering. No hosted execution claim.
+- Kumo products: independent reviews cover the two-child source variant, seven
+  child families, shared inputs, calibration ownership, mixed source selections,
+  corruption rejection and unchanged pure-catalog records.
+- Interventions: the original `27f2683` accepted contradictory task-type metadata.
+  Repair `69fb169` rejects both-side semantic metadata mutations, including old
+  invalid saved archives, while preserving valid archives and descriptive historical
+  environment records. Independent review reran 77 numerical cases. Root integration
+  adds nine literal Kumo-product cases and eight fitted-archive custody cases.
+- Asymmetric priors: independent review of `91ef9f5` covers all 14 files, 18 raw
+  Gamma/normalization configurations, eight mixed-kind seeds, malformed/tampered
+  records, six atomic failures and 27 byte-identical legacy configurations.
+  These weights are logit offsets, not guaranteed emitted category frequencies.
+
+The first explorer test attempt overlapped a root cherry-pick and is INVALID
+verification because subprocesses read temporary conflict markers. Its failure
+is retained separately. The corrected frozen integration run passed 75 focused
+checks before the final metadata/asymmetric cherry-picks. All generated evidence
+remains ignored. Heterogeneous native vectors and intervention explorer controls
+are separate active work; they are not claimed by this candidate.
+
 ## Retained construction checkpoints
 
 | Source checkpoint | Result and limits |

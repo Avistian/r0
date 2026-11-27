@@ -46,15 +46,16 @@ mutations, transaction rollback and targeted legacy byte identity. Integration
 `723ceef` also has 12 mixed-domain arithmetic cases and 12 pipeline/ancestor
 cases (240 numerical comparisons). These are scoped cases, not exhaustive proofs.
 Inspection and saved archives retain member identities, equations and fit records.
-Parent-specific explorer creation/editing and hosted Colab remain separate
-unaccepted work at this checkpoint.
+Parent-specific explorer creation/editing has bounded local Chromium acceptance
+at `b7d14a3`: weighted parent construction, reducer edits, save/reopen/export and
+mobile rendering. Hosted Colab remains NOT_RUN.
 
 ## Native variables and fitted trees
 
 | Inventory ID | Current entry point | State and qualification |
 | --- | --- | --- |
 | A1.structure.07 | `NativeGraphRequest`, `NativeCausalRecipe` softmax emission | SCOPED; actual integer categories, one-hot descendants and typed saved tasks; not complete TabAbax prior reproduction. |
-| A1.structure.09 | `NativeDomainPrior` symmetric Dirichlet frequency weights | PARTIAL; retained Gamma draws provide logit offsets, not guaranteed marginal category frequencies; asymmetric vectors remain pending. |
+| A1.structure.09 | `NativeDomainPrior` symmetric Dirichlet frequency weights | PARTIAL; symmetric and explicit asymmetric concentration vectors retain Gamma draws and logit offsets, not guaranteed marginal category frequencies; full source-law reproduction remains open. |
 | K1.structure.16 | Native argmax emission | SCOPED; deterministic first-class tie policy; complete Kumo prior is not reproduced. |
 | M1.tree.05 | `FittedTreePlan(family="gbdt", task="classification")` | PARTIAL; frozen synthetic fitted classifier exists; source-specific mixed fit populations/lifecycles remain open. |
 | M1.tree.06 | `FittedTreePlan(family="gbdt", task="regression")` | PARTIAL; frozen synthetic fitted regressor exists; source-specific fitting laws remain open. |
@@ -69,15 +70,40 @@ lifecycles are described in [fitted structural trees](issue-28-fitted-structural
 Independent fitted review includes float32 boundaries, GBDT initializers, class
 probability/majority distinctions, ancestral fits, raw replay and budget rejection.
 Original nonfinite-score and contradictory-metadata rejections remain preserved;
-repairs have separate independent probes. This does not establish fitted-tree
-explorer acceptance, XGBoost equivalence or predictive quality.
+repairs have separate independent probes. Local fitted-tree explorer creation,
+majority voting, exact large-identity replay, inspection and export passed bounded
+independent Chromium checks. XGBoost equivalence and predictive quality remain open.
+
+## Broad products and interventions
+
+| Inventory ID | Named component | State and qualification |
+| --- | --- | --- |
+| K1.structure.09 | `FrozenKumoProductFunction` with an MLP child | SCOPED; two nonrecursive children share the same input, with independent fitted-child calibration; named Kumo catalog remains distinct from historical I2 products. |
+| K1.structure.10 | `FrozenKumoProductFunction` with a cluster child | SCOPED; independent cluster fitting and retained raw custody; mixed catalogs retain explicit selected-source variants. |
+
+The [Kumo product contract](research/0028-kumo-products.md) supports all seven
+non-product child families, mixed source catalogs, explicit/geometry/native and
+parent-composition paths. Independent review covered source binding, same-input
+arithmetic, calibration populations, tamper rejection and pure-catalog legacy bytes.
+The exact undisclosed paper sampler is not inferred from these checks.
+
+[Hard and soft causal interventions](issue-28-causal-interventions.md) now have
+explicit state/readout locations, matched exogenous draws or fresh keyed
+populations, retained base archives, inspection and pair persistence. The original
+metadata-validation REJECT at `27f2683` remains historical evidence. Repair
+`69fb169` passed independent metadata/persistence checks and 77 numerical cases.
+Root integration probes add nine Kumo and eight fitted-archive intervention cases.
+These are scoped API checks; intervention explorer controls, heterogeneous native
+vectors and further soft mechanism-component variants remain required work.
 
 ## Explicit next gaps
 
-`K1.structure.09` (product with an MLP child) and `K1.structure.10` (product with a
-cluster child) are PENDING at `723ceef`. The historical I2 product selector
-intentionally contains only GP/tree/discretization/linear/quadratic children;
-it must not be silently redefined to claim these Kumo options. A separate named
-source variant is under implementation. Standalone residual/dropout/skip/gated
-networks and genuine causal intervention requirements also remain open in the
-full inventory; parent reductions and task-control pairs do not close them.
+Standalone residual/dropout/skip/gated networks, heterogeneous native vectors,
+additional source-specific fitted-tree lifecycles and XGBoost remain required.
+Broad families, parameter laws, combinations and deliberate beyond-paper extensions
+must remain visible in implementation and diversity evidence. Existing scalar
+native nodes, parent reductions and task-control pairs do not close these gaps.
+Hosted execution, measured supported maxima, throughput and full structural and
+functional diversity qualification remain unaccepted. The latest combined source
+candidate is `01a4a4c`; its full verification is pending, and the last published
+full-suite checkpoint remains `723ceef` until the retained receipt proves otherwise.
