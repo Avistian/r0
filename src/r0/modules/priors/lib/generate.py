@@ -125,7 +125,7 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         return parent_graph_from_dict(fields, limits=limits)
     if version == "sampled-functional-graph-v1":
         return sampled_graph_from_dict(fields, limits=limits)
-    if version in ("functional-causal-v1", "functional-causal-v2"):
+    if version in ("functional-causal-v1", "functional-causal-v2", "fitted-functional-causal-v1"):
         return functional_recipe_from_dict(fields, limits=limits)
     if version in ("causal-v1", "causal-v2"):
         task = recipe_from_dict(fields.get("task", {}))

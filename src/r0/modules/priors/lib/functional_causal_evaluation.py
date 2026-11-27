@@ -9,6 +9,7 @@ import torch
 
 from r0.modules.priors.lib.construction_provenance import construction_source_config
 from r0.modules.priors.lib.exogenous import sample_exogenous
+from r0.modules.priors.lib.fitted_tree_metadata import fitted_card
 from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_function
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.functional_analysis import functional_certificates
@@ -404,6 +405,7 @@ def generate_functional_causal(
         "innovation": "recorded exogenous laws; independently keyed root and structural streams",
         "sampling_provenance": "authored",
     }
+    card.update(fitted_card(recipe.version))
     if calibration is not None:
         card["normalization"] = "fixed independent calibration"
         card["calibration"] = asdict(calibration)

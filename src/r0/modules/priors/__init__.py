@@ -62,35 +62,11 @@ from .lib.compositions import FunctionComponent as FunctionComponent
 from .lib.exact_gp import GaussianProcessRecipe as GaussianProcessRecipe
 from .lib.exogenous import ExogenousDistribution as ExogenousDistribution
 from .lib.exogenous import NoiseResponse as NoiseResponse
+from .lib.fitted_function_api import *  # noqa: F403
 from .lib.fixture import SourceTask as SourceTask
 from .lib.fixture import sample_fixture as sample_fixture
 from .lib.fourier import FourierRecipe as FourierRecipe
 from .lib.fourier import generate_fourier as generate_fourier
-from .lib.frozen_function_composites import (
-    FrozenDiscretizationFunction as FrozenDiscretizationFunction,
-)
-from .lib.frozen_function_composites import FrozenEMFunction as FrozenEMFunction
-from .lib.frozen_function_composites import FrozenMLPFunction as FrozenMLPFunction
-from .lib.frozen_function_composites import (
-    FrozenProductFunction as FrozenProductFunction,
-)
-from .lib.frozen_function_decoding import (
-    frozen_function_from_dict as frozen_function_from_dict,
-)
-from .lib.frozen_function_evaluation import FrozenFunction as FrozenFunction
-from .lib.frozen_function_evaluation import (
-    evaluate_frozen_function as evaluate_frozen_function,
-)
-from .lib.frozen_function_primitives import (
-    FrozenLinearFunction as FrozenLinearFunction,
-)
-from .lib.frozen_function_primitives import (
-    FrozenQuadraticFunction as FrozenQuadraticFunction,
-)
-from .lib.frozen_function_primitives import FrozenRFFFunction as FrozenRFFFunction
-from .lib.frozen_function_primitives import (
-    FrozenTreeFunction as FrozenTreeFunction,
-)
 from .lib.functional_causal import (
     CalibratedFunctionalCausalRecipe as CalibratedFunctionalCausalRecipe,
 )

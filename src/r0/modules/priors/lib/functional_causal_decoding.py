@@ -130,9 +130,14 @@ def functional_recipe_from_dict(
     admit_function_metadata(data, limits)
     if type(data) is not dict:
         raise ValueError("functional graph records must be objects")
+    from r0.modules.priors.lib.fitted_fit_decoding import decode_node_fit
+    from r0.modules.priors.lib.fitted_graph import FittedFunctionalCausalRecipe
+
     try:
         kind = (
-            CalibratedFunctionalCausalRecipe
+            FittedFunctionalCausalRecipe
+            if data.get("version") == "fitted-functional-causal-v1"
+            else CalibratedFunctionalCausalRecipe
             if data.get("version") == "functional-causal-v2"
             else FunctionalCausalRecipe
         )
@@ -159,6 +164,10 @@ def functional_recipe_from_dict(
         for key in ("observed", "target"):
             fields[key] = tuple(functional_array(ref) for ref in functional_array(fields[key]))
         fields["limits"] = effective
+        if kind is FittedFunctionalCausalRecipe:
+            fields["fits"] = tuple(
+                decode_node_fit(f) for f in functional_array(fields.get("fits", ()))
+            )
         return kind(**fields)
     except (TypeError, KeyError) as error:
         raise ValueError("malformed functional graph record") from error

@@ -1,0 +1,93 @@
+"""Verify retained synthetic draws and fit metadata without rerunning a backend."""
+
+import json
+from typing import TYPE_CHECKING, Any, cast
+
+from r0.modules.priors.lib.generator_snapshot import snapshot_generator
+
+if TYPE_CHECKING:
+    from r0.modules.priors.lib.fitted_tree_fitting import FittedTreeRealization
+
+
+def validate_fitted_custody(fit: "FittedTreeRealization") -> None:
+    streams = {
+        name: snapshot.restore()
+        for name, snapshot in zip(("input", "target", "backend"), fit.initial_rng, strict=True)
+    }
+    expected = ["synthetic-targets", "backend-seeds"]
+    if fit.input_law == "iid-standard-normal":
+        expected.insert(0, "synthetic-inputs")
+    if [draw.role for draw in fit.raw_draws] != expected:
+        raise ValueError("fitted raw draw roles differ from synthetic fit law")
+    for sequence, draw in enumerate(fit.raw_draws):
+        name = {
+            "synthetic-inputs": "input",
+            "synthetic-targets": "target",
+            "backend-seeds": "backend",
+        }[draw.role]
+        if (
+            draw.stream != name
+            or draw.sequence != sequence
+            or draw.owner != ("fitted-tree", "independent-fit")
+        ):
+            raise ValueError("fitted raw draw ownership differs")
+        draw.replay(streams[name])
+        if name == "input":
+            retained = tuple(v for row in fit.inputs for v in row)
+            shape, distribution, parameters = (fit.plan.rows, fit.plan.input_width), "normal", ()
+        elif name == "target":
+            retained = tuple(v for row in fit.targets for v in row)
+            shape = (fit.plan.rows, fit.plan.output_width)
+            distribution = "integers" if fit.plan.task == "classification" else "normal"
+            parameters = (("high", fit.plan.classes),) if distribution == "integers" else ()
+        else:
+            retained = fit.backend_seeds
+            shape, distribution, parameters = (
+                (fit.plan.output_width,),
+                "integers",
+                (("high", 2**31),),
+            )
+        if (draw.values, draw.shape, draw.distribution, draw.parameters) != (
+            retained,
+            shape,
+            distribution,
+            parameters,
+        ):
+            raise ValueError("retained fitted inputs, targets or seeds differ from their raw draws")
+    if tuple(snapshot_generator(rng) for rng in streams.values()) != fit.final_rng:
+        raise ValueError("fitted final RNG custody differs")
+    for output, seed, payload in zip(
+        fit.function.outputs, fit.backend_seeds, fit.backend_parameters, strict=True
+    ):
+        try:
+            parameters = json.loads(payload)
+        except (ValueError, TypeError) as exc:
+            raise ValueError("invalid fitted backend parameters") from exc
+        if (
+            type(parameters) is not dict
+            or cast(dict[str, Any], parameters).get("random_state") != seed
+            or cast(dict[str, Any], parameters).get("max_depth") != fit.plan.depth
+        ):
+            raise ValueError("fitted backend parameters differ from plan and seeds")
+        classifier = fit.plan.task == "classification"
+        if bool(output.classes) != classifier or any(c >= fit.plan.classes for c in output.classes):
+            raise ValueError("fitted class map differs from fit task")
+        boosted = fit.plan.family == "gbdt"
+        expected_combiner = (
+            (
+                "boost_softmax"
+                if len(output.classes) > 2
+                else "boost_sigmoid"
+                if classifier
+                else "boost_identity"
+            )
+            if boosted
+            else fit.plan.classification_rule
+            if classifier
+            else "mean"
+        )
+        trees = (1 if fit.plan.family == "dt" else fit.plan.estimators) * (
+            len(output.classes) if boosted and len(output.classes) > 2 else 1
+        )
+        if output.combiner != expected_combiner or len(output.trees) != trees:
+            raise ValueError("fitted ensemble layout differs from fit plan")

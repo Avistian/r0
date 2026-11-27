@@ -7,6 +7,8 @@ import torch
 
 from r0.modules.priors.lib.causal_activations import CausalActivation, activation_diagnostic
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.fitted_tree_evaluation import evaluate_fitted_tree
+from r0.modules.priors.lib.fitted_tree_records import FrozenFittedTreeFunction
 from r0.modules.priors.lib.frozen_function_composites import (
     FrozenDiscretizationFunction,
     FrozenEMFunction,
@@ -32,6 +34,7 @@ type FrozenFunction = (
     | FrozenProductFunction
     | FrozenMLPFunction
     | FrozenParentFunction
+    | FrozenFittedTreeFunction
 )
 
 _FUNCTION_TYPES = (
@@ -44,6 +47,7 @@ _FUNCTION_TYPES = (
     FrozenProductFunction,
     FrozenMLPFunction,
     FrozenParentFunction,
+    FrozenFittedTreeFunction,
 )
 _DEFAULT_LIMITS = CausalLimits()
 
@@ -63,6 +67,13 @@ def function_geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, i
             (*widths, *(w for dims, _, _ in geometries for w in dims)),
             sum(work for _, work, _ in geometries) + 8 * len(members) * function.output_width,
             max(floor for _, _, floor in geometries),
+        )
+    if type(function) is FrozenFittedTreeFunction:
+        nodes = max(len(t.features) for o in function.outputs for t in o.trees)
+        return (
+            widths,
+            16 * sum(widths) + 16 * nodes + 8 * sum(len(o.classes) for o in function.outputs),
+            0,
         )
     if type(function) is FrozenLinearFunction:
         return widths, 4 * sum(widths), 0
@@ -205,6 +216,8 @@ def _evaluate(
                 result = stacked.logsumexp(dim=1)
             else:
                 result = (stacked * inputs.new_tensor(function.weights)[None, :, None]).sum(dim=1)
+    elif type(function) is FrozenFittedTreeFunction:
+        result = evaluate_fitted_tree(function, inputs)
     elif type(function) is FrozenLinearFunction:
         result = inputs @ inputs.new_tensor(function.matrix).T
     elif type(function) is FrozenQuadraticFunction:

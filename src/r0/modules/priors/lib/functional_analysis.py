@@ -11,6 +11,7 @@ from r0.modules.priors.lib.calibrated_activations import (
 )
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.causal_moments import BOUNDED_ACTIVATIONS, activation_moment_orders
+from r0.modules.priors.lib.fitted_tree_records import FrozenFittedTreeFunction
 from r0.modules.priors.lib.frozen_function_composites import (
     FrozenDiscretizationFunction,
     FrozenEMFunction,
@@ -114,6 +115,11 @@ def function_certificates(
             reduce(_product, column) if function.aggregation == "product" else _sum(list(column))
             for column in zip(*members, strict=True)
         ]
+    if type(function) is FrozenFittedTreeFunction:
+        sources = _sum(
+            [inputs[f] for o in function.outputs for t in o.trees for f in t.features if f >= 0]
+        ).sources
+        return [ChannelCertificate(sources) for _ in function.outputs]
     if type(function) is FrozenLinearFunction:
         return [
             _sum([c for c, weight in zip(inputs, row, strict=True) if weight != 0])

@@ -5,6 +5,8 @@ from typing import Any, cast
 
 from r0.modules.priors.lib.calibrated_activations import CalibratedActivation
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.fitted_tree_decoding import decode_fitted_tree
+from r0.modules.priors.lib.fitted_tree_records import FrozenFittedTreeFunction
 from r0.modules.priors.lib.frozen_function_composites import (
     FrozenDiscretizationFunction,
     FrozenEMFunction,
@@ -23,6 +25,7 @@ from r0.modules.priors.lib.function_metadata import admit_function_metadata
 
 _DEFAULT_LIMITS = CausalLimits()
 _REGISTRY = {
+    "frozen-fitted-tree-function-v1": FrozenFittedTreeFunction,
     "frozen-linear-function-v1": FrozenLinearFunction,
     "frozen-quadratic-function-v1": FrozenQuadraticFunction,
     "frozen-oblivious-tree-function-v1": FrozenTreeFunction,
@@ -36,6 +39,7 @@ _REGISTRY = {
 _LINEAR = frozenset(("frozen-linear-function-v1",))
 _CHEAP = frozenset(_REGISTRY) - {
     "frozen-parent-function-v1",
+    "frozen-fitted-tree-function-v1",
     "frozen-em-function-v1",
     "frozen-product-function-v1",
     "frozen-mlp-function-v1",
@@ -92,6 +96,8 @@ def _decode(data: Any, allowed: frozenset[str]) -> FrozenFunction:
         raise ValueError("unsupported or recursively disallowed frozen function version")
     record_type = _REGISTRY[version]
     fields = _record(raw, record_type)
+    if record_type is FrozenFittedTreeFunction:
+        return decode_fitted_tree(fields)
     if record_type is FrozenParentFunction:
         members = frozenset(_REGISTRY) - {"frozen-parent-function-v1"}
         fields["children"] = tuple(_decode(c, members) for c in _array(fields["children"]))
