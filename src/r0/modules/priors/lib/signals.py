@@ -33,6 +33,10 @@ def evaluate_signal(
             "inputs must be finite float64 CPU/CUDA rows, 1..20000, matching task columns"
         )
     record = json.loads(task.recipe_json)
+    if record["recipe"].get("version") == "network-input-view-v1":
+        from r0.modules.priors.lib.network_input_view import network_view_from_dict, view_signal
+
+        return view_signal(network_view_from_dict(record["recipe"], limits=limits), inputs)
     if record["recipe"].get("version") == "standalone-network-v1":
         from r0.modules.priors.lib.frozen_function_evaluation import evaluate_frozen_function
         from r0.modules.priors.lib.generate import recipe_from_dict

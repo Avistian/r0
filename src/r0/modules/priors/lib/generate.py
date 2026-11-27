@@ -48,6 +48,11 @@ from r0.modules.priors.lib.native_vector_decoding import (
 )
 from r0.modules.priors.lib.native_vector_output import generate_native_vector
 from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
+from r0.modules.priors.lib.network_input_view import (
+    NetworkInputView,
+    generate_network_view,
+    network_view_from_dict,
+)
 from r0.modules.priors.lib.network_recipe import (
     NetworkRecipe,
     generate_network,
@@ -80,6 +85,7 @@ from r0.modules.priors.lib.training_task import TrainingTask
 
 type Recipe = (
     NetworkRecipe
+    | NetworkInputView
     | CausalInterventionRecipe
     | BaseRecipe
     | ConvertedCausalRecipe
@@ -137,6 +143,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
+    if version == "network-input-view-v1":
+        return network_view_from_dict(fields, limits=limits)
     if version == "standalone-network-v1":
         return network_recipe_from_dict(fields, limits=limits)
     if version == "sampled-converted-graph-v1":
@@ -316,6 +324,8 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
         return generate_sampled_converted(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, ConvertedCausalRecipe):
         return generate_converted(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, NetworkInputView):
+        return generate_network_view(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkRecipe):
         return generate_network(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, CausalInterventionRecipe):
