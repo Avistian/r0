@@ -77,3 +77,32 @@ def admit_matrix_function(
     if report["estimated_working_bytes"] > limits.working_bytes:
         raise ValueError("estimated function working memory exceeds declared limit")
     return report
+
+
+def admit_rff_function(
+    plan: JointFunctionPlan, decisions: JointSamplingRecord, limits: CausalLimits
+) -> dict[str, int]:
+    if plan.family != "gp":
+        raise ValueError("Fourier realization branch is not implemented")
+    i, o, k = plan.input_width, plan.output_width, plan.prior.frequencies
+    metadata, metadata_bytes = function_record_cost((plan, decisions), limits)
+    product = dict(plan.parameters)["product_kernel"] is True
+    raw = k * ((i if product else 1) + 1 + o)
+    if not product:
+        assert plan.weights is not None
+        raw += i * k + i * i + plan.weights.realization_parameter_count
+    frozen = k * (i + 1 + o)
+    report = limits.admit_dimensions(
+        (max(i, o),),
+        ((),),
+        rows=k,
+        calibration_rows=0,
+        features=i,
+        outputs=o,
+        extra_parameters=metadata + raw + frozen,
+        extra_working_channels=8 * i + 4 * o + 4,
+    )
+    report["estimated_working_bytes"] += metadata_bytes - 64 * metadata
+    if report["estimated_working_bytes"] > limits.working_bytes:
+        raise ValueError("estimated Fourier working memory exceeds declared limit")
+    return report

@@ -25,6 +25,7 @@ def test_joint_linear_realization_retains_the_source_output_by_input_matrix() ->
     )
     decisions = context.freeze()
     realization = priors.materialize_joint_function(plan, decisions, rng=np.random.default_rng(51))
+    assert isinstance(realization, priors.JointMatrixFunctionRealization)
     assert realization.plan == plan
     assert realization.matrix.plan == plan.matrices[0]
     assert realization.permutation == ()
@@ -65,6 +66,7 @@ def test_joint_quadratic_realization_retains_full_permutation_before_the_matrix_
         realization = priors.materialize_joint_function(
             plan, context.freeze(), rng=np.random.default_rng(53)
         )
+        assert isinstance(realization, priors.JointMatrixFunctionRealization)
         assert realization.permutation == permutation
         assert isinstance(realization.function, priors.FrozenQuadraticFunction)
         assert realization.function.indices == indices

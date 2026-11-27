@@ -16,6 +16,10 @@ from r0.modules.priors.lib.joint_matrix_realization import (
     JointMatrixRealization,
     materialize_joint_matrix,
 )
+from r0.modules.priors.lib.joint_rff_realization import (
+    JointRFFFunctionRealization,
+    materialize_joint_rff,
+)
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
 
 _DEFAULT_LIMITS = CausalLimits()
@@ -80,13 +84,15 @@ def materialize_joint_function(
     *,
     rng: np.random.Generator,
     limits: CausalLimits = _DEFAULT_LIMITS,
-) -> JointMatrixFunctionRealization:
-    """Realize linear/quadratic plans; independent fitting support is separate work."""
+) -> JointMatrixFunctionRealization | JointRFFFunctionRealization:
+    """Realize linear, quadratic and Fourier plans; fitted families follow separately."""
     if type(plan) is not JointFunctionPlan or type(decisions) is not JointSamplingRecord:
         raise ValueError("function realization requires a frozen plan and decisions")
     if type(rng) is not np.random.Generator or type(limits) is not CausalLimits:
         raise ValueError("function realization requires an injected RNG and frozen limits")
     plan.validate(decisions)
+    if plan.family == "gp":
+        return materialize_joint_rff(plan, decisions, rng=rng, limits=limits)
     admit_matrix_function(plan, decisions, limits)
     staged = copy.deepcopy(rng)
     permutation = (

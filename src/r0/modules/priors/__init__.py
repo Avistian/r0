@@ -161,6 +161,9 @@ from r0.modules.priors.lib.joint_point_plans import sample_joint_points as sampl
 from r0.modules.priors.lib.joint_point_realization import (
     materialize_joint_points as materialize_joint_points,
 )
+from r0.modules.priors.lib.joint_rff_realization import (
+    JointRFFFunctionRealization as JointRFFFunctionRealization,
+)
 from r0.modules.priors.lib.joint_root_decoding import (
     joint_root_plan_from_dict as joint_root_plan_from_dict,
 )
