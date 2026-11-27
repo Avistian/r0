@@ -1,7 +1,7 @@
 """Target-mechanism edits: matched finite rows or fresh innovations at fixed locations."""
 
 from dataclasses import asdict, dataclass
-from typing import Any, cast
+from typing import Any
 
 import numpy as np
 
@@ -70,6 +70,22 @@ def _admit_replacement(
             raise ValueError("GP comparison replacement aggregate limit exceeded")
 
 
+def _validate_controls(
+    request: GPColumnRequest, replacement: GPColumnTarget, mode: str, fresh_seed: int | None
+) -> None:
+    if (replacement.input_width, replacement.outputs) != (
+        request.columns,
+        request.outputs,
+    ):
+        raise ValueError("GP comparison replacement geometry differs")
+    if (
+        mode not in ("matched", "fresh")
+        or (mode == "matched" and fresh_seed is not None)
+        or (mode == "fresh" and (type(fresh_seed) is not int or not 0 <= fresh_seed < 2**63))
+    ):
+        raise ValueError("GP comparison requires matched draws or an explicit fresh seed")
+
+
 def compare_gp_columns(
     original: GPColumnPopulation,
     replacement: GPColumnTarget,
@@ -85,17 +101,7 @@ def compare_gp_columns(
     ):
         raise ValueError("GP comparison requires exact population and replacement target")
     _admit(original.request, limits)
-    if (replacement.input_width, replacement.outputs) != (
-        original.request.columns,
-        original.request.outputs,
-    ):
-        raise ValueError("GP comparison replacement geometry differs")
-    if (
-        mode not in ("matched", "fresh")
-        or (mode == "matched" and fresh_seed is not None)
-        or (mode == "fresh" and (type(fresh_seed) is not int or not 0 <= fresh_seed < 2**63))
-    ):
-        raise ValueError("GP comparison requires matched draws or an explicit fresh seed")
+    _validate_controls(original.request, replacement, mode, fresh_seed)
     _admit_replacement(original.request, replacement, limits)
     validate_gp_population(original, limits=limits)
     draw = original.draw
@@ -138,25 +144,27 @@ def compare_gp_columns(
 def gp_column_comparison_from_dict(
     data: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
 ) -> GPColumnComparison:
-    from r0.modules.priors.lib.gp_column_decoding import gp_column_request_from_dict
+    from r0.modules.priors.lib.gp_column_decoding import gp_population_metadata
+    from r0.modules.priors.lib.gp_column_metadata import (
+        gp_draw_metadata,
+        gp_matrix_metadata,
+        gp_target_metadata,
+        gp_vector_metadata,
+    )
 
     admit_function_metadata(data, limits)
     raw = gp_fields(data, GPColumnComparison)
-    if type(raw["original"]) is not dict:
-        raise ValueError("GP comparison original must be an object")
-    request = gp_column_request_from_dict(
-        cast(dict[str, Any], raw["original"]).get("request"), limits=limits
-    )
+    request = gp_population_metadata(raw["original"], limits=limits)
     _admit(request, limits)
-    target = gp_fields(raw["replacement"], GPColumnTarget)
-    for key in ("weights", "hidden"):
-        target[key] = tuple(tuple(row) for row in target[key])
-    for key in ("bias", "hidden_bias"):
-        target[key] = tuple(target[key])
-    target["quadratic"] = tuple(
-        tuple(tuple(row) for row in matrix) for matrix in target["quadratic"]
-    )
-    replacement = GPColumnTarget(**target)
+    replacement = gp_target_metadata(raw["replacement"])
+    _validate_controls(request, replacement, raw["mode"], raw["fresh_seed"])
+    gp_draw_metadata(raw["draw"], request)
+    for key in ("centers", "scales"):
+        gp_vector_metadata(raw[key], request.outputs)
+    if any(v <= 0 for v in raw["scales"]):
+        raise ValueError("GP comparison scales differ from replay")
+    for key in ("original_scores", "replacement_raw", "replacement_scores"):
+        gp_matrix_metadata(raw[key], request.rows, request.outputs)
     _admit_replacement(request, replacement, limits)
     expected = compare_gp_columns(
         gp_column_population_from_dict(raw["original"], limits=limits),

@@ -109,3 +109,32 @@ Feature selection and production filtering remain #30. Row-axis convolution,
 VAR and temporal mechanisms remain #39; exchangeable finite GP row covariance
 does not establish temporal-model coverage. No downstream utility or full-prior
 reproduction claim is made.
+
+## Outer-envelope preflight repair
+
+Independent review of `db5140b` retained **REJECT**: malformed task rows,
+comparison mode or replacement width caused four RNG initializations before
+rejection. Its separate 24-case numerical check passed; numerical agreement did
+not remove that admission defect. The original review packet remains unchanged
+in the rejected worktree's ignored `docs/evidence/issue-28-gp-independent/`.
+
+The repair validates explicit outer schema/version, task controls and adapter
+geometry, comparison mode/fresh identity and replacement dimensions before
+population replay. Both direct comparisons and comparison decoding use the same
+control validator. Pure metadata checks also validate original population identity,
+row IDs, target dimensions, draw/kernel schema and retained matrix/vector shapes.
+A request-only recipe validates adapter compatibility before replacing its source
+with a replayed population. Numerical constructors and sampled laws are unchanged.
+
+The expanded public RED exposed 16 failures among 20 malformed-envelope cases;
+all 20 now reject with zero RNG initializations. The original outside-test probe,
+changed only to expect zero invalid-case calls and write into the repair directory,
+passes. The independent numerical script was rerun unchanged by the repair author:
+24 cases pass. Eighteen valid artifact groups spanning three target families,
+three task types, shared/per-column kernels and both matched/fresh comparisons
+are byte-identical before and after repair (canonical JSON SHA-256
+`ea8a6f2af14e89851f96c420bdcb67d8df201725571d555316b5740de9105a9c`).
+Fifty focused tests pass. Evidence is retained under ignored
+`docs/evidence/issue-28-gp-envelope-preflight/`. Fresh independent repair review is
+still required; no full suite, browser, Colab or GPU run was performed here.
+Hybrid integration and whole-workbench delivery remain required follow-on work.
