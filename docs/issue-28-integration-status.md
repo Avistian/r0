@@ -7,18 +7,20 @@ scientific acceptance or whole-issue completion.
 
 ## Latest verified publication checkpoint
 
-Source `66a09ee61c9760009d5a1bb0a9291b5979f6bc9f` passed full `make check`:
-2,322 passed, one skipped, one warning in 1,144.64 seconds; all static gates passed.
+Source `a65fbb9f5180fbd2b570399880d7c9f6b2369d8e` passed full `make check`:
+2,428 passed, one skipped, one warning in 1,250.47 seconds; static gates passed.
 The warning is sklearn's high-class-count diagnostic in the observed-class-map
-fixture. This checkpoint adds fitted parameter laws, seven typed converter modes
-and bounded CPU measurements to the earlier vector/network/innovation work.
+fixture. This checkpoint adds explicit fitted-population lifecycles, composed
+parameter/lifecycle sampling and repaired typed-converter workflows.
+See the [population/converter checkpoint](issue-28-population-converter-checkpoint.md)
+for source qualifications, independent checks and retained rejection history.
 
 The [atomic delivery map](issue-28-atomic-delivery.md) separates mapped behavior
 from unaudited requirements. Hosted/GPU, complete measured envelopes and full
 paper-option coverage remain open. Smoke/eval-smoke remain NOT_AVAILABLE because
-training/evaluation CLI commands are absent. Later population lifecycles,
-composed parameter/lifecycle sampling, typed-converter workflows and network
-input views are outside this full-suite result.
+training/evaluation CLI commands are absent. Network input views, variance
+matching, their save-guard repairs and neural hyperprior profiles are later
+candidates outside this full-suite result.
 
 ## Combined checkpoint scoped evidence
 
@@ -148,8 +150,9 @@ or intervention integrations; see the current checkpoint descriptions above. See
 
 Source `66a09ee` adds reviewed fitted parameter laws, the typed converter library
 and reproducible CPU measurements to the [vector/network checkpoint](issue-28-vector-network-checkpoint.md).
-Later population lifecycles, composed lifecycle sampling, typed converter explorer
-and intervention workflows, and network input views remain separate candidates.
+At this historical checkpoint, later population and converter workflows were
+outside its result; they now have the separate checkpoint linked above. Network
+input views remain a later candidate.
 
 - Fitted parameters: `fe66402` passed independent NumPy law/final-state checks,
   reconstructed sklearn predictions, classifier-rule oracles, malformed record
@@ -162,8 +165,8 @@ and intervention workflows, and network input views remain separate candidates.
   found an incompatible trace header; `55613ac` restores the shared envelope.
   Independent continuation passed all seven modes' arithmetic, raw replay,
   calibration/ancestral fits, tamper/rollback and four authored/sampled trace cases.
-  Original failures remain retained. Explorer/intervention candidate C has its
-  own pending review and is outside this full-suite result.
+  Original failures remain retained. Repaired explorer/intervention candidate C
+  is qualified separately by the later population/converter checkpoint.
 - [CPU measurements](issue-28-network-resource-measurements.md) cover nine fixed
   cases, including 20,000 rows with eight features and 256 features with 16 rows.
   All passed generation, archive round-trip and regeneration; independent review

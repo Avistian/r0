@@ -57,11 +57,11 @@ mobile rendering. Hosted Colab remains NOT_RUN.
 | A1.structure.07 | `NativeGraphRequest`, `NativeCausalRecipe` softmax emission | SCOPED; actual integer categories, one-hot descendants and typed saved tasks; not complete TabAbax prior reproduction. |
 | A1.structure.09 | `NativeDomainPrior` symmetric Dirichlet frequency weights | PARTIAL; symmetric and explicit asymmetric concentration vectors retain Gamma draws and logit offsets, not guaranteed marginal category frequencies; full source-law reproduction remains open. |
 | K1.structure.16 | Native argmax emission | SCOPED; deterministic first-class tie policy; complete Kumo prior is not reproduced. |
-| M1.tree.05 | `FittedTreePlan(family="gbdt", task="classification")` | PARTIAL; frozen synthetic fitted classifier exists; source-specific mixed fit populations/lifecycles remain open. |
+| M1.tree.05 | `FittedTreePlan(family="gbdt", task="classification")` | PARTIAL; frozen synthetic fitted classifier exists; explicit mixed-independent and support/batch lifecycles exist; source/backend equivalence remains open. |
 | M1.tree.06 | `FittedTreePlan(family="gbdt", task="regression")` | PARTIAL; frozen synthetic fitted regressor exists; source-specific fitting laws remain open. |
 | I1.function.07 | XGBoost multi-output fitted-noise layer | PENDING; sklearn GBDT is not a substitute. |
 | I1.code.09 | XGBoost histogram multi-output regressor | PENDING; no backend implementation or comparison. |
-| OP.function.02 | Fitted XGBoost structural regressor | PENDING; support-only fitting lifecycle also remains separate. |
+| OP.function.02 | Fitted XGBoost structural regressor | PENDING; support-only lifecycle exists for the implemented sklearn backends; XGBoost is not substituted. |
 
 Native contracts and limitations are documented in
 [sampled native graphs](sampled-native-graphs.md). Public fitted-tree exports,
@@ -105,8 +105,9 @@ Stochastic assignments and further component-level variants remain required.
 The [typed converter contract](issue-28-categorical-converters.md) retains named
 category captures separately from descendant representation. All entries below
 are PARTIAL: authored/sampled generation, replay and original-row traces have
-bounded independent acceptance; explorer/Colab and intervention workflows are
-separate candidates. Shared primitives do not establish complete I2 reproduction.
+bounded independent acceptance, including local explorer and intervention
+workflows at repaired `487c6df`. Hosted Colab remains unverified. Shared primitives
+do not establish complete I2 reproduction.
 
 | Inventory ID | Mode | State |
 | --- | --- | --- |
@@ -119,7 +120,8 @@ separate candidates. Shared primitives do not establish complete I2 reproduction
 | I2.category.07 | softmax_int | PARTIAL; sampled integer representation. |
 
 Nested post-function admission and shared trace-header defects have separately
-reviewed repairs; original rejection evidence remains retained. Source selectors,
+reviewed repairs, including the capture-only stochastic-uniform dependency;
+original rejection evidence remains retained. Source selectors,
 every composition and unlisted category IDs are not closed by this table.
 
 ## Explicit next gaps
@@ -128,12 +130,13 @@ every composition and unlisted category IDs are not closed by this table.
 required:** broad families, configurable laws, combinations and across-seed
 structural/functional diversity. Preset counts do not substitute for those requirements.
 
-Checkpoint `66a09ee` includes fitted parameter laws and the typed converter
-library alongside earlier networks, native vectors, interventions and innovations.
-Full check passed 2,322 tests, one skip and one warning. Later population lifecycles,
-sampled-lifecycle combinations, typed converter workflows and network input views
-remain separate candidates. Source-specific neural/noise/root profiles, XGBoost
-and all unimplemented inventory options remain required.
+Checkpoint `a65fbb9` adds explicit fitted population lifecycles, sampled-parameter
+composition and repaired typed-converter workflows. Full check passed 2,428 tests,
+one skip and one warning; see the
+[qualified checkpoint](issue-28-population-converter-checkpoint.md).
+Network input views and their matching/save guards remain later candidates.
+Source-specific neural/noise/root profiles, XGBoost and every unimplemented
+inventory option remain required.
 
 Nine bounded CPU cases have measurements; this does not establish maximal
 combinations, sustained throughput, hosted/GPU or scientific acceptance. Original
