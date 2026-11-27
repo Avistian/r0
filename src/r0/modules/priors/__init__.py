@@ -185,6 +185,12 @@ from r0.modules.priors.lib.joint_root_decoding import (
 from r0.modules.priors.lib.joint_root_plans import JointRootPlan as JointRootPlan
 from r0.modules.priors.lib.joint_root_plans import JointRootPrior as JointRootPrior
 from r0.modules.priors.lib.joint_root_plans import sample_joint_root as sample_joint_root
+from r0.modules.priors.lib.joint_root_realization import (
+    JointRootRealization as JointRootRealization,
+)
+from r0.modules.priors.lib.joint_root_realization import (
+    materialize_joint_root as materialize_joint_root,
+)
 from r0.modules.priors.lib.joint_sampling import JointSamplingContext as JointSamplingContext
 from r0.modules.priors.lib.joint_sampling_records import JointDecision as JointDecision
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord as JointSamplingRecord

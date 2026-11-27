@@ -228,6 +228,16 @@ def admit_frozen_function(
     )
 
 
+def evaluate_admitted_function(function: FrozenFunction, inputs: torch.Tensor) -> torch.Tensor:
+    """Evaluate validated finite float64 rows after enclosing aggregate admission.
+
+    Root fitting needs the same arithmetic while charging retained construction,
+    calibration and evaluation buffers together. Public standalone calls must
+    continue through evaluate_frozen_function and its own input/admission checks.
+    """
+    return _evaluate(function, inputs)
+
+
 def evaluate_frozen_function(
     function: FrozenFunction,
     inputs: torch.Tensor,
@@ -247,4 +257,4 @@ def evaluate_frozen_function(
     admit_frozen_function(function, len(inputs), limits)
     if not torch.isfinite(inputs).all():
         raise ValueError("function inputs must be finite")
-    return _evaluate(function, inputs.to(dtype=torch.float64))
+    return evaluate_admitted_function(function, inputs.to(dtype=torch.float64))
