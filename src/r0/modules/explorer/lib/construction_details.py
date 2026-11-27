@@ -4,17 +4,24 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
-    if recipe.get("version") == "sampled-intervention-policy-v1":
+    if recipe.get("version") in (
+        "sampled-intervention-policy-v1",
+        "sampled-typed-intervention-policy-v1",
+    ):
         request = recipe["request"]
         return {
             "kind": "sampled-intervention-policy",
             "profile": request["profile"],
+            "locations": request.get("locations", []),
+            "retained_base_version": request["base"]["version"],
             "selected": recipe["selected"],
             "bounds": recipe["bounds"],
             "parameter_laws": request["parameter_laws"],
             "bounds_lifecycle": request["bounds_lifecycle"]
-            if request["kind"] == "hard"
-            else "not-used-soft",
+            if recipe["bounds"]
+            else "not-used-soft"
+            if request["kind"] == "soft"
+            else "not-used",
             "mode": request["mode"],
             "population": request["population"],
             "policy_raw_draw_count": len(recipe["raw"]),

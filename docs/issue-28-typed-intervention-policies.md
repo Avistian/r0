@@ -60,6 +60,37 @@ Typed receipts have a new version; scalar v1 policy archives remain unchanged.
 
 Task generation, exact recipe decode, before/after comparison and pair persistence,
 semantic metadata verification and repeated-row inspection are library seams.
-The typed workbench/local notebook integration remains required after independent
-core review. No hosted, full-suite or complete #28 acceptance follows from this
-slice.
+The local explorer and shared callback now route typed policy drafts through the
+bounded pair worker. `typed_intervention_policy_request_from_dict` performs full
+metadata admission and complete outer request semantics before replaying the retained
+original envelope. A validation-only authored graph uses retained source laws,
+calibration, prototype banks, equation geometry, domains and converters. It never
+replaces the stored base; soft parameter paths are checked against the original
+full function metadata, including sampled convolution custody. The runtime
+constructor and this preflight share the same semantic validator. The typed
+profile exposes native logical variables, numerical state/readout locations,
+converter captures, declared category probabilities, all four parameter laws,
+reference lifecycles, population coupling and exact decimal stream identities.
+Editable JSON retains the broader eligibility/count/fraction and multi-address
+options. Existing authored/sampled native, vector, converter, parent-composition,
+fixed fitted-tree and XGBoost construction catalogs remain selectable as originals.
+TAFFY controls retain their narrower source restrictions.
+
+Policy creation preserves the active original and any previous comparison on
+invalid requests or worker timeout. Original-row comparison traces, including
+construction draws with global scope, support repeated row indices. Saved pair
+reopening and ZIP export retain both complete recipes. Opening the policy result
+as active supports frozen Next, replay, ordinary task ZIP export and guarded
+inspection; it does not resample policy values. To edit policy settings, reopen
+the original before.zip and save another comparison. Direct mechanism editing of
+a realized policy envelope and intervention-aware reference curves remain explicit
+required follow-ons; those controls are unavailable rather than stripping policy
+custody. Hosted Colab, full-suite and complete #28 acceptance are not claimed.
+
+## Receipt-envelope admission repair
+
+Independent review of `0b7aaa4b2229174919d8480c888fcf5ca16f4180` found a separate receipt-envelope defect: replacing only the outer initial-snapshot array with an empty array replayed eight sampled-source snapshots before rejection. The historical REJECT remains retained. Earlier request-field admission and numerical acceptance, and the independent 35-stage Chromium workflow, remain qualified evidence rather than complete archive admission acceptance.
+
+Receipt decode now validates snapshot cardinalities and headers, complete raw-record schemas and value shapes, stream/state chains, selection membership/count/permutation, reference identity/lifecycle, bound address/width/order/finiteness, and runtime original-base/comparison/address consistency before replaying the request. Snapshot metadata checks are shared with actual restoration; raw records use their existing strict constructor; request metadata and runtime previews use the same validators as live records. Numerical construction replay still verifies snapshot state/digests, sampled values and reference extrema afterward. The temporary preview never replaces retained sampled or fitted originals, and existing aggregate admission runs before it.
+
+The bounded repair packet is ignored `docs/evidence/issue-28-typed-receipt-preflight/`: public malformed-envelope RED/GREEN, the original outside-test zero-restore probe, focused checks and complete valid policy/pair artifact comparisons. Independent repair acceptance remains a separate gate. No new browser run, full suite, hosted execution or whole-issue acceptance is claimed by this repair.

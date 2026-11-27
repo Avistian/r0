@@ -25,8 +25,16 @@ window.r0request = async (action, data) => {
         .replace("/* CURVES */", (assets / "curves.js").read_text())
         .replace("/* GRAPHS */", (assets / "graphs.js").read_text())
         .replace("/* PAIRS */", (assets / "pairs.js").read_text())
-        .replace("<!-- INTERVENTIONS -->", (assets / "interventions.html").read_text())
-        .replace("/* INTERVENTIONS */", (assets / "interventions.js").read_text())
+        .replace(
+            "<!-- INTERVENTIONS -->",
+            (assets / "interventions.html")
+            .read_text()
+            .replace("<!-- TYPED_POLICY_FIELDS -->", (assets / "typed-policies.html").read_text()),
+        )
+        .replace(
+            "/* INTERVENTIONS */",
+            (assets / "interventions.js").read_text() + (assets / "typed-policies.js").read_text(),
+        )
         .replace(
             "<!-- NETWORK CONTROLS -->",
             (assets / "network_controls.html").read_text()

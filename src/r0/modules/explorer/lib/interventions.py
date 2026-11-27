@@ -31,6 +31,7 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
         "standalone-network-innovations-v1",
         "functional-causal-v2",
         "fitted-functional-causal-v1",
+        "xgboost-fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
         "population-fitted-functional-causal-v1",
         "sampled-population-fitted-functional-causal-v1",
@@ -70,6 +71,8 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
         "vector": vector,
         "converted": converted,
         "version": version,
+        "target": runtime["target"],
+        "observed": runtime["observed"],
         "notice": (
             "Original construction and fit archives remain unchanged. "
             "Interventions use frozen calibration. CPU only; partial coupled mechanisms "

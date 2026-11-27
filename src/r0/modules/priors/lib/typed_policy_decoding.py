@@ -7,12 +7,10 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
 from r0.modules.priors.lib.intervention_policy_decoding import complete_record
-from r0.modules.priors.lib.intervention_policy_laws import InterventionParameterLaw
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
 from r0.modules.priors.lib.raw_draw_spec import RawDrawSpec
 from r0.modules.priors.lib.sampled_graph_decoding import construction_matches
-from r0.modules.priors.lib.typed_policy_locations import InterventionPolicyLocation
 from r0.modules.priors.lib.typed_policy_records import SampledTypedInterventionPolicy
 from r0.modules.priors.lib.typed_policy_request import TypedInterventionPolicyRequest
 
@@ -29,9 +27,9 @@ def restore_typed_base(raw: dict[str, Any]):
 
 
 def typed_policy_from_dict(data: Any, *, limits: CausalLimits) -> SampledTypedInterventionPolicy:
-    from r0.modules.priors.lib.generate import recipe_from_dict
-    from r0.modules.priors.lib.typed_policy_admission import admit_typed_policy
-    from r0.modules.priors.lib.typed_policy_planning import admit_typed_record
+    from r0.modules.priors.lib.typed_policy_request_decoding import (
+        typed_intervention_policy_request_from_dict,
+    )
     from r0.modules.priors.lib.typed_policy_sampling import sample_typed_intervention_policy
 
     admit_function_metadata(data, limits)
@@ -87,34 +85,10 @@ def typed_policy_from_dict(data: Any, *, limits: CausalLimits) -> SampledTypedIn
         reserved = 6 * raw_limits.state_bytes + retained
         if reserved > bounded_raw.working_bytes:
             raise ValueError("typed policy raw/snapshot reservation exceeds caller limits")
-        admit_typed_record(request, effective)
-        recipe_from_dict(request["base"], limits=effective)
-        request["base"] = restore_typed_base(request["base"])
-        request["limits"], request["raw_limits"] = declared, raw_limits
-        for key in ("label_nodes", "eligibility", "locations", "parameter_laws"):
-            if type(request[key]) not in (list, tuple):
-                raise ValueError("typed policy fields require arrays")
-            request[key] = tuple(request[key])
-        locations: list[InterventionPolicyLocation] = []
-        for item in request["locations"]:
-            address = complete_record(item, InterventionPolicyLocation)
-            for key in ("channels", "probabilities"):
-                if type(address[key]) not in (list, tuple):
-                    raise ValueError("typed location fields require arrays")
-                address[key] = tuple(address[key])
-            locations.append(InterventionPolicyLocation(**address))
-        request["locations"] = tuple(locations)
-        laws: list[InterventionParameterLaw] = []
-        for item in request["parameter_laws"]:
-            law = complete_record(item, InterventionParameterLaw)
-            for key in ("path", "choices"):
-                if type(law[key]) not in (list, tuple):
-                    raise ValueError("typed law fields require arrays")
-                law[key] = tuple(law[key])
-            laws.append(InterventionParameterLaw(**law))
-        request["parameter_laws"] = tuple(laws)
-        typed = TypedInterventionPolicyRequest(**request)
-        admit_typed_policy(replace(typed, limits=effective))
+        from r0.modules.priors.lib.typed_receipt_preflight import preflight_typed_receipt
+
+        preflight_typed_receipt(raw, limits=effective)
+        typed = typed_intervention_policy_request_from_dict(request, limits=effective)
         if type(raw["initial"]) not in (list, tuple) or len(raw["initial"]) != 3:
             raise ValueError("typed policy requires three initial snapshots")
         streams = [

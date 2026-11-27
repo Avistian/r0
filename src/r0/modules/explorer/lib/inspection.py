@@ -130,12 +130,16 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         view["target_origin"] = task.target_origin
         native = record["recipe"]
         view["native_construction"] = native["version"]
+        native_record = record
+        if native["version"] == "sampled-typed-intervention-policy-v1":
+            native = native["runtime"]
+            native_record = {**record, "recipe": native}
         if native["version"] == "causal-intervention-v1":
             native = native["base"]
         if native["version"] in ("converted-causal-v1", "sampled-converted-graph-v1"):
             from r0.modules.explorer.lib.converted import converted_target_view
 
-            view.update(converted_target_view(record))
+            view.update(converted_target_view(native_record))
         else:
             if native["version"] in ("sampled-native-graph-v1", "sampled-native-vector-graph-v1"):
                 native = native["recipe"]
