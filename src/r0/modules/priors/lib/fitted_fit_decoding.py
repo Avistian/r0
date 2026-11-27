@@ -14,7 +14,7 @@ from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
 from r0.modules.priors.lib.raw_draw_records import RawDrawRecord
 
 
-def _raw(data: Any) -> RawDrawRecord:
+def decode_fitted_raw_draw(data: Any) -> RawDrawRecord:
     values = fitted_object(data, RawDrawRecord)
     for key in ("owner", "shape", "values"):
         values[key] = fitted_array(values.get(key), 1048576)
@@ -42,9 +42,13 @@ def decode_node_fit(data: Any) -> FittedNodeFit:
             GeneratorSnapshot(**fitted_object(v, GeneratorSnapshot))
             for v in fitted_array(fit.get(key), 3)
         )
-    fit["raw_draws"] = tuple(_raw(v) for v in fitted_array(fit.get("raw_draws"), 3))
+    fit["raw_draws"] = tuple(
+        decode_fitted_raw_draw(v) for v in fitted_array(fit.get("raw_draws"), 3)
+    )
     node["realization"] = FittedTreeRealization(**fit)
     for key in ("prefix_initial", "prefix_final"):
         node[key] = GeneratorSnapshot(**fitted_object(node.get(key), GeneratorSnapshot))
-    node["prefix_draws"] = tuple(_raw(v) for v in fitted_array(node.get("prefix_draws"), 65536))
+    node["prefix_draws"] = tuple(
+        decode_fitted_raw_draw(v) for v in fitted_array(node.get("prefix_draws"), 65536)
+    )
     return FittedNodeFit(**node)

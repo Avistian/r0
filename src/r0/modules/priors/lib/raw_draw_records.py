@@ -77,6 +77,7 @@ def draw_arguments(
         "uniform": {"low", "high"},
         "student_t": {"df"},
         "gamma": {"concentration"},
+        "exponential": {"scale"},
         "integers": {"high"},
         "permutation": {"count"},
         "choice": {"count", "probabilities"},
@@ -91,6 +92,8 @@ def draw_arguments(
         raise ValueError("raw uniform bounds must be finite and ordered")
     if distribution == "student_t" and (not finite_number(args["df"]) or args["df"] <= 0):
         raise ValueError("raw Student-t degrees must be positive and finite")
+    if distribution == "exponential" and (not finite_number(args["scale"]) or args["scale"] <= 0):
+        raise ValueError("raw exponential scale must be finite and positive")
     if distribution == "gamma" and (
         not finite_number(args["concentration"]) or args["concentration"] <= 0
     ):
@@ -131,6 +134,8 @@ def numpy_draw(
         values = rng.uniform(args["low"], args["high"], size=shape)
     elif distribution == "student_t":
         values = rng.standard_t(args["df"], size=shape)
+    elif distribution == "exponential":
+        values = rng.exponential(args["scale"], size=shape)
     elif distribution == "gamma":
         values = rng.gamma(args["concentration"], size=shape)
     elif distribution == "integers":

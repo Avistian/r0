@@ -10,6 +10,7 @@ from r0.modules import priors
 from r0.modules.generation.lib.fitted_construction import construct_fitted
 from r0.modules.generation.lib.native_construction import construct_native
 from r0.modules.generation.lib.network_construction import construct_network
+from r0.modules.generation.lib.sampled_fitted_construction import construct_sampled_fitted
 
 
 def _tuples(value: Any) -> Any:
@@ -32,6 +33,8 @@ def construct_graph(
         return construct_network(
             fields, seed=seed, limits=limits, authored=topology == "network-authored"
         )
+    if topology == "sampled-fitted":
+        return construct_sampled_fitted(fields, seed=seed, limits=limits)
     if topology == "fitted":
         return construct_fitted(fields, seed=seed, limits=limits)
     if topology == "sampled-native-vector":
@@ -141,7 +144,7 @@ class GraphConstruction:
     def task_record(self) -> dict[str, Any]:
         """Return preconstruction row geometry; sampled native target type is not yet known."""
         controls = json.loads(self.controls_json)
-        if controls.get("topology") == "fitted":
+        if controls.get("topology") in ("fitted", "sampled-fitted"):
             return controls["skeleton"]["task"]
         if controls.get("topology") not in ("sampled-native", "sampled-native-vector"):
             return controls["task"]

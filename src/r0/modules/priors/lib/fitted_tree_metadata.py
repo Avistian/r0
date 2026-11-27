@@ -2,6 +2,12 @@
 
 
 def fitted_card(version: str) -> dict[str, str]:
+    if version == "sampled-fitted-functional-causal-v1":
+        return {
+            **fitted_card("fitted-functional-causal-v1"),
+            "construction": "sampled-parameters-independent-fitted-trees-v1",
+            "sampling_provenance": "parameter-laws-raw-custody-and-independent-fit-v1",
+        }
     if version != "fitted-functional-causal-v1":
         return {}
     return {

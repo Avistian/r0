@@ -79,4 +79,6 @@ def fitted_examples() -> dict[str, Any]:
                 for index, width in ((1, 2), (2, 3))
             ],
         }
-    return result
+    from r0.modules.explorer.lib.fitted_parameter_examples import fitted_parameter_examples
+
+    return {**result, **fitted_parameter_examples(result)}

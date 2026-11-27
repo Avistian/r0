@@ -132,10 +132,14 @@ def functional_recipe_from_dict(
         raise ValueError("functional graph records must be objects")
     from r0.modules.priors.lib.fitted_fit_decoding import decode_node_fit
     from r0.modules.priors.lib.fitted_graph import FittedFunctionalCausalRecipe
+    from r0.modules.priors.lib.fitted_parameter_decoding import sampled_fitted_plan_from_dict
+    from r0.modules.priors.lib.sampled_fitted_graph import SampledFittedFunctionalCausalRecipe
 
     try:
         kind = (
-            FittedFunctionalCausalRecipe
+            SampledFittedFunctionalCausalRecipe
+            if data.get("version") == "sampled-fitted-functional-causal-v1"
+            else FittedFunctionalCausalRecipe
             if data.get("version") == "fitted-functional-causal-v1"
             else CalibratedFunctionalCausalRecipe
             if data.get("version") == "functional-causal-v2"
@@ -164,9 +168,15 @@ def functional_recipe_from_dict(
         for key in ("observed", "target"):
             fields[key] = tuple(functional_array(ref) for ref in functional_array(fields[key]))
         fields["limits"] = effective
-        if kind is FittedFunctionalCausalRecipe:
+        if issubclass(kind, FittedFunctionalCausalRecipe):
             fields["fits"] = tuple(
                 decode_node_fit(f) for f in functional_array(fields.get("fits", ()))
+            )
+        if kind is SampledFittedFunctionalCausalRecipe:
+            fields["parameter_samples"] = tuple(
+                (pair[0], sampled_fitted_plan_from_dict(pair[1], limits=effective))
+                for pair in functional_array(fields.get("parameter_samples", ()))
+                if _parameter_pair(pair)
             )
         return kind(**fields)
     except (TypeError, KeyError) as error:
@@ -195,3 +205,10 @@ def functional_node_from_dict(raw: Any) -> FunctionalCausalNode:
     if node.get("pipeline") is not None:
         node["pipeline"] = functional_pipeline(node["pipeline"])
     return FunctionalCausalNode(**node)
+
+
+def _parameter_pair(pair: Any) -> bool:
+    entry = functional_array(pair)
+    if len(entry) != 2 or type(entry[0]) is not int:
+        raise ValueError("sampled fitted parameter bindings require node/sample pairs")
+    return True

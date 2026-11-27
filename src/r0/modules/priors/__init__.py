@@ -94,6 +94,7 @@ from .lib.fitted_function_api import NetworkRecipe as NetworkRecipe
 from .lib.fitted_function_api import NetworkSamplingRequest as NetworkSamplingRequest
 from .lib.fitted_function_api import SampledNetwork as SampledNetwork
 from .lib.fitted_function_api import sample_network as sample_network
+from .lib.fitted_parameter_api import *  # noqa: F403
 from .lib.fixture import SourceTask as SourceTask
 from .lib.fixture import sample_fixture as sample_fixture
 from .lib.fourier import FourierRecipe as FourierRecipe

@@ -8,7 +8,10 @@ def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
         from r0.modules.explorer.lib.networks import network_details
 
         return network_details(recipe)
-    if recipe.get("version") == "fitted-functional-causal-v1":
+    if recipe.get("version") in (
+        "fitted-functional-causal-v1",
+        "sampled-fitted-functional-causal-v1",
+    ):
         return {
             "kind": "independent-fitted-trees",
             "notice": (
@@ -30,6 +33,25 @@ def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
                     "combiners": [o["combiner"] for o in fit["realization"]["function"]["outputs"]],
                 }
                 for fit in recipe["fits"]
+            ],
+            "parameter_samples": [
+                {
+                    "node": node,
+                    "profile": sample["prior"]["profile"],
+                    "source": sample["source"],
+                    "actual_plan": sample["plan"],
+                    "laws": sample["prior"]["laws"],
+                    "pinned_formula": (
+                        "depth=min(4,2+floor(Exp(scale=2))); count=min(4,1+floor(Exp(scale=2)))"
+                        if sample["prior"]["profile"] == "tabicl-pinned-depth-count-v1"
+                        else None
+                    ),
+                    "backend_semantics": sample["backend_semantics"],
+                    "lifecycle": sample["lifecycle"],
+                    "unused_parameters": sample["unused_parameters"],
+                    "raw_draw_count": len(sample["raw"]),
+                }
+                for node, sample in recipe.get("parameter_samples", [])
             ],
             "backend_randomness": "seeds/version retained; internal backend draws not captured",
         }

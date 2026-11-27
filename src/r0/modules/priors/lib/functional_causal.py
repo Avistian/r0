@@ -28,10 +28,16 @@ class FunctionalCausalRecipe:
     def __post_init__(self) -> None:
         if (
             self.version
-            not in ("functional-causal-v1", "functional-causal-v2", "fitted-functional-causal-v1")
+            not in (
+                "functional-causal-v1",
+                "functional-causal-v2",
+                "fitted-functional-causal-v1",
+                "sampled-fitted-functional-causal-v1",
+            )
             or self.version == "functional-causal-v2"
             and not self.target_calibration_rows
-            or self.version == "fitted-functional-causal-v1"
+            or self.version
+            in ("fitted-functional-causal-v1", "sampled-fitted-functional-causal-v1")
             and not getattr(self, "fits", ())
             or type(self.task) is not LinearRecipe
         ):

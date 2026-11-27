@@ -49,7 +49,10 @@ class FittedFunctionalCausalRecipe(FunctionalCausalRecipe):
     def __post_init__(self) -> None:
         FunctionalCausalRecipe.__post_init__(self)
         if (
-            self.version != "fitted-functional-causal-v1"
+            self.version
+            not in ("fitted-functional-causal-v1", "sampled-fitted-functional-causal-v1")
+            or self.version == "sampled-fitted-functional-causal-v1"
+            and not getattr(self, "parameter_samples", ())
             or type(self.fits) is not tuple
             or not self.fits
             or any(type(f) is not FittedNodeFit for f in self.fits)

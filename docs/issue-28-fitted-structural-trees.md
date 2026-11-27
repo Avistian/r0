@@ -137,7 +137,7 @@ memory measurements. Broader bounds, GPU, browser and Colab evidence remain
 | XGBoost `hist` joint vector-leaf structural fit | **PENDING**. Package absent; no new dependency authorized. sklearn GBDT is not this algorithm. |
 | Faithful XGBoost path | Once dependency authority exists, fit the pinned CPU `hist`/`multi_output_tree` model, export shared vector leaves, base score and additive objective/link; compare JSON exporter against backend on boundaries, missing routes and vectors. No such backend comparison has run. |
 | Clean-room histogram boosting alternative | Would be a separately named mathematical adaptation needing histogram/gradient/Hessian/split-gain and vector-leaf oracle evidence. Not implemented or claimed equivalent. |
-| TabICL capped exponential depth/count law and graph overrides | Exact reference remains inventoried; this plan uses explicit caller settings, not those joint samplers. |
+| TabICL capped exponential depth/count law and graph overrides | [Recorded parameter profiles](issue-28-fitted-parameter-laws.md) implement the pinned two laws with explicit backend/lifecycle adaptation labels. Graph overrides and full source sampler remain required. |
 | TabICL batch refit on actual parent rows | Reference mode remains required; default here intentionally fits independent rows once. No full TabICL reproduction claim. |
 | O'Prior support-only fitting | Distinct lifecycle, still required; independent rows are not support rows. |
 | Mitra mixed categorical/Gaussian synthetic fit population | Still required; this slice's standalone input law is Gaussian. Published missing parameters remain UNKNOWN. |
