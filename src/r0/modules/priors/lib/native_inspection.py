@@ -15,7 +15,9 @@ from r0.modules.priors.lib.kumo_product_inspection import kumo_product_steps
 from r0.modules.priors.lib.native_decoding import native_recipe_from_dict
 from r0.modules.priors.lib.native_evaluation import evaluate_native_graph, native_rng
 from r0.modules.priors.lib.native_graph_decoding import native_graph_from_dict
+from r0.modules.priors.lib.network_inspection import network_steps
 from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
+from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -46,7 +48,7 @@ def native_steps(
                 f"{node.equation.function.aggregation}(ordered encoded parent members)"
                 " + structural noise"
             )
-        if isinstance(node.equation.function, FrozenKumoProductFunction):
+        if isinstance(node.equation.function, (FrozenKumoProductFunction, FrozenNetworkFunction)):
             if node.equation.parents:
                 inputs = torch.cat([result.states[p] for p in node.equation.parents], dim=1)
             else:
@@ -68,15 +70,28 @@ def native_steps(
                     inputs[selection],
                     asdict(node.equation.root),
                 )
-            parents = kumo_product_steps(
-                node.equation.function,
-                inputs,
-                prefix=f"kumo-product-{i}",
-                parents=parents,
-                indices=indices,
-                add=add,
-            )
-            equation = "f_left(same encoded input) * f_right(same encoded input) + structural noise"
+            if isinstance(node.equation.function, FrozenNetworkFunction):
+                parents = network_steps(
+                    node.equation.function,
+                    inputs,
+                    prefix=f"network-{i}",
+                    indices=indices,
+                    add=add,
+                    input_parents=parents,
+                )
+                equation = "frozen network(encoded parents) + structural noise"
+            else:
+                parents = kumo_product_steps(
+                    node.equation.function,
+                    inputs,
+                    prefix=f"kumo-product-{i}",
+                    parents=parents,
+                    indices=indices,
+                    add=add,
+                )
+                equation = (
+                    "f_left(same encoded input) * f_right(same encoded input) + structural noise"
+                )
         add(
             f"function-{i}",
             f"Native equation {i}",

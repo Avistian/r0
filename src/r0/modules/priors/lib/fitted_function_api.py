@@ -79,3 +79,14 @@ __all__ = [
     "FittedSplitTable",
     "FittedTreeOutput",
 ]
+
+from r0.modules.priors.lib.network_recipe import NetworkRecipe as NetworkRecipe
+from r0.modules.priors.lib.network_sampling import sample_network as sample_network
+from r0.modules.priors.lib.network_sampling_records import (
+    NetworkSamplingRequest as NetworkSamplingRequest,
+)
+from r0.modules.priors.lib.network_sampling_records import SampledNetwork as SampledNetwork
+from r0.modules.priors.lib.structural_network import FrozenNetworkFunction as FrozenNetworkFunction
+from r0.modules.priors.lib.structural_network import NetworkAffine as NetworkAffine
+from r0.modules.priors.lib.structural_network import NetworkBlock as NetworkBlock
+from r0.modules.priors.lib.structural_network import NetworkProjection as NetworkProjection

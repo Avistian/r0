@@ -23,6 +23,8 @@ from r0.modules.priors.lib.frozen_function_primitives import (
 )
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
+from r0.modules.priors.lib.network_evaluation import evaluate_network, network_geometry
+from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.weight_geometry import Matrix
 
 type FrozenFunction = (
@@ -37,6 +39,7 @@ type FrozenFunction = (
     | FrozenMLPFunction
     | FrozenParentFunction
     | FrozenFittedTreeFunction
+    | FrozenNetworkFunction
 )
 
 _FUNCTION_TYPES = (
@@ -51,6 +54,7 @@ _FUNCTION_TYPES = (
     FrozenMLPFunction,
     FrozenParentFunction,
     FrozenFittedTreeFunction,
+    FrozenNetworkFunction,
 )
 _DEFAULT_LIMITS = CausalLimits()
 
@@ -58,6 +62,8 @@ _DEFAULT_LIMITS = CausalLimits()
 def function_geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, int]:
     if type(function) not in _FUNCTION_TYPES:
         raise ValueError("function geometry requires a frozen function record")
+    if type(function) is FrozenNetworkFunction:
+        return network_geometry(function)
     widths = (function.input_width, function.output_width)
     if type(function) is FrozenParentFunction:
         members = (
@@ -194,6 +200,8 @@ def _mlp_activation(
 def _evaluate(
     function: FrozenFunction, inputs: torch.Tensor, diagnostics: list[dict[str, Any]] | None = None
 ) -> torch.Tensor:
+    if type(function) is FrozenNetworkFunction:
+        return evaluate_network(function, inputs, diagnostics=diagnostics)
     if type(function) is FrozenParentFunction:
         members = [_evaluate(function.joint, inputs, diagnostics)] if function.joint else []
         offset = 0

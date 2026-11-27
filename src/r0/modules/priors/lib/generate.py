@@ -44,6 +44,11 @@ from r0.modules.priors.lib.native_vector_decoding import (
 )
 from r0.modules.priors.lib.native_vector_output import generate_native_vector
 from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
+from r0.modules.priors.lib.network_recipe import (
+    NetworkRecipe,
+    generate_network,
+    network_recipe_from_dict,
+)
 from r0.modules.priors.lib.node_pipeline import pipeline_from_dict
 from r0.modules.priors.lib.parameter_preferences import parameter_preferences_from_dict
 from r0.modules.priors.lib.polynomial import PolynomialRecipe
@@ -68,7 +73,8 @@ from r0.modules.priors.lib.topology_graph_decoding import topology_graph_from_di
 from r0.modules.priors.lib.training_task import TrainingTask
 
 type Recipe = (
-    CausalInterventionRecipe
+    NetworkRecipe
+    | CausalInterventionRecipe
     | BaseRecipe
     | CompositeRecipe
     | CausalRecipe
@@ -123,6 +129,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
+    if version == "standalone-network-v1":
+        return network_recipe_from_dict(fields, limits=limits)
     if version == "causal-intervention-v1":
         from r0.modules.priors.lib.causal_intervention_decoding import intervention_from_dict
 
@@ -284,6 +292,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, NetworkRecipe):
+        return generate_network(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, CausalInterventionRecipe):
         from r0.modules.priors.lib.causal_intervention_generation import generate_intervened
 

@@ -9,6 +9,8 @@ from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_f
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.kumo_product_inspection import kumo_product_steps
+from r0.modules.priors.lib.network_inspection import network_steps
+from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 
 
 def parent_function_steps(
@@ -30,6 +32,15 @@ def parent_function_steps(
             if isinstance(function.joint, FrozenKumoProductFunction)
             else parents
         )
+        if isinstance(function.joint, FrozenNetworkFunction):
+            joint_parents = network_steps(
+                function.joint,
+                inputs,
+                prefix=identifier,
+                indices=indices,
+                add=add,
+                input_parents=parents,
+            )
         add(
             identifier,
             f"Joint member {node}",
@@ -55,6 +66,15 @@ def parent_function_steps(
             if isinstance(child, FrozenKumoProductFunction)
             else [parents[index]]
         )
+        if isinstance(child, FrozenNetworkFunction):
+            child_parents = network_steps(
+                child,
+                inputs[:, offset:stop],
+                prefix=identifier,
+                indices=indices,
+                add=add,
+                input_parents=[parents[index]],
+            )
         add(
             identifier,
             f"Parent {index} transform for node {node}",

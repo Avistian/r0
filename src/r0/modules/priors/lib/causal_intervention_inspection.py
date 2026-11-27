@@ -13,6 +13,8 @@ from r0.modules.priors.lib.causal_intervention_generation import generate_interv
 from r0.modules.priors.lib.causal_intervention_records import causal_runtime
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.native_causal import NativeCausalNode
+from r0.modules.priors.lib.network_inspection import network_steps
+from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -37,6 +39,24 @@ def intervention_steps(
     selected = list(indices)
     for i, node in enumerate(runtime.nodes):
         equation = node.equation if isinstance(node, NativeCausalNode) else node
+        effective = recipe.effective_runtime().nodes[i]
+        effective_equation = (
+            effective.equation if isinstance(effective, NativeCausalNode) else effective
+        )
+        if (
+            isinstance(effective_equation.function, FrozenNetworkFunction)
+            and "inputs" in execution.traces[i]
+        ):
+            network_steps(
+                effective_equation.function,
+                execution.traces[i]["inputs"],
+                prefix=f"network-{i}",
+                indices=indices,
+                add=add,
+                input_parents=[f"intervention-{p}-state" for p in effective_equation.parents]
+                if effective_equation.parents
+                else [f"intervention-{i}-root"],
+            )
         changes = [asdict(c) for c in recipe.interventions if c.node == i]
         for role, value in execution.traces[i].items():
             matrix = value[:, None] if value.ndim == 1 else value

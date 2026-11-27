@@ -129,6 +129,19 @@ def evaluate_functional_nodes(
             readouts.append(readout)
         if add is not None:
             equation = "f(concat(parent states))" if node.parents else "f(root base)"
+            from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
+
+            if isinstance(node.function, FrozenNetworkFunction):
+                from r0.modules.priors.lib.network_inspection import network_steps
+
+                parents = network_steps(
+                    node.function,
+                    inputs,
+                    prefix=f"network-{index}",
+                    indices=indices,
+                    add=add,
+                    input_parents=parents,
+                )
             if isinstance(node.function, FrozenParentFunction):
                 parents = parent_function_steps(
                     node.function, inputs, node=index, parents=parents, indices=indices, add=add

@@ -17,6 +17,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenTreeFunction,
 )
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
+from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 
 type ParentMember = (
     FrozenLinearFunction
@@ -29,6 +30,7 @@ type ParentMember = (
     | FrozenProductFunction
     | FrozenMLPFunction
     | FrozenFittedTreeFunction
+    | FrozenNetworkFunction
 )
 _MEMBER_TYPES = (
     FrozenLinearFunction,
@@ -41,6 +43,7 @@ _MEMBER_TYPES = (
     FrozenKumoProductFunction,
     FrozenMLPFunction,
     FrozenFittedTreeFunction,
+    FrozenNetworkFunction,
 )
 
 
