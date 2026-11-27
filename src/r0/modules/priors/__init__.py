@@ -122,6 +122,15 @@ from r0.modules.priors.lib.joint_function_decoding import (
 )
 from r0.modules.priors.lib.joint_function_plans import JointFunctionPlan as JointFunctionPlan
 from r0.modules.priors.lib.joint_function_prior import JointFunctionPrior as JointFunctionPrior
+from r0.modules.priors.lib.joint_function_realization import (
+    JointMatrixFunctionRealization as JointMatrixFunctionRealization,
+)
+from r0.modules.priors.lib.joint_function_realization import (
+    materialize_joint_function as materialize_joint_function,
+)
+from r0.modules.priors.lib.joint_function_realization_decoding import (
+    joint_function_realization_from_dict as joint_function_realization_from_dict,
+)
 from r0.modules.priors.lib.joint_function_sampling import (
     sample_joint_function as sample_joint_function,
 )
