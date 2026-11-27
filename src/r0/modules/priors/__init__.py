@@ -112,6 +112,10 @@ from r0.modules.priors.lib.source_causal_prior import SourceStageBinding as Sour
 from r0.modules.priors.lib.source_causal_sampling import (
     with_source_activations as with_source_activations,
 )
+from r0.modules.priors.lib.source_matrix import SourceMatrixCausalRecipe as SourceMatrixCausalRecipe
+from r0.modules.priors.lib.source_matrix_sampling import (
+    with_source_matrices as with_source_matrices,
+)
 from r0.modules.priors.lib.training_task import TrainingTask as TrainingTask
 from r0.modules.priors.lib.transformed_weights import GaussianWeights as GaussianWeights
 from r0.modules.priors.lib.transformed_weights import NormalizedWeights as NormalizedWeights

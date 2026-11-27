@@ -1,11 +1,13 @@
 """Plan shared numerical/categorical matrix decisions before materializing arrays."""
 
+from collections.abc import Callable
 from dataclasses import fields
 
 import numpy as np
 
 from r0.modules.priors.lib.categorical_preferences import CategoricalParameter
 from r0.modules.priors.lib.categorical_sampling import CategoricalSampler
+from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.causal_matrix_sampling import MatrixPlan, sample_matrix_plan
 from r0.modules.priors.lib.causal_nodes import (
     ActivatedCausalNode,
@@ -24,23 +26,32 @@ from r0.modules.priors.lib.matrix_preference_prior import (
 )
 from r0.modules.priors.lib.parameter_preferences import NumericalParameter, ParameterSampler
 from r0.modules.priors.lib.preference_binding import PreferenceBinding
+from r0.modules.priors.lib.preference_limits import PreferenceLimits
 from r0.modules.priors.lib.preferred_contract import Path
 
 _DEFAULT_PRIOR = CausalMatrixPrior()
+_DEFAULT_LIMITS = PreferenceLimits()
 
 
-class _Planner:
+class MatrixPlanner:
     def __init__(
-        self, recipe: SampledCausalRecipe, prior: CausalMatrixPrior, rng: np.random.Generator
+        self,
+        prior: CausalMatrixPrior,
+        rng: np.random.Generator,
+        activation: Callable[[Path], CausalActivation],
+        *,
+        numerical_limits: PreferenceLimits = _DEFAULT_LIMITS,
+        categorical_limits: PreferenceLimits = _DEFAULT_LIMITS,
     ) -> None:
-        self.recipe, self.prior, self.rng = recipe, prior, rng
+        self.prior, self.rng, self.activation = prior, rng, activation
         self.numerical = ParameterSampler(
             rng,
             default_mode=prior.mode,
             global_policy="quantile" if prior.mode == "global" else "strict",
+            limits=numerical_limits,
         )
         self.categorical = CategoricalSampler(
-            rng, default_mode=prior.mode, policy=prior.categorical_policy
+            rng, default_mode=prior.mode, policy=prior.categorical_policy, limits=categorical_limits
         )
         self.bindings: list[PreferenceBinding] = []
         self.numeric_index = 0
@@ -72,13 +83,7 @@ class _Planner:
         if family == "gaussian":
             return MatrixPlan(rows, columns, family)
         if family == "transformed":
-            index = int(
-                self.rng.choice(
-                    len(self.recipe.activation_probabilities),
-                    p=self.recipe.activation_probabilities,
-                )
-            )
-            activation = self.recipe.activation_prior.sample_choice(index, self.rng)
+            activation = self.activation(path + ("activation",))
             child = self.plan(rows, columns, path + ("child", "source"), simple=True)
             return MatrixPlan(rows, columns, family, activation=activation, child=child)
         polynomial = self.prior.vector_family == "polynomial"
@@ -144,7 +149,14 @@ def sample_preferred_matrices(
         raise ValueError("preferred matrix sampling requires a base activation-prior recipe")
     if type(prior) is not CausalMatrixPrior or type(rng) is not np.random.Generator:
         raise ValueError("preferred matrix sampling requires a frozen prior and injected Generator")
-    planner = _Planner(recipe, prior, rng)
+
+    def activation(path: Path) -> CausalActivation:
+        index = int(
+            rng.choice(len(recipe.activation_probabilities), p=recipe.activation_probabilities)
+        )
+        return recipe.activation_prior.sample_choice(index, rng)
+
+    planner = MatrixPlanner(prior, rng, activation)
     plans = tuple(
         planner.plan(len(n.weights), len(n.bias), ("nodes", i, "weight_construction", "source"))
         if n.parents

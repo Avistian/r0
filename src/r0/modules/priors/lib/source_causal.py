@@ -1,7 +1,7 @@
 """Sampled source activation stages with replay-checked ancestral calibration."""
 
 from dataclasses import asdict, dataclass
-from typing import Any
+from typing import Any, ClassVar
 
 from r0.modules.priors.lib.activation_sampling import finite_number
 from r0.modules.priors.lib.calibrated_activations import CalibratedActivation
@@ -24,6 +24,8 @@ _EMPTY = SourceActivationSelections((), ParameterPreferences(), CategoricalPrefe
 
 @dataclass(frozen=True, slots=True)
 class SourceCausalRecipe(CausalRecipe):
+    expected_construction: ClassVar[str] = "source-activations-v1"
+
     source_prior: SourceActivationPrior = SourceActivationPrior()
     source_selections: SourceActivationSelections = _EMPTY
     rescale_preferences: ParameterPreferences = ParameterPreferences()
@@ -62,10 +64,18 @@ class SourceCausalRecipe(CausalRecipe):
             "calibration_stream": "source-activation-calibration-v1",
         }
 
+    @property
+    def source_selection_offset(self) -> int:
+        return 0
+
+    def validate_source_nodes(self) -> None:
+        if any(type(n) is not ActivatedCausalNode for n in self.nodes):
+            raise ValueError("source activation construction requires Gaussian activated nodes")
+
     def __post_init__(self) -> None:
         if (
             self.version != "causal-v2"
-            or self.construction != "source-activations-v1"
+            or self.construction != self.expected_construction
             or type(self.source_prior) is not SourceActivationPrior
             or type(self.source_selections) is not SourceActivationSelections
             or type(self.rescale_preferences) is not ParameterPreferences
@@ -97,13 +107,14 @@ class SourceCausalRecipe(CausalRecipe):
         ):
             raise ValueError("source activation preference policies disagree with their prior")
         CausalRecipe.__post_init__(self)
-        if any(type(n) is not ActivatedCausalNode for n in self.nodes):
-            raise ValueError("source activation construction requires Gaussian activated nodes")
+        self.validate_source_nodes()
+        offset = self.source_selection_offset
         expected = source_stages(tuple(n.parents for n in self.nodes), prior)
         if (
             tuple((b.node, b.stage) for b in self.source_bindings) != expected
-            or tuple(b.selection for b in self.source_bindings) != tuple(range(len(expected)))
-            or len(self.source_selections.selections) != len(expected)
+            or tuple(b.selection for b in self.source_bindings)
+            != tuple(range(offset, offset + len(expected)))
+            or len(self.source_selections.selections) != offset + len(expected)
         ):
             raise ValueError("source bindings must cover every active stage and selection in order")
         if len(self.rescale_preferences.draws) != (

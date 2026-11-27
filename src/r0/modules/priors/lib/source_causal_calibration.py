@@ -1,6 +1,7 @@
 """Fit source activation stages along an independent ancestral Gaussian sample."""
 
 from collections.abc import Callable
+from dataclasses import replace
 
 import numpy as np
 import torch
@@ -8,7 +9,8 @@ import torch
 from r0.modules.priors.lib.calibrated_activations import calibrate_source_activation
 from r0.modules.priors.lib.causal_activations import CausalActivation, activate
 from r0.modules.priors.lib.causal_limits import CausalLimits
-from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode, CausalNode
+from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode, CausalNode, MatrixCausalNode
+from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
 from r0.modules.priors.lib.parameter_preferences import ParameterPreferences
 from r0.modules.priors.lib.source_activation_sampling import SourceActivationSelections
 from r0.modules.priors.lib.source_causal_prior import SourceActivationPrior, SourceStageBinding
@@ -49,6 +51,10 @@ def fit_source_nodes(
         )
 
     for i, node in enumerate(nodes):
+        if isinstance(node, MatrixCausalNode) and (
+            node.exogenous != ExogenousDistribution() or node.noise_response != NoiseResponse()
+        ):
+            raise ValueError("source matrix calibration requires its Gaussian innovations")
         after = noise_units[i] < prior.noise_after_probability
         if prior.selector == "plain":
             input_activation, output_activation = stage(i, "input", None), stage(i, "output", None)
@@ -64,7 +70,7 @@ def fit_source_nodes(
             )
             argument = (
                 torch.zeros_like(innovation) + torch.tensor(node.bias, dtype=torch.float64)
-                if after
+                if after or isinstance(node, MatrixCausalNode)
                 else innovation + torch.tensor(node.bias, dtype=torch.float64)
             )
             parents = torch.cat([values[p] for p in node.parents], dim=1) if node.parents else None
@@ -73,6 +79,8 @@ def fit_source_nodes(
                 argument = argument + activate(parents, input_activation) @ torch.tensor(
                     node.weights, dtype=torch.float64
                 )
+            if isinstance(node, MatrixCausalNode) and not after:
+                argument = argument + innovation
             output_activation = stage(i, "output", argument)
             value = activate(argument, output_activation)
             if after:
@@ -81,7 +89,14 @@ def fit_source_nodes(
                 raise ValueError("nonfinite ancestral activation calibration; task was not retried")
             values.append(value)
         fitted.append(
-            ActivatedCausalNode(
+            replace(
+                node,
+                input_activation=input_activation,
+                output_activation=output_activation,
+                noise_position="after_output" if after else "before_output",
+            )
+            if isinstance(node, MatrixCausalNode)
+            else ActivatedCausalNode(
                 parents=node.parents,
                 weights=node.weights,
                 bias=node.bias,

@@ -93,6 +93,7 @@ class CausalRecipe:
             "activation-gaussian-matrices-v1",
             "activation-shared-matrices-v1",
             "source-activations-v1",
+            "source-shared-matrices-v1",
         ) or (self.construction != "authored" and self.topology is None):
             raise ValueError("sampled construction requires its saved topology")
         if (
@@ -106,6 +107,7 @@ class CausalRecipe:
                 "activation-gaussian-matrices-v1",
                 "activation-shared-matrices-v1",
                 "source-activations-v1",
+                "source-shared-matrices-v1",
             )
             and type(self) is CausalRecipe
         ):

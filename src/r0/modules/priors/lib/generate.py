@@ -37,6 +37,7 @@ from r0.modules.priors.lib.smooth import SmoothRecipe
 from r0.modules.priors.lib.source_activation_sampling import source_activation_selections_from_dict
 from r0.modules.priors.lib.source_causal import SourceCausalRecipe
 from r0.modules.priors.lib.source_causal_prior import SourceActivationPrior, SourceStageBinding
+from r0.modules.priors.lib.source_matrix import SourceMatrixCausalRecipe
 from r0.modules.priors.lib.training_task import TrainingTask
 
 type Recipe = BaseRecipe | CompositeRecipe | CausalRecipe
@@ -94,6 +95,24 @@ def recipe_from_dict(data: object) -> Recipe:
         fields["nodes"] = tuple(causal_node_from_dict(item) for item in fields["nodes"])
         for key in ("observed", "target"):
             fields[key] = tuple(tuple(ref) for ref in fields[key])
+        if "matrix_prior" in fields:
+            matrix_prior = dict(fields["matrix_prior"])
+            for key in ("families", "simple_families", "point_laws", "covariance_bases"):
+                if key in matrix_prior:
+                    matrix_prior[key] = tuple(matrix_prior[key])
+            fields["matrix_prior"] = CausalMatrixPrior(**matrix_prior)
+            fields["numerical_preferences"] = parameter_preferences_from_dict(
+                fields["numerical_preferences"]
+            )
+            fields["categorical_preferences"] = categorical_preferences_from_dict(
+                fields["categorical_preferences"]
+            )
+            bindings: list[PreferenceBinding] = []
+            for raw in fields["preference_bindings"]:
+                binding = dict(raw)
+                binding["path"] = tuple(binding["path"])
+                bindings.append(PreferenceBinding(**binding))
+            fields["preference_bindings"] = tuple(bindings)
         if "source_prior" in fields:
             fields["source_prior"] = SourceActivationPrior(**fields["source_prior"])
             fields["source_selections"] = source_activation_selections_from_dict(
@@ -106,28 +125,14 @@ def recipe_from_dict(data: object) -> Recipe:
                 SourceStageBinding(**b) for b in fields["source_bindings"]
             )
             fields["noise_units"] = tuple(fields["noise_units"])
+            if "matrix_prior" in fields:
+                fields["matrix_activation_nodes"] = tuple(fields["matrix_activation_nodes"])
+                return SourceMatrixCausalRecipe(**fields)
             return SourceCausalRecipe(**fields)
         if "activation_prior" in fields:
             fields["activation_prior"] = activation_prior_from_dict(fields["activation_prior"])
             fields["activation_probabilities"] = tuple(fields["activation_probabilities"])
             if "matrix_prior" in fields:
-                matrix_prior = dict(fields["matrix_prior"])
-                for key in ("families", "simple_families", "point_laws", "covariance_bases"):
-                    if key in matrix_prior:
-                        matrix_prior[key] = tuple(matrix_prior[key])
-                fields["matrix_prior"] = CausalMatrixPrior(**matrix_prior)
-                fields["numerical_preferences"] = parameter_preferences_from_dict(
-                    fields["numerical_preferences"]
-                )
-                fields["categorical_preferences"] = categorical_preferences_from_dict(
-                    fields["categorical_preferences"]
-                )
-                bindings: list[PreferenceBinding] = []
-                for raw in fields["preference_bindings"]:
-                    binding = dict(raw)
-                    binding["path"] = tuple(binding["path"])
-                    bindings.append(PreferenceBinding(**binding))
-                fields["preference_bindings"] = tuple(bindings)
                 return PreferredCausalRecipe(**fields)
             return SampledCausalRecipe(**fields)
         return CausalRecipe(**fields)

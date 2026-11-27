@@ -34,6 +34,14 @@ from r0.modules.explorer import ExplorerSession
         ("causal-source-plain-refreshed-v1", "source-activations-v1"),
         ("causal-source-plain-local-v1", "source-activations-v1"),
         ("causal-source-plain-global-v1", "source-activations-v1"),
+        ("causal-source-standard-matrices-v1", "source-shared-matrices-v1"),
+        ("causal-source-standard-refreshed-matrices-v1", "source-shared-matrices-v1"),
+        ("causal-source-standard-local-matrices-v1", "source-shared-matrices-v1"),
+        ("causal-source-standard-global-matrices-v1", "source-shared-matrices-v1"),
+        ("causal-source-plain-matrices-v1", "source-shared-matrices-v1"),
+        ("causal-source-plain-refreshed-matrices-v1", "source-shared-matrices-v1"),
+        ("causal-source-plain-local-matrices-v1", "source-shared-matrices-v1"),
+        ("causal-source-plain-global-matrices-v1", "source-shared-matrices-v1"),
     ],
 )
 def test_sampled_causal_session_saves_reopens_and_replays_its_graph(
@@ -48,8 +56,10 @@ def test_sampled_causal_session_saves_reopens_and_replays_its_graph(
         },
         "sampling": {"family": family, "profile": profile},
     }
-    if profile == "causal-source-plain-refreshed-v1" and family in ("forward", "layered"):
-        # The original unfiltered profile pass exposed these two exp-overflow
+    if (profile == "causal-source-plain-refreshed-v1" and family in ("forward", "layered")) or (
+        profile == "causal-source-plain-refreshed-matrices-v1" and family == "forward"
+    ):
+        # The original unfiltered profile passes exposed these exp-overflow
         # draws. Keep their exact identities and full recipes; do not replace them.
         recipe = priors.sample_recipe(
             family,
