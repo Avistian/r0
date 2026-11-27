@@ -5,6 +5,7 @@ from dataclasses import asdict
 from typing import Any, cast
 
 from r0.modules import priors as p
+from r0.modules.generation.lib.authored_xgboost import prepare_authored_xgboost
 
 
 def _authored(value: Any) -> Any:
@@ -25,6 +26,8 @@ def convolution_editor(data: dict[str, Any]) -> dict[str, Any]:
     if len(json.dumps(data, allow_nan=False).encode()) > maximum:
         raise ValueError("convolution editor request exceeds byte cap")
     limits = p.CausalLimits(**data.get("causal_limits", {}))
+    if data["validation"] == "convolution-draft":
+        prepare_authored_xgboost(data, "authored-mechanism-v1")
     recipe = p.recipe_from_dict(data["recipe"], limits=limits)
     if type(recipe) not in (
         p.FunctionalCausalRecipe,

@@ -46,10 +46,21 @@ def parameter_group(record: Any, path: tuple[str, ...]) -> tuple[Any, str | int,
             raise ValueError("parameter sequence indices must be canonical nonnegative decimals")
         return int(token)
 
+    def check_custody(parent: Any, token: str) -> None:
+        version = (
+            getattr(parent, "version", None)
+            if is_dataclass(parent)
+            else (cast(dict[str, Any], parent).get("version") if type(parent) is dict else None)
+        )
+        if version == "sampled-feature-conv1d-r0-v1" and token != "function":
+            raise ValueError("policy laws cannot alter sampled convolution custody")
+
     parent: Any = record
     for token in path[:-1]:
+        check_custody(parent, token)
         key = key_for(parent, token)
         parent = getattr(parent, str(key)) if is_dataclass(parent) else parent[key]
+    check_custody(parent, path[-1])
     key = key_for(parent, path[-1])
     return parent, key, getattr(parent, str(key)) if is_dataclass(parent) else parent[key]
 

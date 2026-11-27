@@ -9,6 +9,7 @@ import torch
 from r0.modules.priors.lib.causal_intervention_generation import generate_intervened
 from r0.modules.priors.lib.causal_intervention_inspection import intervention_steps
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.intervention_policy_construction import policy_construction_steps
 from r0.modules.priors.lib.intervention_policy_validation import validate_policy_task
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -142,6 +143,16 @@ def typed_policy_steps(task: TrainingTask, indices: Any, add: Any, *, limits: Ca
         {"profile": recipe.request.profile, "eligible": recipe.request.eligible},
     )
 
+    original_construction = [
+        item
+        for node in recipe.selected
+        for item in policy_construction_steps(
+            recipe.request.equations[node].function,
+            tuple(law.path for law in recipe.request.parameter_laws if law.node == node),
+            node=node,
+            add=add,
+        )
+    ]
     add(
         "policy-realization",
         "Retained typed intervention realization",
@@ -152,6 +163,7 @@ def typed_policy_steps(task: TrainingTask, indices: Any, add: Any, *, limits: Ca
             "changes": [asdict(c) for c in recipe.runtime.interventions],
             "bounds": [asdict(b) for b in recipe.bounds],
             "locations": [asdict(a) for a in recipe.request.locations],
+            "original_sampled_construction": original_construction,
         },
     )
 

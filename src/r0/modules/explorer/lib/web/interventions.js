@@ -77,7 +77,8 @@ function showIntervention() {
 }
 function drawInterventionTrace() {
   const choice=$("intervention-stage").value, [side,index]=choice.split(":"), graph=interventionTrace[side], stage=graph.nodes[Number(index)];
-  table("intervention-trace-table",["Original row",...stage.column_indices.map(c=>`channel ${c}`)],graph.rows.map((row,i)=>[row,...stage.values[i]]));
+  const context=matrixContext(stage,stage.values.length,graph.rows);
+  table("intervention-trace-table",[context.rowHeading,...context.columnLabels.map(c=>`channel ${c}`)],stage.values.map((values,i)=>[context.rowLabels[i],...values]));
   $("intervention-trace-json").textContent=pretty({side,rows:graph.rows,...stage});
 }
 $("intervention-load").onclick=()=>act("Preparing intervention controls…",async()=>{

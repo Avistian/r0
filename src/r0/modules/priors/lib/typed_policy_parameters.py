@@ -6,7 +6,7 @@ from dataclasses import asdict
 
 import numpy as np
 
-from r0.modules.priors.lib.frozen_function_decoding import frozen_function_from_dict
+from r0.modules.priors.lib.intervention_policy_function import finish_policy_function
 from r0.modules.priors.lib.intervention_policy_laws import (
     numeric_leaves,
     parameter_group,
@@ -46,11 +46,10 @@ def resample_typed_function(
         if not np.isfinite(values).all():
             raise ValueError("nonfinite resampled parameter; no retry")
         parent[key] = replace_leaves(group, iter(values))
-    function = frozen_function_from_dict(record, limits=request.limits)
-    if (
-        type(function) is not type(original)
-        or function.input_width != original.input_width
-        or function.output_width != original.output_width
-    ):
-        raise ValueError("soft resampling must preserve function family and geometry")
+    function = finish_policy_function(
+        original,
+        record,
+        tuple(law.path for law in request.parameter_laws if law.node == node),
+        request.limits,
+    )
     return function
