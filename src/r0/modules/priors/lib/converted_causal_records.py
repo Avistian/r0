@@ -4,6 +4,10 @@ from dataclasses import dataclass
 
 from r0.modules.priors.lib.categorical_converter import CategoricalConverter
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.frozen_function_evaluation import (
+    admit_frozen_function,
+    function_geometry,
+)
 from r0.modules.priors.lib.functional_analysis import (
     ChannelCertificate,
     functional_node_certificates,
@@ -129,26 +133,59 @@ class ConvertedCausalRecipe:
         converted_certificates(self.nodes)
 
     def admit(self) -> dict[str, int]:
-        report = admit_functional_graph(
-            tuple(n.equation for n in self.nodes),
+        return admit_converted_nodes(
+            self.nodes,
+            self.task.rows,
             self.limits,
-            rows=self.task.rows,
             metadata=(self.task, self.nodes, self.observed, self.target, self.limits),
             features=self.task.features,
             outputs=max(1, len(self.nodes[self.target.node].feature(self.target).vocabulary)),
         )
-        work = sum(
-            8 * self.task.rows * len(c.vocabulary) * (3 * c.width + 8)
-            + 16 * len(c.vocabulary) * c.width
-            for n in self.nodes
-            for c in n.converters
+
+
+def admit_converted_nodes(
+    nodes: tuple[ConvertedCausalNode, ...],
+    rows: int,
+    limits: CausalLimits,
+    *,
+    metadata: tuple[object, ...],
+    features: int = 0,
+    outputs: int = 0,
+) -> dict[str, int]:
+    """Charge post functions as nested mechanisms, including center-dependent row floors.
+
+    The common graph admission already counts all frozen parameters in metadata.
+    Summed post-function reports conservatively include their standalone buffers;
+    their own geometry also passes the caller's channel limits before any tensors.
+    """
+    report = admit_functional_graph(
+        tuple(n.equation for n in nodes),
+        limits,
+        rows=rows,
+        metadata=metadata,
+        features=features,
+        outputs=outputs,
+    )
+    work = sum(
+        8 * rows * len(c.vocabulary) * (3 * c.width + 8) + 16 * len(c.vocabulary) * c.width
+        for n in nodes
+        for c in n.converters
+    )
+    for node in nodes:
+        for converter in node.converters:
+            if converter.post_function is None:
+                continue
+            nested = admit_frozen_function(converter.post_function, rows, limits)
+            dimensions, _, _ = function_geometry(converter.post_function)
+            report["largest_node_channels"] = max(report["largest_node_channels"], max(dimensions))
+            work += nested["estimated_working_bytes"]
+    report["estimated_working_bytes"] += work
+    if report["estimated_working_bytes"] > limits.working_bytes:
+        raise ValueError(
+            "categorical converter and nested post-function workspace "
+            "exceeds limit before allocation"
         )
-        report["estimated_working_bytes"] += work
-        if report["estimated_working_bytes"] > self.limits.working_bytes:
-            raise ValueError(
-                "categorical distance/probability workspace exceeds limit before allocation"
-            )
-        return report
+    return report
 
 
 def converted_certificates(

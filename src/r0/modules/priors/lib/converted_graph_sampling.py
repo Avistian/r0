@@ -14,6 +14,7 @@ from r0.modules.priors.lib.converted_causal_records import (
     ConvertedCausalNode,
     ConvertedCausalRecipe,
     ConvertedReadout,
+    admit_converted_nodes,
     converted_certificates,
 )
 from r0.modules.priors.lib.converted_evaluation import evaluate_converted_nodes
@@ -21,7 +22,6 @@ from r0.modules.priors.lib.converted_graph_admission import admit_converted_cons
 from r0.modules.priors.lib.converted_graph_planning import plan_converted_graph
 from r0.modules.priors.lib.converted_graph_request import ConvertedGraphRequest
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
-from r0.modules.priors.lib.functional_graph_admission import admit_functional_graph
 from r0.modules.priors.lib.generator_snapshot import snapshot_generator
 from r0.modules.priors.lib.joint_function_plans import JointFunctionPlan
 from r0.modules.priors.lib.joint_function_realization import materialize_joint_function
@@ -105,10 +105,10 @@ def sample_converted_graph(
                 ) -> torch.Tensor:
                     prefix = tuple(nodes)
                     converted_certificates(prefix)
-                    admit_functional_graph(
-                        tuple(n.equation for n in prefix),
+                    admit_converted_nodes(
+                        prefix,
+                        request.calibration_rows,
                         request.limits,
-                        rows=request.calibration_rows,
                         metadata=(
                             request,
                             plan,
