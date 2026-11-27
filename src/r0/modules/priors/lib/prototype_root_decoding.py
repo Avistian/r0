@@ -9,6 +9,7 @@ from r0.modules.priors.lib.fitted_tree_decoding import fitted_array, fitted_obje
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.functional_causal_decoding import functional_root
 from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
+from r0.modules.priors.lib.joint_root_base import JointRootBase
 from r0.modules.priors.lib.prototype_root_construction import (
     PrototypeBatchReference,
     SampledPrototypeRoot,
@@ -22,47 +23,71 @@ from r0.modules.priors.lib.prototype_root_records import (
     admit_prototype_work,
 )
 from r0.modules.priors.lib.prototype_weight_law import PrototypeWeightLaw
-from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
+from r0.modules.priors.lib.raw_draw_records import RawDrawLimits, RawDrawRecord
 
 _DEFAULT_LIMITS = CausalLimits()
 
 
+def prototype_object(data: object, kind: Any) -> dict[str, Any]:
+    values = fitted_object(data, kind)
+    if set(values) != {field.name for field in fields(kind)}:
+        raise ValueError("prototype record fields differ")
+    return values
+
+
 def prototype_weight_law_from_dict(data: object) -> PrototypeWeightLaw:
-    values = fitted_object(data, PrototypeWeightLaw)
-    values["probabilities"] = fitted_array(values["probabilities"], 4096)
-    return PrototypeWeightLaw(**values)
+    try:
+        values = prototype_object(data, PrototypeWeightLaw)
+        values["probabilities"] = fitted_array(values["probabilities"], 4096)
+        return PrototypeWeightLaw(**values)
+    except (KeyError, TypeError, AttributeError, OverflowError, RecursionError) as error:
+        raise ValueError("malformed prototype root record") from error
 
 
 def prototype_root_plan_from_dict(
     data: object, *, limits: CausalLimits = _DEFAULT_LIMITS
 ) -> PrototypeRootPlan:
-    admit_function_metadata(data, limits)
-    values = fitted_object(data, PrototypeRootPlan)
-    values["base"] = functional_root(values["base"])
-    values["weights"] = prototype_weight_law_from_dict(values["weights"])
-    values["raw_limits"] = RawDrawLimits(**fitted_object(values["raw_limits"], RawDrawLimits))
-    plan = PrototypeRootPlan(**values)
-    admit_prototype_plan(plan, limits, batch=False)
-    return plan
+    try:
+        admit_function_metadata(data, limits)
+        values = prototype_object(data, PrototypeRootPlan)
+        base = values["base"]
+        if (
+            type(base) is dict
+            and cast(dict[str, Any], base).get("version") != "source-root-base-v1"
+        ):
+            prototype_object(cast(dict[str, Any], base), JointRootBase)
+        values["base"] = functional_root(base)
+        values["weights"] = prototype_weight_law_from_dict(values["weights"])
+        values["raw_limits"] = RawDrawLimits(
+            **prototype_object(values["raw_limits"], RawDrawLimits)
+        )
+        plan = PrototypeRootPlan(**values)
+        admit_prototype_plan(plan, limits, batch=False)
+        return plan
+    except (KeyError, TypeError, AttributeError, OverflowError, RecursionError) as error:
+        raise ValueError("malformed prototype root record") from error
 
 
 def frozen_prototype_root_from_dict(
     data: object, *, limits: CausalLimits = _DEFAULT_LIMITS
 ) -> FrozenPrototypeRoot:
-    admit_function_metadata(data, limits)
-    values = fitted_object(data, FrozenPrototypeRoot)
-    raw = fitted_array(values["prototypes"], 4096)
-    if not raw:
-        raise ValueError("prototype bank must be nonempty")
-    width = len(fitted_array(raw[0], 1024))
-    admit_prototype_work(len(raw), width, 1, limits)
-    values["prototypes"] = tuple(fitted_array(row, width) for row in raw)
-    values["weights"] = prototype_weight_law_from_dict(values["weights"])
-    return FrozenPrototypeRoot(**values)
+    try:
+        admit_function_metadata(data, limits)
+        values = prototype_object(data, FrozenPrototypeRoot)
+        raw = fitted_array(values["prototypes"], 4096)
+        if not raw:
+            raise ValueError("prototype bank must be nonempty")
+        width = len(fitted_array(raw[0], 1024))
+        admit_prototype_work(len(raw), width, 1, limits)
+        values["prototypes"] = tuple(fitted_array(row, width) for row in raw)
+        values["weights"] = prototype_weight_law_from_dict(values["weights"])
+        return FrozenPrototypeRoot(**values)
+    except (KeyError, TypeError, AttributeError, OverflowError, RecursionError) as error:
+        raise ValueError("malformed prototype root record") from error
 
 
 def _snapshot(data: object, bound: int) -> GeneratorSnapshot:
-    values = fitted_object(data, GeneratorSnapshot)
+    values = prototype_object(data, GeneratorSnapshot)
     if type(values["payload"]) is not str or len(values["payload"]) > bound:
         raise ValueError("prototype snapshot exceeds its declared byte bound")
     return GeneratorSnapshot(**values)
@@ -71,14 +96,14 @@ def _snapshot(data: object, bound: int) -> GeneratorSnapshot:
 def decode_prototype_record(data: object, *, batch: bool, limits: CausalLimits) -> Any:
     admit_function_metadata(data, limits)
     kind = PrototypeBatchReference if batch else SampledPrototypeRoot
-    values = fitted_object(data, kind)
-    declared = CausalLimits(**fitted_object(values["limits"], CausalLimits))
+    values = prototype_object(data, kind)
+    declared = CausalLimits(**prototype_object(values["limits"], CausalLimits))
     if any(getattr(declared, f.name) > getattr(limits, f.name) for f in fields(limits)):
         raise ValueError("prototype declared limits exceed caller limits")
     plan = prototype_root_plan_from_dict(values["plan"], limits=declared)
     admit_prototype_plan(plan, declared, batch=batch)
     values["plan"], values["limits"] = plan, declared
-    root = fitted_object(values["root"], FrozenPrototypeRoot)
+    root = prototype_object(values["root"], FrozenPrototypeRoot)
     matrix = fitted_array(root["prototypes"], plan.count)
     if len(matrix) != plan.count:
         raise ValueError("prototype retained count differs")
@@ -91,7 +116,7 @@ def decode_prototype_record(data: object, *, batch: bool, limits: CausalLimits) 
             *specs,
             plan.weights.draw_spec(plan.count, plan.reference_rows, ("prototype-emission",)),
         )
-        draw = fitted_object(values["draw"], PrototypeRootDraw)
+        draw = prototype_object(values["draw"], PrototypeRootDraw)
         for name, columns in (
             ("values", plan.base.width),
             ("weights", plan.count),
@@ -110,7 +135,7 @@ def decode_prototype_record(data: object, *, batch: bool, limits: CausalLimits) 
     for record, spec in zip(raw, specs, strict=True):
         if type(record) is not dict:
             raise ValueError("prototype raw record must be an object")
-        item = cast(dict[str, Any], record)
+        item = prototype_object(cast(dict[str, Any], record), RawDrawRecord)
         fitted_array(item.get("values"), spec.numbers)
         # Parameters are bounded by the declared law before nested tuple conversion.
         for pair in fitted_array(item.get("parameters"), 2):
@@ -133,10 +158,16 @@ def decode_prototype_record(data: object, *, batch: bool, limits: CausalLimits) 
 def sampled_prototype_root_from_dict(
     data: object, *, limits: CausalLimits = _DEFAULT_LIMITS
 ) -> SampledPrototypeRoot:
-    return decode_prototype_record(data, batch=False, limits=limits)
+    try:
+        return decode_prototype_record(data, batch=False, limits=limits)
+    except (KeyError, TypeError, AttributeError, OverflowError, RecursionError) as error:
+        raise ValueError("malformed prototype root record") from error
 
 
 def prototype_batch_reference_from_dict(
     data: object, *, limits: CausalLimits = _DEFAULT_LIMITS
 ) -> PrototypeBatchReference:
-    return decode_prototype_record(data, batch=True, limits=limits)
+    try:
+        return decode_prototype_record(data, batch=True, limits=limits)
+    except (KeyError, TypeError, AttributeError, OverflowError, RecursionError) as error:
+        raise ValueError("malformed prototype root record") from error
