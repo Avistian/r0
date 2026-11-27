@@ -62,7 +62,7 @@ class RunRequest:
         if self.construction is not None:
             if type(self.construction) is not GraphConstruction or self.sampling is not None:
                 raise ValueError("graph construction cannot also use recipe sampling")
-            if json.loads(self.construction.controls_json).get("task") != json.loads(
+            if json.loads(json.dumps(self.construction.task_record())) != json.loads(
                 json.dumps(asdict(self.recipe))
             ):
                 raise ValueError("construction task controls differ from the run recipe")

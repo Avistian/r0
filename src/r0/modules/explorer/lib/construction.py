@@ -4,7 +4,7 @@ from dataclasses import asdict, replace
 from typing import Any, cast
 
 from r0.modules import priors
-from r0.modules.explorer.lib.native import native_example
+from r0.modules.explorer.lib.native import native_example, sampled_native_example
 
 
 def caller_limits(data: dict[str, Any]) -> priors.CausalLimits:
@@ -61,6 +61,7 @@ def construction_examples() -> dict[str, Any]:
             "topology_prior": asdict(priors.MotifGraphPrior(depth=1)),
         },
         "Native mixed graph (authored)": native_example(),
+        "Native mixed graph (sampled domains)": sampled_native_example(),
         **{
             f"Numerical pipeline: {variant}": {
                 **geometry,
@@ -83,17 +84,23 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
 
     raw = json.loads(task.recipe_json)["recipe"]
     recipe = priors.recipe_from_dict(raw, limits=limits)
-    runtime = getattr(recipe, "runtime", recipe)
+    runtime = (
+        recipe.recipe
+        if isinstance(recipe, priors.SampledNativeGraph)
+        else getattr(recipe, "runtime", recipe)
+    )
     if isinstance(runtime, priors.NativeCausalRecipe):
         return {
             "kind": "mechanism-edit",
-            "construction": runtime.version,
+            "construction": recipe.version,
             "editable_recipe": asdict(runtime),
             "geometry": None,
             "native": True,
             "notice": (
                 "Native direct targets. Editing equations or domains creates a linked "
-                "authored graph, not a causal intervention."
+                "authored graph, not a causal intervention. Frequency weights shift logits; "
+                "they do not guarantee marginal category counts. Sampled construction "
+                "receipts stay in the original archive."
             ),
             "nodes": [
                 {

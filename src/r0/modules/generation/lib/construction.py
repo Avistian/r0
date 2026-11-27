@@ -7,6 +7,7 @@ from typing import Any, cast
 import numpy as np
 
 from r0.modules import priors
+from r0.modules.generation.lib.native_construction import construct_native
 
 
 def _tuples(value: Any) -> Any:
@@ -25,6 +26,8 @@ def construct_graph(
         raise ValueError("construction seed must be an integer in [0, 2**63)")
     fields = _tuples(controls)
     topology = fields.pop("topology")
+    if topology == "sampled-native":
+        return construct_native(fields, seed=seed, limits=limits)
     task = priors.recipe_from_dict(fields.pop("task"))
     if type(task) is not priors.LinearRecipe:
         raise ValueError("graph construction requires linear task controls")
@@ -104,6 +107,26 @@ class GraphConstruction:
             raise ValueError("construction controls must be JSON below 1 MiB")
         if type(json.loads(self.controls_json)) is not dict:
             raise ValueError("construction controls must be an object")
+
+    def task_record(self) -> dict[str, Any]:
+        """Return preconstruction row geometry; sampled native target type is not yet known."""
+        controls = json.loads(self.controls_json)
+        if controls.get("topology") != "sampled-native":
+            return controls["task"]
+        observed = controls["observed"]
+        if type(observed) is not list:
+            raise ValueError("sampled native observed channels must be an array")
+        count = len(cast(list[Any], observed))
+        return asdict(
+            priors.LinearRecipe(
+                rows=controls.get("rows", 64),
+                context_rows=controls.get("context_rows", 48),
+                split=controls.get("split", 0),
+                features=count,
+                signal_features=count,
+                active_features=count,
+            )
+        )
 
     def build(self, limits: priors.CausalLimits) -> priors.Recipe:
         return construct_graph(json.loads(self.controls_json), seed=self.seed, limits=limits)

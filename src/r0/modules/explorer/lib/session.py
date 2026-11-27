@@ -17,7 +17,7 @@ from r0.modules.explorer.lib.edits import SavedEdit, create_edit, open_edit
 from r0.modules.explorer.lib.exports import replay_bundle
 from r0.modules.explorer.lib.inspection import inspect_rows, inspect_task
 from r0.modules.explorer.lib.saved import load_saved, run_saved, run_saved_document
-from r0.modules.generation import RecipeSampling, RunRequest
+from r0.modules.generation import GraphConstruction, RecipeSampling, RunRequest
 from r0.modules.priors import (
     Combination,
     CompositeRecipe,
@@ -133,8 +133,12 @@ class ExplorerSession:
             seed = normalized["construction_seed"]
             if isinstance(seed, str) and seed.isdecimal():
                 seed = int(seed)
+            if type(seed) is not int:
+                raise ValueError("construction seed must be an integer")
             request = {
-                "recipe": normalized["controls"]["task"],
+                "recipe": GraphConstruction(
+                    json.dumps(normalized["controls"], allow_nan=False), seed
+                ).task_record(),
                 "construction": {
                     "controls_json": json.dumps(normalized["controls"], allow_nan=False),
                     "seed": seed,

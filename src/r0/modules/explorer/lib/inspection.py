@@ -126,9 +126,13 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
     if task.feature_schema:
         view["feature_schema"] = [asdict(f) for f in task.feature_schema]
         view["target_origin"] = task.target_origin
-        view["target_emission"] = record["recipe"]["nodes"][record["recipe"]["target"][0]][
-            "domain"
-        ]["emission"]
+        native = record["recipe"]
+        view["native_construction"] = native["version"]
+        if native["version"] == "sampled-native-graph-v1":
+            native = native["recipe"]
+        domain = native["nodes"][native["target"][0]]["domain"]
+        view["target_emission"] = domain["emission"]
+        view["target_frequency_weights"] = domain.get("frequencies")
         for feature, schema in zip(view["features"], task.feature_schema, strict=True):
             feature["kind"] = schema.kind
             feature["role"] = "native observed variable"

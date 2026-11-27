@@ -79,6 +79,8 @@ Each node currently contains one vector continuous variable or one scalar
 binary/categorical variable. The indexed `domain:0` ownership seam leaves room
 for ordered heterogeneous variables, but that extension remains required #28
 work. Other remaining work includes asymmetric Dirichlet parameter vectors,
-additional disclosed source-specific frequency laws when available, sampled
-native UI controls and native intervention-pair APIs. Neither a source's mixture
+additional disclosed source-specific frequency laws when available, and native
+intervention-pair APIs. The current sampled-native JSON controls and shared
+workbench are described in [Sampled native explorer](sampled-native-explorer.md);
+hosted notebook execution remains separately unverified. Neither a source's mixture
 probabilities nor undisclosed laws have been silently invented as defaults.

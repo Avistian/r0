@@ -44,3 +44,32 @@ def native_example() -> dict[str, Any]:
     controls = asdict(recipe)
     controls.pop("limits")
     return {"topology": "native", **controls}
+
+
+def sampled_native_example() -> dict[str, Any]:
+    """Explicit DAG and broad editable native-domain catalogs, with safe small fits."""
+    category = priors.NativeDomainPrior(
+        kinds=("categorical",),
+        cardinalities=(3, 4),
+        emissions=("softmax",),
+    )
+    functions = priors.JointFunctionPrior(
+        functions="lin", matrix=priors.JointMatrixPrior(families=("gaussian",))
+    )
+    request = priors.NativeGraphRequest(
+        parents=((), (0,), (0, 1), (2,)),
+        domains=(
+            priors.NativeDomainPrior(kinds=("continuous",)),
+            priors.NativeDomainPrior(kinds=("binary",), emissions=("softmax",)),
+            category,
+            category,
+        ),
+        observed=((0, 0), (1, 0), (2, 0)),
+        target=(3, 0),
+        calibration_rows=16,
+        root_prior=priors.JointRootPrior(families=("gaussian",), function=functions),
+        function_prior=functions,
+    )
+    controls = asdict(request)
+    controls.pop("limits")
+    return {"topology": "sampled-native", **controls}

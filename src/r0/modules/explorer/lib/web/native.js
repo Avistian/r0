@@ -27,7 +27,7 @@ function nativeCharts(view,feature,channel) {
 function nativeViewControls(view) {
   const native=view.target_origin==="native-variable-v1";
   $("native-notice").hidden=!native;
-  if(native) $("native-notice").textContent="Native direct target · declared categorical values and vocabularies are retained. Numeric arrays encode categories by vocabulary index. Edit equations and domains below; adapter pairs and response curves are unavailable.";
+  if(native) $("native-notice").textContent="Native direct target · declared categorical values and vocabularies are retained. Numeric arrays encode categories by vocabulary index. Edit equations and domains below; adapter pairs and response curves are unavailable." + (view.native_construction==="sampled-native-graph-v1" ? " Sampled domain construction and four RNG streams are retained. Frequency weights shift logits or reference cutpoints; they do not guarantee marginal class frequencies." : "");
   $("pair-panel").hidden=native;
   $("curve").closest("article").hidden=native;
   $("signal-title").textContent=native ? "Feature and native equation score" : "Feature and latent signal";

@@ -42,7 +42,7 @@ async function act(message, work) {
   }
 }
 
-function taskControls(recipe) { return recipe.request?.task || recipe.task || recipe; }
+function taskControls(recipe) { return recipe.recipe?.task || recipe.request?.task || recipe.task || recipe; }
 function parseRecipe() {
   return JSON.parse($("recipe").value, (key, value) => {
     if (key === "split" && typeof value === "number" && !Number.isSafeInteger(value)) throw new Error("Write large split identifiers as quoted decimal strings to preserve every digit.");
@@ -51,7 +51,7 @@ function parseRecipe() {
 }
 function fillControls(recipe) {
   const task = taskControls(recipe);
-  const native=recipe.version === "native-causal-v1";
+  const native=["native-causal-v1","sampled-native-graph-v1"].includes(recipe.version);
   $("difficulty-label").hidden=native;
   for(const id of ["features","active","task-type","classes"]) $(id).disabled=native;
   for (const [id, key] of Object.entries({rows: "rows", context: "context_rows", features: "features", active: "active_features", "task-type": "task_type", classes: "classes"})) $(id).value = task[key];
