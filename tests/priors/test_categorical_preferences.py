@@ -122,3 +122,53 @@ def test_categorical_admission_counts_nested_beta_draws_before_using_randomness(
         admitted.categorical(request)
     assert json.dumps(rng.bit_generator.state, sort_keys=True) == before
     assert admitted.freeze() == record
+
+
+def test_positive_subnormal_mass_survives_probability_display_underflow() -> None:
+    import math
+
+    low = 0.07213475204444818
+    decay = priors.NumericalParameter(
+        "simple_random_weights_decay_rate",
+        low,
+        6.0,
+        shape=(1,),
+        scale="log",
+        boundary_mass=True,
+    )
+    scale = priors.NumericalParameter(
+        "simple_random_weights_std_scale", 0.0001, 10.0, shape=(1,), scale="log"
+    )
+    hyper = priors.ParameterPreferences(
+        preferences=(
+            priors.NumericalPreference(decay, mode="meta", mean=0.5, concentration=1.0),
+            priors.NumericalPreference(scale, mode="meta", mean=0.5, concentration=1.0),
+        ),
+        draws=(
+            priors.NumericalDraw(decay, 0, (0.0,), (low,)),
+            priors.NumericalDraw(scale, 1, (1.0,), (10.0,)),
+        ),
+    )
+    weights = priors.PolynomialWeightVector(
+        (0.0, -74.495, 0.007924812503605782),
+        decay=low,
+        log_noise_scale=10.0,
+        permutation=(0, 1, 2),
+    )
+    assert weights.values() == (1.2247448713915892, 5e-324, 1.2247448713915892)
+    request = priors.CategoricalParameter("tiny", ("left", "middle", "right"))
+    preference = priors.CategoricalPreference(
+        request, "meta", weights=weights, hyperparameters=hyper
+    )
+    # Equal outside masses put the midpoint strictly inside the positive middle bin.
+    assert preference.choose(0.5) == 1
+    assert math.isfinite(preference.log_probabilities[1])
+    assert preference.log_probabilities[1] < math.log(5e-324)
+    with pytest.raises(ValueError, match="probabilit.*underflow"):
+        _ = preference.probabilities
+    record = priors.CategoricalPreferences(
+        preferences=(preference,), draws=(priors.CategoricalDraw(request, 0, 0.5, 1, "middle"),)
+    )
+    assert (
+        priors.categorical_preferences_from_dict(json.loads(json.dumps(asdict(record)))) == record
+    )

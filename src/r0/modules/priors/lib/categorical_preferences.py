@@ -81,7 +81,6 @@ class CategoricalPreference:
                 or self.weights.log_noise_scale != hyper.draws[1].values[0]
             ):
                 raise ValueError("categorical polynomial hyperparameters disagree with the vector")
-            _ = self.probabilities  # Validate the representable probability view before a choice.
         elif self.weights is not None or self.hyperparameters is not None:
             raise ValueError("categorical weights and hyperparameters apply only to meta mode")
 
@@ -101,8 +100,19 @@ class CategoricalPreference:
         total = math.fsum(weights)
         probabilities = tuple(w / total for w in weights)
         if any(w > 0 and p == 0 for w, p in zip(weights, probabilities, strict=True)):
-            raise ValueError("categorical probabilities underflow; draw was not retried")
+            raise ValueError(
+                "categorical probabilities underflow in binary64 view; use log_probabilities"
+            )
         return probabilities
+
+    @property
+    def log_probabilities(self) -> tuple[float, ...]:
+        """Log view of the represented masses, retaining subnormal positive support."""
+        if self.weights is None:
+            return (-math.log(len(self.request.choices)),) * len(self.request.choices)
+        weights = self.weights.values()
+        normalizer = math.log(math.fsum(weights))
+        return tuple(math.log(w) - normalizer if w else -math.inf for w in weights)
 
     def choose(self, unit: float) -> int:
         _unit(unit)
