@@ -214,6 +214,7 @@ from .lib.joint_api import (
 from .lib.joint_api import (
     FunctionCalibrationSample as FunctionCalibrationSample,
 )
+from .lib.joint_api import GeometryGraphRequest as GeometryGraphRequest
 from .lib.joint_api import (
     JointActivationPlan as JointActivationPlan,
 )
@@ -329,6 +330,7 @@ from .lib.joint_api import (
     JointWidthPrior as JointWidthPrior,
 )
 from .lib.joint_api import ObservationChannelLayout as ObservationChannelLayout
+from .lib.joint_api import SampledGeometryGraph as SampledGeometryGraph
 from .lib.joint_api import allocate_observation_channels as allocate_observation_channels
 from .lib.joint_api import (
     fit_joint_activation as fit_joint_activation,
@@ -336,6 +338,7 @@ from .lib.joint_api import (
 from .lib.joint_api import (
     fit_joint_converter as fit_joint_converter,
 )
+from .lib.joint_api import geometry_graph_from_dict as geometry_graph_from_dict
 from .lib.joint_api import (
     joint_activation_plan_from_dict as joint_activation_plan_from_dict,
 )
@@ -393,6 +396,7 @@ from .lib.joint_api import (
 from .lib.joint_api import (
     materialize_joint_weights as materialize_joint_weights,
 )
+from .lib.joint_api import sample_geometry_graph as sample_geometry_graph
 from .lib.joint_api import (
     sample_joint_activation as sample_joint_activation,
 )

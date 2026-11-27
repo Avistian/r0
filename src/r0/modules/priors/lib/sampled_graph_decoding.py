@@ -25,7 +25,7 @@ from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGrap
 _DEFAULT_LIMITS = CausalLimits()
 
 
-def _function_prior(raw: Any) -> JointFunctionPrior:
+def decode_joint_function_prior(raw: Any) -> JointFunctionPrior:
     value = functional_record(raw, JointFunctionPrior)
     matrix = functional_record(value.get("matrix", {}), JointMatrixPrior)
     for name in ("families", "simple_families"):
@@ -50,10 +50,10 @@ def decode_joint_graph_request(raw: Any, limits: CausalLimits) -> JointGraphRequ
     for name in ("parents", "observed", "target"):
         value[name] = tuple(functional_array(row) for row in functional_array(value[name]))
     value["widths"] = functional_array(value["widths"])
-    value["function_prior"] = _function_prior(value["function_prior"])
+    value["function_prior"] = decode_joint_function_prior(value["function_prior"])
     root = functional_record(value["root_prior"], JointRootPrior)
     root["families"] = functional_array(root["families"])
-    root["function"] = _function_prior(root["function"])
+    root["function"] = decode_joint_function_prior(root["function"])
     value["root_prior"] = JointRootPrior(**root)
     value["raw_limits"] = RawDrawLimits(**functional_record(value["raw_limits"], RawDrawLimits))
     noises: list[JointGraphNoise] = []

@@ -1,5 +1,14 @@
 """Joint construction exports collected for the public priors entry point."""
 
+from r0.modules.priors.lib.geometry_graph_decoding import (
+    geometry_graph_from_dict as geometry_graph_from_dict,
+)
+from r0.modules.priors.lib.geometry_graph_request import (
+    GeometryGraphRequest as GeometryGraphRequest,
+)
+from r0.modules.priors.lib.geometry_graph_sampling import (
+    sample_geometry_graph as sample_geometry_graph,
+)
 from r0.modules.priors.lib.joint_activation_plans import JointActivationPlan as JointActivationPlan
 from r0.modules.priors.lib.joint_activation_plans import (
     joint_activation_plan_from_dict as joint_activation_plan_from_dict,
@@ -166,4 +175,7 @@ from r0.modules.priors.lib.observation_channel_layout import (
 )
 from r0.modules.priors.lib.observation_channel_layout import (
     allocate_observation_channels as allocate_observation_channels,
+)
+from r0.modules.priors.lib.sampled_geometry_graph import (
+    SampledGeometryGraph as SampledGeometryGraph,
 )
