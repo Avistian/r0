@@ -66,6 +66,7 @@ def native_vector_steps(
                         node.equation.root,
                         recipe.task.rows,
                         native_vector_rng(record["seed"], record["task_id"], "root", index),
+                        limits=recipe.limits,
                     ),
                     dtype=torch.float64,
                 )

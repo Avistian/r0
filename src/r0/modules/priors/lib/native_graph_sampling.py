@@ -147,6 +147,7 @@ def sample_native_graph(
                             "cpu",
                             capture=capture,
                             owner=("native", f"receiver:{node_index}", role),
+                            limits=request.limits,
                         )
                         receipts.append(
                             ParentCalibrationReceipt(
@@ -181,6 +182,7 @@ def sample_native_graph(
                             "cpu",
                             capture=capture,
                             owner=("native", f"receiver:{i}", "calibration"),
+                            limits=request.limits,
                         )
                         calibration = torch.cat(
                             [population.states[p] for p in request.parents[i]], dim=1
