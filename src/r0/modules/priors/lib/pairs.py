@@ -75,7 +75,17 @@ def paired_recipe(
         raise ValueError("pair intervention must change the selected value")
     changed = replace(controls, **{field: value})
     from r0.modules.priors.lib.network_innovation_recipe import NetworkInnovationRecipe
+    from r0.modules.priors.lib.prototype_batch_network import (
+        PrototypeBatchNetworkRecipe,
+        RealizedPrototypeBatchNetworkRecipe,
+    )
 
+    if isinstance(recipe, (PrototypeBatchNetworkRecipe, RealizedPrototypeBatchNetworkRecipe)):
+        if intervention not in ("noise", "separation"):
+            raise ValueError(
+                "prototype batch pairs support only noise/separation on the same population"
+            )
+        return recipe.with_task(changed)
     if isinstance(recipe, NetworkInnovationRecipe):
         if intervention not in ("noise", "separation") or recipe.source is None:
             raise ValueError(

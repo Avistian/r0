@@ -1,5 +1,11 @@
 """Public frozen prototype convex-mixture roots and explicit batch-reference records."""
 
+from .prototype_batch_decoding import prototype_batch_network_from_dict
+from .prototype_batch_network import (
+    PrototypeBatchNetworkRecipe,
+    RealizedPrototypeBatchNetworkRecipe,
+    realize_prototype_batch_network,
+)
 from .prototype_root_base import PrototypeRootBase, prototype_root_base_from_dict
 from .prototype_root_construction import (
     PrototypeBatchReference,
@@ -19,6 +25,10 @@ from .prototype_root_records import FrozenPrototypeRoot, PrototypeRootPlan
 from .prototype_weight_law import PrototypeWeightLaw
 
 __all__ = [
+    "PrototypeBatchNetworkRecipe",
+    "RealizedPrototypeBatchNetworkRecipe",
+    "realize_prototype_batch_network",
+    "prototype_batch_network_from_dict",
     "PrototypeRootBase",
     "prototype_root_base_from_dict",
     "PrototypeWeightLaw",

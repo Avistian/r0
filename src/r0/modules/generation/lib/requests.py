@@ -112,8 +112,32 @@ def generate_requested(request: RunRequest, task_id: int) -> TrainingTask:
 
 
 def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) -> bool:
+    from r0.modules.priors import (
+        PrototypeBatchNetworkRecipe,
+        RealizedPrototypeBatchNetworkRecipe,
+    )
+
+    selected = selected_recipe(request, task_id)
+    if isinstance(selected, (PrototypeBatchNetworkRecipe, RealizedPrototypeBatchNetworkRecipe)):
+        realized = recipe_from_dict(
+            record["recipe"], limits=request.causal_limits or selected.limits
+        )
+        expected = (
+            selected.request
+            if isinstance(selected, RealizedPrototypeBatchNetworkRecipe)
+            else selected
+        )
+        return (
+            isinstance(realized, RealizedPrototypeBatchNetworkRecipe)
+            and json.dumps(asdict(realized.request), sort_keys=True)
+            == json.dumps(asdict(expected), sort_keys=True)
+            and (realized.seed, realized.task_id) == (request.seed, task_id)
+            and record.get("sampling") == sampling_record(request)
+            and record["seed"] == request.seed
+            and record["task_id"] == task_id
+        )
     return (
-        record["recipe"] == json.loads(json.dumps(asdict(selected_recipe(request, task_id))))
+        record["recipe"] == json.loads(json.dumps(asdict(selected)))
         and record.get("sampling") == sampling_record(request)
         and record["seed"] == request.seed
         and record["task_id"] == task_id
