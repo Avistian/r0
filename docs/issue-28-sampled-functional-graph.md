@@ -110,3 +110,28 @@ variables, interventions, the local/Colab workbench and required runtime and
 scientific evidence also remain in #28. The authoritative scope remains
 `docs/specs/0028-causal-network-generators.md`; this checkpoint does not replace
 or narrow it.
+
+## Independent publication finding and repair candidate
+
+Independent spec review rejected candidate `665db66`: a `PCG64` subclass with an
+unchanged class name could override the caller state setter while its deep copy
+returned an ordinary NumPy engine. Failure at the raw-stream publication left
+the previously published named stream advanced. The exact original public probe
+and output are retained at
+`/tmp/r0-28-sampled-graph-spec-665db66/publication_probe.py` and `.log`.
+
+The repair validates concrete NumPy bit-generator types instead of class names
+before construction. The five declared engines remain supported; subclasses
+with arbitrary setter/deepcopy behavior are rejected before any caller changes.
+It does not claim rollback for arbitrary user-defined state setters. Regression
+cases place the failing subclass in each of the four roles: all four failed
+before repair (`/tmp/r0-28-graph-publication-red.log`), and the complete runtime
+suite passed 43 cases afterward (`/tmp/r0-28-graph-publication-green.log`). A
+subsequent test annotation adjustment addresses NumPy's private typed state;
+compatibility checks are running on that final candidate. Independent repair
+review remains pending. The original REJECT remains historical evidence.
+
+The standards reviewer found no documented-standard violations, with one
+nonblocking maintainability heuristic about positional snapshot tuples. That
+report is `/tmp/r0-28-sampled-graph-standards-665db66.txt`. It is not a correctness
+acceptance or a full-issue completion verdict.

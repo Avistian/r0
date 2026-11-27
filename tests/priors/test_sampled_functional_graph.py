@@ -2,6 +2,7 @@
 
 import copy
 from dataclasses import asdict, replace
+from typing import Any
 
 import numpy as np
 import pytest
@@ -238,3 +239,33 @@ def test_graph_emission_row_count_does_not_change_fitted_constants() -> None:
     assert first.calibrations == second.calibrations
     assert first.raw == second.raw
     assert first.final == second.final
+
+
+@pytest.mark.parametrize("role", [0, 1, 2, 3])
+def test_graph_rejects_overridden_engine_setters_before_any_caller_changes(role: int) -> None:
+    class PCG64(np.random.PCG64):
+        @property
+        def state(self) -> Any:
+            return super().state
+
+        @state.setter
+        def state(self, value: Any) -> None:
+            raise RuntimeError("injected publication failure")
+
+        def __deepcopy__(self, memo: dict[int, Any]) -> np.random.PCG64:
+            clone = np.random.PCG64(0)
+            clone.state = self.state
+            return clone
+
+    streams = [np.random.default_rng(seed) for seed in (13, 115, 116, 117)]
+    streams[role] = np.random.Generator(PCG64(115))
+    before = [copy.deepcopy(rng.bit_generator.state) for rng in streams]
+    with pytest.raises(ValueError, match="supported.*generator"):
+        priors.sample_joint_graph(
+            _small_request(),
+            named_rng=streams[0],
+            raw_rng=streams[1],
+            calibration_rng=streams[2],
+            fit_rng=streams[3],
+        )
+    assert [rng.bit_generator.state for rng in streams] == before
