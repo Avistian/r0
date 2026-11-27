@@ -305,7 +305,9 @@ class ExplorerSession:
             )
         from r0.modules.explorer.lib.observations import observation_action
 
-        observed = observation_action(action, self.task, data, self.output_dir)
+        observed = observation_action(
+            action, self.task, data, self.output_dir, archive=self.archive
+        )
         if observed is not None:
             return observed
         if action == "intervention_controls":

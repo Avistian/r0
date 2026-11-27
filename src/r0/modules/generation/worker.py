@@ -31,6 +31,11 @@ def main() -> int:
 
         print(json.dumps(observation_editor(raw_request), allow_nan=False))
         return 0
+    if raw_request.get("validation") == "observation-curve":
+        from r0.modules.generation.lib.observation_curve import observation_curve
+
+        print(json.dumps(observation_curve(raw_request), allow_nan=False))
+        return 0
     if raw_request.get("validation") == "network-graph":
         from r0.modules.generation.lib.network_graph import network_graph
 

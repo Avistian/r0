@@ -112,8 +112,9 @@ def test_guarded_observation_editor_archive_next_and_intervention(tmp_path: Path
         == original["recipe_json"]
     )
     assert session.request("export", {})["data"]
-    with pytest.raises(ValueError, match="required follow-on"):
-        session.request("curve", {"feature": 0, "points": 3})
+    curve = session.request("curve", {"feature": 0, "points": 3})["curve"]
+    assert curve["kind"] == "observation_causal_reference"
+    assert curve["recipe_json"] == original["recipe_json"]
 
 
 def test_guarded_observation_decode_and_timeout_preserve_baseline(

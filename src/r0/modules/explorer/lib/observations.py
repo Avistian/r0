@@ -47,17 +47,21 @@ def inspect_observation(
 
 
 def observation_action(
-    action: str, task: priors.TrainingTask, data: dict[str, Any], output_dir: Path
+    action: str,
+    task: priors.TrainingTask,
+    data: dict[str, Any],
+    output_dir: Path,
+    *,
+    archive: str | None = None,
 ) -> dict[str, Any] | None:
     if action not in ("mechanism", "intervention_controls", "observation_draft", "curve"):
         return None
     if json.loads(task.recipe_json)["recipe"].get("version") != "network-observation-recipe-v1":
         return None
     if action == "curve":
-        raise ValueError(
-            "Observation causal-reference curves remain required follow-on work; "
-            "use original-row traces or explicit interventions"
-        )
+        from r0.modules.explorer.lib.observation_curves import inspect_observation_curve
+
+        return inspect_observation_curve(task, archive, data, output_dir)
     return inspect_observation(
         task,
         data,

@@ -108,6 +108,7 @@ from .lib.functional_causal_evaluation import (
     sample_functional_prefix as sample_functional_prefix,
 )
 from .lib.functional_prefix import FunctionalPrefix as FunctionalPrefix
+from .lib.functional_reference import evaluate_functional_reference as evaluate_functional_reference
 from .lib.generate import Recipe as Recipe
 from .lib.generate import generate_task as generate_task
 from .lib.generate import recipe_from_dict as recipe_from_dict

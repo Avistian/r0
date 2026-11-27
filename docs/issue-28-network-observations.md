@@ -155,9 +155,20 @@ Local HTTP and notebook callbacks share the same session actions, including
 save/reopen/export and decimal-string transport for IDs above 2^53. Local callback
 verification is distinct from hosted Colab execution, which remains NOT_RUN.
 
-Causal reference curves are explicitly unavailable in this workbench slice and
-remain required follow-on work. The intended reference semantics clamp selected
-state/readout channels simultaneously, fix hidden roots to an original row and
-choose zero or original structural innovations; this is not a conditional mean.
-The UI does not silently evaluate selected hidden channels as original network
-inputs. Broader architecture selection policies also remain required.
+Causal reference curves clamp every selected observed state/readout channel
+simultaneously, fix hidden roots to the selected original row and choose zero or
+original structural innovations. Target aliases propagate the original observed
+clamp. Results are raw target readouts: target adapters, class probabilities and
+conditional means are not implied. The original population shape fixes root and
+innovation draws while query points vary. Means in structural noise laws remain
+present in the zero-innovation reference.
+
+The public `evaluate_observation_reference` validates the complete envelope and
+admits original plus query populations before finite masks or source replay.
+The guarded archive action additionally verifies the complete saved task,
+including semantic metadata and tensors, before slicing an anchor row. Curve
+JSON retains the complete original recipe, decimal-string task identity, source
+selection and alias annotations. Invalid requests and worker timeouts preserve
+the saved baseline. Local browser and shared callback delivery are covered;
+hosted execution remains NOT_RUN. Broader architecture selection policies remain
+required.
