@@ -172,3 +172,39 @@ selection and alias annotations. Invalid requests and worker timeouts preserve
 the saved baseline. Local browser and shared callback delivery are covered;
 hosted execution remains NOT_RUN. Broader architecture selection policies remain
 required.
+
+## General architecture observation extension
+
+`r0-propagated-block-v1` is an explicit r0 selection law, not a reproduction of
+P1's sequential equal-width source. It accepts all seven standalone families
+and authored combinations: variable-width dense/sparse blocks, irregular ordered
+multi-parent inputs, residual/projected skip paths and gated expert mixtures.
+The two P1 profiles retain their sequential, equal-width, single-expert limits
+and unchanged raw-draw consumption.
+
+The extension catalog contains every block's **propagated output**, in block
+order then channel order. A gated block contributes its mixed output, including
+projected skips and any supported post-block innovations; individual expert
+outputs, gate logits, root inputs and pre-noise intermediate values are not
+catalog entries. Parent order and source node mapping remain exactly those of
+the compiled frozen source. No architecture is simplified or resampled.
+
+`block` selection chooses uniformly among all valid contiguous within-block
+feature windows, weighted by the number of valid starts per block. Windows never
+cross width boundaries. `unrestricted` selects from the concatenated catalog
+without replacement. `internal` targets are selected without replacement from
+channels not selected as features. `final` targets are the last requested
+channels of the last block, excluded from feature candidates. Feature order is
+either catalog order or its recorded permutation. Insufficient widths/capacity
+reject without padding, retries or fallback. These are specified r0 laws; the
+pinned source's excluded first block, reserved target slots and possible overlap
+are confined to its existing profile.
+
+The existing complete observation envelope retains architecture, selection raw
+draws/snapshots, exact propagated catalog and original target mapping. Public
+archive replay, selected-row traces, state/readout interventions and causal
+references share these mappings. Source-specific noise placement restrictions
+still apply: general gated/skip sources may use explicit post-block noise, while
+pre-activation and pinned source noise retain their narrower accepted shapes.
+Dedicated workbench presets for this extension are a separate delivery increment.
+Additional expert-internal or gate-logit observation catalogs are not claimed.
