@@ -41,6 +41,8 @@ def hyperprior_graph_from_dict(
         )
         observation_metadata_cost(data, effective)
         raw_task = complete_topology_record(raw["task"], LinearRecipe)
+        if type(raw_task["class_offsets"]) not in (tuple, list):
+            raise ValueError("topology task class offsets require an explicit array")
         raw_task["class_offsets"] = tuple(raw_task["class_offsets"])
         task = LinearRecipe(**raw_task)
         prior = topology_hyperprior_from_dict(raw["topology"])
@@ -59,6 +61,9 @@ def hyperprior_graph_from_dict(
             caps,
             retained=outer["topology"],
         )
+        from r0.modules.priors.lib.hyperprior_graph_preflight import preflight_hyperprior_graph
+
+        preflight_hyperprior_graph(outer, raw, task, prior, declared, caps, limits=effective)
         request = HyperpriorGraphRequest(
             task,
             prior,

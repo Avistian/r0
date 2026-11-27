@@ -41,7 +41,7 @@ def topology_hyperprior_from_dict(data: Any):
         raise ValueError("invalid complete topology hyperprior request") from exc
 
 
-def sampled_topology_hyperprior_from_dict(
+def sampled_topology_hyperprior_metadata(
     data: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
 ) -> SampledTopologyHyperprior:
     try:
@@ -85,9 +85,19 @@ def sampled_topology_hyperprior_from_dict(
             raw["algorithm"],
             raw["version"],
         )
-        result.replay(limits=effective)
+        result.initial.validate_metadata(byte_limit=raw_limits.state_bytes)
+        result.final.validate_metadata(byte_limit=raw_limits.state_bytes)
+        result.validate_structure(limits=effective)
         if encode(asdict(result)) != encode(data):
             raise ValueError("topology hyperprior archive differs from complete canonical record")
         return result
     except (KeyError, TypeError, AttributeError, OverflowError, RecursionError, IndexError) as exc:
         raise ValueError("invalid complete sampled topology hyperprior archive") from exc
+
+
+def sampled_topology_hyperprior_from_dict(
+    data: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
+) -> SampledTopologyHyperprior:
+    result = sampled_topology_hyperprior_metadata(data, limits=limits)
+    result.replay(limits=recursive_effective_limits(result.limits, limits))
+    return result
