@@ -163,3 +163,25 @@ This slice does not add explorer/Colab controls, native categorical variables,
 non-Gaussian sampled innovations, separate-parent aggregation, fitted DT/RF/
 ExtraTrees/XGBoost/GBDT mechanisms, or residual standalone networks. It does not
 claim full #28, browser, scientific distribution or publication acceptance.
+
+
+## Converter span repair
+
+A later structural-topology workbench probe found that the initial pipeline
+builder and validator treated `(node, start, stop)` converter intervals as
+`(node, start, width)`. Repeated assignments could fail construction or silently
+create extra converters on latent channels. The original candidate and its
+rejection remain retained. Both sites now assign exactly `[start:stop]`, using
+`stop - start` entries; latent channels receive no numerical readout converter.
+
+Two public regression cases independently accumulate expected groups from feature
+assignments, with narrow and wider latent widths. Both failed before the repair;
+they and the existing pipeline/workbench cases pass afterward (36 tests). A
+separate public ExplorerSession probe passes six nondefault attachment/motif
+workflows across all three converter variants, including edits, reopening,
+repeated-row inspection and invalid-request state preservation. Procedures and
+original failures remain ignored under `docs/evidence/issue-28-pipeline-spans/`
+in `/tmp/r0-28-pipeline-spans`. This repairs unpublished pipeline candidates;
+it does not promise replay of their incorrectly allocated archives. Ordinary
+geometry-v1 semantics are unchanged. Independent repair review and combined
+full verification remain required.

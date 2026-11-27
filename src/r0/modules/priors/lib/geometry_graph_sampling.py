@@ -92,8 +92,8 @@ def sample_geometry_graph(
         if type(request) is GeometryPipelineRequest:
             converter_groups = [[""] * count for count in layout.converter_channels]
             for group, spans in zip(request.groups, layout.spans, strict=True):
-                for node, start, width in spans:
-                    converter_groups[node][start : start + width] = [group.name] * width
+                for node, start, stop in spans:
+                    converter_groups[node][start:stop] = [group.name] * (stop - start)
             pipeline_plans = tuple(
                 sample_joint_pipeline(
                     context,

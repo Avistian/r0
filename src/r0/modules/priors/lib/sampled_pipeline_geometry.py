@@ -43,9 +43,9 @@ class SampledPipelineGeometry(SampledGeometryGraph):
                 raise ValueError("sampled pipeline geometry or fit binding differs")
             groups = [""] * self.layout.converter_channels[i]
             for group, spans in zip(self.request.groups, self.layout.spans, strict=True):
-                for node, start, width in spans:
+                for node, start, stop in spans:
                     if node == i:
-                        groups[start : start + width] = [group.name] * width
+                        groups[start:stop] = [group.name] * (stop - start)
             if tuple(c.feature_group for c in planned.converters) != tuple(groups):
                 raise ValueError("pipeline converter group binding differs")
             if any(
