@@ -18,6 +18,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
 )
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
+from r0.modules.priors.lib.xgboost_vector import FrozenXGBoostVector
 
 type ParentMember = (
     FrozenLinearFunction
@@ -30,6 +31,7 @@ type ParentMember = (
     | FrozenProductFunction
     | FrozenMLPFunction
     | FrozenFittedTreeFunction
+    | FrozenXGBoostVector
     | FrozenNetworkFunction
 )
 _MEMBER_TYPES = (
@@ -43,6 +45,7 @@ _MEMBER_TYPES = (
     FrozenKumoProductFunction,
     FrozenMLPFunction,
     FrozenFittedTreeFunction,
+    FrozenXGBoostVector,
     FrozenNetworkFunction,
 )
 

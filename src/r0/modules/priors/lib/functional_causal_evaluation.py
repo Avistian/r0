@@ -173,6 +173,10 @@ def generate_functional_causal(
         )
         else recipe
     )
+    from r0.modules.priors.lib.xgboost_fit_graph import XGBoostFittedGraph
+
+    if isinstance(recipe, XGBoostFittedGraph):
+        recipe.validate_custody()
     if any(type(v) is not int or not 0 <= v < 2**63 for v in (seed, task_id)):
         raise ValueError("seed and task_id must be integers in [0, 2**63)")
     if device not in ("cpu", "cuda"):
@@ -264,6 +268,16 @@ def generate_functional_causal(
         "sampling_provenance": "authored",
     }
     card.update(fitted_card(recipe.version))
+    if isinstance(recipe, XGBoostFittedGraph):
+        card.update(
+            {
+                "construction": "independent-xgboost-synthetic-fit-v1",
+                "sampling_provenance": "retained-raw-fit-and-native-model-custody-v1",
+                "fitting_population": "iid-normal-independent-construction-rows",
+                "fitting_lifecycle": "fit-once-then-frozen-replay",
+                "source_fidelity": "explicit-lifecycle-adaptation-not-full-source-reproduction",
+            }
+        )
     from r0.modules.priors.lib.fitted_population_graph import PopulationFittedGraph
 
     if isinstance(recipe, PopulationFittedGraph):

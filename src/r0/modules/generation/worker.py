@@ -48,6 +48,10 @@ def main() -> int:
         return 0
     pairing = raw_request.pop("pairing", None)
     edit_policy = raw_request.pop("edit_policy", None)
+    if edit_policy is not None:
+        from r0.modules.generation.lib.authored_xgboost import prepare_authored_xgboost
+
+        prepare_authored_xgboost(raw_request, edit_policy)
     request = request_from_dict(raw_request)
     if edit_policy is not None:
         from r0.modules.generation.lib.edit_validation import validate_edit_request
