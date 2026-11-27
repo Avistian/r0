@@ -26,11 +26,13 @@ from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
 from r0.modules.priors.lib.network_decoding import decode_block, decode_network
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 
 _DEFAULT_LIMITS = CausalLimits()
 _REGISTRY = {
     "frozen-feature-conv1d-r0-v1": FrozenFeatureConv1D,
+    "frozen-recursive-forest-function-v1": FrozenRecursiveForestFunction,
     "frozen-network-block-v1": FrozenNetworkBlockFunction,
     "frozen-structural-network-v1": FrozenNetworkFunction,
     "frozen-fitted-tree-function-v1": FrozenFittedTreeFunction,
@@ -59,6 +61,7 @@ _KUMO = frozenset(
 )
 _CHEAP = frozenset(_REGISTRY) - {
     "frozen-feature-conv1d-r0-v1",
+    "frozen-recursive-forest-function-v1",
     "frozen-network-block-v1",
     "frozen-structural-network-v1",
     "frozen-kumo-product-function-v1",
@@ -111,7 +114,7 @@ def _activation(data: Any) -> CalibratedActivation:
     return CalibratedActivation(**fields)
 
 
-def _decode(data: Any, allowed: frozenset[str]) -> FrozenFunction:
+def _decode(data: Any, allowed: frozenset[str], limits: CausalLimits) -> FrozenFunction:
     if type(data) is not dict:
         raise ValueError("frozen function record must be an object")
     raw = cast(dict[str, Any], data)
@@ -124,6 +127,10 @@ def _decode(data: Any, allowed: frozenset[str]) -> FrozenFunction:
         from r0.modules.priors.lib.feature_conv_decoding import decode_feature_conv1d
 
         return decode_feature_conv1d(fields)
+    if record_type is FrozenRecursiveForestFunction:
+        from r0.modules.priors.lib.recursive_function_decoding import recursive_function_from_dict
+
+        return recursive_function_from_dict(raw, limits=limits)
     if record_type is FrozenNetworkBlockFunction:
         fields["incoming_widths"] = tuple(_array(fields["incoming_widths"]))
         fields["block"] = decode_block(fields["block"])
@@ -134,12 +141,12 @@ def _decode(data: Any, allowed: frozenset[str]) -> FrozenFunction:
         return decode_fitted_tree(fields)
     if record_type is FrozenParentFunction:
         members = frozenset(_REGISTRY) - {"frozen-parent-function-v1"}
-        fields["children"] = tuple(_decode(c, members) for c in _array(fields["children"]))
+        fields["children"] = tuple(_decode(c, members, limits) for c in _array(fields["children"]))
         fields["joint"] = (
-            _decode(fields["joint"], members) if fields.get("joint") is not None else None
+            _decode(fields["joint"], members, limits) if fields.get("joint") is not None else None
         )
         fields["reducer"] = (
-            _decode(fields["reducer"], frozenset(("frozen-mlp-function-v1",)))
+            _decode(fields["reducer"], frozenset(("frozen-mlp-function-v1",)), limits)
             if fields.get("reducer") is not None
             else None
         )
@@ -159,26 +166,30 @@ def _decode(data: Any, allowed: frozenset[str]) -> FrozenFunction:
         fields["phases"] = tuple(_array(fields["phases"]))
     elif record_type in (FrozenDiscretizationFunction, FrozenEMFunction):
         fields["centers"] = _matrix(fields["centers"])
-        fields["linear"] = _decode(fields["linear"], _LINEAR)
+        fields["linear"] = _decode(fields["linear"], _LINEAR, limits)
         if record_type is FrozenEMFunction:
             fields["scales"] = tuple(_array(fields["scales"]))
     elif record_type in (FrozenProductFunction, FrozenKumoProductFunction):
         allowed_children = _KUMO if record_type is FrozenKumoProductFunction else _CHEAP
-        fields["left"] = _decode(fields["left"], allowed_children)
-        fields["right"] = _decode(fields["right"], allowed_children)
+        fields["left"] = _decode(fields["left"], allowed_children, limits)
+        fields["right"] = _decode(fields["right"], allowed_children, limits)
     else:
-        fields["linears"] = tuple(_decode(layer, _LINEAR) for layer in _array(fields["linears"]))
+        fields["linears"] = tuple(
+            _decode(layer, _LINEAR, limits) for layer in _array(fields["linears"])
+        )
         fields["activations"] = tuple(_activation(a) for a in _array(fields.get("activations", ())))
     return record_type(**fields)
 
 
-def decode_admitted_function(data: Any) -> FrozenFunction:
+def decode_admitted_function(
+    data: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
+) -> FrozenFunction:
     """Decode after enclosing raw metadata admission and before aggregate geometry admission.
 
     Graph nodes are not the virtual dimensions counted by standalone admission.
     Enclosing callers must admit the complete graph before allocating numerical arrays.
     """
-    return _decode(data, frozenset(_REGISTRY))
+    return _decode(data, frozenset(_REGISTRY), limits)
 
 
 def frozen_function_from_dict(
@@ -189,7 +200,7 @@ def frozen_function_from_dict(
     if type(limits) is not CausalLimits:
         raise ValueError("frozen function decoding requires caller-owned limits")
     admit_function_metadata(data, limits)
-    function = decode_admitted_function(data)
+    function = decode_admitted_function(data, limits=limits)
     # Admission for one evaluation row includes center-dependent working floors.
     # Every later call separately admits its actual row count before tensors.
     admit_frozen_function(function, 1, limits)

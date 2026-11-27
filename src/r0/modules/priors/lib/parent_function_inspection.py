@@ -12,6 +12,8 @@ from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.kumo_product_inspection import kumo_product_steps
 from r0.modules.priors.lib.network_inspection import network_steps
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
+from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_steps
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 
 
@@ -34,6 +36,10 @@ def parent_function_steps(
             if isinstance(function.joint, FrozenKumoProductFunction)
             else parents
         )
+        if isinstance(function.joint, FrozenRecursiveForestFunction):
+            joint_parents = recursive_function_steps(
+                function.joint, inputs, prefix=identifier, parents=parents, indices=indices, add=add
+            )
         if isinstance(function.joint, FrozenNetworkFunction):
             joint_parents = network_steps(
                 function.joint,
@@ -77,6 +83,15 @@ def parent_function_steps(
             if isinstance(child, FrozenKumoProductFunction)
             else [parents[index]]
         )
+        if isinstance(child, FrozenRecursiveForestFunction):
+            child_parents = recursive_function_steps(
+                child,
+                inputs[:, offset:stop],
+                prefix=identifier,
+                parents=[parents[index]],
+                indices=indices,
+                add=add,
+            )
         if isinstance(child, FrozenNetworkFunction):
             child_parents = network_steps(
                 child,

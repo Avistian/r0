@@ -31,6 +31,7 @@ from r0.modules.priors.lib.network_evaluation import (
     evaluate_network_block,
     network_geometry,
 )
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.weight_geometry import Matrix
 
@@ -46,6 +47,7 @@ type FrozenFunction = (
     | FrozenMLPFunction
     | FrozenParentFunction
     | FrozenFittedTreeFunction
+    | FrozenRecursiveForestFunction
     | FrozenNetworkBlockFunction
     | FrozenNetworkFunction
     | FrozenFeatureConv1D
@@ -63,6 +65,7 @@ _FUNCTION_TYPES = (
     FrozenMLPFunction,
     FrozenParentFunction,
     FrozenFittedTreeFunction,
+    FrozenRecursiveForestFunction,
     FrozenNetworkFunction,
     FrozenFeatureConv1D,
     FrozenNetworkBlockFunction,
@@ -77,6 +80,12 @@ def function_geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, i
         from r0.modules.priors.lib.feature_conv_graph import convolution_geometry
 
         return convolution_geometry(function)
+    if type(function) is FrozenRecursiveForestFunction:
+        return (
+            (function.input_width, function.output_width),
+            256 * len(function.forest.trees) + 16 * function.input_width,
+            0,
+        )
     if type(function) is FrozenNetworkBlockFunction:
         b = function.block
         widths = (
@@ -230,6 +239,10 @@ def _evaluate(
         from r0.modules.priors.lib.feature_conv_evaluation import evaluate_admitted_feature_conv1d
 
         return evaluate_admitted_feature_conv1d(function, inputs)
+    if type(function) is FrozenRecursiveForestFunction:
+        from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_outputs
+
+        return recursive_function_outputs(function, inputs)[0]
     if type(function) is FrozenNetworkBlockFunction:
         return evaluate_network_block(
             function.block,
@@ -368,6 +381,17 @@ def admit_frozen_function(
     report["estimated_working_bytes"] += storage_adjustment
     if report["estimated_working_bytes"] > limits.working_bytes:
         raise ValueError("convolution complete metadata and working storage exceed limits")
+    from r0.modules.priors.lib.recursive_forest_function import recursive_function_members
+
+    for member in recursive_function_members(function):
+        extra = member.admit(rows, limits)
+        report["estimated_working_bytes"] += extra["estimated_working_bytes"]
+        report["parameters"] += extra["parameters"]
+    if (
+        report["estimated_working_bytes"] > limits.working_bytes
+        or report["parameters"] > limits.parameters
+    ):
+        raise ValueError("recursive function and composite aggregate workspace exceeds limits")
     return report
 
 

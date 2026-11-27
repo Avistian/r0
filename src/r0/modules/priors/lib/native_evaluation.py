@@ -18,6 +18,7 @@ from r0.modules.priors.lib.native_causal import (
 )
 from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
+from r0.modules.priors.lib.recursive_function_metadata import recursive_mechanism_metadata
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.signal_noise import signal_noise_scale
 from r0.modules.priors.lib.source_root_base import functional_root_values
@@ -282,6 +283,7 @@ def generate_native_causal(
         encode(
             {
                 "family": "native_causal",
+                **recursive_mechanism_metadata(tuple(n.equation.function for n in recipe.nodes)),
                 "version": recipe.version,
                 "target_origin": "native-variable-v1",
                 "target": recipe.target,

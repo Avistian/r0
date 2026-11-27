@@ -21,6 +21,8 @@ from r0.modules.priors.lib.native_vector_evaluation import (
 )
 from r0.modules.priors.lib.network_inspection import network_steps
 from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
+from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_steps
 from r0.modules.priors.lib.source_root_base import functional_root_values
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -61,7 +63,10 @@ def native_vector_steps(
                 indices=indices,
                 add=add,
             )
-        if isinstance(node.equation.function, (FrozenNetworkFunction, FrozenFeatureConv1D)):
+        if isinstance(
+            node.equation.function,
+            (FrozenNetworkFunction, FrozenFeatureConv1D, FrozenRecursiveForestFunction),
+        ):
             if node.equation.root is not None:
                 network_inputs = torch.tensor(
                     functional_root_values(
@@ -88,6 +93,15 @@ def native_vector_steps(
                     node.equation.function,
                     network_inputs,
                     prefix=f"convolution-{index}",
+                    parents=parents,
+                    indices=indices,
+                    add=add,
+                )
+            elif isinstance(node.equation.function, FrozenRecursiveForestFunction):
+                parents = recursive_function_steps(
+                    node.equation.function,
+                    network_inputs,
+                    prefix=f"recursive-{index}",
                     parents=parents,
                     indices=indices,
                     add=add,

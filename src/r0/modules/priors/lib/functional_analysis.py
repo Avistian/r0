@@ -29,6 +29,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction, NetworkAffine
 
 if TYPE_CHECKING:
@@ -173,6 +174,11 @@ def function_certificates(
             reduce(_product, column) if function.aggregation == "product" else _sum(list(column))
             for column in zip(*members, strict=True)
         ]
+    if type(function) is FrozenRecursiveForestFunction:
+        sources = _sum(
+            [inputs[n.feature] for t in function.forest.trees for n in t.nodes if n.left != -1]
+        ).sources
+        return [ChannelCertificate(sources) for _ in range(function.output_width)]
     if type(function) is FrozenFittedTreeFunction:
         sources = _sum(
             [inputs[f] for o in function.outputs for t in o.trees for f in t.features if f >= 0]
