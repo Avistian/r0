@@ -69,3 +69,11 @@ fields and unused controls. Unbounded Zipf moment order is exponent minus one;
 bounded and continuous laws here have all finite positive absolute moments.
 This is law emission, not a claim of source profile selection or joint-root
 graph integration.
+
+Aggregate raw admission uses public frozen RawDrawSpec declarations and
+RawDrawLedger.admit_draws before allocating the root output. This includes
+already retained records, the actual bound stream name, ownership metadata,
+all raw numbers, and the ledger's snapshot allowance. It shares the exact
+per-record cost with capture. Admission is read-only, not a reservation: later
+capture still checks its live remaining capacity. Invalid ownership rejects
+before output allocation; finite-output failures still roll back atomically.

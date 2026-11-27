@@ -2,23 +2,22 @@
 
 import copy
 import hashlib
-import math
 from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any, cast
+from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
 
-from r0.modules.priors.lib.joint_sampling_records import validate_name, validate_path
+from r0.modules.priors.lib.joint_sampling_records import validate_name
 from r0.modules.priors.lib.joint_streams import JointStreamLimits, stream_states
 from r0.modules.priors.lib.raw_draw_records import (
     RawDrawLimits,
     RawDrawRecord,
-    draw_arguments,
     numpy_draw,
     state_digest,
 )
+from r0.modules.priors.lib.raw_draw_spec import RawDrawSpec
 
 _DEFAULT_LIMITS = RawDrawLimits()
 
@@ -62,6 +61,30 @@ class RawDrawLedger:
             raise ValueError("final aggregate raw record limit exceeded")
         for rng in self._bindings.values():
             state_digest(rng, limits.state_bytes)
+
+    def _admit_additional(self, draws: int, numbers: int, retained_bytes: int) -> None:
+        if (
+            len(self._records) + draws > self.limits.draws
+            or self._numbers + numbers > self.limits.numbers
+            or self._bytes + retained_bytes + 2 * self.limits.state_bytes
+            > self.limits.working_bytes
+        ):
+            raise ValueError("raw draw retained record limit exceeded")
+
+    def admit_draws(self, rng: np.random.Generator, draws: tuple[RawDrawSpec, ...]) -> None:
+        """Admit a complete sequence without drawing, reserving or changing the ledger."""
+        self._available()
+        if type(draws) is not tuple or any(type(draw) is not RawDrawSpec for draw in draws):
+            raise ValueError("raw admission requires frozen draw declarations")
+        stream = self._stream_for(rng) if self._staged else "raw"
+        before = state_digest(rng, self.limits.state_bytes)
+        if self._staged and before != self._expected[stream]:
+            raise ValueError("unrecorded RNG draw before raw admission")
+        self._admit_additional(
+            len(draws),
+            sum(draw.numbers for draw in draws),
+            sum(draw.retained_bytes(stream) for draw in draws),
+        )
 
     def _stream_for(self, rng: np.random.Generator) -> str:
         for name, bound in self._bindings.items():
@@ -142,26 +165,9 @@ class RawDrawLedger:
         if stream is not None and stream != bound:
             raise ValueError("raw draw stream label differs from its bound RNG")
         stream = bound
-        validate_path(owner)
-        validate_name(role, "raw draw role")
-        validate_name(stream, "raw draw stream")
-        draw_arguments(distribution, shape, parameters)
-        count = math.prod(shape)
-        metadata = sum(
-            len(cast(tuple[Any, ...], v)) if type(v) is tuple else 1 for _, v in parameters
-        )
-        cost = (
-            96 * count
-            + 128 * (metadata + len(shape) + len(owner))
-            + 1024
-            + sum(len(s.encode()) for s in (*owner, role, stream, distribution))
-        )
-        if (
-            len(self._records) + 1 > self.limits.draws
-            or self._numbers + count > self.limits.numbers
-            or self._bytes + cost + 2 * self.limits.state_bytes > self.limits.working_bytes
-        ):
-            raise ValueError("raw draw retained record limit exceeded")
+        spec = RawDrawSpec(owner, role, distribution, shape, parameters)
+        count, cost = spec.numbers, spec.retained_bytes(stream)
+        self._admit_additional(1, count, cost)
         before = state_digest(rng, self.limits.state_bytes)
         if before != self._expected[stream]:
             raise ValueError("unrecorded RNG draw before raw capture")

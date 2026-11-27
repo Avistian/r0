@@ -4,7 +4,9 @@ import numpy as np
 from numpy.typing import NDArray
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.joint_sampling_records import validate_path
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger
+from r0.modules.priors.lib.raw_draw_spec import RawDrawSpec
 from r0.modules.priors.lib.source_root_laws import SourceRootLaw
 
 _DEFAULT_LIMITS = CausalLimits()
@@ -40,36 +42,46 @@ def draw_source_root(
     if capture is not None and type(capture) is not RawDrawLedger:
         raise ValueError("root capture must be a raw draw ledger")
     ledger = capture if capture is not None else RawDrawLedger()
+    validate_path(owner)
+    declarations: list[RawDrawSpec] = []
+    for column, coordinate in enumerate(law.coordinates):
+        family = coordinate.family
+        distribution = (
+            "normal"
+            if family == "gaussian"
+            else "choice"
+            if family == "categorical"
+            else "zipf"
+            if family == "zipf"
+            else "random"
+        )
+        parameters = (
+            (
+                ("count", len(coordinate.probabilities)),
+                ("probabilities", coordinate.probabilities),
+            )
+            if family == "categorical"
+            else (("exponent", coordinate.exponent),)
+            if family == "zipf"
+            else ()
+        )
+        declarations.append(
+            RawDrawSpec((*owner, f"column:{column}"), "values", distribution, (rows,), parameters)
+        )
+    ledger.admit_draws(rng, tuple(declarations))
     with ledger.transaction(rng) as (stream, staged):
         output = np.empty((rows, width), dtype=np.float64)
-        for column, coordinate in enumerate(law.coordinates):
+        for column, (coordinate, spec) in enumerate(
+            zip(law.coordinates, declarations, strict=True)
+        ):
             family = coordinate.family
-            distribution = (
-                "normal"
-                if family == "gaussian"
-                else "choice"
-                if family == "categorical"
-                else "zipf"
-                if family == "zipf"
-                else "random"
-            )
-            parameters = (
-                (
-                    ("count", len(coordinate.probabilities)),
-                    ("probabilities", coordinate.probabilities),
-                )
-                if family == "categorical"
-                else (("exponent", coordinate.exponent),)
-                if family == "zipf"
-                else ()
-            )
             raw = staged.draw(
                 stream,
-                owner=(*owner, f"column:{column}"),
-                role="values",
-                distribution=distribution,
-                shape=(rows,),
-                parameters=parameters,
+                owner=spec.owner,
+                role=spec.role,
+                distribution=spec.distribution,
+                shape=spec.shape,
+                parameters=spec.parameters,
             )
             with np.errstate(over="ignore", invalid="ignore"):
                 if family == "gaussian":
