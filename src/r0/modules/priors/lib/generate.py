@@ -87,6 +87,7 @@ from r0.modules.priors.lib.source_causal_prior import SourceActivationPrior, Sou
 from r0.modules.priors.lib.source_matrix import SourceMatrixCausalRecipe
 from r0.modules.priors.lib.topology_graph_decoding import topology_graph_from_dict
 from r0.modules.priors.lib.training_task import TrainingTask
+from r0.modules.priors.lib.typed_policy_records import SampledTypedInterventionPolicy
 
 type Recipe = (
     PrototypeBatchNetworkRecipe
@@ -95,6 +96,7 @@ type Recipe = (
     | NetworkInputView
     | CausalInterventionRecipe
     | SampledInterventionPolicy
+    | SampledTypedInterventionPolicy
     | BaseRecipe
     | ConvertedCausalRecipe
     | SampledConvertedGraph
@@ -176,6 +178,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         return converted_graph_from_dict(fields, limits=limits)
     if version == "converted-causal-v1":
         return converted_recipe_from_dict(fields, limits=limits)
+    if version == "sampled-typed-intervention-policy-v1":
+        from r0.modules.priors.lib.typed_policy_decoding import typed_policy_from_dict
+
+        return typed_policy_from_dict(data, limits=limits or CausalLimits())
     if version == "sampled-intervention-policy-v1" or (
         "reference_raw" in fields and "runtime" in fields
     ):
@@ -364,6 +370,10 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
         return generate_prototype_batch_network(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkRecipe):
         return generate_network(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, SampledTypedInterventionPolicy):
+        from r0.modules.priors.lib.typed_policy_output import generate_typed_policy_task
+
+        return generate_typed_policy_task(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, SampledInterventionPolicy):
         from r0.modules.priors.lib.intervention_policy_output import generate_policy_task
 

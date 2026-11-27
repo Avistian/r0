@@ -185,6 +185,10 @@ def compare_causal_pair(
     from r0.modules.priors.lib.generate import generate_task, recipe_from_dict
 
     b, a = json.loads(before.recipe_json), json.loads(after.recipe_json)
+    if a["recipe"].get("version") == "sampled-typed-intervention-policy-v1":
+        from r0.modules.priors.lib.typed_policy_output import compare_typed_policy_pair
+
+        return compare_typed_policy_pair(before, after, limits=limits)
     if a["recipe"].get("version") == "sampled-intervention-policy-v1":
         from r0.modules.priors.lib.intervention_policy_output import compare_policy_pair
 
