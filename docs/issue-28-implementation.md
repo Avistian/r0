@@ -221,3 +221,35 @@ browser/Colab/GPU and scientific acceptance. Smoke/eval-smoke are NOT_AVAILABLE.
 Complete source activation selection/calibration, wider graph/network/tree/GP and
 root/noise/weight variants, typed states, interventions and the full workbench remain
 required. The full goal stays active.
+
+
+## Source activation selection and authored calibration checkpoint
+
+At `d9193b8`, public retained selectors preserve the pinned source's four/eight
+fixed-family slot multiplicities, 27 fixed primitives and distinct real/integer
+power laws. Named local/global/meta and shared/refresh policies retain complete
+selection references. A rejected hierarchical selection commits neither RNG
+advancement nor partial records. Authored causal nodes now support an independently
+fitted standardize/rescale/activate/standardize pipeline with frozen constants,
+calibration identity, per-channel shifts and accounted storage. Shared generation,
+JSON replay and row inspection use those same constants.
+[Laws, source adaptations and evidence](issue-28-source-activations.md).
+
+Full checks at the repaired source pass **653 tests, one skipped**, all static
+gates passing. Initial `c7cf429` is retained as **REJECT** despite its passing
+652-test suite: scaling before centering distorted a nearly constant large-offset
+channel's population standard deviation. The repair preserves that spread and
+keeps an overflow branch for opposite-sign extremes. Original fixture, independent
+Decimal oracle, saved wrong outputs and RED/GREEN remain inspectable. Independent
+verification passes ten Decimal fixtures, four coupled-function oracles, 480 exact
+local selections, six policy combinations, malformed-record and rollback checks,
+72 byte-exact legacy regression cases and new binary/multiclass calibrated cases.
+Both standards stages find no hard violations; resource ownership remains a
+nonblocking heuristic. All final programs and raw outcomes are retained.
+
+This increment supplies selector APIs and authored frozen pipelines. Their binding
+to sampled causal/matrix profiles, shared rescale sampling, remaining L2/Kumaraswamy
+wrappers, wider graph/network/tree/GP and structural options, typed states,
+interventions and actual browser/Colab delivery remain required. Smoke/eval-smoke
+are NOT_AVAILABLE; scientific and supported-size acceptance are not established.
+The full issue #28 goal stays active.

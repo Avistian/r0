@@ -118,9 +118,13 @@ slot and primitive catalogs. A worked identity pipeline on the independent sampl
 {-1,+1}, scale 2, reduces algebraically to `2*x/(2 + 0.0001*1.0001)`. Generation,
 JSON replay and row inspection agree for 16 and 32 task rows without refitting.
 A child-draw limit case verifies a rejected selection leaves the injected RNG and
-frozen record unchanged. Development RED/GREEN logs are retained in `/tmp` for
-publication with the final verification checkpoint. Full checks and independent
-review are still pending; no whole-issue or scientific acceptance is claimed.
+frozen record unchanged. [Development RED/GREEN logs](research/0028-source-activation-development.json)
+retain their exact outputs and hashes as working-tree evidence, separately from
+frozen-source full checks. The offset repair has separate
+[RED](research/0028-source-activation-offset-red.txt) and
+[GREEN](research/0028-source-activation-offset-green.txt) logs. Final full checks at `d9193b8` pass **653 tests, one skipped**, including all static
+gates. Independent repaired-source review passes the bounded checks below; no whole-issue
+or scientific acceptance is claimed.
 
 
 ## Initial independent rejection and repair
@@ -136,6 +140,70 @@ the wrong constants; their agreement did not establish mathematical correctness.
 
 The repair centers on a represented calibration value before scaling deviations,
 with an overflow branch for opposite-sign extremes. The regression retains the
-independent Decimal oracle's constants and tanh query output. Final repair checks
-and the other independent dynamic audits remain pending. The initial rejection is
+independent Decimal oracle's constants and tanh query output. Final [full repair checks](research/0028-source-activation-check-d9193b8.txt) pass
+653 tests, one skipped, including all static gates. The independent dynamic audit
+is retained separately below. The initial rejection is
 not erased by the passing original repository suite.
+
+
+## Final independent verification and reproduction
+
+The [final spec review](research/0028-source-activation-spec-repair.txt) reports
+**PASS** for the bounded selector/authored-wrapper increment at `d9193b8`:
+
+- Ten independent Decimal calibration fixtures, including original/negative large
+  offsets, adjacent maximum floats, opposite-sign/asymmetric extremes, constant
+  maximum/zero/subnormal channels, subnormal spread and ordinary values. Maximum
+  inverse-scale relative error is 1.12e-16 and maximum fitted-function absolute
+  error is 4.45e-16 within these fixtures.
+- Four NumPy channel-coupled function oracles (softmax, tied maximum, rank, argsort).
+- 480 independently predicted local selections covering all eighteen selector
+  slots and integer outputs 2..5; six local/global/meta by shared/refresh policy
+  combinations and explicit global exponent reuse.
+- Nine malformed selection and six malformed calibration records rejected;
+  legacy priors reject fitted wrappers. Both sampler forks isolate state; rejected
+  numerical/categorical children preserve RNG and scope. Calibration admission
+  rejects before consuming randomness.
+- **72 exact legacy regression cases**: twelve existing profiles, three topologies,
+  two seeds. Recipes, arrays, identities, mechanism JSON and row traces match
+  `97ff24d` byte-for-byte; all 72 generated successfully. These cases do not cover
+  classification. Two additional new calibrated binary/multiclass fixtures check
+  analytic scores, JSON replay and original-row target traces.
+
+[Receipt](research/0028-source-activation-repair-receipt.json) binds four final
+executed programs and confirms 66 imported source-file hashes match the frozen
+revision. [Raw evidence manifest](research/0028-source-activation-repair-artifacts.json)
+retains the exact 1,955,447-byte ZIP in three ordered binary parts. Concatenate with
+no separator and verify the manifest's SHA-256 before extracting into a new folder.
+The archive contains all per-case raw outputs, fixtures, saved recipes/arrays/traces,
+complete receipt and original harness errors; the baseline source checkout is
+excluded and can be reconstructed from its Git revision. The overstrict oracle
+mean tolerance, a stdlib module-name collision and a missing shell Python alias
+remain harness history, distinct from the original product rejection.
+
+The four published `scripts/verify_source_activation_*.py` files are byte-identical
+to the final executed programs, with their publication names mapped in the manifest.
+Use explicit pinned source and a fresh output directory, for example:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+PYTHONPATH=/path/to/d9193b8/src /path/to/python \
+  scripts/verify_source_activation_numerical.py /new/numerical-output
+```
+
+Run selectors and coupled programs the same way. Run compatibility separately with
+the base and repaired source trees and compare their `compatibility.json` records.
+The record of that comparison is [retained here](research/0028-source-activation-compatibility.json).
+
+[Initial standards review](research/0028-source-activation-standards.txt) found no
+documented violations and one nonblocking ownership/duplication heuristic in
+activation working-channel accounting. Its [repair delta](research/0028-source-activation-standards-delta.txt)
+found no new findings and verified original evidence integrity. These reports did
+not rerun the suite or replace mathematical verification.
+
+The publication changes documentation, retained evidence and portable programs;
+source/test bytes remain those checked and independently reviewed at `d9193b8`.
+The one full-suite skip is the existing CUDA case. Live CLI help exposes only
+replay/oracle/diagnose-priors, so smoke/eval-smoke remain NOT_AVAILABLE. Browser,
+Colab, GPU, supported-size and scientific acceptance remain outstanding. Timing
+and process peak RSS are NOT_MEASURED for this increment.
