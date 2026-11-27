@@ -122,13 +122,22 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
     fields = dict(data)
     raw_limits = fields.pop("causal_limits", None)
     limits = None if raw_limits is None else CausalLimits(**raw_limits)
-    recipe = recipe_from_dict(fields.pop("recipe"), limits=limits or CausalLimits())
+    raw_construction = fields.pop("construction", None)
+    construction = None if raw_construction is None else GraphConstruction(**raw_construction)
+    # Construction-only transport derives its task inside the guarded worker.
+    # Explicit recipe controls still take precedence and must pass RunRequest's
+    # geometry binding check, so contradictory controls cannot be ignored.
+    raw_recipe = (
+        construction.task_record()
+        if "recipe" not in fields and construction is not None
+        else fields.pop("recipe", None)
+    )
+    recipe = recipe_from_dict(raw_recipe, limits=limits or CausalLimits())
     sampling = fields.pop("sampling", None)
-    construction = fields.pop("construction", None)
     return RunRequest(
         recipe,
         sampling=None if sampling is None else RecipeSampling(**sampling),
         causal_limits=limits,
-        construction=None if construction is None else GraphConstruction(**construction),
+        construction=construction,
         **fields,
     )

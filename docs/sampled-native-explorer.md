@@ -14,7 +14,9 @@ class count follow the sampled target domain. The shared guarded generation
 transport binds this row geometry before sampling, then saves the complete
 sampled archive. Dataset shape fields above the construction panel do not override
 these controls. Root and child function catalogs must have compatible shared
-named preference contracts.
+named preference contracts. Malformed row, context or observed-channel controls
+are validated inside the guarded worker after the attempt receipt is created;
+the failed attempt is retained and the active dataset stays unchanged.
 
 Each `domains` entry exposes kinds, cardinality catalogs, emissions, frequency
 laws, concentration/temperature bounds, threshold laws/scales and continuous width.
