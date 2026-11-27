@@ -19,10 +19,13 @@ try {
   await b.click("next");assert.equal(await b.evaluate("$('task-id').value"),"18014398509481988");
   assert.deepEqual(JSON.parse(await b.evaluate("current.recipe_json")).recipe.root,root);
   await b.evaluate(`$('replay-record').value=${JSON.stringify(raw)}`);await b.click("replay");
-  await b.evaluate("$('prototype-lifecycle').value='prototype-batch-reference-v1'");await b.click("prototype-apply");
-  let rejected=false;try{await b.click("construct");}catch{rejected=true;}assert.ok(rejected);
+  await b.evaluate("$('prototype-lifecycle').value='prototype-batch-reference-v1';$('prototype-rho').value='0.25'");await b.click("prototype-apply");
+  await b.click("construct");
+  assert.equal(JSON.parse(await b.evaluate("current.recipe_json")).recipe.version,"prototype-batch-network-realized-v1");
+  await b.evaluate(`$('replay-record').value=${JSON.stringify(raw)}`);await b.click("replay");
+  let rejected=false;
   assert.equal(await b.evaluate("current.recipe_json"),raw);
-  await b.evaluate("$('prototype-lifecycle').value='frozen-independent-prototype-bank-r0-v1'");await b.click("prototype-apply");
+  await b.evaluate("$('prototype-lifecycle').value='frozen-independent-prototype-bank-r0-v1';$('prototype-rho').value='0.125'");await b.click("prototype-apply");
   await b.click("mechanism-load");assert.equal(await b.evaluate("$('source-root-editor').hidden"),false);
   assert.equal(await b.evaluate("$('source-root-json').readOnly"),true);
   await b.evaluate("$('source-root-edit-policy').value='authored';$('source-root-edit-policy').onchange();$('source-root-json').value='{}'");
@@ -47,5 +50,5 @@ try {
     assert.equal(retained.mode,mode);if(mode.startsWith("dirichlet")) assert.equal(retained.trials,null);
   }
   await b.screenshot("prototype-dirichlet.png");assert.deepEqual(b.exceptions,[]);
-  await fs.writeFile(path.join(out,"receipt.json"),JSON.stringify({status:"PASS",raw,authored,allWeightLaws:true,batchReferenceRejected:true,exactIdentity:true,traceRows:trace.graph.rows,exceptions:b.exceptions},null,2));
+  await fs.writeFile(path.join(out,"receipt.json"),JSON.stringify({status:"PASS",raw,authored,allWeightLaws:true,batchReferenceSeparate:true,exactIdentity:true,traceRows:trace.graph.rows,exceptions:b.exceptions},null,2));
 } finally {b.close();}

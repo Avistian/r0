@@ -99,6 +99,13 @@ def explain_generation(
             raise ValueError("network input views do not have composite children")
         return {**network_view_steps(task, indices, add, limits=limits), "nodes": nodes}
 
+    if record["recipe"].get("version") == "prototype-batch-network-realized-v1":
+        from r0.modules.priors.lib.prototype_batch_inspection import prototype_batch_steps
+
+        if component is not None:
+            raise ValueError("prototype batch networks do not have composite children")
+        return {**prototype_batch_steps(task, indices, add, limits=limits), "nodes": nodes}
+
     if record["recipe"].get("version") == "standalone-network-v1":
         from r0.modules.priors.lib.network_inspection import standalone_network_steps
 

@@ -97,14 +97,21 @@ def network_editor(recipe: priors.NetworkRecipe | priors.NetworkInputView) -> di
 
 
 def network_editor_record(editable: dict[str, Any], version: str, matched: bool) -> dict[str, Any]:
-    base = editable.get("base", editable)
+    base = editable.get("source", editable.get("base", editable))
     return {
         "kind": "mechanism-edit",
         "network": True,
         "matching_edit": matched,
         "construction": version,
         "editable_recipe": editable,
-        "notice": NOTICE,
+        "notice": (
+            "Batch reference request: edits retain this lifecycle. Same seed/task/rows and root "
+            "law preserve the population; changed root/count/rows reconstruct it. Original "
+            "realized bank and all raw draws remain in the original archive. "
+            if version == "prototype-batch-network-realized-v1"
+            else ""
+        )
+        + NOTICE,
         "nodes": [
             {
                 "index": i,
@@ -130,6 +137,7 @@ def guarded_network_editor(
 
     raw = json.loads(task.recipe_json)["recipe"]
     if raw.get("version") not in (
+        "prototype-batch-network-realized-v1",
         "standalone-network-v1",
         "network-input-view-v1",
         "network-input-view-v2",
@@ -255,6 +263,9 @@ def validate_editor_draft(
             "validation": "network-draft",
             "recipe": data["recipe"],
             "matching_source": original if matched else None,
+            "batch_source": original
+            if original.get("version") == "prototype-batch-network-realized-v1"
+            else None,
             "matching_policy": data.get("matching_policy", "recalibrate" if matched else None),
             "causal_limits": asdict(limits),
             "max_seconds": data.get("max_seconds", 60),

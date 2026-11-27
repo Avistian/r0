@@ -13,8 +13,8 @@
 
 <fieldset id="prototype-controls" hidden><legend>Shared prototype root bank</legend>
 <p class="muted">Each row draws one weight vector shared across all coordinates. Prototype counts and beta mappings below are explicit r0 reconstructions of the P2 description. Probability-temperature and Dirichlet modes are extensions.</p>
-<label>Lifecycle<select id="prototype-lifecycle"><option value="frozen-independent-prototype-bank-r0-v1">Frozen independent bank</option><option value="prototype-batch-reference-v1">Batch reference — required, workbench pending</option></select></label>
-<p class="muted">Frozen Next retains the bank and draws fresh row weights. Batch reference remains available in the library; this workbench rejects it explicitly rather than freezing a batch-dependent bank. Normalization controls above fit the prototype construction base independently, not the displayed query population.</p>
+<label>Lifecycle<select id="prototype-lifecycle"><option value="frozen-independent-prototype-bank-r0-v1">Frozen independent bank</option><option value="prototype-batch-reference-v1">Batch reference — reconstruct each task</option></select></label>
+<p class="muted" id="prototype-lifecycle-note"></p><p class="muted">Normalization controls above fit the prototype construction base independently, not the displayed query population. Batch reference with internal network innovations remains a required follow-on.</p>
 <label>Reference population rows<input id="prototype-reference" type="number" min="1" value="32"></label>
 <label>Prototype fraction rho<input id="prototype-rho" type="number" min="0" max="1" step="0.01" value="0.125"></label>
 <label>Integer count convention<select id="prototype-count-rule"><option value="ceil-r0">Ceil</option><option value="floor-r0">Floor</option><option value="nearest-even-r0">Nearest, ties to even</option></select></label>

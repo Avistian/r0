@@ -207,7 +207,35 @@ def inspect_network_curve_guarded(
             "not conditional mean or class probability"
         )
         if noisy
+        else "frozen network on observed batch coordinates; no root redraw or query normalization"
+        if record["recipe"].get("version") == "prototype-batch-network-realized-v1"
         else (
             "frozen latent network channels, including retained matching; not class probabilities"
         ),
     }
+
+
+def inspect_response_curve(
+    task: TrainingTask, data: dict[str, Any], output_dir: Path
+) -> dict[str, Any]:
+    """Route saved construction references through guarded worker evaluation."""
+    from r0.modules.explorer.lib.construction import caller_limits
+
+    if json.loads(task.recipe_json)["recipe"].get("version") in (
+        "functional-causal-v1",
+        "functional-causal-v2",
+        "xgboost-fitted-functional-causal-v1",
+        "prototype-batch-network-realized-v1",
+        "standalone-network-v1",
+        "standalone-network-innovations-v1",
+        "network-input-view-v1",
+        "network-input-view-v2",
+    ):
+        return inspect_network_curve_guarded(task, data, output_dir, limits=caller_limits(data))
+    return inspect_curve(
+        task,
+        feature=data["feature"],
+        anchor_row=data.get("anchor_row", 0),
+        points=data.get("points", 129),
+        bounds=data.get("bounds"),
+    )

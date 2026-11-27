@@ -62,6 +62,10 @@ from r0.modules.priors.lib.node_pipeline import pipeline_from_dict
 from r0.modules.priors.lib.parameter_preferences import parameter_preferences_from_dict
 from r0.modules.priors.lib.polynomial import PolynomialRecipe
 from r0.modules.priors.lib.preference_binding import PreferenceBinding
+from r0.modules.priors.lib.prototype_batch_network import (
+    PrototypeBatchNetworkRecipe,
+    RealizedPrototypeBatchNetworkRecipe,
+)
 from r0.modules.priors.lib.quadratic import QuadraticRecipe
 from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
 from r0.modules.priors.lib.sampled_converted_output import generate_sampled_converted
@@ -84,7 +88,9 @@ from r0.modules.priors.lib.topology_graph_decoding import topology_graph_from_di
 from r0.modules.priors.lib.training_task import TrainingTask
 
 type Recipe = (
-    NetworkRecipe
+    PrototypeBatchNetworkRecipe
+    | RealizedPrototypeBatchNetworkRecipe
+    | NetworkRecipe
     | NetworkInputView
     | CausalInterventionRecipe
     | BaseRecipe
@@ -142,6 +148,11 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
     if not isinstance(data, dict):
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
+    if "version" not in fields and (
+        {"request", "population", "seed", "task_id"} <= set(fields)
+        or {"source", "rho", "weights", "count_rule", "max_prototypes", "raw_limits"} <= set(fields)
+    ):
+        raise ValueError("prototype batch archive requires an explicit version")
     version = fields.get("version", "linear-v1")
     if version == "network-input-view-v2":
         from r0.modules.priors.lib.matched_network_view import matched_view_from_dict
@@ -153,6 +164,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         from r0.modules.priors.lib.network_innovation_decoding import network_innovation_from_dict
 
         return network_innovation_from_dict(fields, limits=limits)
+    if version in ("prototype-batch-network-request-v1", "prototype-batch-network-realized-v1"):
+        from r0.modules.priors.lib.prototype_batch_decoding import prototype_batch_network_from_dict
+
+        return prototype_batch_network_from_dict(data, limits=limits)
     if version == "standalone-network-v1":
         return network_recipe_from_dict(fields, limits=limits)
     if version == "sampled-converted-graph-v1":
@@ -335,6 +350,10 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
         return generate_converted(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkInputView):
         return generate_network_view(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, (PrototypeBatchNetworkRecipe, RealizedPrototypeBatchNetworkRecipe)):
+        from r0.modules.priors.lib.prototype_batch_output import generate_prototype_batch_network
+
+        return generate_prototype_batch_network(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkRecipe):
         return generate_network(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, CausalInterventionRecipe):

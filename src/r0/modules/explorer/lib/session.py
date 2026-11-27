@@ -11,9 +11,11 @@ from r0.modules.explorer.lib.construction import (
     caller_limits,
     construction_examples,
     frozen_archive_version,
+    guarded_archive_version,
+    population_identity,
     prepare_mechanism_editor,
 )
-from r0.modules.explorer.lib.curves import inspect_curve, inspect_gp_curve
+from r0.modules.explorer.lib.curves import inspect_gp_curve, inspect_response_curve
 from r0.modules.explorer.lib.edits import SavedEdit, create_edit, open_edit
 from r0.modules.explorer.lib.exports import replay_bundle
 from r0.modules.explorer.lib.inspection import inspect_rows, inspect_task
@@ -213,6 +215,7 @@ class ExplorerSession:
             if not isinstance(record, dict):
                 raise ValueError("recipe record must be an object")
             record = cast(dict[str, Any], record)
+            record = population_identity(record, data)
             if "frozen_identity" in data:
                 identity = data["frozen_identity"]
                 frozen_recipe = record.get("recipe")
@@ -237,7 +240,7 @@ class ExplorerSession:
             if (
                 "sampling" not in record
                 and "sampling" not in data
-                and frozen_archive_version(record["recipe"].get("version", ""))
+                and guarded_archive_version(record["recipe"].get("version", ""))
             ):
                 request = {
                     "recipe": record["recipe"],
@@ -403,32 +406,7 @@ class ExplorerSession:
             )
             return {"curve": _identity_numbers(curve, for_browser=True)}
         if action == "curve":
-            if json.loads(self.task.recipe_json)["recipe"].get("version") in (
-                "functional-causal-v1",
-                "functional-causal-v2",
-                "xgboost-fitted-functional-causal-v1",
-                "standalone-network-v1",
-                "standalone-network-innovations-v1",
-                "network-input-view-v1",
-                "network-input-view-v2",
-            ):
-                from r0.modules.explorer.lib.curves import inspect_network_curve_guarded
-
-                return {
-                    "curve": inspect_network_curve_guarded(
-                        self.task, data, self.output_dir, limits=caller_limits(data)
-                    )
-                }
-
-            return {
-                "curve": inspect_curve(
-                    self.task,
-                    feature=data["feature"],
-                    anchor_row=data.get("anchor_row", 0),
-                    points=data.get("points", 129),
-                    bounds=data.get("bounds"),
-                )
-            }
+            return {"curve": inspect_response_curve(self.task, data, self.output_dir)}
         if action == "export":
             bundle = replay_bundle(self.task, max_bytes=data.get("max_bytes", 256 * 1024**2))
             return {
