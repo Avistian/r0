@@ -1,9 +1,10 @@
 # Source-specific root distributions
 
 This work covers the remaining P1.root.01–03 and P1.code.02–06 inventory options.
-Lossless integer Zipf records and a strict coordinate-law emitter are implemented.
-Root profile selection, frozen normalization, graph/network integration and
-explorer delivery are still pending; these prerequisites do not close those IDs.
+Lossless integer Zipf records, a strict coordinate-law emitter and frozen
+source-qualified profile selection are implemented. Frozen normalization,
+graph/network integration and explorer delivery remain separate work; these
+prerequisites do not close those IDs.
 
 ## Primary-source distinctions
 
@@ -127,3 +128,51 @@ root law and frozen transform. Limits accompany graph and network evaluation.
 This is authored root integration. Source profile construction custody and replay
 must still be carried by an enclosing sampled artifact. Guarded explorer controls,
 full profile construction and saved-workflow verification remain pending.
+
+
+## Frozen source-profile selection
+
+`SourceRootProfile` offers the pinned P1 `normal`, `uniform` and conditional
+`mixed` selector laws. `sample_source_root_profile` takes distinct `model_rng`
+and `selection_rng` generators and returns `SampledSourceRootProfile`. The
+model stream owns the full Gaussian parameter vectors; the selection stream
+owns one selection call. The resulting `.law` can be emitted without any
+normalization using `draw_source_root`. Both initial/final generator snapshots,
+raw draws, Gaussian parameters (including unused ones), and three mixed
+thresholds remain in the immutable record. Strict public decoders reconstruct
+and replay the whole envelope. NumPy probability laws and retained sequence
+are reproducible; Torch/Python/NumPy cross-library bitwise parity is not claimed.
+
+For P1 mixed selection, stored thresholds are `(unused Zipf, categorical,
+normal)` in source order. Conditional family probabilities are
+`1-normal`, `normal*(1-categorical)`, and `normal*categorical`; the Zipf threshold
+is deliberately not a third weight. The full presampled Gaussian vectors are
+retained even for a unit-uniform selection, matching the source constructor's
+otherwise unused draws. Category weights and Zipf exponents are frozen with
+one selected call. This is explicitly `frozen-selection-r0-v1`, not an assertion
+that the source keeps per-forward categorical/Zipf parameters fixed per model.
+Repeated emission does not resample these parameters. The
+`.source_normalization` metadata names source mixed-category sample-standardization
+and Zipf centering; those transforms are **not applied** here. Independent frozen
+calibration and generated-batch reference normalization remain distinct layers.
+
+`forced-r0` accepts one family per coordinate: standard Gaussian, presampled
+Gaussian, unit uniform, symmetric uniform, categorical, clipped sampled Zipf,
+and fixed-exponent unbounded Zipf. This explicit heterogeneous composition is
+an r0 extension, not the paper's underspecified multivariate distribution.
+There are no retries or silent repairs for nonfinite or zero-total weights.
+
+The [P2 initialization description](https://www.nature.com/articles/s41586-024-08328-6)
+selects normal versus symmetric uniform per root node. `p2-node-mixture-r0`
+selects once for the entire root vector, with an explicitly configurable
+`p2_normal_probability`. It currently uses unit normal scale and uniform
+half-width one. These fixed settings and the selection probability are a named
+reconstruction; varying source scale hyperparameters and shared-prototype
+coupling remain required follow-ons, not implicit features of this selector.
+
+Whole-profile admission bounds all conditional branches and maximum category
+count before any stochastic parameter draw. It includes both streams, raw
+records and replay snapshots; conditional branches can use less than that
+conservative budget. Public records preserve exact law and parameter custody
+without modifying existing source-root or legacy root record versions. Graph,
+network, intervention and explorer integration remain separately required.
