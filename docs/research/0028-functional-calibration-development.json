@@ -1,0 +1,99 @@
+{
+  "source": "09cdbbab88de5cc9b04702bb7433aea47f8ae160",
+  "archive": "0028-functional-calibration-development.zip",
+  "bytes": 14367,
+  "sha256": "3ded202d66f8e262a70c8f700fb17281d130d63c5ed7ef61cf32fd5ed94f91c3",
+  "files": {
+    "r0-28-calibration-public-lint.log": {
+      "bytes": 23281,
+      "sha256": "e424631f1d990f18b496a171940023e3d99f350a1b5ef4f0021bd80cb43682ab",
+      "mirrored": false
+    },
+    "r0-28-calibration-public-lint2.log": {
+      "bytes": 2717,
+      "sha256": "de7f53e6519725e39a58e90992500690ba25efc631d2ac325a9200b6e5e1b13e",
+      "mirrored": true
+    },
+    "r0-28-calibration-public-lint3.log": {
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "mirrored": true
+    },
+    "r0-28-calibration-public-replay-09cdbba.log": {
+      "bytes": 46,
+      "sha256": "4bbd724efb74670846e38d7e89404c8b927f78b975961f71db6c218f7d98e920",
+      "mirrored": true
+    },
+    "r0-28-calibration-public-replay-ca50743.log": {
+      "bytes": 46,
+      "sha256": "4bbd724efb74670846e38d7e89404c8b927f78b975961f71db6c218f7d98e920",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-commit.log": {
+      "bytes": 674,
+      "sha256": "235d3dc5fbc9ef7992452e7f8517f0ef7e7b60e42b06465767fe05c7c1e85b02",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-focused.log": {
+      "bytes": 98,
+      "sha256": "ca38ec9f74e12343a8366405fa8bc214a48045899c5f51fdc93ac6c8960b8893",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-full-check.log": {
+      "bytes": 3382,
+      "sha256": "4b6232a4434fe34be640a7cccb224a1c2a9029ee39975e5c6478ca3d7cdfca38",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-green.log": {
+      "bytes": 99,
+      "sha256": "67a62dd67d0864265fa543a93459a4de34254f7b6da4c5293ac81580efa379f0",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-integrity-green.log": {
+      "bytes": 110,
+      "sha256": "d247864f88b3e1be9e725b4ba2fd9241797804131db95e83cb87747070ff1914",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-integrity-red.log": {
+      "bytes": 9377,
+      "sha256": "f9bca3e13ae247cef371075afbf74f6dad6e6118c3be90a8a561d932bcc5a074",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-lint.log": {
+      "bytes": 904,
+      "sha256": "070a5ab2e188cd07ac650a6399cb1567a6933ed0fa2e7468f257b5576bbaae03",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-missing-red.log": {
+      "bytes": 2927,
+      "sha256": "d761811559288f998eb19ffed1068b7fac930a88a45ba8c36bb37fc2dc4c1d13",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-red.log": {
+      "bytes": 1133,
+      "sha256": "ab0ade11564179d27b270674ed4063d82d78788881a65f3869ed0950ec0c3abe",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-static.log": {
+      "bytes": 2078,
+      "sha256": "92bb4991ab273e7716a8832d61aaa9630793fd8f874f984823132443ab1347f4",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-static2.log": {
+      "bytes": 3877,
+      "sha256": "1373efbbb6f760c77e74ec758c2bc772ca0d9e697a3a9dcc4acb2f3b0b7040c8",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-types.log": {
+      "bytes": 37,
+      "sha256": "6d88a1b220adb7a3d62092b6e38431f0b3fe8babe9864fab90e5849766260332",
+      "mirrored": true
+    },
+    "r0-28-graph-calibration-version-red.log": {
+      "bytes": 1192,
+      "sha256": "487b67f38f46de03f3cb37c526691dc63c2370f2ee80f0a9958e310593f5be6d",
+      "mirrored": true
+    }
+  },
+  "qualification": "Author development/static/full-suite and public-copy replay logs retained verbatim. Intermediate uncommitted source bytes and failed lint-copy bytes are not all retained. Independent review artifacts are separate."
+}

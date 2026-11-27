@@ -1,0 +1,41 @@
+{
+  "source": "09cdbbab88de5cc9b04702bb7433aea47f8ae160",
+  "base": "15b0fea3791269203b390e80342a340ceffbc062",
+  "bytes": 5153934,
+  "sha256": "812f6b1331c0f6c07b29794c4d27a239260fe08e034d0833929ef1d54a881052",
+  "parts": [
+    {
+      "path": "0028-functional-calibration-spec.part01",
+      "bytes": 900000,
+      "sha256": "d0035b4d5995e8669a88c4829aad4d2b684f634f031e27d29bd0979945fe87cf"
+    },
+    {
+      "path": "0028-functional-calibration-spec.part02",
+      "bytes": 900000,
+      "sha256": "ba1a8c0f23697f828f012d48b1691276f4694864df8681ded84a688832c90557"
+    },
+    {
+      "path": "0028-functional-calibration-spec.part03",
+      "bytes": 900000,
+      "sha256": "2ead6e494789266ca8416f41afad92f6c9fe54b7e20d36615e2785dd659aa282"
+    },
+    {
+      "path": "0028-functional-calibration-spec.part04",
+      "bytes": 900000,
+      "sha256": "9ef58e5317edea7bfc45f689304653b6318518678f35fd447ad62f13217df4c8"
+    },
+    {
+      "path": "0028-functional-calibration-spec.part05",
+      "bytes": 900000,
+      "sha256": "9fd43b74c0ae226ca41fa9f69f5dc5ee64c61690a6a6f759d7582bff569935ce"
+    },
+    {
+      "path": "0028-functional-calibration-spec.part06",
+      "bytes": 653934,
+      "sha256": "5cd060ba03c5adb51f9f172cbfdce7660d848826b3c28dd9ee91ae26b36363bb"
+    }
+  ],
+  "manifest_entries": 2641,
+  "manifest_sha256": "732a048b7dabf513511a83d3cf71b4f737ccadca023514391421be35ad264960",
+  "qualification": "Bounded target-calibration candidate acceptance, fresh exact-main independent replay, separate author replays of linted public copies. Original reviewer harness failure retained. No full sampled-graph, browser, Colab, GPU, resource-measurement or scientific acceptance."
+}

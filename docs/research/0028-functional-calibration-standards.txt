@@ -1,0 +1,14 @@
+Scoped Standards review: ca50743d1ebc2479d4c7a57fb4434141910270eb
+Base: ae815a6f44205b13ea39654ee36df5ce3099a14d
+
+Read-only preflight confirmed /tmp/r0-28-graph-sampling, exact candidate HEAD, sole candidate commit, and only ?? .venv. Reviewed the full base...HEAD diff and repository instructions. No tests or environment mutations performed.
+
+(a) Documented violations: none identified in this scoped source/document review.
+
+The changed priors implementation stays within its module; new tests use public entry points, consistent with src/r0/modules/README.md. Independent target fitting is authorized by docs/specs/0028-causal-network-generators.md:76-80, so CODING_STANDARDS.md:10-12's context-only preprocessing rule is not a violation here. Explicit named RNG injection is retained. No added dependency or protected-file edit appears in the diff.
+
+docs/issue-28-functional-target-calibration.md:43-63 keeps full checks, independent review, evidence publication, and broader delivery explicitly pending. Accordingly, AGENTS.md's completion checks are not yet satisfied, but this document does not claim completion. Historical RED logs alone cannot reproduce intermediate failures without corresponding source/procedure; historical RED reproducibility remains unverified under CODING_STANDARDS.md:26-32. The parent reports packaging in progress; this review does not convert it into completed evidence.
+
+(b) Heuristic smell, nonblocking: Repeated Switches / Duplicated Code — src/r0/modules/priors/lib/generation_graph.py:127-154 repeats `in ("causal-v1", "causal-v2", "functional-causal-v1", "functional-causal-v2")` for input parents, description, observed-channel metadata and `causal`. This predates the candidate, which extends all four copies. Compute `causal` once before the first `add(...)` and reuse it; this keeps future version support from drifting between presentation branches. No documented rule mandates this cleanup.
+
+No other actionable heuristic finding identified in the remaining changed files. This is a Standards review only, not a functional, scientific, browser/Colab, full-check, or overall issue-28 acceptance verdict.

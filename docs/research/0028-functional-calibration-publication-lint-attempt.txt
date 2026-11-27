@@ -1,0 +1,62 @@
+python3 scripts/run_check.py python scripts/check_checkout.py && python3 scripts/run_check.py python scripts/check_hooks.py
+Interpreter: /home/avist/Projects/r0/.venv/bin/python3
+r0 source: /tmp/r0-28/src/r0/__init__.py
+Expected package: /tmp/r0-28/src/r0
+Active commit hook: /tmp/r0-28/.githooks/pre-commit
+python3 scripts/run_check.py python scripts/check_tracked_files.py
+python3 scripts/run_check.py python scripts/check_artifact_sizes.py
+python3 scripts/run_check.py ruff format --check .
+622 files already formatted
+python3 scripts/run_check.py ruff check .
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/verify_functional_calibration/probe.py:3:1
+   |
+ 1 |   """Independent public-API checks; no test helpers or private implementation calls."""
+ 2 |
+ 3 | / import hashlib
+ 4 | | import json
+ 5 | | import math
+ 6 | | import platform
+ 7 | | import sys
+ 8 | | from dataclasses import asdict, replace
+ 9 | | from pathlib import Path
+10 | |
+11 | | import numpy as np
+12 | | import torch
+13 | | from r0.modules import priors as p
+14 | | from r0.modules.explorer import ExplorerSession
+   | |_______________________________________________^
+15 |
+16 |   OUT = Path(__file__).resolve().parent
+   |
+help: Organize imports
+   |
+12 | import torch
+13 +
+14 | from r0.modules import priors as p
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> scripts/verify_functional_calibration/supplement.py:1:1
+  |
+1 | / import hashlib
+2 | | import json
+3 | | from dataclasses import replace
+4 | | from pathlib import Path
+5 | |
+6 | | import numpy as np
+7 | | from r0.modules import priors as p
+  | |__________________________________^
+8 |
+9 |   OUT = Path(__file__).resolve().parent
+  |
+help: Organize imports
+  |
+6 | import numpy as np
+7 +
+8 | from r0.modules import priors as p
+  |
+
+Found 2 errors.
+[*] 2 fixable with `--fix`.
+make: *** [Makefile:10: lint] Error 1

@@ -1,0 +1,54 @@
+python3 scripts/run_check.py ruff format --check .
+595 files already formatted
+python3 scripts/run_check.py ruff check .
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+  --> tests/priors/test_functional_calibration_integrity.py:33:24
+   |
+31 | @pytest.mark.parametrize("record", [None, [], [1], "wrong", 42, True])
+32 | def test_functional_decoder_rejects_nonobject_records(record: Any) -> None:
+33 |     with pytest.raises(ValueError):
+   |                        ^^^^^^^^^^
+34 |         priors.functional_recipe_from_dict(record)
+   |
+
+PT006 Wrong type passed to first argument of `pytest.mark.parametrize`; expected `tuple`
+  --> tests/priors/test_functional_calibration_integrity.py:38:5
+   |
+37 | @pytest.mark.parametrize(
+38 |     "field,value",
+   |     ^^^^^^^^^^^^^
+39 |     [
+40 |         ("rows", True),
+   |
+help: Use a `tuple` for the first argument
+   |
+37 | @pytest.mark.parametrize(
+   -     "field,value",
+38 +     ("field", "value"),
+39 |     [
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+  --> tests/priors/test_functional_calibration_integrity.py:59:24
+   |
+57 |     card = json.loads(task.mechanism_json)
+58 |     card["calibration"][field] = value
+59 |     with pytest.raises(ValueError):
+   |                        ^^^^^^^^^^
+60 |         priors.explain_generation(replace(task, mechanism_json=json.dumps(card)), [0, 15])
+   |
+
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+   --> tests/priors/test_functional_calibration_integrity.py:100:24
+    |
+ 98 |     else:
+ 99 |         card["calibration"] = calibration
+100 |     with pytest.raises(ValueError):
+    |                        ^^^^^^^^^^
+101 |         priors.explain_generation(replace(task, mechanism_json=json.dumps(card)), [0, 15])
+    |
+
+Found 4 errors.
+1 unsafe fix available with `--fix --unsafe-fixes`.
+make: *** [Makefile:10: lint] Error 1

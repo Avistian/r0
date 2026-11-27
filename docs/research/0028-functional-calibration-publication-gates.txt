@@ -1,0 +1,62 @@
+python3 scripts/run_check.py python scripts/check_checkout.py && python3 scripts/run_check.py python scripts/check_hooks.py
+Interpreter: /home/avist/Projects/r0/.venv/bin/python3
+r0 source: /tmp/r0-28/src/r0/__init__.py
+Expected package: /tmp/r0-28/src/r0
+Active commit hook: /tmp/r0-28/.githooks/pre-commit
+python3 scripts/run_check.py python scripts/check_tracked_files.py
+python3 scripts/run_check.py python scripts/check_artifact_sizes.py
+python3 scripts/run_check.py ruff format --check .
+622 files already formatted
+python3 scripts/run_check.py ruff check .
+All checks passed!
+python3 scripts/run_check.py pyright
+0 errors, 0 warnings, 0 informations
+python3 scripts/run_check.py lint-imports
+
+╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐
+╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │
+ ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗
+ ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝
+╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║
+╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝
+  └──▶║║                    ▲ 
+      ╚╝────────────────────┘
+
+
+---------
+Contracts
+---------
+
+Analyzed 217 files, 1415 dependencies.
+--------------------------------------
+
+Layers KEPT
+ADR 0002: the training path never sees real data KEPT
+Only the adapter imports relbench KEPT
+Comparison stays isolated from training and real-data adapters KEPT
+
+Contracts: 4 kept, 0 broken.
+python3 scripts/run_check.py python scripts/check_module_tests.py
+python3 scripts/run_check.py python scripts/check_file_tokens.py
+
+Product source/tests unchanged from 09cdbba. Archive recovered with 2641 verified entries.
+Two blank import-separator lines added after public replay; token sequences checked equal.
+Whitespace check excludes only exact verbatim raw logs:
+docs/evidence/issue-28/functional-calibration/r0-28-calibration-public-lint2.log
+docs/evidence/issue-28/functional-calibration/r0-28-calibration-public-lint3.log
+docs/evidence/issue-28/functional-calibration/r0-28-calibration-public-replay-09cdbba.log
+docs/evidence/issue-28/functional-calibration/r0-28-calibration-public-replay-ca50743.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-commit.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-focused.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-full-check.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-green.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-integrity-green.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-integrity-red.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-lint.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-missing-red.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-red.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-static.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-static2.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-types.log
+docs/evidence/issue-28/functional-calibration/r0-28-graph-calibration-version-red.log
+docs/research/0028-functional-calibration-check-ca50743.txt

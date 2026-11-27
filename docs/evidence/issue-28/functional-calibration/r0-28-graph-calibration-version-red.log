@@ -1,0 +1,20 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_target_calibration_is_fixed_across_emission_sizes_and_inspection _____
+
+    def test_target_calibration_is_fixed_across_emission_sizes_and_inspection() -> None:
+>       recipe = priors.CalibratedFunctionalCausalRecipe(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            priors.LinearRecipe(rows=16, context_rows=8, features=1, signal_features=1, active_features=1),
+            (priors.FunctionalCausalNode(
+                (), priors.FrozenLinearFunction(((1.0,), (4.0,))),
+                root=priors.JointRootBase("gaussian", 1),
+            ),),
+            ((0, 0),), ((0, 1),), calibration_rows=64,
+        )
+E       AttributeError: module 'r0.modules.priors' has no attribute 'CalibratedFunctionalCausalRecipe'
+
+tests/priors/test_functional_calibration.py:12: AttributeError
+=========================== short test summary info ============================
+FAILED tests/priors/test_functional_calibration.py::test_target_calibration_is_fixed_across_emission_sizes_and_inspection
+1 failed in 0.96s
