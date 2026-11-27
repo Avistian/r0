@@ -1,4 +1,4 @@
-"""Inspectable synthetic mechanisms, construction records and source-task fixtures."""
+"""Inspectable synthetic priors."""
 
 from .lib.activation_sampling import (
     ActivationParameterPrior as ActivationParameterPrior,
@@ -370,6 +370,7 @@ from .lib.parameter_preferences import ParameterSampler as ParameterSampler
 from .lib.parameter_preferences import (
     parameter_preferences_from_dict as parameter_preferences_from_dict,
 )
+from .lib.parent_api import *  # noqa: F403
 from .lib.pipeline_api import *  # noqa: F403
 from .lib.polynomial import PolynomialRecipe as PolynomialRecipe
 from .lib.preference_binding import PreferenceBinding as PreferenceBinding

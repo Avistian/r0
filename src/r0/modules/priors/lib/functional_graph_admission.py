@@ -2,6 +2,7 @@
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.frozen_function_evaluation import function_geometry
+from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
 from r0.modules.priors.lib.joint_function_admission import function_record_cost
 
@@ -18,6 +19,12 @@ def validate_functional_nodes(
     for index, node in enumerate(nodes):
         if type(node) is not FunctionalCausalNode or any(p >= index for p in node.parents):
             raise ValueError("functional nodes must be in acyclic parent-before-child order")
+        if isinstance(node.function, FrozenParentFunction) and (
+            not node.parents
+            or tuple(c.input_width for c in node.function.children)
+            != tuple(nodes[p].function.output_width for p in node.parents)
+        ):
+            raise ValueError("parent composition slices differ from ordered parent widths")
         if node.parents and node.function.input_width != sum(
             nodes[p].function.output_width for p in node.parents
         ):

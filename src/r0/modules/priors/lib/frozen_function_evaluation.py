@@ -19,6 +19,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenRFFFunction,
     FrozenTreeFunction,
 )
+from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.weight_geometry import Matrix
 
 type FrozenFunction = (
@@ -30,6 +31,7 @@ type FrozenFunction = (
     | FrozenEMFunction
     | FrozenProductFunction
     | FrozenMLPFunction
+    | FrozenParentFunction
 )
 
 _FUNCTION_TYPES = (
@@ -41,6 +43,7 @@ _FUNCTION_TYPES = (
     FrozenEMFunction,
     FrozenProductFunction,
     FrozenMLPFunction,
+    FrozenParentFunction,
 )
 _DEFAULT_LIMITS = CausalLimits()
 
@@ -49,6 +52,18 @@ def function_geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, i
     if type(function) not in _FUNCTION_TYPES:
         raise ValueError("function geometry requires a frozen function record")
     widths = (function.input_width, function.output_width)
+    if type(function) is FrozenParentFunction:
+        members = (
+            *function.children,
+            *((function.joint,) if function.joint else ()),
+            *((function.reducer,) if function.reducer else ()),
+        )
+        geometries = tuple(function_geometry(c) for c in members)
+        return (
+            (*widths, *(w for dims, _, _ in geometries for w in dims)),
+            sum(work for _, work, _ in geometries) + 8 * len(members) * function.output_width,
+            max(floor for _, _, floor in geometries),
+        )
     if type(function) is FrozenLinearFunction:
         return widths, 4 * sum(widths), 0
     if type(function) is FrozenQuadraticFunction:
@@ -165,7 +180,32 @@ def _mlp_activation(
 def _evaluate(
     function: FrozenFunction, inputs: torch.Tensor, diagnostics: list[dict[str, Any]] | None = None
 ) -> torch.Tensor:
-    if type(function) is FrozenLinearFunction:
+    if type(function) is FrozenParentFunction:
+        members = [_evaluate(function.joint, inputs, diagnostics)] if function.joint else []
+        offset = 0
+        for child in function.children:
+            members.append(
+                _evaluate(child, inputs[:, offset : offset + child.input_width], diagnostics)
+            )
+            offset += child.input_width
+        if function.aggregation == "mlp":
+            assert function.reducer is not None
+            result = _evaluate(function.reducer, torch.cat(members, dim=1), diagnostics)
+        else:
+            stacked = torch.stack(members, dim=1)
+            if function.aggregation == "sum":
+                result = stacked.sum(dim=1)
+            elif function.aggregation == "product":
+                result = stacked.prod(dim=1)
+            elif function.aggregation == "mean":
+                result = stacked.mean(dim=1)
+            elif function.aggregation == "max":
+                result = stacked.max(dim=1).values
+            elif function.aggregation == "logsumexp":
+                result = stacked.logsumexp(dim=1)
+            else:
+                result = (stacked * inputs.new_tensor(function.weights)[None, :, None]).sum(dim=1)
+    elif type(function) is FrozenLinearFunction:
         result = inputs @ inputs.new_tensor(function.matrix).T
     elif type(function) is FrozenQuadraticFunction:
         selected = inputs[:, function.indices]

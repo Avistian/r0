@@ -7,26 +7,26 @@ from typing import Any
 import numpy as np
 import torch
 
-from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.construction_provenance import construction_source_config
 from r0.modules.priors.lib.exogenous import sample_exogenous
 from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_function
+from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.functional_analysis import functional_certificates
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
-from r0.modules.priors.lib.functional_causal_decoding import functional_recipe_from_dict
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
 from r0.modules.priors.lib.functional_prefix import FunctionalPrefix
 from r0.modules.priors.lib.functional_target_calibration import (
     fit_target_calibration,
-    target_calibration_from_dict,
 )
 from r0.modules.priors.lib.joint_root_base import draw_root_base
 from r0.modules.priors.lib.joint_sampling_records import validate_path
 from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
+from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
+from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
 from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.signal_noise import signal_noise_scale
 from r0.modules.priors.lib.task_output import complete_task
@@ -217,11 +217,17 @@ def _evaluate_functional_nodes(
         if readouts is not None:
             readouts.append(readout)
         if add is not None:
+            equation = "f(concat(parent states))" if node.parents else "f(root base)"
+            if isinstance(node.function, FrozenParentFunction):
+                parents = parent_function_steps(
+                    node.function, inputs, node=index, parents=parents, indices=indices, add=add
+                )
+                equation = f"{node.function.aggregation}(ordered parent members)"
             add(
                 f"function-{index}",
                 f"Frozen function {index}",
                 parents,
-                "f(concat(parent states))" if node.parents else "f(root base)",
+                equation,
                 output[list(indices)],
                 asdict(node.function),
             )
@@ -284,6 +290,7 @@ def _evaluate_functional_nodes(
 def generate_functional_causal(
     recipe: FunctionalCausalRecipe
     | SampledFunctionalGraph
+    | SampledParentGraph
     | SampledTopologyGraph
     | SampledGeometryGraph,
     *,
@@ -293,14 +300,30 @@ def generate_functional_causal(
 ) -> TrainingTask:
     construction = (
         recipe
-        if isinstance(recipe, (SampledFunctionalGraph, SampledTopologyGraph, SampledGeometryGraph))
+        if isinstance(
+            recipe,
+            (
+                SampledFunctionalGraph,
+                SampledTopologyGraph,
+                SampledGeometryGraph,
+                SampledParentGraph,
+            ),
+        )
         else None
     )
     if construction is not None:
         construction.validate()
     recipe = (
         recipe.runtime
-        if isinstance(recipe, (SampledFunctionalGraph, SampledTopologyGraph, SampledGeometryGraph))
+        if isinstance(
+            recipe,
+            (
+                SampledFunctionalGraph,
+                SampledTopologyGraph,
+                SampledGeometryGraph,
+                SampledParentGraph,
+            ),
+        )
         else recipe
     )
     if any(type(v) is not int or not 0 <= v < 2**63 for v in (seed, task_id)):
@@ -386,7 +409,11 @@ def generate_functional_causal(
         card["calibration"] = asdict(calibration)
     if construction is not None:
         card["version"] = construction.version
-        card["construction"] = "sampled-frozen-functions-v1"
+        card["construction"] = (
+            "sampled-parent-functions-v1"
+            if isinstance(construction, SampledParentGraph)
+            else "sampled-frozen-functions-v1"
+        )
         card["sampling_provenance"] = "retained-four-stream-construction-v1"
         if isinstance(construction, (SampledTopologyGraph, SampledGeometryGraph)):
             card["construction"] = "sampled-topology-and-functions-v1"
@@ -422,61 +449,3 @@ def generate_functional_causal(
         rng=rng,
         source_config=source_config,
     )
-
-
-def functional_steps(
-    record: dict[str, Any],
-    card: dict[str, Any],
-    indices: Sequence[int],
-    add: Callable[..., None],
-    *,
-    limits: CausalLimits | None = None,
-) -> torch.Tensor:
-    limits = CausalLimits() if limits is None else limits
-    raw_recipe = record["recipe"]
-    if raw_recipe.get("version") == "sampled-geometry-graph-v1":
-        from r0.modules.priors.lib.geometry_graph_decoding import geometry_graph_from_dict
-
-        recipe = geometry_graph_from_dict(raw_recipe, limits=limits).runtime
-    elif raw_recipe.get("version") == "sampled-topology-graph-v1":
-        from r0.modules.priors.lib.topology_graph_decoding import topology_graph_from_dict
-
-        recipe = topology_graph_from_dict(raw_recipe, limits=limits).runtime
-    elif raw_recipe.get("version") == "sampled-functional-graph-v1":
-        from r0.modules.priors.lib.sampled_graph_decoding import sampled_graph_from_dict
-
-        recipe = sampled_graph_from_dict(raw_recipe, limits=limits).runtime
-    else:
-        recipe = functional_recipe_from_dict(raw_recipe, limits=limits)
-    values: list[torch.Tensor] = []
-    functional_values(
-        recipe,
-        lambda *keys: functional_rng(record["seed"], record["task_id"], *keys),
-        "cpu",
-        add=add,
-        indices=indices,
-        readouts=values,
-    )
-    scores = torch.stack([values[i][list(indices), j] for i, j in recipe.target], dim=1)
-    parameters: dict[str, Any] = {"target": recipe.target}
-    if recipe.target_calibration_rows:
-        calibration = target_calibration_from_dict(card.get("calibration"), len(recipe.target))
-        if (
-            calibration.rows != recipe.target_calibration_rows
-            or calibration.prefix_fingerprint
-            != record_fingerprint(([asdict(n) for n in recipe.nodes], recipe.target))
-        ):
-            raise ValueError("retained target calibration differs from its frozen graph")
-        scores = calibration.apply(scores)
-        parameters["calibration"] = card["calibration"]
-    add(
-        "signal",
-        "Graph target channels",
-        list(dict.fromkeys(f"readout-{i}" for i, _ in recipe.target)),
-        "(declared target channels - fixed center) / fixed scale"
-        if recipe.target_calibration_rows
-        else "select declared target channels",
-        scores,
-        parameters,
-    )
-    return scores

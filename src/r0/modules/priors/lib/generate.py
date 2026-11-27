@@ -47,6 +47,7 @@ from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
 from r0.modules.priors.lib.sampled_graph_decoding import sampled_graph_from_dict
 from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
 from r0.modules.priors.lib.sampled_native_output import generate_sampled_native
+from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
 from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.sampling import BaseRecipe, generate_base_task
 from r0.modules.priors.lib.smooth import SmoothRecipe
@@ -63,6 +64,7 @@ type Recipe = (
     | CausalRecipe
     | FunctionalCausalRecipe
     | SampledFunctionalGraph
+    | SampledParentGraph
     | SampledTopologyGraph
     | SampledGeometryGraph
     | NativeCausalRecipe
@@ -117,6 +119,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         return geometry_graph_from_dict(fields, limits=limits)
     if version == "sampled-topology-graph-v1":
         return topology_graph_from_dict(fields, limits=limits)
+    if version == "sampled-parent-graph-v1":
+        from r0.modules.priors.lib.parent_graph_decoding import parent_graph_from_dict
+
+        return parent_graph_from_dict(fields, limits=limits)
     if version == "sampled-functional-graph-v1":
         return sampled_graph_from_dict(fields, limits=limits)
     if version in ("functional-causal-v1", "functional-causal-v2"):
@@ -197,6 +203,7 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
                     CompositeRecipe,
                     CausalRecipe,
                     FunctionalCausalRecipe,
+                    SampledParentGraph,
                     SampledFunctionalGraph,
                     SampledTopologyGraph,
                     SampledGeometryGraph,
@@ -263,6 +270,7 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
         recipe,
         (
             FunctionalCausalRecipe,
+            SampledParentGraph,
             SampledFunctionalGraph,
             SampledTopologyGraph,
             SampledGeometryGraph,

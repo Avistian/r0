@@ -7,12 +7,15 @@ from r0.modules.priors.lib.joint_matrix_plans import JointMatrixPrior
 
 _DEFAULT = ("mlp", "tree", "disc", "lin", "quad", "gp", "em", "prod")
 _PRESETS = {"default": _DEFAULT, "tabpfnv2": ("mlp", "tree", "disc")}
+_FORCED = {"r0-linear-projection-v1": "lin", "r0-neural-reducer-v1": "mlp"}
 _CHEAP = ("gp", "tree", "disc", "lin", "quad")
 
 
 def _expand(functions: str) -> tuple[str, ...]:
     if type(functions) is not str or not functions or len(functions) > 4096:
         raise ValueError("function catalog must be a nonempty bounded source token string")
+    if functions in _FORCED:
+        return (_FORCED[functions],)
     families: list[str] = []
     for token in functions.split(","):
         if token in _PRESETS:
@@ -59,7 +62,11 @@ class JointFunctionPrior:
             raise ValueError("function selector scope must be Boolean")
         families = _CHEAP if cheap else _expand(self.functions)
         return CategoricalParameter(
-            "cheap_random_function_fct_type" if cheap else "random_function_fct_type",
+            "cheap_random_function_fct_type"
+            if cheap
+            else self.functions
+            if self.functions in _FORCED
+            else "random_function_fct_type",
             tuple(f"function-slot-{i}-{family}-v1" for i, family in enumerate(families)),
         )
 

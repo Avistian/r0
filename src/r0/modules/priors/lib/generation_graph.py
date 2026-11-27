@@ -10,7 +10,8 @@ import torch
 from r0.modules.priors.lib.causal import causal_rng
 from r0.modules.priors.lib.causal_inspection import causal_steps
 from r0.modules.priors.lib.causal_limits import CausalLimits
-from r0.modules.priors.lib.functional_causal_evaluation import functional_rng, functional_steps
+from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
+from r0.modules.priors.lib.functional_steps import functional_steps
 from r0.modules.priors.lib.graph_functions import analytic_steps, composite_steps, gp_steps
 from r0.modules.priors.lib.native_inspection import native_steps
 from r0.modules.priors.lib.representatives import record_fingerprint
@@ -142,6 +143,7 @@ def explain_generation(
             "functional-causal-v1",
             "functional-causal-v2",
             "sampled-functional-graph-v1",
+            "sampled-parent-graph-v1",
             "sampled-topology-graph-v1",
             "sampled-geometry-graph-v1",
         )
@@ -156,6 +158,7 @@ def explain_generation(
             "functional-causal-v1",
             "functional-causal-v2",
             "sampled-functional-graph-v1",
+            "sampled-parent-graph-v1",
             "sampled-topology-graph-v1",
             "sampled-geometry-graph-v1",
         )
@@ -174,6 +177,7 @@ def explain_generation(
                     "functional-causal-v1",
                     "functional-causal-v2",
                     "sampled-functional-graph-v1",
+                    "sampled-parent-graph-v1",
                     "sampled-topology-graph-v1",
                     "sampled-geometry-graph-v1",
                 )
@@ -187,6 +191,7 @@ def explain_generation(
         "functional-causal-v1",
         "functional-causal-v2",
         "sampled-functional-graph-v1",
+        "sampled-parent-graph-v1",
         "sampled-topology-graph-v1",
         "sampled-geometry-graph-v1",
     )
@@ -195,6 +200,7 @@ def explain_generation(
         "functional-causal-v1",
         "functional-causal-v2",
         "sampled-functional-graph-v1",
+        "sampled-parent-graph-v1",
         "sampled-topology-graph-v1",
         "sampled-geometry-graph-v1",
     ):
@@ -219,7 +225,12 @@ def explain_generation(
     controls = (
         record["recipe"]["request"]["task"]
         if card["version"]
-        in ("sampled-functional-graph-v1", "sampled-topology-graph-v1", "sampled-geometry-graph-v1")
+        in (
+            "sampled-functional-graph-v1",
+            "sampled-parent-graph-v1",
+            "sampled-topology-graph-v1",
+            "sampled-geometry-graph-v1",
+        )
         else record["recipe"].get("task", record["recipe"])
     )
 
@@ -229,6 +240,7 @@ def explain_generation(
             "functional-causal-v1",
             "functional-causal-v2",
             "sampled-functional-graph-v1",
+            "sampled-parent-graph-v1",
             "sampled-topology-graph-v1",
             "sampled-geometry-graph-v1",
         ):

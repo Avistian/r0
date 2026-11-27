@@ -2,6 +2,7 @@
 
 import math
 from dataclasses import dataclass
+from functools import reduce
 from typing import TYPE_CHECKING
 
 from r0.modules.priors.lib.calibrated_activations import (
@@ -23,6 +24,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenRFFFunction,
     FrozenTreeFunction,
 )
+from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 
 if TYPE_CHECKING:
     from r0.modules.priors.lib.functional_causal import FunctionalCausalNode
@@ -94,6 +96,24 @@ def _activation(
 def function_certificates(
     function: FrozenFunction, inputs: list[ChannelCertificate]
 ) -> list[ChannelCertificate]:
+    if type(function) is FrozenParentFunction:
+        members = [function_certificates(function.joint, inputs)] if function.joint else []
+        offset = 0
+        for child in function.children:
+            members.append(
+                function_certificates(child, inputs[offset : offset + child.input_width])
+            )
+            offset += child.input_width
+        if function.reducer:
+            return function_certificates(
+                function.reducer, [c for member in members for c in member]
+            )
+        if function.aggregation == "weighted":
+            members = [m for m, w in zip(members, function.weights, strict=True) if w != 0]
+        return [
+            reduce(_product, column) if function.aggregation == "product" else _sum(list(column))
+            for column in zip(*members, strict=True)
+        ]
     if type(function) is FrozenLinearFunction:
         return [
             _sum([c for c, weight in zip(inputs, row, strict=True) if weight != 0])

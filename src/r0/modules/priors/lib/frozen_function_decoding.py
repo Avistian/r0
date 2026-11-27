@@ -18,6 +18,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenRFFFunction,
     FrozenTreeFunction,
 )
+from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
 
 _DEFAULT_LIMITS = CausalLimits()
@@ -30,9 +31,11 @@ _REGISTRY = {
     "frozen-em-function-v1": FrozenEMFunction,
     "frozen-product-function-v1": FrozenProductFunction,
     "frozen-mlp-function-v1": FrozenMLPFunction,
+    "frozen-parent-function-v1": FrozenParentFunction,
 }
 _LINEAR = frozenset(("frozen-linear-function-v1",))
 _CHEAP = frozenset(_REGISTRY) - {
+    "frozen-parent-function-v1",
     "frozen-em-function-v1",
     "frozen-product-function-v1",
     "frozen-mlp-function-v1",
@@ -89,7 +92,19 @@ def _decode(data: Any, allowed: frozenset[str]) -> FrozenFunction:
         raise ValueError("unsupported or recursively disallowed frozen function version")
     record_type = _REGISTRY[version]
     fields = _record(raw, record_type)
-    if record_type is FrozenLinearFunction:
+    if record_type is FrozenParentFunction:
+        members = frozenset(_REGISTRY) - {"frozen-parent-function-v1"}
+        fields["children"] = tuple(_decode(c, members) for c in _array(fields["children"]))
+        fields["joint"] = (
+            _decode(fields["joint"], members) if fields.get("joint") is not None else None
+        )
+        fields["reducer"] = (
+            _decode(fields["reducer"], frozenset(("frozen-mlp-function-v1",)))
+            if fields.get("reducer") is not None
+            else None
+        )
+        fields["weights"] = tuple(_array(fields.get("weights", ())))
+    elif record_type is FrozenLinearFunction:
         fields["matrix"] = _matrix(fields["matrix"])
     elif record_type is FrozenQuadraticFunction:
         fields["indices"] = tuple(_array(fields["indices"]))

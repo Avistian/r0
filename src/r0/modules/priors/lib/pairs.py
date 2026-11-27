@@ -17,6 +17,7 @@ from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
 from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
+from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
 from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -59,7 +60,10 @@ def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> R
             for component in recipe.components
         )
         return replace(recipe, task=changed, components=components)
-    if isinstance(recipe, (SampledFunctionalGraph, SampledTopologyGraph, SampledGeometryGraph)):
+    if isinstance(
+        recipe,
+        (SampledFunctionalGraph, SampledTopologyGraph, SampledGeometryGraph, SampledParentGraph),
+    ):
         return recipe.with_task(changed)
     return changed if isinstance(recipe, LinearRecipe) else replace(recipe, task=changed)
 
