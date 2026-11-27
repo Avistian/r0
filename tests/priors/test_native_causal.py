@@ -14,11 +14,13 @@ from r0.modules.priors import (
     FunctionalCausalNode,
     JointRootBase,
     LinearRecipe,
+    NativeCausalNode,
+    NativeCausalRecipe,
+    VariableDomain,
+    explain_generation,
     generate_task,
     recipe_from_dict,
 )
-from r0.modules.priors.lib.native_causal import NativeCausalNode, NativeCausalRecipe, VariableDomain
-from r0.modules.priors.lib.native_evaluation import evaluate_native_graph
 
 
 def mixed_recipe(emission: Literal["softmax", "argmax"] = "softmax") -> NativeCausalRecipe:
@@ -61,17 +63,19 @@ def mixed_recipe(emission: Literal["softmax", "argmax"] = "softmax") -> NativeCa
 
 def test_native_state_is_integer_and_children_receive_one_hot() -> None:
     recipe = mixed_recipe()
-    result = evaluate_native_graph(recipe, seed=19, task_id=2)
-    assert result.values[1].dtype == torch.int64
-    assert result.values[3].dtype == torch.int64
-    assert torch.equal(result.values[2][:, 0], 10.0 + 10.0 * result.values[1][:, 0])
-    assert torch.equal(result.values[1][:, 0], (result.values[0][:, 0] >= 0).long())
     task = generate_task(recipe, seed=19, task_id=2)
-    assert torch.equal(task.targets, result.values[4][:, 0])
+    assert task.targets.dtype == torch.int64
+    assert torch.equal(task.inputs[:, 1], 10.0 + 10.0 * task.inputs[:, 0])
+    graph = explain_generation(task, list(range(16)))
+    nodes = {node["id"]: node for node in graph["nodes"]}
+    roots = torch.tensor(nodes["causal-0"]["values"])[:, 0]
+    assert torch.equal(task.inputs[:16, 0], (roots >= 0).to(torch.float64))
+    assert nodes["causal-4"]["values"] == [[int(v)] for v in task.targets[:16]]
     assert task.target_origin == "native-variable-v1"
-    assert json.loads(task.mechanism_json)["native_emissions"]["4"]["uniforms"] == (
-        result.uniforms[4].numpy().tolist()
-    )
+    uniforms = json.loads(task.mechanism_json)["native_emissions"]["4"]["uniforms"]
+    assert len(uniforms) == recipe.task.rows
+    assert all(0 <= value < 1 for value in uniforms)
+    assert nodes["uniform-4"]["values"] == [[value] for value in uniforms[:16]]
 
 
 def test_mixed_episode_and_archive_keep_domains(tmp_path: Path) -> None:
@@ -123,11 +127,11 @@ def test_softmax_uses_retained_uniforms_and_fixed_declared_vocabulary() -> None:
     import numpy as np
 
     recipe = mixed_recipe()
-    result = evaluate_native_graph(recipe, seed=7, task_id=8)
-    parent = result.values[3][:, 0].numpy()
+    task = generate_task(recipe, seed=7, task_id=8)
+    parent = task.inputs[:, 2].to(torch.int64).numpy()
     logits = np.array([[1.0, 0.0, -1.0], [0.0, 1.0, 0.0], [-1.0, 0.0, 1.0]])[parent]
     probabilities = np.exp(logits) / np.exp(logits).sum(axis=1, keepdims=True)
-    uniform = result.uniforms[4].numpy()
+    uniform = np.array(json.loads(task.mechanism_json)["native_emissions"]["4"]["uniforms"])
     expected = np.array(
         [
             int(cast(np.intp, np.searchsorted(np.cumsum(row), u, side="right")))
@@ -135,8 +139,9 @@ def test_softmax_uses_retained_uniforms_and_fixed_declared_vocabulary() -> None:
         ],
         dtype=np.int64,
     )
-    assert np.array_equal(result.values[4][:, 0].numpy(), expected)
-    np.testing.assert_allclose(result.probabilities[4].numpy(), probabilities, rtol=1e-14)
+    assert np.array_equal(task.targets.numpy(), expected)
+    assert task.probabilities is not None
+    np.testing.assert_allclose(task.probabilities.numpy(), probabilities, rtol=1e-14)
 
 
 def test_argmax_tie_and_threshold_boundary_are_declared() -> None:
@@ -145,17 +150,14 @@ def test_argmax_tie_and_threshold_boundary_are_declared() -> None:
     nodes[0] = replace(
         nodes[0], equation=replace(nodes[0].equation, function=FrozenLinearFunction(((0.0,),)))
     )
-    result = evaluate_native_graph(replace(recipe, nodes=tuple(nodes)), seed=7, task_id=8)
-    assert torch.all(result.values[1] == 1)  # threshold equality goes to the upper interval
-    assert torch.all(result.values[3] == 0)  # first-index argmax tie
     task = generate_task(replace(recipe, nodes=tuple(nodes)), seed=7, task_id=8)
+    assert torch.all(task.inputs[:, 0] == 1)  # threshold equality goes to the upper interval
+    assert torch.all(task.inputs[:, 2] == 0)  # first-index argmax tie
     assert task.classes == ("red", "green", "blue")  # never inferred from emitted rows
     assert task.feature_schema[2].vocabulary == task.classes
 
 
 def test_inspection_preserves_order_repeats_and_rejects_changed_uniform() -> None:
-    from r0.modules.priors import explain_generation
-
     task = generate_task(mixed_recipe(), seed=3, task_id=1)
     graph = explain_generation(task, [9, 1, 9])
     target = next(node for node in graph["nodes"] if node["id"] == "targets")
@@ -196,9 +198,11 @@ def test_native_regression_and_binary_targets_do_not_use_label_adapter() -> None
             classes=classes,
         )
         variant = replace(recipe, task=controls, observed=((0, 0),), target=target)
-        result = evaluate_native_graph(variant, seed=7, task_id=1)
         task = generate_task(variant, seed=7, task_id=1)
-        assert torch.equal(task.targets, result.values[target[0]][:, 0])
+        binary = (task.inputs[:, 0] >= 0).to(torch.int64)
+        expected = 10.0 + 10.0 * binary if kind == "regression" else binary
+        assert torch.equal(task.targets, expected)
+        assert task.targets.dtype == (torch.float64 if kind == "regression" else torch.int64)
         assert task.episode().task_type == kind
         assert task.target_origin == "native-variable-v1"
 
