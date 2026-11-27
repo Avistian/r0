@@ -53,7 +53,7 @@ def test_constant_mask_failure_is_atomic():
     )
     rng = np.random.default_rng(3)
     state = str(rng.bit_generator.state)
-    with pytest.raises(ValueError, match="zero|dispersion"):
+    with pytest.raises(ValueError, match="constant|zero|dispersion"):
         p.fit_network_variance_match(
             original, before_inputs=(0, 1), after_inputs=(1,), rows=32, rng=rng
         )

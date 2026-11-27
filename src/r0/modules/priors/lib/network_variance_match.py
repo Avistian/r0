@@ -60,6 +60,8 @@ def _scores(base: NetworkRecipe, population: Matrix, mask: tuple[int, ...]) -> M
 
 def _moments(scores: Matrix) -> tuple[tuple[float, ...], tuple[float, ...]]:
     values = np.asarray(scores, dtype=np.float64)
+    if np.any(np.all(values == values[0], axis=0)):
+        raise ValueError("constant independent score channel; no fallback")
     with np.errstate(over="ignore", invalid="ignore", under="ignore"):
         mean, std = values.mean(axis=0), values.std(axis=0)
     if not np.isfinite(mean).all() or not np.isfinite(std).all() or np.any(std <= 0):
