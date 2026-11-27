@@ -69,3 +69,15 @@ and reopen the component receipt separately for source selection provenance.
 Automatic generation/archive custody integration, observation-aware interventions,
 workbench controls, and shared local/Colab workflows are remaining work, not
 accepted implicitly by the materialization helper.
+
+## Pinned overlap materialization repair
+
+A pinned final-target draw can select the same propagated channel as an observed
+feature. Materialization now adds one explicit identity target node for each such
+channel, retaining the selected feature and original receipt unchanged. The alias
+copies that channel exactly and is a descendant of its original node; intervention
+on the original state therefore flows to the alias. This preserves the source's
+possible target leakage rather than filtering or resampling it. Generic graphs
+still reject identical observed/target references. Alias matrices, channels and
+working storage are admitted before construction. Receipt-aware task provenance
+and user-visible overlap/alias annotations remain the next envelope integration.

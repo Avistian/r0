@@ -146,19 +146,11 @@ class SampledNetworkObservations:
 
     def runtime(self, task: LinearRecipe) -> FunctionalCausalRecipe:
         """Explicit task adapter; keep this envelope separately until recipe integration."""
-        self.validate_replay()
-        expected = task.classes if task.task_type == "multiclass" else 1
-        if task.features != self.request.features or expected != self.request.outputs:
-            raise ValueError("observation task feature/output geometry differs")
-        source, plan = observation_source(self.request)
-        nodes, _ = compile_network_innovations(source, plan)
-
-        def refs(ids: tuple[int, ...]) -> tuple[tuple[int, int], ...]:
-            return tuple((self.catalog[i].node, self.catalog[i].channel) for i in ids)
-
-        return FunctionalCausalRecipe(
-            task, nodes, refs(self.features), refs(self.targets), source.limits
+        from r0.modules.priors.lib.network_observation_runtime import (
+            materialize_network_observations,
         )
+
+        return materialize_network_observations(self, task)
 
 
 def sample_network_observations(

@@ -246,3 +246,76 @@ def test_multiple_internal_classification_outputs() -> None:
     np.testing.assert_allclose(
         actual.probabilities.numpy(), weights / weights.sum(axis=1, keepdims=True), atol=1e-12
     )
+
+
+def test_pinned_overlap_runtime_retains_values_and_receipt() -> None:
+    request = p.NetworkObservationRequest(source(), 2, profile="p1-778f0d0-v1", target="final")
+    receipt = p.sample_network_observations(request, rng=np.random.default_rng(2))
+    before = asdict(receipt)
+    task = p.LinearRecipe(rows=16, context_rows=8, features=2, signal_features=2, active_features=2)
+    graph = receipt.runtime(task)
+    assert receipt.target_feature_overlap == (7,)
+    assert asdict(receipt) == before
+    assert len(graph.nodes) == 5
+    assert graph.target == ((4, 0),)
+    assert graph.nodes[4].parents == (3,)
+    actual = p.generate_task(graph, seed=19, task_id=2**54 + 13)
+    np.testing.assert_array_equal(actual.inputs[:, 1].numpy(), actual.targets.numpy())
+    restored = p.recipe_from_dict(asdict(graph))
+    replay = p.generate_task(restored, seed=19, task_id=2**54 + 13)
+    np.testing.assert_array_equal(actual.targets.numpy(), replay.targets.numpy())
+    assert p.explain_generation(actual, [15, 0, 15])["signal_max_error"] == 0
+    pair = p.generate_causal_pair(
+        graph,
+        interventions=(p.HardIntervention(3, channels=(3,), values=(7.25,)),),
+        seed=19,
+        task_id=2**54 + 13,
+    )
+    np.testing.assert_array_equal(pair.after.inputs[:, 1].numpy(), [7.25] * 16)
+    np.testing.assert_array_equal(pair.after.targets.numpy(), [7.25] * 16)
+
+
+def test_pinned_overlap_alias_node_budget(monkeypatch: pytest.MonkeyPatch) -> None:
+    base = replace(source(), limits=p.CausalLimits(nodes=7))
+    assert isinstance(base, p.NetworkRecipe)
+    stage = p.NetworkInnovationStage((1.0,) * 4, (0.2,) * 4)
+    src = p.with_network_innovations(base, p.NetworkInnovationPlan((stage,) * 3))
+    receipt = p.sample_network_observations(
+        p.NetworkObservationRequest(src, 2, profile="p1-778f0d0-v1", target="final"),
+        rng=np.random.default_rng(2),
+    )
+    task = p.LinearRecipe(rows=16, context_rows=8, features=2, signal_features=2, active_features=2)
+    from r0.modules.priors.lib import network_observation_runtime
+
+    def forbidden(*args: object, **kwargs: object) -> None:
+        raise AssertionError("alias allocated before node cap")
+
+    monkeypatch.setattr(network_observation_runtime, "FrozenLinearFunction", forbidden)
+    with pytest.raises(ValueError, match="alias geometry"):
+        receipt.runtime(task)
+
+
+def test_pinned_overlap_multiclass_alias_keeps_other_target_channels() -> None:
+    receipt = p.sample_network_observations(
+        p.NetworkObservationRequest(
+            source(), 2, outputs=3, profile="p1-778f0d0-v1", target="final"
+        ),
+        rng=np.random.default_rng(2),
+    )
+    task = p.LinearRecipe(
+        rows=16,
+        context_rows=8,
+        features=2,
+        signal_features=2,
+        active_features=2,
+        task_type="multiclass",
+        classes=3,
+    )
+    runtime = receipt.runtime(task)
+    assert receipt.features == (3, 7)
+    assert receipt.targets == (5, 6, 7)
+    assert runtime.target == ((3, 1), (3, 2), (4, 0))
+    emitted = p.generate_task(runtime, seed=17, task_id=2**54 + 13)
+    np.testing.assert_array_equal(emitted.inputs[:, 1].numpy(), emitted.scores[:, 2].numpy())
+    assert emitted.probabilities is not None
+    np.testing.assert_allclose(emitted.probabilities.sum(dim=1).numpy(), 1.0, rtol=0, atol=1e-14)
