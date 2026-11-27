@@ -5,6 +5,7 @@ from typing import Any, cast
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
+from r0.modules.priors.lib.joint_ledger_shape import validate_joint_ledger_shape
 from r0.modules.priors.lib.joint_operation_registry import (
     JointOperationRegistry,
     JointOperationSpan,
@@ -57,6 +58,7 @@ def joint_operation_registry_from_dict(
         registry_limits.admit(len(raw), path_bytes)
         owned_limits.admit(len(raw), path_bytes)
         operations.append(operation)
+    validate_joint_ledger_shape(fields["decisions"])
     try:
         decisions = joint_sampling_from_dict(fields["decisions"])
     except (KeyError, TypeError) as error:
