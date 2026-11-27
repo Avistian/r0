@@ -50,6 +50,21 @@ from .lib.causal_activations import CausalActivation as CausalActivation
 from .lib.causal_graph import CausalGraph as CausalGraph
 from .lib.causal_graph import CausalGraphPrior as CausalGraphPrior
 from .lib.causal_graph import sample_causal_graph as sample_causal_graph
+from .lib.causal_intervention_generation import (
+    compare_causal_pair as compare_causal_pair,
+)
+from .lib.causal_intervention_generation import (
+    generate_causal_pair as generate_causal_pair,
+)
+from .lib.causal_intervention_records import (
+    CausalInterventionRecipe as CausalInterventionRecipe,
+)
+from .lib.causal_intervention_records import (
+    HardIntervention as HardIntervention,
+)
+from .lib.causal_intervention_records import (
+    SoftIntervention as SoftIntervention,
+)
 from .lib.causal_limits import CausalLimits as CausalLimits
 from .lib.causal_nodes import RootInputCausalNode as RootInputCausalNode
 from .lib.causal_pipeline import CausalPipelineRecipe as CausalPipelineRecipe

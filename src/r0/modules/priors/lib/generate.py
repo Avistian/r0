@@ -6,6 +6,7 @@ from r0.modules.priors.lib.activation_sampling import activation_prior_from_dict
 from r0.modules.priors.lib.categorical_preferences import categorical_preferences_from_dict
 from r0.modules.priors.lib.causal import CausalRecipe, causal_node_from_dict, generate_causal
 from r0.modules.priors.lib.causal_graph import CausalGraph, CausalGraphPrior
+from r0.modules.priors.lib.causal_intervention_records import CausalInterventionRecipe
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.causal_pipeline import CausalPipelineRecipe
 from r0.modules.priors.lib.causal_preferred import PreferredCausalRecipe
@@ -59,7 +60,8 @@ from r0.modules.priors.lib.topology_graph_decoding import topology_graph_from_di
 from r0.modules.priors.lib.training_task import TrainingTask
 
 type Recipe = (
-    BaseRecipe
+    CausalInterventionRecipe
+    | BaseRecipe
     | CompositeRecipe
     | CausalRecipe
     | FunctionalCausalRecipe
@@ -111,6 +113,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         raise ValueError("recipe must be an object")
     fields = dict(cast(dict[str, Any], data))
     version = fields.get("version", "linear-v1")
+    if version == "causal-intervention-v1":
+        from r0.modules.priors.lib.causal_intervention_decoding import intervention_from_dict
+
+        return intervention_from_dict(fields, limits=limits)
     if version == "sampled-native-graph-v1":
         return native_graph_from_dict(fields, limits=limits)
     if version == "native-causal-v1":
@@ -262,6 +268,10 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, CausalInterventionRecipe):
+        from r0.modules.priors.lib.causal_intervention_generation import generate_intervened
+
+        return generate_intervened(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, SampledNativeGraph):
         return generate_sampled_native(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NativeCausalRecipe):

@@ -85,6 +85,13 @@ def explain_generation(
             }
         )
 
+    if record["recipe"].get("version") == "causal-intervention-v1":
+        from r0.modules.priors.lib.causal_intervention_inspection import intervention_steps
+
+        if component is not None:
+            raise ValueError("interventions do not have composite children")
+        return {**intervention_steps(task, indices, add, limits=limits), "nodes": nodes}
+
     if record["recipe"].get("version") in ("native-causal-v1", "sampled-native-graph-v1"):
         if component is not None:
             raise ValueError("native graphs do not have composite children")

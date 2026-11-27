@@ -7,6 +7,7 @@ from dataclasses import asdict, dataclass
 import numpy as np
 import torch
 
+from r0.modules.priors.lib.causal_intervention_execution import InterventionExecution
 from r0.modules.priors.lib.exogenous import sample_exogenous
 from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_function
 from r0.modules.priors.lib.joint_root_base import draw_root_base
@@ -39,7 +40,12 @@ def native_rng(seed: int, task_id: int, *keys: object) -> np.random.Generator:
 
 
 def evaluate_native_graph(
-    recipe: NativeCausalRecipe, *, seed: int, task_id: int, device: str = "cpu"
+    recipe: NativeCausalRecipe,
+    *,
+    seed: int,
+    task_id: int,
+    device: str = "cpu",
+    execution: InterventionExecution | None = None,
 ) -> NativeEvaluation:
     """Discrete node values are int64; their descendants receive explicit one-hot state."""
     if type(recipe) is not NativeCausalRecipe:
@@ -50,7 +56,15 @@ def evaluate_native_graph(
         raise ValueError("native device must be available cpu or cuda; no implicit fallback")
     recipe.admit()
     return evaluate_native_nodes(
-        recipe.nodes, recipe.task.rows, lambda *keys: native_rng(seed, task_id, *keys), device
+        recipe.nodes,
+        recipe.task.rows,
+        lambda *keys: (
+            execution.rng(lambda *parts: native_rng(seed, task_id, *parts), *keys)
+            if execution
+            else native_rng(seed, task_id, *keys)
+        ),
+        device,
+        execution=execution,
     )
 
 
@@ -62,6 +76,7 @@ def evaluate_native_nodes(
     *,
     capture: RawDrawLedger | None = None,
     owner: tuple[str, ...] = ("native",),
+    execution: InterventionExecution | None = None,
 ) -> NativeEvaluation:
     """Evaluate an already admitted prefix; callers own resource and certificate checks."""
     states: list[torch.Tensor] = []
@@ -71,6 +86,35 @@ def evaluate_native_nodes(
     uniforms: dict[int, torch.Tensor] = {}
     for index, node in enumerate(nodes):
         equation, domain = node.equation, node.domain
+        forced = execution.category(index) if execution else None
+        if forced is not None:
+            category = torch.full(
+                (rows,), domain.vocabulary.index(forced), dtype=torch.int64, device=device
+            )
+            encoded = torch.nn.functional.one_hot(category, num_classes=len(domain.vocabulary)).to(
+                torch.float64
+            )
+            values.append(category[:, None])
+            states.append(encoded)
+            scores.append(encoded)
+            probabilities[index] = encoded
+            assert execution is not None
+            execution.bypassed.append(index)
+            execution.record(
+                index, state=encoded, readout=category[:, None], forced_probability=encoded
+            )
+            continue
+        bypass = (
+            execution.bypass(index, equation, rows, device, capture_readout=False)
+            if execution and domain.kind == "continuous"
+            else None
+        )
+        if bypass is not None:
+            state, _ = bypass
+            states.append(state)
+            values.append(state)
+            scores.append(state)
+            continue
         if equation.root:
             inputs = torch.tensor(
                 draw_root_base(
@@ -83,6 +127,8 @@ def evaluate_native_nodes(
                 dtype=torch.float64,
                 device=device,
             )
+            if execution:
+                execution.record(index, root=inputs)
         else:
             inputs = torch.cat([states[p] for p in equation.parents], dim=1)
         output = evaluate_admitted_function(equation.function, inputs)
@@ -106,6 +152,10 @@ def evaluate_native_nodes(
         state = (pipeline.before_noise(output) if pipeline else output) + scale * raw
         if pipeline:
             state, _ = pipeline.finish(state)
+        if execution:
+            execution.record(index, inputs=inputs, function=output, exogenous=raw, scale=scale)
+            if domain.kind == "continuous":
+                state, _ = execution.apply(index, equation, state, state)
         if not torch.isfinite(state).all():
             raise ValueError("nonfinite native equation score; task was not retried")
         scores.append(state)
@@ -154,13 +204,26 @@ def evaluate_native_nodes(
         probabilities.setdefault(index, encoded)
         values.append(category[:, None])
         states.append(encoded)
+        if execution:
+            execution.record(
+                index, state=encoded, readout=category[:, None], probability=probabilities[index]
+            )
+            if index in uniforms:
+                execution.record(index, uniform=uniforms[index])
     return NativeEvaluation(tuple(values), tuple(scores), probabilities, uniforms, tuple(states))
 
 
 def generate_native_causal(
-    recipe: NativeCausalRecipe, *, seed: int, task_id: int, device: str = "cpu"
+    recipe: NativeCausalRecipe,
+    *,
+    seed: int,
+    task_id: int,
+    device: str = "cpu",
+    execution: InterventionExecution | None = None,
 ) -> TrainingTask:
-    result = evaluate_native_graph(recipe, seed=seed, task_id=task_id, device=device)
+    result = evaluate_native_graph(
+        recipe, seed=seed, task_id=task_id, device=device, execution=execution
+    )
     config = asdict(recipe)
     source = {
         **config,
