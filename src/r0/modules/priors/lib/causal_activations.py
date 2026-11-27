@@ -77,6 +77,19 @@ class CausalActivation:
     parameters: tuple[tuple[str, float], ...] = ()
 
     @property
+    def parameter_count(self) -> int:
+        return len(self.parameters)
+
+    def validate_width(self, width: int) -> None:
+        """Primitive activations accept every channel width."""
+
+    def diagnostic_input(self, value: torch.Tensor) -> torch.Tensor:
+        return value
+
+    def apply(self, value: torch.Tensor) -> torch.Tensor:
+        return primitive_activation(value, self)
+
+    @property
     def mixes_channels(self) -> bool:
         return self.kind in ("softmax", "tied_max", "argmax", "rank", "argsort")
 
@@ -120,6 +133,10 @@ class CausalActivation:
 
 
 def activate(value: torch.Tensor, activation: CausalActivation) -> torch.Tensor:
+    return activation.apply(value)
+
+
+def primitive_activation(value: torch.Tensor, activation: CausalActivation) -> torch.Tensor:
     """Apply a declared activation without hiding nonfinite inputs or outputs."""
     if not torch.isfinite(value).all():
         raise ValueError("nonfinite causal activation input; task was not retried")
@@ -181,6 +198,7 @@ def activation_diagnostic(
     value: torch.Tensor, activation: CausalActivation
 ) -> dict[str, object] | None:
     """Describe base-activation boundaries, never filter a draw or fit a parameter."""
+    value = activation.diagnostic_input(value)
     parameters = dict(activation.parameters)
     argument = parameters.get("input_scale", 1.0) * value + parameters.get("input_shift", 0.0)
     kind = activation.kind

@@ -137,6 +137,8 @@ class CausalActivationPrior:
         )
 
     def accepts(self, index: int, value: CausalActivation) -> bool:
+        if type(value) is not CausalActivation:
+            return False
         choice = self.choices[index]
         group = self.parameter_priors[index] if self.parameter_priors else ()
         actual, frozen = dict(value.parameters), dict(choice.parameters)

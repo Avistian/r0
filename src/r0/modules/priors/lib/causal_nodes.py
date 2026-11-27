@@ -4,6 +4,7 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
+from r0.modules.priors.lib.calibrated_activations import CalibratedActivation, activation_from_dict
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
 from r0.modules.priors.lib.inputs import InputDistribution
@@ -69,18 +70,31 @@ class ActivatedCausalNode(CausalNode):
 
     @property
     def activation_parameter_count(self) -> int:
-        return len(self.input_activation.parameters) + len(self.output_activation.parameters)
+        return self.input_activation.parameter_count + self.output_activation.parameter_count
+
+    @property
+    def working_extra_channels(self) -> int:
+        return max(
+            (
+                10 * len(a.input_mean)
+                for a in (self.input_activation, self.output_activation)
+                if isinstance(a, CalibratedActivation)
+            ),
+            default=0,
+        )
 
     def __post_init__(self) -> None:
         CausalNode.__post_init__(self)
         if any(
-            type(a) is not CausalActivation
+            type(a) not in (CausalActivation, CalibratedActivation)
             for a in (
                 self.input_activation,
                 self.output_activation,
             )
         ):
             raise ValueError("node activations must use CausalActivation")
+        self.input_activation.validate_width(len(self.weights))
+        self.output_activation.validate_width(len(self.bias))
         if self.noise_position not in ("before_output", "after_output"):
             raise ValueError("noise position must be before_output or after_output")
         if not self.parents and self.input_activation != CausalActivation():
@@ -98,7 +112,10 @@ class StochasticCausalNode(ActivatedCausalNode):
 
     @property
     def working_extra_channels(self) -> int:
-        return self.working_channels_for_width(len(self.bias))
+        return max(
+            self.working_channels_for_width(len(self.bias)),
+            super(StochasticCausalNode, self).working_extra_channels,
+        )
 
     @staticmethod
     def working_channels_for_width(width: int) -> int:
@@ -163,11 +180,7 @@ def causal_node_from_dict(data: dict[str, Any]) -> CausalNode:
     )
     for key in ("input_activation", "output_activation"):
         if key in fields:
-            activation = dict(fields[key])
-            activation["parameters"] = tuple(
-                tuple(pair) for pair in activation.get("parameters", ())
-            )
-            fields[key] = CausalActivation(**activation)
+            fields[key] = activation_from_dict(fields[key])
     if "weight_construction" in fields:
         fields["weight_construction"] = weight_construction_from_dict(fields["weight_construction"])
     if any(key in fields for key in ("exogenous", "noise_response", "weight_construction")):

@@ -1,5 +1,7 @@
 """Explicit-RNG named categorical sampling with retained scope and admission."""
 
+import copy
+
 import numpy as np
 
 from r0.modules.priors.lib.categorical_preferences import (
@@ -43,6 +45,17 @@ class CategoricalSampler:
         self._parameters = 0
         self._draw_count = 0
         self._value_count = 0
+
+    def fork(self, rng: np.random.Generator) -> "CategoricalSampler":
+        """Copy scope bookkeeping onto an injected stream, sharing frozen records."""
+        if type(rng) is not np.random.Generator:
+            raise ValueError("sampling fork requires an injected Generator")
+        fork = copy.copy(self)
+        fork._rng = rng
+        fork._preferences = self._preferences.copy()
+        fork._draws = self._draws.copy()
+        fork._keys = self._keys.copy()
+        return fork
 
     def categorical(self, request: CategoricalParameter) -> CategoricalDraw:
         if type(request) is not CategoricalParameter:

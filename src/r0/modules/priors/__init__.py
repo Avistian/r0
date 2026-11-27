@@ -10,6 +10,12 @@ from r0.modules.priors.lib.activation_sampling import (
 )
 from r0.modules.priors.lib.activation_sampling import CausalActivationPrior as CausalActivationPrior
 from r0.modules.priors.lib.authored import authored_episode as authored_episode
+from r0.modules.priors.lib.calibrated_activations import (
+    CalibratedActivation as CalibratedActivation,
+)
+from r0.modules.priors.lib.calibrated_activations import (
+    calibrate_source_activation as calibrate_source_activation,
+)
 from r0.modules.priors.lib.categorical_preferences import CategoricalDraw as CategoricalDraw
 from r0.modules.priors.lib.categorical_preferences import (
     CategoricalParameter as CategoricalParameter,
@@ -88,6 +94,18 @@ from r0.modules.priors.lib.representatives import record_fingerprint as record_f
 from r0.modules.priors.lib.representatives import sample_proposal as sample_proposal
 from r0.modules.priors.lib.signals import evaluate_signal as evaluate_signal
 from r0.modules.priors.lib.smooth import SmoothRecipe as SmoothRecipe
+from r0.modules.priors.lib.source_activation_law import (
+    SourceActivationSelection as SourceActivationSelection,
+)
+from r0.modules.priors.lib.source_activation_sampling import (
+    SourceActivationSampler as SourceActivationSampler,
+)
+from r0.modules.priors.lib.source_activation_sampling import (
+    SourceActivationSelections as SourceActivationSelections,
+)
+from r0.modules.priors.lib.source_activation_sampling import (
+    source_activation_selections_from_dict as source_activation_selections_from_dict,
+)
 from r0.modules.priors.lib.training_task import TrainingTask as TrainingTask
 from r0.modules.priors.lib.transformed_weights import GaussianWeights as GaussianWeights
 from r0.modules.priors.lib.transformed_weights import NormalizedWeights as NormalizedWeights

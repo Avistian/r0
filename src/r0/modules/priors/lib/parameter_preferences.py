@@ -1,5 +1,6 @@
 """Frozen named numerical draws with checked scope and replayable realizations."""
 
+import copy
 import math
 from dataclasses import dataclass, replace
 from decimal import Decimal, localcontext
@@ -246,6 +247,17 @@ class ParameterSampler:
         self._preferences: list[NumericalPreference] = []
         self._draws: list[NumericalDraw] = []
         self._names: dict[tuple[str, str], int] = {}
+
+    def fork(self, rng: np.random.Generator) -> "ParameterSampler":
+        """Copy scope bookkeeping onto an injected stream, sharing frozen records."""
+        if type(rng) is not np.random.Generator:
+            raise ValueError("sampling fork requires an injected Generator")
+        fork = copy.copy(self)
+        fork._rng = rng
+        fork._preferences = self._preferences.copy()
+        fork._draws = self._draws.copy()
+        fork._names = self._names.copy()
+        return fork
 
     def numerical(self, request: NumericalParameter) -> NumericalDraw:
         if type(request) is not NumericalParameter:
