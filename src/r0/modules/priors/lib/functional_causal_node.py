@@ -7,13 +7,14 @@ from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
 from r0.modules.priors.lib.frozen_function_evaluation import FrozenFunction, function_geometry
 from r0.modules.priors.lib.joint_root_base import JointRootBase
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline
+from r0.modules.priors.lib.source_root_base import SourceRootBase
 
 
 @dataclass(frozen=True, slots=True)
 class FunctionalCausalNode:
     parents: tuple[int, ...]
     function: FrozenFunction
-    root: JointRootBase | None = None
+    root: JointRootBase | SourceRootBase | None = None
     noise_scale: tuple[float, ...] = ()
     exogenous: ExogenousDistribution = ExogenousDistribution()
     noise_response: NoiseResponse = NoiseResponse()
@@ -21,7 +22,9 @@ class FunctionalCausalNode:
     version: str = "functional-causal-node-v1"
 
     def __post_init__(self) -> None:
-        if self.version != "functional-causal-node-v1":
+        if self.version not in ("functional-causal-node-v1", "functional-causal-node-v2") or (
+            type(self.root) is SourceRootBase and self.version != "functional-causal-node-v2"
+        ):
             raise ValueError("unsupported functional node version")
         function_geometry(self.function)
         width = self.function.output_width
@@ -53,5 +56,9 @@ class FunctionalCausalNode:
         if self.parents:
             if self.root is not None:
                 raise ValueError("only parentless functions have a root base")
-        elif type(self.root) is not JointRootBase or self.root.width != self.function.input_width:
+        elif (
+            self.root is None
+            or type(self.root) not in (JointRootBase, SourceRootBase)
+            or self.root.width != self.function.input_width
+        ):
             raise ValueError("root base width must match the root function input")

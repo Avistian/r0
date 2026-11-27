@@ -13,6 +13,7 @@ from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.network_hyperprior_records import SampledHyperpriorNetwork
 from r0.modules.priors.lib.network_sampling_records import SampledNetwork
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.source_root_base import SourceRootBase
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -21,7 +22,7 @@ from r0.modules.priors.lib.training_task import TrainingTask
 class NetworkRecipe:
     task: LinearRecipe
     network: FrozenNetworkFunction | SampledNetwork
-    root: JointRootBase | None = None
+    root: JointRootBase | SourceRootBase | None = None
     limits: CausalLimits = CausalLimits()
     version: str = "standalone-network-v1"
 
@@ -44,7 +45,8 @@ class NetworkRecipe:
         if function.input_width != self.task.features or function.output_width != expected:
             raise ValueError("standalone network input/output widths differ from task controls")
         if self.root is not None and (
-            type(self.root) is not JointRootBase or self.root.width != function.input_width
+            type(self.root) not in (JointRootBase, SourceRootBase)
+            or self.root.width != function.input_width
         ):
             raise ValueError("standalone network root must match feature width")
         self.runtime.admit()
@@ -64,6 +66,9 @@ class NetworkRecipe:
                     (),
                     FrozenLinearFunction(identity),
                     self.root or JointRootBase("gaussian", width),
+                    version="functional-causal-node-v2"
+                    if type(self.root) is SourceRootBase
+                    else "functional-causal-node-v1",
                 ),
                 FunctionalCausalNode((0,), self.function),
             ),

@@ -26,6 +26,7 @@ from r0.modules.priors.lib.node_pipeline import (
     CausalNodePipeline,
     NumericalConverter,
 )
+from r0.modules.priors.lib.source_root_base import SourceRootBase, source_root_base_from_dict
 from r0.modules.priors.lib.weight_vectors import (
     PolynomialWeightVector,
     UniformWeightVector,
@@ -98,7 +99,11 @@ def functional_pipeline(value: Any) -> CausalNodePipeline:
     return CausalNodePipeline(**fields)
 
 
-def functional_root(value: Any) -> JointRootBase:
+def functional_root(value: Any) -> JointRootBase | SourceRootBase:
+    if type(value) is dict:
+        raw_root = cast(dict[str, Any], value)
+        if raw_root.get("version") == "source-root-base-v1":
+            return source_root_base_from_dict(raw_root)
     fields = functional_record(value, JointRootBase)
     for key in ("factor", "gaussian_factor"):
         if fields.get(key) is not None:

@@ -1,5 +1,6 @@
 """Public source-root coordinate and emission contract."""
 
+from .source_root_base import SourceRootBase, source_root_base_from_dict
 from .source_root_batch import (
     SourceRootBatchReference,
     draw_source_root_batch_reference,
@@ -14,6 +15,8 @@ from .source_root_laws import SourceRootCoordinate, SourceRootLaw, source_root_f
 from .source_root_sampling import draw_source_root
 
 __all__ = [
+    "SourceRootBase",
+    "source_root_base_from_dict",
     "SourceRootBatchReference",
     "draw_source_root_batch_reference",
     "source_root_batch_reference_from_dict",

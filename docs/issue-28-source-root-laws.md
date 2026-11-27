@@ -108,3 +108,22 @@ This implements normalization arithmetic and lifecycle, not full pinned-source
 parameter-selection timing or an authenticated replay envelope. Those and the
 versioned graph/network/explorer integration remain pending. Shared arithmetic
 with independent calibration does not imply the same sampling lifecycle.
+
+## Functional graph and standalone network integration
+
+`SourceRootBase` combines a coordinate law with an optional authored independent
+frozen calibration. Functional nodes explicitly use `functional-causal-node-v2`
+for this descriptor; v1 nodes reject it. Existing v1 root records and draw order
+remain unchanged. Standalone networks construct the corresponding versioned root
+node and retain the descriptor in their own archive. Batch-reference statistics
+cannot be passed as a frozen graph root calibration.
+
+The shared evaluator, original-row inspection and support/query root streams use
+the same root adapter. Source-coordinate certificates preserve boundedness and
+Zipf moment order; finite calibration samples never upgrade a population moment
+certificate. Independent variance matching for network input views uses the same
+root law and frozen transform. Limits accompany graph and network evaluation.
+
+This is authored root integration. Source profile construction custody and replay
+must still be carried by an enclosing sampled artifact. Guarded explorer controls,
+full profile construction and saved-workflow verification remain pending.

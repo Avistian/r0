@@ -66,6 +66,7 @@ def functional_values(
         diagnostics=diagnostics,
         execution=execution,
         population_partitions=partitions,
+        limits=recipe.limits,
     )
 
 
@@ -87,7 +88,9 @@ def evaluate_functional_prefix(
         raise ValueError("CUDA is unavailable; select CPU explicitly")
     prefix.admit()
     readouts: list[torch.Tensor] = []
-    states = evaluate_functional_nodes(prefix.nodes, prefix.rows, rng, device, readouts=readouts)
+    states = evaluate_functional_nodes(
+        prefix.nodes, prefix.rows, rng, device, readouts=readouts, limits=prefix.limits
+    )
     return PrefixEvaluation(tuple(states), tuple(readouts))
 
 
@@ -124,6 +127,7 @@ def sample_functional_prefix(
             readouts=readouts,
             capture=ledger,
             owner=owner,
+            limits=prefix.limits,
         )
         return PrefixEvaluation(tuple(states), tuple(readouts))
 

@@ -169,7 +169,7 @@ def test_preallocation_limits_masks_and_binding_preserve_rng():
     ):
         with (
             patch(
-                "r0.modules.priors.lib.network_variance_match.draw_root_base",
+                "r0.modules.priors.lib.network_variance_match.functional_root_values",
                 side_effect=AssertionError("allocated before admission"),
             ),
             pytest.raises(ValueError, match="limit"),
