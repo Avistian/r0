@@ -22,6 +22,8 @@ from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.matrix_preference_prior import PREFERRED_MATRIX_PROFILES
 from r0.modules.priors.lib.preferred_matrix_sampling import sample_preferred_matrices
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.source_causal_prior import SOURCE_ACTIVATION_PROFILES
+from r0.modules.priors.lib.source_causal_sampling import with_source_activations
 
 _EXPLORATION_ACTIVATIONS = (
     "identity",
@@ -64,6 +66,7 @@ def sample_causal_profile(
         "causal-matrices-v1",
         "causal-gaussian-matrices-v1",
         *PREFERRED_MATRIX_PROFILES,
+        *SOURCE_ACTIVATION_PROFILES,
     ):
         raise ValueError("unsupported causal sampling profile")
     outputs = task.classes if task.task_type == "multiclass" else 1
@@ -100,10 +103,18 @@ def sample_causal_profile(
             "causal-matrices-v1",
             "causal-gaussian-matrices-v1",
             *PREFERRED_MATRIX_PROFILES,
+            *SOURCE_ACTIVATION_PROFILES,
         )
         else ()
     )
     recipe = sample_causal_recipe(prior, task=task, seed=seed, task_id=task_id, widths=widths)
+    if profile in SOURCE_ACTIVATION_PROFILES:
+        source_prior = replace(
+            SOURCE_ACTIVATION_PROFILES[profile],
+            placement=str(rng.choice(("input", "output", "both"))),
+            noise_after_probability=float(rng.choice((0, 0.5, 1))),
+        )
+        return with_source_activations(recipe, prior=source_prior, seed=seed, task_id=task_id)
     if profile in (
         "causal-preferences-v1",
         "causal-exogenous-v1",

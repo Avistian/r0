@@ -47,6 +47,10 @@ class CausalRecipe:
     version: str = "causal-v1"
 
     @property
+    def admission_calibration_rows(self) -> int:
+        return self.calibration_rows if self.normalize else 0
+
+    @property
     def sampling_record(self) -> dict[str, Any] | None:
         return None
 
@@ -88,6 +92,7 @@ class CausalRecipe:
             "activation-matrices-v1",
             "activation-gaussian-matrices-v1",
             "activation-shared-matrices-v1",
+            "source-activations-v1",
         ) or (self.construction != "authored" and self.topology is None):
             raise ValueError("sampled construction requires its saved topology")
         if (
@@ -100,6 +105,7 @@ class CausalRecipe:
                 "activation-matrices-v1",
                 "activation-gaussian-matrices-v1",
                 "activation-shared-matrices-v1",
+                "source-activations-v1",
             )
             and type(self) is CausalRecipe
         ):
@@ -128,7 +134,7 @@ class CausalRecipe:
         self.limits.admit(
             self.nodes,
             rows=self.task.rows,
-            calibration_rows=self.calibration_rows if self.normalize else 0,
+            calibration_rows=self.admission_calibration_rows,
             features=self.task.features,
             outputs=outputs,
             extra_parameters=self.sampling_parameter_count,
@@ -364,7 +370,7 @@ def generate_causal(
         "resource_admission": recipe.limits.admit(
             recipe.nodes,
             rows=recipe.task.rows,
-            calibration_rows=recipe.calibration_rows if recipe.normalize else 0,
+            calibration_rows=recipe.admission_calibration_rows,
             features=recipe.task.features,
             outputs=len(recipe.target),
             extra_parameters=recipe.sampling_parameter_count,

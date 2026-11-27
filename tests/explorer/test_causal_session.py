@@ -1,10 +1,12 @@
 """Sampled causal tasks travel through the shared saved explorer workflow."""
 
 import json
+from dataclasses import asdict
 from pathlib import Path
 
 import pytest
 
+from r0.modules import priors
 from r0.modules.explorer import ExplorerSession
 
 
@@ -24,23 +26,49 @@ from r0.modules.explorer import ExplorerSession
         ("causal-refreshed-matrices-v1", "activation-shared-matrices-v1"),
         ("causal-local-matrices-v1", "activation-shared-matrices-v1"),
         ("causal-global-matrices-v1", "activation-shared-matrices-v1"),
+        ("causal-source-standard-v1", "source-activations-v1"),
+        ("causal-source-standard-refreshed-v1", "source-activations-v1"),
+        ("causal-source-standard-local-v1", "source-activations-v1"),
+        ("causal-source-standard-global-v1", "source-activations-v1"),
+        ("causal-source-plain-v1", "source-activations-v1"),
+        ("causal-source-plain-refreshed-v1", "source-activations-v1"),
+        ("causal-source-plain-local-v1", "source-activations-v1"),
+        ("causal-source-plain-global-v1", "source-activations-v1"),
     ],
 )
 def test_sampled_causal_session_saves_reopens_and_replays_its_graph(
     tmp_path: Path, family: str, profile: str, construction: str
 ) -> None:
     session = ExplorerSession(tmp_path / "original")
-    result = session.request(
-        "generate",
-        {
-            "record": {
-                "recipe": {"rows": 16, "context_rows": 8},
-                "seed": 28,
-                "task_id": 10,
-            },
-            "sampling": {"family": family, "profile": profile},
+    request = {
+        "record": {
+            "recipe": {"rows": 16, "context_rows": 8},
+            "seed": 28,
+            "task_id": 10,
         },
-    )
+        "sampling": {"family": family, "profile": profile},
+    }
+    if profile == "causal-source-plain-refreshed-v1" and family in ("forward", "layered"):
+        # The original unfiltered profile pass exposed these two exp-overflow
+        # draws. Keep their exact identities and full recipes; do not replace them.
+        recipe = priors.sample_recipe(
+            family,
+            profile=profile,
+            task=priors.LinearRecipe(rows=16, context_rows=8),
+            seed=28,
+            task_id=10,
+        )
+        (tmp_path / "failed-recipe.json").write_text(json.dumps(asdict(recipe)))
+        with pytest.raises(ValueError, match="Generation failed"):
+            session.request("generate", request)
+        failures = list((tmp_path / "original").rglob("failures-0.jsonl"))
+        assert len(failures) == 1
+        assert json.loads(failures[0].read_text()) == {
+            "task_id": 10,
+            "error": "ValueError: nonfinite exp activation output; task was not retried",
+        }
+        return
+    result = session.request("generate", request)
     record = json.loads(result["recipe_json"])
     assert record["recipe"]["topology"]["prior"]["family"] == family
     assert record["recipe"]["construction"] == construction

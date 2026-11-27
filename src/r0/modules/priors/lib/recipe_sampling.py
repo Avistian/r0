@@ -31,6 +31,7 @@ from r0.modules.priors.lib.quadratic import QuadraticRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.sampling import BaseRecipe
 from r0.modules.priors.lib.smooth import SmoothRecipe
+from r0.modules.priors.lib.source_causal_prior import SOURCE_ACTIVATION_PROFILES
 
 BROAD_FAMILIES = (
     "linear",
@@ -323,6 +324,9 @@ def sample_recipe(
         "causal-matrices-v1": ("forward", "layered", "redirection"),
         "causal-gaussian-matrices-v1": ("forward", "layered", "redirection"),
         **{profile: ("forward", "layered", "redirection") for profile in PREFERRED_MATRIX_PROFILES},
+        **{
+            profile: ("forward", "layered", "redirection") for profile in SOURCE_ACTIVATION_PROFILES
+        },
     }
     if profile not in families or family not in families[profile]:
         raise ValueError("unsupported sampling profile or family")
@@ -336,6 +340,7 @@ def sample_recipe(
         "causal-matrices-v1",
         "causal-gaussian-matrices-v1",
         *PREFERRED_MATRIX_PROFILES,
+        *SOURCE_ACTIVATION_PROFILES,
     ):
         return sample_causal_profile(
             family,

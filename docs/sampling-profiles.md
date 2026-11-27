@@ -211,3 +211,16 @@ matrix vectors; CausalMatrixPrior also exposes uniform vectors and restricted
 family/point-law/base choices. [Laws, bindings, source adaptations and delivery
 state](issue-28-shared-matrix-preferences.md). These are r0 exploration profiles,
 not a claim of complete source joint-prior reproduction.
+
+## Source activation profiles
+
+The eight `causal-source-{standard,plain}{,-refreshed,-local,-global}-v1` profiles
+bind the source's hierarchical primitive preferences to Gaussian-affine causal
+structures. Standard profiles use independent ancestral calibration and retain
+fixed input/output standardization, shifts and shared named rescale preferences.
+Plain profiles retain unwrapped primitives. All support forward, layered and
+redirection graphs through the shared saved backend path. They preserve explicit
+overflow failures and valid degenerate draws. See
+[source causal profile laws and qualifications](issue-28-source-causal-profiles.md).
+Matrix integration and remaining wrappers are still required; these profiles do
+not establish full source joint-prior reproduction or browser/Colab acceptance.

@@ -34,6 +34,9 @@ from r0.modules.priors.lib.preference_binding import PreferenceBinding
 from r0.modules.priors.lib.quadratic import QuadraticRecipe
 from r0.modules.priors.lib.sampling import BaseRecipe, generate_base_task
 from r0.modules.priors.lib.smooth import SmoothRecipe
+from r0.modules.priors.lib.source_activation_sampling import source_activation_selections_from_dict
+from r0.modules.priors.lib.source_causal import SourceCausalRecipe
+from r0.modules.priors.lib.source_causal_prior import SourceActivationPrior, SourceStageBinding
 from r0.modules.priors.lib.training_task import TrainingTask
 
 type Recipe = BaseRecipe | CompositeRecipe | CausalRecipe
@@ -91,6 +94,19 @@ def recipe_from_dict(data: object) -> Recipe:
         fields["nodes"] = tuple(causal_node_from_dict(item) for item in fields["nodes"])
         for key in ("observed", "target"):
             fields[key] = tuple(tuple(ref) for ref in fields[key])
+        if "source_prior" in fields:
+            fields["source_prior"] = SourceActivationPrior(**fields["source_prior"])
+            fields["source_selections"] = source_activation_selections_from_dict(
+                fields["source_selections"]
+            )
+            fields["rescale_preferences"] = parameter_preferences_from_dict(
+                fields["rescale_preferences"]
+            )
+            fields["source_bindings"] = tuple(
+                SourceStageBinding(**b) for b in fields["source_bindings"]
+            )
+            fields["noise_units"] = tuple(fields["noise_units"])
+            return SourceCausalRecipe(**fields)
         if "activation_prior" in fields:
             fields["activation_prior"] = activation_prior_from_dict(fields["activation_prior"])
             fields["activation_probabilities"] = tuple(fields["activation_probabilities"])

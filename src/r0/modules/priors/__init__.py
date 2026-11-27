@@ -106,6 +106,12 @@ from r0.modules.priors.lib.source_activation_sampling import (
 from r0.modules.priors.lib.source_activation_sampling import (
     source_activation_selections_from_dict as source_activation_selections_from_dict,
 )
+from r0.modules.priors.lib.source_causal import SourceCausalRecipe as SourceCausalRecipe
+from r0.modules.priors.lib.source_causal_prior import SourceActivationPrior as SourceActivationPrior
+from r0.modules.priors.lib.source_causal_prior import SourceStageBinding as SourceStageBinding
+from r0.modules.priors.lib.source_causal_sampling import (
+    with_source_activations as with_source_activations,
+)
 from r0.modules.priors.lib.training_task import TrainingTask as TrainingTask
 from r0.modules.priors.lib.transformed_weights import GaussianWeights as GaussianWeights
 from r0.modules.priors.lib.transformed_weights import NormalizedWeights as NormalizedWeights
