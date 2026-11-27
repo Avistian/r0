@@ -429,3 +429,8 @@ from .lib.joint_api import (
 from .lib.joint_api import (
     sample_joint_widths as sample_joint_widths,
 )
+from .lib.structural_graph import StructuralGraph as StructuralGraph
+from .lib.structural_graph import sample_structural_graph as sample_structural_graph
+from .lib.structural_graph_algorithm import GraphRewrite as GraphRewrite
+from .lib.structural_graph_prior import AttachmentGraphPrior as AttachmentGraphPrior
+from .lib.structural_graph_prior import MotifGraphPrior as MotifGraphPrior
