@@ -14,6 +14,8 @@ from r0.modules.priors.lib.joint_discretization_decoding import decode_joint_dis
 from r0.modules.priors.lib.joint_discretization_realization import (
     JointDiscretizationFunctionRealization,
 )
+from r0.modules.priors.lib.joint_em_decoding import decode_joint_em
+from r0.modules.priors.lib.joint_em_realization import JointEMFunctionRealization
 from r0.modules.priors.lib.joint_function_admission import admit_matrix_function
 from r0.modules.priors.lib.joint_function_decoding import joint_function_plan_from_dict
 from r0.modules.priors.lib.joint_function_realization import JointMatrixFunctionRealization
@@ -37,6 +39,7 @@ def joint_function_realization_from_dict(
     | JointRFFFunctionRealization
     | JointTreeFunctionRealization
     | JointDiscretizationFunctionRealization
+    | JointEMFunctionRealization
 ):
     if type(decisions) is not JointSamplingRecord or type(limits) is not CausalLimits:
         raise ValueError(
@@ -45,6 +48,8 @@ def joint_function_realization_from_dict(
     admit_function_metadata(data, limits)
     if type(data) is not dict:
         raise ValueError("function realization must be a JSON object")
+    if data.get("version") == "joint-em-function-realization-v1":
+        return decode_joint_em(data, decisions, limits)
     if data.get("version") == "joint-discretization-function-realization-v1":
         return decode_joint_discretization(data, decisions, limits)
     if data.get("version") == "joint-rff-function-realization-v1":

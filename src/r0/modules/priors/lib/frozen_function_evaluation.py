@@ -17,6 +17,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenRFFFunction,
     FrozenTreeFunction,
 )
+from r0.modules.priors.lib.weight_geometry import Matrix
 
 type FrozenFunction = (
     FrozenLinearFunction
@@ -126,6 +127,24 @@ def _log_distances(inputs: torch.Tensor, centers: torch.Tensor, p: float) -> tor
     return mantissa.log() + exponent.to(inputs.dtype) * math.log(2)
 
 
+def em_assignment_probabilities(
+    inputs: torch.Tensor,
+    centers: Matrix,
+    scales: tuple[float, ...],
+    p: float,
+    q: float,
+) -> torch.Tensor:
+    """Evaluate already admitted, finite EM geometry for fitting or frozen emission."""
+    logs = _log_distances(inputs, inputs.new_tensor(centers), p)
+    log_scales = inputs.new_tensor(scales).log()
+    penalties = (q * (logs - log_scales)).exp()
+    logits = -0.5 * math.log(2 * math.pi) - log_scales - penalties
+    result = logits.softmax(dim=1)
+    if not torch.isfinite(result).all():
+        raise ValueError("nonfinite EM assignment probabilities; evaluation was not retried")
+    return result
+
+
 def _evaluate(function: FrozenFunction, inputs: torch.Tensor) -> torch.Tensor:
     if type(function) is FrozenLinearFunction:
         result = inputs @ inputs.new_tensor(function.matrix).T
@@ -175,11 +194,14 @@ def _evaluate(function: FrozenFunction, inputs: torch.Tensor) -> torch.Tensor:
                 index += 1
     else:
         assert isinstance(function, FrozenEMFunction)
-        logs = _log_distances(inputs, inputs.new_tensor(function.centers), function.p)
-        scales = inputs.new_tensor(function.scales).log()
-        penalties = (function.q * (logs - scales)).exp()
-        logits = -0.5 * math.log(2 * math.pi) - scales - penalties
-        result = _evaluate(function.linear, logits.softmax(dim=1))
+        assignments = em_assignment_probabilities(
+            inputs,
+            function.centers,
+            function.scales,
+            function.p,
+            function.q,
+        )
+        result = _evaluate(function.linear, assignments)
     if not torch.isfinite(result).all():
         raise ValueError("nonfinite frozen function output; evaluation was not retried")
     return result

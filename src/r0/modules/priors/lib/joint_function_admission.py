@@ -164,3 +164,31 @@ def admit_discretization_function(
     if report["estimated_working_bytes"] > limits.working_bytes:
         raise ValueError("estimated discretization fitting memory exceeds declared limit")
     return report
+
+
+def admit_em_function(
+    plan: JointFunctionPlan, decisions: JointSamplingRecord, limits: CausalLimits
+) -> dict[str, int]:
+    if plan.family != "em":
+        raise ValueError("EM realization requires an EM plan")
+    i, o, rows = plan.input_width, plan.output_width, plan.calibration_rows
+    count = int(dict(plan.parameters)["components"])
+    matrix = plan.matrices[0]
+    metadata, metadata_bytes = function_record_cost((plan, decisions, matrix), limits)
+    # Sample, anchors, Gaussian jitter/spreads, actual fit assignments and matrix.
+    raw = rows * i + count * (i + 2) + rows * count + matrix_realization_parameters(matrix)
+    frozen = count * (i + 1 + o) + 2
+    report = limits.admit_dimensions(
+        (max(i, o, count),),
+        ((),),
+        rows=max(rows, o),
+        calibration_rows=0,
+        features=i,
+        outputs=o,
+        extra_parameters=metadata + raw + frozen,
+        extra_working_channels=16 * count * i + 12 * count + 8 * (i + o),
+    )
+    report["estimated_working_bytes"] += metadata_bytes - 64 * metadata + 256
+    if report["estimated_working_bytes"] > limits.working_bytes:
+        raise ValueError("estimated EM fitting memory exceeds declared limit")
+    return report

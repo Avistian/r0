@@ -15,6 +15,10 @@ from r0.modules.priors.lib.joint_discretization_realization import (
     JointDiscretizationFunctionRealization,
     materialize_joint_discretization,
 )
+from r0.modules.priors.lib.joint_em_realization import (
+    JointEMFunctionRealization,
+    materialize_joint_em,
+)
 from r0.modules.priors.lib.joint_function_admission import admit_matrix_function
 from r0.modules.priors.lib.joint_function_plans import JointFunctionPlan
 from r0.modules.priors.lib.joint_matrix_realization import (
@@ -101,6 +105,7 @@ def materialize_joint_function(
     | JointRFFFunctionRealization
     | JointTreeFunctionRealization
     | JointDiscretizationFunctionRealization
+    | JointEMFunctionRealization
 ):
     """Freeze supported constructions using caller-owned samples for fitted functions.
 
@@ -112,6 +117,16 @@ def materialize_joint_function(
     if type(rng) is not np.random.Generator or type(limits) is not CausalLimits:
         raise ValueError("function realization requires an injected RNG and frozen limits")
     plan.validate(decisions)
+    if plan.family == "em":
+        return materialize_joint_em(
+            plan,
+            decisions,
+            rng=rng,
+            fit_rng=fit_rng,
+            calibration=calibration,
+            calibration_id=calibration_id,
+            limits=limits,
+        )
     if plan.family == "disc":
         return materialize_joint_discretization(
             plan,

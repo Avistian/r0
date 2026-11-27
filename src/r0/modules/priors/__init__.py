@@ -120,6 +120,9 @@ from r0.modules.priors.lib.joint_converter_plans import (
 from r0.modules.priors.lib.joint_discretization_realization import (
     JointDiscretizationFunctionRealization as JointDiscretizationFunctionRealization,
 )
+from r0.modules.priors.lib.joint_em_realization import (
+    JointEMFunctionRealization as JointEMFunctionRealization,
+)
 from r0.modules.priors.lib.joint_function_calibration import (
     FunctionCalibrationSample as FunctionCalibrationSample,
 )
