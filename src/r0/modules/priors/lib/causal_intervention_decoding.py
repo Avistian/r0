@@ -89,7 +89,10 @@ def intervention_from_dict(data: object, *, limits: CausalLimits) -> CausalInter
                 for key in ("channels", "values"):
                     change[key] = functional_array(change[key])
                 changes.append(HardIntervention(**change))
-            elif cast(dict[str, Any], item).get("version") == "stage-causal-intervention-v1":
+            elif cast(dict[str, Any], item).get("version") in (
+                "stage-causal-intervention-v1",
+                "stage-causal-intervention-v2",
+            ):
                 change = functional_record(item, StageIntervention)
                 if change.get("root") is not None:
                     change["root"] = functional_root(change["root"])

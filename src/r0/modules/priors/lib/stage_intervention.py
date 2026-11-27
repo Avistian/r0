@@ -5,12 +5,13 @@ from dataclasses import dataclass
 from r0.modules.priors.lib.joint_root_base import JointRootBase
 from r0.modules.priors.lib.native_causal import FrequencyVariableDomain, VariableDomain
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline
+from r0.modules.priors.lib.source_root_base import SourceRootBase
 
 
 @dataclass(frozen=True, slots=True)
 class StageIntervention:
     node: int
-    root: JointRootBase | None = None
+    root: JointRootBase | SourceRootBase | None = None
     replace_pipeline: bool = False
     pipeline: CausalNodePipeline | None = None
     domain: VariableDomain | None = None
@@ -18,12 +19,14 @@ class StageIntervention:
 
     def __post_init__(self) -> None:
         if (
-            self.version != "stage-causal-intervention-v1"
+            self.version not in ("stage-causal-intervention-v1", "stage-causal-intervention-v2")
+            or type(self.root) is SourceRootBase
+            and self.version != "stage-causal-intervention-v2"
             or type(self.node) is not int
             or self.node < 0
             or type(self.replace_pipeline) is not bool
             or self.root is not None
-            and type(self.root) is not JointRootBase
+            and type(self.root) not in (JointRootBase, SourceRootBase)
             or self.pipeline is not None
             and type(self.pipeline) is not CausalNodePipeline
             or self.pipeline is not None

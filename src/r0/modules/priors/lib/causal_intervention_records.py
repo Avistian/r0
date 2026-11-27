@@ -31,6 +31,7 @@ from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
 from r0.modules.priors.lib.sampled_native_vector_graph import SampledNativeVectorGraph
 from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
 from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
+from r0.modules.priors.lib.source_root_base import SourceRootBase
 from r0.modules.priors.lib.stage_intervention import StageIntervention
 
 if TYPE_CHECKING:
@@ -385,6 +386,8 @@ def replacement_equation_fields(change: SoftIntervention | StageIntervention) ->
         fields: dict[str, Any] = {}
         if change.root is not None:
             fields["root"] = change.root
+            if isinstance(change.root, SourceRootBase):
+                fields["version"] = "functional-causal-node-v2"
         if change.replace_pipeline:
             fields["pipeline"] = change.pipeline
         return fields
