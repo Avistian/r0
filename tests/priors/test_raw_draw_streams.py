@@ -67,31 +67,23 @@ def test_multiple_stream_failure_rolls_back_all_generators_and_records() -> None
         np.testing.assert_array_equal(originals[name].random(8), controls[name].random(8))
 
 
-@pytest.mark.parametrize("captured", [False, True])
 @pytest.mark.parametrize("mapping", ["caller", "staged"])
 @pytest.mark.parametrize("mutation", ["replace", "delete", "add"])
-def test_transaction_rejects_stream_mapping_mutation(
-    captured: bool, mapping: str, mutation: str
-) -> None:
-    from r0.modules.priors.lib.raw_draw_capture import raw_transactions
-
+def test_transaction_rejects_stream_mapping_mutation(mapping: str, mutation: str) -> None:
     originals = {"raw": np.random.default_rng(3), "fit": np.random.default_rng(4)}
     retained = originals.copy()
     controls = copy.deepcopy(originals)
-    capture = priors.RawDrawLedger() if captured else None
+    capture = priors.RawDrawLedger()
 
     def attempt() -> None:
-        with raw_transactions(originals, capture) as (streams, ledger):
-            if ledger is None:
-                streams["raw"].normal(size=4)
-            else:
-                ledger.draw(
-                    streams["raw"],
-                    owner=("node",),
-                    role="weights",
-                    distribution="normal",
-                    shape=(4,),
-                )
+        with capture.transactions(originals) as (streams, ledger):
+            ledger.draw(
+                streams["raw"],
+                owner=("node",),
+                role="weights",
+                distribution="normal",
+                shape=(4,),
+            )
             target = originals if mapping == "caller" else streams
             if mutation == "delete":
                 del target["fit"]
@@ -102,8 +94,7 @@ def test_transaction_rejects_stream_mapping_mutation(
 
     with pytest.raises(ValueError, match="stream bindings changed"):
         attempt()
-    if capture is not None:
-        assert capture.freeze() == ()
+    assert capture.freeze() == ()
     for name in retained:
         np.testing.assert_array_equal(retained[name].random(8), controls[name].random(8))
 
