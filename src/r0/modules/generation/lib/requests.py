@@ -126,9 +126,36 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
             for key, identity in (("seed", request.seed), ("task_id", task_id))
         ):
             return False
-        realized = recipe_from_dict(
-            record["recipe"], limits=request.causal_limits or selected.request.limits
-        )
+        raw = record.get("recipe")
+        if type(raw) is not dict:
+            return False
+        raw = cast(dict[str, Any], raw)
+        source = raw.get("source")
+        if type(source) is not dict:
+            return False
+        source = cast(dict[str, Any], source)
+        if (
+            raw.get("version") != selected.version
+            or source.get("version") != "gp-column-population-v1"
+            or any(
+                type(source.get(key)) is not int or source[key] != identity
+                for key, identity in (("seed", request.seed), ("task_id", task_id))
+            )
+            or record.get("sampling") != sampling_record(request)
+        ):
+            return False
+        # These controls are known without any numerical population replay.
+        actual_controls = {"task": raw.get("task"), "request": source.get("request")}
+        expected_controls = {"task": asdict(selected.task), "request": asdict(selected.request)}
+        if json.dumps(actual_controls, sort_keys=True, allow_nan=False) != json.dumps(
+            expected_controls, sort_keys=True, allow_nan=False
+        ):
+            return False
+        if isinstance(selected.source, GPColumnPopulation) and json.dumps(
+            raw, sort_keys=True, allow_nan=False
+        ) != json.dumps(asdict(selected), sort_keys=True, allow_nan=False):
+            return False
+        realized = recipe_from_dict(raw, limits=request.causal_limits or selected.request.limits)
         if not isinstance(realized, GPColumnRecipe) or not isinstance(
             realized.source, GPColumnPopulation
         ):

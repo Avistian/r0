@@ -45,3 +45,13 @@ hybrid DAG roots; broader population/location catalog coverage; Colab/shared
 callback coverage; resource/diversity qualification. This checkpoint is not
 complete issue #28 or complete workbench acceptance. The source-related core
 contract is in [GP column populations](issue-28-gp-column-populations.md).
+
+Independent review of `111284c` rejected producer admission ordering: mismatched
+request target family or task noise triggered covariance replay before rejection.
+The follow-up repair compares complete task/request/sampling metadata, exact
+outer and nested identities and any originally realized source before replay.
+The original public probe now observes zero Cholesky calls for wrong producers;
+a valid control still completes. Five public cases retain three genuine baseline
+failures (two already rejected early). The combined52-case GP/workbench/admission
+check passes. Historical rejection remains retained; independent repair review
+and broader UI review remain pending.
