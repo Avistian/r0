@@ -1,5 +1,6 @@
 """Frozen root base laws and retained raw draws before the source function."""
 
+import math
 from dataclasses import dataclass
 
 import numpy as np
@@ -51,13 +52,17 @@ class JointRootBase:
             or self.covariance_base not in ("uniform", "gaussian")
         ):
             raise ValueError("covariance roots require aligned Gaussian factors, weights and base")
-        with np.errstate(over="ignore", invalid="ignore"):
-            expected = (
-                np.asarray(self.gaussian_factor, dtype=np.float64)
-                * np.asarray(self.weights.values(), dtype=np.float64)[None, :]
-            )
-        if not np.isfinite(expected).all() or self.factor != frozen_matrix(expected):
-            raise ValueError("root covariance factor differs from its column-weighted construction")
+        # Frozen records are validated before enclosing graph admission. Verify
+        # each binary64 product directly, without constructing numerical arrays
+        # or a duplicate derived matrix before that aggregate gate.
+        weights = self.weights.values()
+        for row, stored in zip(self.gaussian_factor, self.factor, strict=True):
+            for value, weight, actual in zip(row, weights, stored, strict=True):
+                expected = float(value) * float(weight)
+                if not math.isfinite(expected) or actual != expected:
+                    raise ValueError(
+                        "root covariance factor differs from its column-weighted construction"
+                    )
 
 
 def root_base_values(
