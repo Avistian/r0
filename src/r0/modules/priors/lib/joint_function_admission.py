@@ -4,7 +4,9 @@ from dataclasses import fields, is_dataclass
 from typing import Any, cast
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.joint_activation_plans import JointActivationPlan
 from r0.modules.priors.lib.joint_function_plans import JointFunctionPlan
+from r0.modules.priors.lib.joint_matrix_plans import JointMatrixPlan
 from r0.modules.priors.lib.joint_matrix_realization import matrix_realization_parameters
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
 
@@ -256,4 +258,42 @@ def admit_product_function(
         raise ValueError("aggregate product parameter limit exceeded")
     if report["estimated_working_bytes"] > limits.working_bytes:
         raise ValueError("aggregate product working memory limit exceeded")
+    return report
+
+
+def admit_mlp_function(
+    plan: JointFunctionPlan,
+    decisions: JointSamplingRecord,
+    limits: CausalLimits,
+) -> dict[str, int]:
+    if plan.family != "mlp":
+        raise ValueError("MLP realization requires an MLP plan")
+    rows, i, o = plan.calibration_rows, plan.input_width, plan.output_width
+    widths = (i, *(matrix.rows for matrix in plan.matrices))
+    metadata, metadata_bytes = function_record_cost((plan, decisions, plan.matrices), limits)
+    raw = rows * (i + o) + sum(matrix_realization_parameters(matrix) for matrix in plan.matrices)
+    frozen = 2 + sum(matrix.rows * matrix.columns for matrix in plan.matrices)
+    width = i
+    for child in plan.ordered_children:
+        if isinstance(child, JointActivationPlan):
+            raw += rows * width
+            frozen += child.activation.parameter_count + 6 * width + 2
+        else:
+            assert isinstance(child, JointMatrixPlan)
+            width = child.rows
+    report = limits.admit_dimensions(
+        widths,
+        tuple(() for _ in widths),
+        rows=max(rows, *widths),
+        calibration_rows=0,
+        features=i,
+        outputs=o,
+        extra_parameters=metadata + raw + frozen,
+        extra_working_channels=24 * sum(widths),
+    )
+    report["estimated_working_bytes"] += (
+        metadata_bytes - 64 * metadata + 512 * (1 + len(plan.activations))
+    )
+    if report["estimated_working_bytes"] > limits.working_bytes:
+        raise ValueError("estimated MLP fitting memory exceeds declared limit")
     return report

@@ -28,6 +28,8 @@ from r0.modules.priors.lib.joint_function_realization import (
     JointProductFunctionRealization,
 )
 from r0.modules.priors.lib.joint_matrix_decoding import joint_matrix_realization_from_dict
+from r0.modules.priors.lib.joint_mlp_decoding import decode_joint_mlp
+from r0.modules.priors.lib.joint_mlp_realization import JointMLPFunctionRealization
 from r0.modules.priors.lib.joint_rff_decoding import decode_joint_rff
 from r0.modules.priors.lib.joint_rff_realization import JointRFFFunctionRealization
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
@@ -49,6 +51,7 @@ def joint_function_realization_from_dict(
     | JointDiscretizationFunctionRealization
     | JointEMFunctionRealization
     | JointProductFunctionRealization
+    | JointMLPFunctionRealization
 ):
     if type(decisions) is not JointSamplingRecord or type(limits) is not CausalLimits:
         raise ValueError(
@@ -57,6 +60,8 @@ def joint_function_realization_from_dict(
     admit_function_metadata(data, limits)
     if type(data) is not dict:
         raise ValueError("function realization must be a JSON object")
+    if data.get("version") == "joint-mlp-function-realization-v1":
+        return decode_joint_mlp(data, decisions, limits)
     if data.get("version") == "joint-product-function-realization-v1":
         return _decode_product(data, decisions, limits)
     if data.get("version") == "joint-em-function-realization-v1":

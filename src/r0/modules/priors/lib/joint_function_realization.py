@@ -34,6 +34,10 @@ from r0.modules.priors.lib.joint_matrix_realization import (
     JointMatrixRealization,
     materialize_joint_matrix,
 )
+from r0.modules.priors.lib.joint_mlp_realization import (
+    JointMLPFunctionRealization,
+    materialize_joint_mlp,
+)
 from r0.modules.priors.lib.joint_rff_realization import (
     JointRFFFunctionRealization,
     materialize_joint_rff,
@@ -175,6 +179,7 @@ def materialize_joint_function(
     | JointDiscretizationFunctionRealization
     | JointEMFunctionRealization
     | JointProductFunctionRealization
+    | JointMLPFunctionRealization
 ):
     """Freeze supported constructions using caller-owned samples for fitted functions.
 
@@ -186,6 +191,16 @@ def materialize_joint_function(
     if type(rng) is not np.random.Generator or type(limits) is not CausalLimits:
         raise ValueError("function realization requires an injected RNG and frozen limits")
     plan.validate(decisions)
+    if plan.family == "mlp":
+        return materialize_joint_mlp(
+            plan,
+            decisions,
+            rng=rng,
+            fit_rng=fit_rng,
+            calibration=calibration,
+            calibration_id=calibration_id,
+            limits=limits,
+        )
     if plan.family == "prod":
         return _materialize_product(
             plan,

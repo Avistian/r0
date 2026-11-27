@@ -243,6 +243,53 @@ def calibrate_source_activation(
         raise ValueError("calibration requires a primitive activation and injected Generator")
     if type(limits) is not CausalLimits:
         raise ValueError("activation calibration requires frozen causal limits")
+    return _fit_source_activation(
+        activation,
+        calibration,
+        rng=rng,
+        shift_rows=None,
+        scale=scale,
+        calibration_id=calibration_id,
+        limits=limits,
+    )
+
+
+def reconstruct_source_activation(
+    activation: CausalActivation,
+    calibration: NDArray[np.float64],
+    *,
+    shift_rows: tuple[int, ...],
+    scale: float,
+    calibration_id: str,
+) -> CalibratedActivation:
+    """Reconstruct an already admitted fit from retained row choices, without RNG.
+
+    Enclosing construction/decoding must admit the complete record and sample
+    before calling this helper, including all intermediate fitting buffers.
+    """
+    if type(activation) is not CausalActivation or type(shift_rows) is not tuple:
+        raise ValueError("activation reconstruction requires a primitive and retained row tuple")
+    return _fit_source_activation(
+        activation,
+        calibration,
+        rng=None,
+        shift_rows=shift_rows,
+        scale=scale,
+        calibration_id=calibration_id,
+        limits=None,
+    )
+
+
+def _fit_source_activation(
+    activation: CausalActivation,
+    calibration: NDArray[np.float64],
+    *,
+    rng: np.random.Generator | None,
+    shift_rows: tuple[int, ...] | None,
+    scale: float,
+    calibration_id: str,
+    limits: CausalLimits | None,
+) -> CalibratedActivation:
     if (
         type(calibration) is not np.ndarray
         or calibration.ndim != 2
@@ -255,16 +302,21 @@ def calibrate_source_activation(
         raise ValueError("calibration sample identity must be nonempty")
     if not finite_number(scale) or not 1 <= scale <= 10:
         raise ValueError("source activation rescale must lie in [1,10]")
-    limits.admit_dimensions(
-        (width,),
-        ((),),
-        rows=rows,
-        calibration_rows=0,
-        features=width,
-        outputs=width,
-        extra_parameters=activation.parameter_count + 6 * width + 2,
-        extra_working_channels=10 * width,
-    )
+    if shift_rows is not None and (
+        len(shift_rows) != width or any(type(i) is not int or not 0 <= i < rows for i in shift_rows)
+    ):
+        raise ValueError("activation shift rows must match calibration geometry")
+    if limits is not None:
+        limits.admit_dimensions(
+            (width,),
+            ((),),
+            rows=rows,
+            calibration_rows=0,
+            features=width,
+            outputs=width,
+            extra_parameters=activation.parameter_count + 6 * width + 2,
+            extra_working_channels=10 * width,
+        )
     sample = np.ascontiguousarray(calibration, dtype="<f8")
     if not np.isfinite(sample).all():
         raise ValueError("activation calibration sample must be finite")
@@ -272,7 +324,10 @@ def calibrate_source_activation(
     value = torch.tensor(sample, dtype=torch.float64)
     input_mean, input_inverse = _statistics(value)
     standardized = _center_scale(value, input_mean, input_inverse)
-    indices = tuple(int(i) for i in rng.integers(rows, size=width))
+    indices = (
+        tuple(int(i) for i in rng.integers(rows, size=width)) if rng is not None else shift_rows
+    )
+    assert indices is not None
     shift = tuple(-float(standardized[i, j]) for j, i in enumerate(indices))
     argument = _finite(scale * (standardized + standardized.new_tensor(shift)))
     result = primitive_activation(argument, activation)

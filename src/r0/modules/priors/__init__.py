@@ -161,6 +161,9 @@ from r0.modules.priors.lib.joint_matrix_realization import (
 from r0.modules.priors.lib.joint_matrix_realization import (
     materialize_joint_matrix as materialize_joint_matrix,
 )
+from r0.modules.priors.lib.joint_mlp_realization import (
+    JointMLPFunctionRealization as JointMLPFunctionRealization,
+)
 from r0.modules.priors.lib.joint_plan_calibration import (
     fit_joint_activation as fit_joint_activation,
 )
