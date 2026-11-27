@@ -1,0 +1,16 @@
+The three Python files in this directory are the final publication programs. Each accepts one output-directory argument, remains below 20,000 bytes, and passes Ruff check and format-check using `/tmp/r0-28/pyproject.toml` plus `lint.isort.known-first-party=["r0"]`.
+
+These are newly executed publication copies, not merely unexecuted formatting copies. Cleanup split imports/statements/assertions, removed unused imports, and renamed the local request-cost helper to avoid shadowing. No formatting-only AST identity is claimed. The original programs, outputs, manifest, and PASS review remain unchanged; their retained hashes were checked.
+
+Fresh runs are in `../publication-runs/`: `numerical/`, `contracts/`, `old-head/`, and `old-base/`. All four executions exited zero. Numerical JSON outputs match the original run; the 36 contract-check results match; all 37 old-profile comparison files remain identical between base and head. The existing unused-branch NumPy `expm1` warning recurred without nonfinite selected results. This introduces no new scientific coverage or acceptance claim.
+
+`custody.json` binds each final script hash, output directory, successful execution, Ruff commands/results, and original-artifact preservation. Each run's `execution.json` retains the actual script/import hashes, verified against the frozen source revision.
+
+Run the head programs with:
+
+```bash
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=/tmp/r0-28/src \
+  /home/avist/Projects/r0/.venv/bin/python SCRIPT OUTPUTDIR
+```
+
+For the base old-profile run, use `PYTHONPATH=/tmp/source-causal-spec-c4081e1/base-source/src`. The original review's environment and whole-issue PENDING qualifications still apply.

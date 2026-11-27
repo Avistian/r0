@@ -1,0 +1,91 @@
+{
+  "source_commit": "c4081e1eec5ce7e340acf3066ce3f2ff3eb518a9",
+  "profile": "causal-source-standard-v1",
+  "summary": "0028-source-causal-census-standard.json",
+  "attempts": 192,
+  "headers": [
+    {
+      "path": "0028-source-causal-census-standard-headers-01.jsonl",
+      "sha256": "100a486583cd12098dccfd0a3cc659149a5f4743c85c6ec6cceb5a7cdd3e4c90",
+      "count": 32
+    },
+    {
+      "path": "0028-source-causal-census-standard-headers-02.jsonl",
+      "sha256": "6ed3e55e2c3c19e9ce6b49c624d85f89d234c0518523f9baba7f8a681c00eb30",
+      "count": 32
+    },
+    {
+      "path": "0028-source-causal-census-standard-headers-03.jsonl",
+      "sha256": "3675800a0cdb8a49381703144626c697dab76d49ba7ef25913537a169f8ca204",
+      "count": 32
+    },
+    {
+      "path": "0028-source-causal-census-standard-headers-04.jsonl",
+      "sha256": "15bb560972a8c458129fdb8ed0e80ff65e8994acc9b6d7afbf209c607f3943e8",
+      "count": 32
+    },
+    {
+      "path": "0028-source-causal-census-standard-headers-05.jsonl",
+      "sha256": "3ea9d0d98f20366e1917149b515a78e27d95bf7caa4cda5a032813d91626f60b",
+      "count": 32
+    },
+    {
+      "path": "0028-source-causal-census-standard-headers-06.jsonl",
+      "sha256": "db8e59db59868cec5fa91d5ca8c31170e17e694858fd756d9ad3d0aff2a92249",
+      "count": 32
+    }
+  ],
+  "failed_records": {
+    "path": "0028-source-causal-census-standard-failed.zip",
+    "bytes": 12765,
+    "sha256": "3684cab529686a08c0e6f8db6be4a4b69851fe8bacd90f2757b1513f2fd3a276",
+    "records": [
+      {
+        "path": "layered-6.json",
+        "bytes": 58253,
+        "sha256": "48580c07e436e3266a2e4c6688d5c86604a775c94e6abb8318ae5b3fb1c5f2ca"
+      }
+    ]
+  },
+  "local_raw": [
+    {
+      "path": "/tmp/r0-28-causal-source-standard-v1-census-c4081e1/forward.jsonl",
+      "status": "LOCAL_ONLY",
+      "bytes": 2660147,
+      "sha256": "0bee1a5b09c6df78f3c3d85432caef31306148a0b59d675f3751f30227f0f3df"
+    },
+    {
+      "path": "/tmp/r0-28-causal-source-standard-v1-census-c4081e1/forward.zip",
+      "status": "LOCAL_ONLY",
+      "bytes": 5538903,
+      "sha256": "781a647796306cd9a1cc3ef68840b6ad3f1b1baf26602249ce72c7f5932d7973"
+    },
+    {
+      "path": "/tmp/r0-28-causal-source-standard-v1-census-c4081e1/layered.jsonl",
+      "status": "LOCAL_ONLY",
+      "bytes": 2427314,
+      "sha256": "f5f6ff57a1ac58c304d8150be8765b557c10f3acb1263efc90ff08bbab18fd93"
+    },
+    {
+      "path": "/tmp/r0-28-causal-source-standard-v1-census-c4081e1/layered.zip",
+      "status": "LOCAL_ONLY",
+      "bytes": 4939765,
+      "sha256": "5f99b2f9887a7336ee1190c91e0c5a19f02a3f405fed465d2d8ff470c93817c2"
+    },
+    {
+      "path": "/tmp/r0-28-causal-source-standard-v1-census-c4081e1/redirection.jsonl",
+      "status": "LOCAL_ONLY",
+      "bytes": 2803882,
+      "sha256": "69d792be7878bb993357410096eb5be9ae7becaa9924ef127150f0a71a80e16f"
+    },
+    {
+      "path": "/tmp/r0-28-causal-source-standard-v1-census-c4081e1/redirection.zip",
+      "status": "LOCAL_ONLY",
+      "bytes": 5838093,
+      "sha256": "6bba1b267ef8d31daad57f55999f86a8ac0e13fa0f80fd9a7c84d4a485de63ca"
+    }
+  ],
+  "program": "scripts/source_causal_census.py",
+  "program_sha256": "ec8db3a065096d1abf48818ce0cb187943da0c07c4e089df4131cfe848a3ec83",
+  "qualification": "Every attempted identity/header and every complete failed record is published. Successful raw recipes and task archives remain LOCAL_ONLY. No failed/degenerate task was replaced. Each profile uses192 attempts: seed28,64 task IDs per topology, cycling regression/binary/multiclass. Timing and peakRSS NOT_MEASURED."
+}

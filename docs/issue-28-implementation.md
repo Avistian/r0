@@ -253,3 +253,30 @@ wrappers, wider graph/network/tree/GP and structural options, typed states,
 interventions and actual browser/Colab delivery remain required. Smoke/eval-smoke
 are NOT_AVAILABLE; scientific and supported-size acceptance are not established.
 The full issue #28 goal stays active.
+
+
+## Source activation causal-profile checkpoint
+
+At `c4081e1`, eight source-activation profiles bind primitive and named rescale
+preferences to Gaussian-affine causal structures across all three graph families.
+Standard wrappers fit independent ancestral samples in parent order and retain
+all constants and stream identities. JSON loading reconstructs that calibration
+and rejects incoherent stage edits; task rows/context cannot refit the mechanism.
+Plain profiles retain unwrapped primitives. Combined sampling/fitting costs and
+calibration buffers are included in admission and task cards.
+[Definitions and evidence](issue-28-source-causal-profiles.md).
+
+Full checks pass **679 tests, one skipped**, all static gates. Independent NumPy
+verification passes 27 ancestral/generation cases, 24 corruption/admission rejects,
+six plain policies, six saved workflows across task types and 37 exact old-profile
+files from twelve fixtures. Independent accounting checks exact budget boundaries;
+array estimates remain distinct from measured process RSS. Standards finds no hard
+violations and one nonblocking metadata-accounting duplication heuristic.
+
+The unfiltered author census retains **1,507 valid / 1,536 attempted** tasks and
+all 29 complete failed recipes. All failures are generation overflows; all 31
+primitive kinds occur across attempted recipes. Valid degenerate draws remain.
+Successful raw census archives are LOCAL_ONLY with hashes; all headers and failed
+records are published. Matrix integration, remaining wrappers, wider graph/network/
+tree/GP and structural options, typed states, interventions and actual browser/Colab
+workbench delivery remain required. The full goal stays active.

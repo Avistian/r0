@@ -1,0 +1,217 @@
+{
+  "families": {
+    "forward": {
+      "attempted": 64,
+      "failed": 4,
+      "failures": [
+        {
+          "error": "ValueError: nonfinite integer_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 8
+        },
+        {
+          "error": "ValueError: nonfinite signed_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 18
+        },
+        {
+          "error": "ValueError: nonfinite integer_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 47
+        },
+        {
+          "error": "ValueError: nonfinite signed_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 52
+        }
+      ],
+      "flags": {
+        "disconnected_target": 30,
+        "inactive_relu": 1,
+        "zero_target_dispersion": 1
+      },
+      "missing_complete_recipes": 0,
+      "noise_after_probabilities": {
+        "0.0": 22,
+        "0.5": 20,
+        "1.0": 22
+      },
+      "placements": {
+        "both": 15,
+        "input": 26,
+        "output": 23
+      },
+      "primitive_kinds": {
+        "abs": 7,
+        "argsort": 19,
+        "elu": 41,
+        "gaussian_bump": 30,
+        "hardtanh": 18,
+        "heaviside_positive": 19,
+        "identity": 15,
+        "integer_power": 49,
+        "leaky_relu": 34,
+        "log_clip_abs": 19,
+        "log_sigmoid": 20,
+        "modulo": 8,
+        "rank": 29,
+        "reciprocal_abs_power": 72,
+        "relu": 14,
+        "relu_power": 22,
+        "round": 45,
+        "selu": 8,
+        "sigmoid": 8,
+        "sign_positive": 8,
+        "signed_power": 122,
+        "silu": 5,
+        "sin": 20,
+        "softmax": 8,
+        "softplus": 10,
+        "tanh": 29,
+        "tied_max": 116
+      },
+      "rescale_draws": 0,
+      "stage_bindings": 795,
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 60
+    },
+    "layered": {
+      "attempted": 64,
+      "failed": 2,
+      "failures": [
+        {
+          "error": "ValueError: nonfinite exp activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 35
+        },
+        {
+          "error": "ValueError: nonfinite signed_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 62
+        }
+      ],
+      "flags": {
+        "disconnected_target": 36,
+        "inactive_relu": 1,
+        "saturated_activation": 1
+      },
+      "missing_complete_recipes": 0,
+      "noise_after_probabilities": {
+        "0.0": 23,
+        "0.5": 18,
+        "1.0": 23
+      },
+      "placements": {
+        "both": 24,
+        "input": 24,
+        "output": 16
+      },
+      "primitive_kinds": {
+        "abs": 37,
+        "elu": 20,
+        "exp": 52,
+        "gaussian_bump": 21,
+        "heaviside_positive": 53,
+        "identity": 21,
+        "integer_power": 89,
+        "interval_abs_le_1": 24,
+        "log_sigmoid": 30,
+        "modulo": 22,
+        "rank": 1,
+        "reciprocal_abs_power": 79,
+        "relu": 34,
+        "relu6": 18,
+        "relu_power": 52,
+        "round": 21,
+        "selu": 20,
+        "sigmoid": 14,
+        "sign_positive": 44,
+        "signed_power": 54,
+        "silu": 31,
+        "sin": 4,
+        "softmax": 29,
+        "softplus": 39,
+        "tanh": 26,
+        "tied_max": 21
+      },
+      "rescale_draws": 0,
+      "stage_bindings": 856,
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 62
+    },
+    "redirection": {
+      "attempted": 64,
+      "failed": 1,
+      "failures": [
+        {
+          "error": "ValueError: nonfinite relu_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 59
+        }
+      ],
+      "flags": {
+        "disconnected_target": 3,
+        "inactive_relu": 2,
+        "zero_target_dispersion": 1
+      },
+      "missing_complete_recipes": 0,
+      "noise_after_probabilities": {
+        "0.0": 21,
+        "0.5": 22,
+        "1.0": 21
+      },
+      "placements": {
+        "both": 21,
+        "input": 25,
+        "output": 18
+      },
+      "primitive_kinds": {
+        "abs": 40,
+        "elu": 80,
+        "exp": 6,
+        "gaussian_bump": 8,
+        "hardtanh": 24,
+        "heaviside_positive": 75,
+        "integer_power": 15,
+        "leaky_relu": 12,
+        "rank": 103,
+        "reciprocal_abs_power": 52,
+        "relu": 32,
+        "relu_power": 91,
+        "round": 67,
+        "selu": 62,
+        "sigmoid": 52,
+        "sign_positive": 60,
+        "signed_power": 64,
+        "silu": 36,
+        "softmax": 21,
+        "softplus": 22,
+        "tanh": 47,
+        "tied_max": 104
+      },
+      "rescale_draws": 0,
+      "stage_bindings": 1073,
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 63
+    }
+  },
+  "filter": "none",
+  "head": "c4081e1eec5ce7e340acf3066ce3f2ff3eb518a9",
+  "peak_rss": "NOT_MEASURED",
+  "profile": "causal-source-plain-global-v1",
+  "program_sha256": "ec8db3a065096d1abf48818ce0cb187943da0c07c4e089df4131cfe848a3ec83",
+  "seed": 28,
+  "timing": "NOT_MEASURED"
+}

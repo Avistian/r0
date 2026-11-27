@@ -113,5 +113,89 @@ messages and full sampled recipes are retained. No failed draw was replaced.
 The other 22 workflows save, reopen, regenerate and inspect their original rows.
 This is backend evidence, not actual browser or Colab evidence.
 
-Full repository checks, independent verification and broader uncensored coverage
-are pending for this increment. The full #28 goal remains active.
+Development logs and the two initial failed recipes are retained in the
+[development manifest](research/0028-source-causal-development.json), separately
+from frozen-source verification below. The full #28 goal remains active.
+
+
+## Frozen verification checkpoint
+
+At `c4081e1`, [full repository checks](research/0028-source-causal-check-c4081e1.txt)
+pass **679 tests, one skipped**, including all static gates. The skip is the existing
+CUDA case on this CPU-only environment. Smoke/eval-smoke remain NOT_AVAILABLE:
+this checkout exposes no train/eval CLI. Publication preserves these source/test
+bytes; later documentation, census and portable verifier programs are separate.
+
+[Independent spec review](research/0028-source-causal-spec-review.txt) passes 27
+NumPy ancestral-calibration/generation cases: three modes, three placements and
+three noise probabilities, mixed widths 2/1/3/1, 32 calibration rows and 16 task
+rows. It checks stage statistics, shifts/indices, identities, parent propagation
+and generated values through public traces. Maximum error divided by
+`1 + abs(expected)` is 4.164e-13 within the declared `rtol=atol=2e-9` tolerance.
+The maximum absolute error is 23,552 on very large exponential intermediates;
+this is not an absolute-small-error claim.
+
+Twenty-four corruption/admission cases reject. Independent integer accounting
+matches **415 parameters and 85,376 estimated working bytes** for its declared
+fixture: exact boundaries accept and minus-one budgets reject. Existing selection
+record counts are reused; the new stage/rescale integration costs are independently
+enumerated. Larger selection budgets and changes to task rows/context preserve
+mechanisms. Six plain policy records decode, and six standard/plain by
+regression/binary/multiclass explorer workflows save, open, replay and trace.
+Twelve old-profile fixtures produce **37 byte-identical files** against `de9262f`.
+
+[Raw spec evidence](research/0028-source-causal-spec-artifacts.json) retains original
+and final executions, exact inputs, fitted recipes, saved workflows, source/import
+hashes, custody and historical harness errors in six ordered ZIP byte parts.
+Concatenate without separators and verify the manifest SHA-256 before extraction.
+The baseline checkout is excluded and can be reconstructed from its Git revision.
+The three published `scripts/verify_source_causal_*.py` programs are byte-identical
+to final executed publication copies. Their cleanup and bounded rerun are described
+in the [publication qualifier](research/0028-source-causal-publication.txt); original
+programs, outputs and PASS report remain retained. No formatting-only identity is
+claimed. The wrong-keyword harness attempt and unused NumPy-branch overflow warning
+remain separate from product findings.
+
+[Standards review](research/0028-source-causal-standards.txt) finds no documented
+violations and one low-severity possible duplication heuristic in metadata cost
+accounting. It does not replace numerical verification.
+
+## Unfiltered author census
+
+All eight profiles attempted seed 28 and task ids 0..63 in every topology, cycling
+regression/binary/multiclass, with 16 rows and four observed features. **1,507 valid
+/ 1,536 attempted** tasks are retained. All 29 failures occurred during generation;
+every attempted task has its complete sampled recipe. No calibration attempt failed,
+and no failed or degenerate task was replaced.
+
+| Profile suffix | Valid / attempted | Summary and artifact manifest |
+| --- | --- | --- |
+| standard | 191 / 192 | [summary](research/0028-source-causal-census-standard.json), [artifacts](research/0028-source-causal-census-standard-artifacts.json) |
+| standard-refreshed | 192 / 192 | [summary](research/0028-source-causal-census-standard-refreshed.json), [artifacts](research/0028-source-causal-census-standard-refreshed-artifacts.json) |
+| standard-local | 192 / 192 | [summary](research/0028-source-causal-census-standard-local.json), [artifacts](research/0028-source-causal-census-standard-local-artifacts.json) |
+| standard-global | 188 / 192 | [summary](research/0028-source-causal-census-standard-global.json), [artifacts](research/0028-source-causal-census-standard-global-artifacts.json) |
+| plain | 184 / 192 | [summary](research/0028-source-causal-census-plain.json), [artifacts](research/0028-source-causal-census-plain-artifacts.json) |
+| plain-refreshed | 185 / 192 | [summary](research/0028-source-causal-census-plain-refreshed.json), [artifacts](research/0028-source-causal-census-plain-refreshed-artifacts.json) |
+| plain-local | 190 / 192 | [summary](research/0028-source-causal-census-plain-local.json), [artifacts](research/0028-source-causal-census-plain-local-artifacts.json) |
+| plain-global | 185 / 192 | [summary](research/0028-source-causal-census-plain-global.json), [artifacts](research/0028-source-causal-census-plain-global-artifacts.json) |
+
+Failures are explicit exponential or integer/ReLU/signed-power overflow. The pooled
+attempted recipes cover all **31 primitive kinds** (27 fixed plus four power
+families); this does not say each profile individually covers all kinds. Valid
+flagged tasks remain in the denominator. Every header/recipe identity and every
+complete failed record is published. Successful raw recipes and task archives are
+explicitly LOCAL_ONLY in the manifests; their hashes and reproducible controls are
+retained. Timing and peak RSS are NOT_MEASURED for the census.
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+PYTHONPATH=/path/to/c4081e1/src /path/to/python scripts/source_causal_census.py \
+  /new/output --profile causal-source-standard-v1
+```
+
+Repeat with each desired profile and a new output directory. Independent verifier
+programs take one fresh output-directory argument with the same environment; run
+compatibility separately against the base and candidate source trees.
+This establishes bounded source-activation integration, not matrix integration,
+all-paper completion, browser/Colab/GPU acceptance, measured supported-size limits
+or predictive superiority.

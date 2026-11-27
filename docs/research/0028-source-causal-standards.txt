@@ -1,0 +1,10 @@
+Standards review: c4081e1eec5ce7e340acf3066ce3f2ff3eb518a9
+Base: de9262ff08c1ccb2945b4ba2eb3740bbc9ffad32 (three-dot diff).
+
+Documented-standard violations: none found in the scoped diff. Reviewed r0 AGENTS.md, CODING_STANDARDS.md, src/r0/modules/README.md, requirements, ADRs 0001/0002/0005/0006/0012, the accepted #28 specification and increment documentation. Home-repository TypeScript course rules were excluded. Public tests use module entry points; randomness is local and reproducible; source calibration uses independent samples, as expressly required by accepted specification item 12. This is mechanism calibration, distinct from context-only task normalization. No protected evaluation paths, dependencies, or cloud operations changed. The retained test programs identify the worked example and all 24 profile/topology identities; the increment explicitly leaves broader verification and delivery pending.
+
+Heuristic finding (low severity): possible Duplicated Code in resource accounting. source_causal_sampling.py:80-86 computes `4 + len(noise_units) + selections.parameter_count + scales.parameter_count + sum(b.parameter_count for b in frozen_bindings)`. source_causal.py:43-50 repeats that exact shape using recipe fields: `4 + len(self.noise_units) + self.source_selections.parameter_count + self.rescale_preferences.parameter_count + sum(b.parameter_count for b in self.source_bindings)`. These feed pre-fit admission and the loaded recipe's accounting respectively. A future metadata change could update only one. Consider a shared private accounting helper so both paths evolve together. No present numerical disagreement was found; this is a maintainability judgment, not a documented-rule violation.
+
+Scope: read-only source review; no full test suite or numerical acceptance claimed. Parent owns repository checks; separate independent verification owns numerical checks. Development logs remain working-tree evidence pending publication.
+
+Totals: 0 documented-standard violations; 1 low-severity heuristic.

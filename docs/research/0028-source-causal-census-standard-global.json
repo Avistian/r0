@@ -1,0 +1,198 @@
+{
+  "families": {
+    "forward": {
+      "attempted": 64,
+      "failed": 3,
+      "failures": [
+        {
+          "error": "ValueError: nonfinite relu_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 17
+        },
+        {
+          "error": "ValueError: nonfinite relu_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 25
+        },
+        {
+          "error": "ValueError: nonfinite relu_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 52
+        }
+      ],
+      "flags": {
+        "disconnected_target": 26,
+        "saturated_activation": 2
+      },
+      "missing_complete_recipes": 0,
+      "noise_after_probabilities": {
+        "0.0": 12,
+        "0.5": 29,
+        "1.0": 23
+      },
+      "placements": {
+        "both": 26,
+        "input": 18,
+        "output": 20
+      },
+      "primitive_kinds": {
+        "argsort": 29,
+        "elu": 56,
+        "exp": 17,
+        "gaussian_bump": 40,
+        "hardtanh": 43,
+        "heaviside_positive": 19,
+        "identity": 66,
+        "interval_abs_le_1": 8,
+        "leaky_relu": 8,
+        "log_sigmoid": 30,
+        "modulo": 1,
+        "rank": 55,
+        "relu_power": 230,
+        "round": 8,
+        "selu": 40,
+        "sigmoid": 39,
+        "sign_positive": 29,
+        "signed_power": 181,
+        "sin": 19,
+        "softmax": 15,
+        "softplus": 62,
+        "square": 39,
+        "tanh": 1
+      },
+      "rescale_draws": 1035,
+      "stage_bindings": 1035,
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 61
+    },
+    "layered": {
+      "attempted": 64,
+      "failed": 1,
+      "failures": [
+        {
+          "error": "ValueError: nonfinite relu_power activation output; task was not retried",
+          "phase": "generation",
+          "task_id": 21
+        }
+      ],
+      "flags": {
+        "disconnected_target": 37,
+        "inactive_relu": 1,
+        "saturated_activation": 5
+      },
+      "missing_complete_recipes": 0,
+      "noise_after_probabilities": {
+        "0.0": 23,
+        "0.5": 27,
+        "1.0": 14
+      },
+      "placements": {
+        "both": 21,
+        "input": 19,
+        "output": 24
+      },
+      "primitive_kinds": {
+        "abs": 21,
+        "argsort": 6,
+        "elu": 23,
+        "gaussian_bump": 38,
+        "hardtanh": 63,
+        "heaviside_positive": 66,
+        "identity": 18,
+        "interval_abs_le_1": 45,
+        "leaky_relu": 14,
+        "log_clip_abs": 44,
+        "log_sigmoid": 10,
+        "rank": 31,
+        "relu": 19,
+        "relu_power": 116,
+        "round": 44,
+        "selu": 59,
+        "sigmoid": 12,
+        "sign_positive": 33,
+        "signed_power": 68,
+        "sin": 12,
+        "softmax": 30,
+        "softplus": 31,
+        "square": 15,
+        "tanh": 127
+      },
+      "rescale_draws": 945,
+      "stage_bindings": 945,
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 63
+    },
+    "redirection": {
+      "attempted": 64,
+      "failed": 0,
+      "failures": [],
+      "flags": {
+        "disconnected_target": 5,
+        "saturated_activation": 2
+      },
+      "missing_complete_recipes": 0,
+      "noise_after_probabilities": {
+        "0.0": 18,
+        "0.5": 23,
+        "1.0": 23
+      },
+      "placements": {
+        "both": 22,
+        "input": 22,
+        "output": 20
+      },
+      "primitive_kinds": {
+        "abs": 27,
+        "argsort": 15,
+        "elu": 16,
+        "exp": 17,
+        "gaussian_bump": 45,
+        "hardtanh": 24,
+        "heaviside_positive": 19,
+        "identity": 25,
+        "interval_abs_le_1": 10,
+        "leaky_relu": 38,
+        "log_clip_abs": 48,
+        "log_sigmoid": 18,
+        "rank": 30,
+        "relu6": 6,
+        "relu_power": 151,
+        "round": 8,
+        "selu": 20,
+        "sigmoid": 16,
+        "sign_positive": 47,
+        "signed_power": 277,
+        "silu": 20,
+        "sin": 23,
+        "softmax": 11,
+        "softplus": 18,
+        "square": 55,
+        "tanh": 54,
+        "tied_max": 54
+      },
+      "rescale_draws": 1092,
+      "stage_bindings": 1092,
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64
+    }
+  },
+  "filter": "none",
+  "head": "c4081e1eec5ce7e340acf3066ce3f2ff3eb518a9",
+  "peak_rss": "NOT_MEASURED",
+  "profile": "causal-source-standard-global-v1",
+  "program_sha256": "ec8db3a065096d1abf48818ce0cb187943da0c07c4e089df4131cfe848a3ec83",
+  "seed": 28,
+  "timing": "NOT_MEASURED"
+}
