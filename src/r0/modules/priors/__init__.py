@@ -85,6 +85,7 @@ from .lib.compositions import FunctionComponent as FunctionComponent
 from .lib.exact_gp import GaussianProcessRecipe as GaussianProcessRecipe
 from .lib.exogenous import ExogenousDistribution as ExogenousDistribution
 from .lib.exogenous import NoiseResponse as NoiseResponse
+from .lib.feature_conv_api import *  # noqa: F403
 from .lib.fitted_function_api import *  # noqa: F403
 from .lib.fitted_parameter_api import *  # noqa: F403
 from .lib.fitted_population_api import *  # noqa: F403
