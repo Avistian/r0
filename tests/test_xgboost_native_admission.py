@@ -52,3 +52,25 @@ def test_nested_native_numbers_reject_before_numpy_allocation(
     with pytest.raises(ValueError, match="native|parameter|vector"):
         p.xgboost_fit_from_dict(data, limits=p.CausalLimits(parameters=5000))
     assert calls == []
+
+
+@pytest.mark.parametrize(
+    "limits",
+    [p.CausalLimits(node_channels=1), p.CausalLimits(total_channels=1), p.CausalLimits(nodes=1)],
+)
+def test_native_export_geometry_rejects_before_conversion(
+    limits: p.CausalLimits, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fit = p.fit_xgboost(
+        p.XGBoostFitPlan(input_width=4, output_width=5, rows=32, estimators=2),
+        input_rng=np.random.default_rng(1),
+        target_rng=np.random.default_rng(2),
+        backend_rng=np.random.default_rng(3),
+    )
+
+    def forbidden(*args: Any, **kwargs: Any) -> Any:
+        raise AssertionError("numerical conversion preceded geometry admission")
+
+    monkeypatch.setattr(np, "asarray", forbidden)
+    with pytest.raises(ValueError, match="channel|node.*limit"):
+        p.export_xgboost_vector(fit.model_json.encode("ascii"), limits=limits)

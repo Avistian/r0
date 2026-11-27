@@ -53,6 +53,24 @@ def export_xgboost_vector(
         if not 1 <= len(base) <= 100:
             raise ValueError("invalid vector base score width")
         admit_function_metadata(base, limits)
+        node_counts = tuple(int(t["tree_param"]["num_nodes"]) for t in native_trees)
+        if any(not 1 <= n <= 511 for n in node_counts):
+            raise ValueError("native tree node count exceeds supported geometry")
+        # Same one-row geometry/workspace contract as shared frozen-function admission.
+        output_width = len(base)
+        widest_tree = max(node_counts)
+        limits.admit_dimensions(
+            (width_in, output_width),
+            ((), ()),
+            rows=1,
+            calibration_rows=0,
+            features=width_in,
+            outputs=output_width,
+            extra_parameters=output_width + sum(n * (5 + output_width) for n in node_counts),
+            extra_working_channels=16 * (width_in + output_width)
+            + 16 * widest_tree
+            + widest_tree * output_width,
+        )
         # Validate scalar shape/types before NumPy can interpret a nested array.
         scalars = [_native_number(value) for value in base]
         initial = np.asarray(scalars, dtype=np.float32)
