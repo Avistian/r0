@@ -31,8 +31,8 @@ async function applyObservationDraft() {
 let observationNodeDrafts=new Map(),observationSelectedNode=null;
 function resetObservationDrafts(){observationNodeDrafts.clear();observationSelectedNode=null;}
 function observationNodeDraft(index){
-  if(!mechanismInfo?.observation_selection)return null;
-  const fields=["mechanism-function","mechanism-parents","mechanism-noise","mechanism-pipeline"];
+  if(!mechanismInfo?.observation_selection && !mechanismInfo?.convolution)return null;
+  const fields=["mechanism-function","mechanism-parents","mechanism-noise","mechanism-pipeline",...(mechanismInfo.convolution?["mechanism-domain"]:[])];
   if(observationSelectedNode!==null)observationNodeDrafts.set(observationSelectedNode,Object.fromEntries(fields.map(id=>[id,$(id).value])));
   observationSelectedNode=index;
   return observationNodeDrafts.get(index)||null;
