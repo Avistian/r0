@@ -85,7 +85,30 @@ def test_notebook_registers_callback_and_returns_structured_errors(
     assert reopened["edit"]["card"] == changed["edit"]["card"]
     if example == "Explicit causal graph":
         assert 'id="intervention-controls"' in displayed[0]
-        baseline = reopened["recipe_json"]
+        authored = callbacks[name](
+            "generate", {"recipe": editor["editable_recipe"], "seed": 19, "task_id": 0}
+        )["application/json"]
+        assert "error" not in authored
+        baseline = authored["recipe_json"]
+        sampled = callbacks[name](
+            "sample_intervention_policy",
+            {
+                "policy_json": json.dumps(
+                    {
+                        "streams": [3, 5, 7],
+                        "profile": "explicit-policy-r0-v1",
+                        "count": 1,
+                        "reference_rows": 16,
+                    }
+                )
+            },
+        )["application/json"]
+        assert "error" not in sampled
+        assert sampled["recipe_json"] == baseline
+        assert (
+            sampled["intervention"]["after"]["construction_details"]["kind"]
+            == "sampled-intervention-policy"
+        )
         pair = callbacks[name](
             "intervene",
             {

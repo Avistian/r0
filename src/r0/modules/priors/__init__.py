@@ -119,6 +119,7 @@ from .lib.generation_graph import explain_generation as explain_generation
 from .lib.gp_conditioning import condition_gp as condition_gp
 from .lib.grouped_linear import GroupedLinearRecipe as GroupedLinearRecipe
 from .lib.inputs import InputDistribution as InputDistribution
+from .lib.intervention_policy_api import *  # noqa: F403
 from .lib.joint_api import (
     FeatureGroup as FeatureGroup,
 )

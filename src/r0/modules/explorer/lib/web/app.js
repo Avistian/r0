@@ -43,7 +43,7 @@ async function act(message, work) {
   }
 }
 
-function taskControls(recipe) { return recipe.request?.source?.task || recipe.source?.task || recipe.recipe?.task || recipe.request?.task || recipe.task || recipe; }
+function taskControls(recipe) { return recipe.request?.base?.task || recipe.request?.source?.task || recipe.source?.task || recipe.recipe?.task || recipe.request?.task || recipe.task || recipe; }
 function parseRecipe() {
   return JSON.parse($("recipe").value, (key, value) => {
     if (key === "split" && typeof value === "number" && !Number.isSafeInteger(value)) throw new Error("Write large split identifiers as quoted decimal strings to preserve every digit.");

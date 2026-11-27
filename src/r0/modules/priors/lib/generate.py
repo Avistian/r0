@@ -29,6 +29,7 @@ from r0.modules.priors.lib.functional_causal_evaluation import generate_function
 from r0.modules.priors.lib.geometry_graph_decoding import geometry_graph_from_dict
 from r0.modules.priors.lib.grouped_linear import GroupedLinearRecipe
 from r0.modules.priors.lib.inputs import InputDistribution
+from r0.modules.priors.lib.intervention_policy_records import SampledInterventionPolicy
 from r0.modules.priors.lib.kernels import (
     GibbsKernel,
     Kernel,
@@ -98,6 +99,7 @@ type Recipe = (
     | NetworkObservationRecipe
     | NetworkInputView
     | CausalInterventionRecipe
+    | SampledInterventionPolicy
     | BaseRecipe
     | ConvertedCausalRecipe
     | SampledConvertedGraph
@@ -185,6 +187,12 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         return converted_graph_from_dict(fields, limits=limits)
     if version == "converted-causal-v1":
         return converted_recipe_from_dict(fields, limits=limits)
+    if version == "sampled-intervention-policy-v1" or (
+        "reference_raw" in fields and "runtime" in fields
+    ):
+        from r0.modules.priors.lib.intervention_policy_decoding import intervention_policy_from_dict
+
+        return intervention_policy_from_dict(data, limits=limits or CausalLimits())
     if version == "causal-intervention-v1":
         from r0.modules.priors.lib.causal_intervention_decoding import intervention_from_dict
 
@@ -369,6 +377,10 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
         return generate_prototype_batch_network(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkRecipe):
         return generate_network(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, SampledInterventionPolicy):
+        from r0.modules.priors.lib.intervention_policy_output import generate_policy_task
+
+        return generate_policy_task(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, CausalInterventionRecipe):
         from r0.modules.priors.lib.causal_intervention_generation import generate_intervened
 
