@@ -95,7 +95,7 @@ def intervention_from_dict(data: object, *, limits: CausalLimits) -> CausalInter
             ):
                 change = functional_record(item, StageIntervention)
                 if change.get("root") is not None:
-                    change["root"] = functional_root(change["root"])
+                    change["root"] = functional_root(change["root"], limits=limits)
                 if change.get("pipeline") is not None:
                     change["pipeline"] = functional_pipeline(change["pipeline"])
                 if change.get("domain") is not None:
