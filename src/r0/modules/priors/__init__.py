@@ -436,6 +436,7 @@ from .lib.source_matrix import SourceMatrixCausalRecipe as SourceMatrixCausalRec
 from .lib.source_matrix_sampling import (
     with_source_matrices as with_source_matrices,
 )
+from .lib.source_root_api import *  # noqa: F403
 from .lib.structural_graph import StructuralGraph as StructuralGraph
 from .lib.structural_graph import sample_structural_graph as sample_structural_graph
 from .lib.structural_graph_algorithm import GraphRewrite as GraphRewrite

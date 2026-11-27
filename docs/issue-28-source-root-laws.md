@@ -1,9 +1,9 @@
 # Source-specific root distributions
 
 This work covers the remaining P1.root.01–03 and P1.code.02–06 inventory options.
-The first implementation step adds lossless integer Zipf raw records. Root profile
-construction, frozen normalization, graph/network integration and explorer
-delivery are still pending; this prerequisite does not close those inventory IDs.
+Lossless integer Zipf records and a strict coordinate-law emitter are implemented.
+Root profile selection, frozen normalization, graph/network integration and
+explorer delivery are still pending; these prerequisites do not close those IDs.
 
 ## Primary-source distinctions
 
@@ -50,3 +50,22 @@ int64 values. No clipping, centering or floating conversion occurs in the raw
 record. Root profiles must declare those later transformations independently.
 Replay checks the supplied original generator state and exact integer draws.
 Invalid parameters or malformed retained values do not publish RNG changes.
+
+
+## Coordinate-law emission prerequisite
+
+SourceRootCoordinate and SourceRootLaw retain an authored vector of Gaussian,
+unit-uniform, symmetric-uniform, categorical or Zipf coordinates. Zipf clipping
+is explicit; unclipped integer samples remain in the raw ledger. Numeric output
+uses binary64, so integer-to-float conversion may round values above the exact
+integer range. Gaussian zero scale is allowed as a deliberate constant draw;
+a later standardization lifecycle must handle degeneracy explicitly.
+
+draw_source_root accepts a caller-owned generator, optional raw ledger, ownership
+path and limits. It admits arrays and retained raw scalars before allocation,
+stages all draws, and publishes RNG/ledger changes only after finite output.
+Existing records survive late failure. Strict coordinate decoding rejects unknown
+fields and unused controls. Unbounded Zipf moment order is exponent minus one;
+bounded and continuous laws here have all finite positive absolute moments.
+This is law emission, not a claim of source profile selection or joint-root
+graph integration.
