@@ -254,5 +254,9 @@ root transform a second time.
 
 This delivery does not implement source batch refitting as a frozen independent
 root, resolve the P1 paper's underspecified multivariate law, or assert P2 prototype
-coupling. Root plus internal neural-noise composition remains a required separate
-integration. Hosted Colab execution is NOT_RUN; the local shared callback is covered.
+coupling. Root plus internal neural-noise composition is available through a nested
+`network-innovations` wrapper: all 107 root presets have noisy counterparts, with
+separate architecture, root-profile/calibration and noise-statistics streams. The
+compiled root uses node-v2 and retains the exact sampled-root envelope; zero/fixed
+noise references consume observed root outputs once. Root edits validate the
+complete noise plan before accepting the draft. Hosted Colab execution is NOT_RUN; the local shared callback is covered.
