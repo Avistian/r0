@@ -197,3 +197,17 @@ Both support `forward`, `layered` and `redirection` with widths 1/2/4 and existi
 node activation preferences. Kernel records distinguish Gaussian-mixture and
 random-covariance points. [Exact laws, local adaptations, limits and retained failures](issue-28-matrix-families.md)
 remain separate from complete source joint-prior reproduction.
+
+## Shared matrix preference profiles
+
+`causal-shared-matrices-v1`, `causal-refreshed-matrices-v1`,
+`causal-local-matrices-v1` and `causal-global-matrices-v1` extend the matrix families
+with retained named numerical/categorical choices. Each supports forward, layered
+and redirection topologies and preserves every sampled decision through saved
+replay. Shared/refreshed modes use Beta numerical laws and polynomial categorical
+weights; local/global modes use uniform category choices. Global numerical draws
+explicitly reuse quantiles across width-dependent bounds. All four use polynomial
+matrix vectors; CausalMatrixPrior also exposes uniform vectors and restricted
+family/point-law/base choices. [Laws, bindings, source adaptations and delivery
+state](issue-28-shared-matrix-preferences.md). These are r0 exploration profiles,
+not a claim of complete source joint-prior reproduction.
