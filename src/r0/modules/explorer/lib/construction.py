@@ -4,6 +4,7 @@ from dataclasses import asdict
 from typing import Any, cast
 
 from r0.modules import priors
+from r0.modules.explorer.lib.native import native_example
 
 
 def caller_limits(data: dict[str, Any]) -> priors.CausalLimits:
@@ -59,6 +60,7 @@ def construction_examples() -> dict[str, Any]:
             "topology": "motif-geometry",
             "topology_prior": asdict(priors.MotifGraphPrior(depth=1)),
         },
+        "Native mixed graph (authored)": native_example(),
     }
 
 
@@ -68,6 +70,30 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
     raw = json.loads(task.recipe_json)["recipe"]
     recipe = priors.recipe_from_dict(raw, limits=limits)
     runtime = getattr(recipe, "runtime", recipe)
+    if isinstance(runtime, priors.NativeCausalRecipe):
+        return {
+            "kind": "mechanism-edit",
+            "construction": runtime.version,
+            "editable_recipe": asdict(runtime),
+            "geometry": None,
+            "native": True,
+            "notice": (
+                "Native direct targets. Editing equations or domains creates a linked "
+                "authored graph, not a causal intervention."
+            ),
+            "nodes": [
+                {
+                    "index": i,
+                    "parents": list(node.equation.parents),
+                    "width": node.value_width,
+                    "encoded_width": node.state_width,
+                    "score_width": node.equation.function.output_width,
+                    "function": node.equation.function.version,
+                    "domain": asdict(node.domain),
+                }
+                for i, node in enumerate(runtime.nodes)
+            ],
+        }
     if not isinstance(runtime, priors.FunctionalCausalRecipe):
         raise ValueError("mechanism editing requires a frozen functional causal graph")
     return {

@@ -1,7 +1,7 @@
 """Graph construction runs inside the guarded generation worker."""
 
 import json
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Any, cast
 
 import numpy as np
@@ -28,6 +28,13 @@ def construct_graph(
     task = priors.recipe_from_dict(fields.pop("task"))
     if type(task) is not priors.LinearRecipe:
         raise ValueError("graph construction requires linear task controls")
+    if topology == "native":
+        native = priors.recipe_from_dict(
+            {"task": asdict(task), "limits": asdict(limits), **fields}, limits=limits
+        )
+        if type(native) is not priors.NativeCausalRecipe:
+            raise ValueError("native construction requires an authored native recipe")
+        return native
     functions = fields.pop("function_prior")
     matrix = priors.JointMatrixPrior(**functions.pop("matrix"))
     function = priors.JointFunctionPrior(matrix=matrix, **functions)

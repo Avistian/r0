@@ -25,6 +25,9 @@ def edit_card(before: priors.TrainingTask, after: priors.TrainingTask) -> dict[s
     left, right = json.loads(before.recipe_json), json.loads(after.recipe_json)
     same_rows = len(before.inputs) == len(after.inputs)
     same_seed = (left["seed"], left["task_id"]) == (right["seed"], right["task_id"])
+    same_target_vocabulary = (
+        not (before.feature_schema or after.feature_schema) or before.classes == after.classes
+    )
     return {
         "version": "mechanism-edit-card-v1",
         "kind": "mechanism-edit",
@@ -39,7 +42,7 @@ def edit_card(before: priors.TrainingTask, after: priors.TrainingTask) -> dict[s
         "changed_target_fraction": float(
             (before.targets != after.targets).to(torch.float64).mean().item()
         )
-        if same_rows
+        if same_rows and same_target_vocabulary
         else None,
         "before_signal_std": [float(v.item()) for v in before.scores.std(dim=0, unbiased=False)],
         "after_signal_std": [float(v.item()) for v in after.scores.std(dim=0, unbiased=False)],
@@ -60,8 +63,8 @@ def create_edit(
 ) -> SavedEdit:
     record = json.loads(before.recipe_json)
     recipe = priors.recipe_from_dict(data["recipe"], limits=limits)
-    if not isinstance(recipe, priors.FunctionalCausalRecipe):
-        raise ValueError("mechanism edits require a frozen authored functional graph")
+    if not isinstance(recipe, (priors.FunctionalCausalRecipe, priors.NativeCausalRecipe)):
+        raise ValueError("mechanism edits require a frozen authored functional or native graph")
     request = RunRequest(
         recipe=recipe,
         seed=record["seed"],

@@ -51,6 +51,9 @@ function parseRecipe() {
 }
 function fillControls(recipe) {
   const task = taskControls(recipe);
+  const native=recipe.version === "native-causal-v1";
+  $("difficulty-label").hidden=native;
+  for(const id of ["features","active","task-type","classes"]) $(id).disabled=native;
   for (const [id, key] of Object.entries({rows: "rows", context: "context_rows", features: "features", active: "active_features", "task-type": "task_type", classes: "classes"})) $(id).value = task[key];
   $("difficulty").value = task.task_type === "regression" ? task.noise_ratio : task.separation;
   $("difficulty-label").firstChild.textContent = task.task_type === "regression" ? "Noise / signal" : "Class separation";
@@ -170,6 +173,7 @@ function scatter(container, points, xName, yName) {
 function charts() {
   if (!current) return;
   const view = current.view, feature = number("feature"), channel = number("channel");
+  if(view.target_origin === "native-variable-v1") {nativeCharts(view,feature,channel);return;}
   histogram("feature-hist", view.features[feature].summary, `x${feature}`);
   histogram("target-hist", view.target, "Target");
   scatter("signal-plot", view.rows.map(row => ({...row, x: row.inputs[feature], y: row.scores[Math.min(channel, row.scores.length - 1)]})), `x${feature}`, "Latent signal");
@@ -195,7 +199,7 @@ function show(result) {
     const strong = document.createElement("strong"), caption = document.createElement("span"); strong.textContent = format(value); caption.textContent = label; box.append(strong, caption); $("metrics").append(box);
   }
   $("sampling").textContent = `Charts show ${view.shown_rows} of ${view.total_rows} rows: ${view.sampling}. The table previews the first ${Math.min(64, view.shown_rows)} sampled rows. Distribution summaries use all ${view.total_rows} rows.`;
-  $("identity").textContent = pretty({source_task_id: view.source_task_id, episode_id: view.episode_id, archive: result.archive, generation: result.run?.summary, elapsed_seconds: result.run?.elapsed_seconds, execution: view.recipe.execution});
+  $("identity").textContent = pretty({source_task_id: view.source_task_id, episode_id: view.episode_id, archive: result.archive, generation: result.run?.summary, elapsed_seconds: result.run?.elapsed_seconds, execution: view.recipe.execution, ...(view.feature_schema ? {feature_schema:view.feature_schema,target_origin:view.target_origin} : {})});
   $("feature").replaceChildren(...view.features.map(feature => new Option(`${feature.name} · ${feature.role}`, feature.index)));
   $("channel").replaceChildren(...(view.classes.length ? view.classes : ["Signal"]).map((name, i) => new Option(name, i)));
   $("class-panel").hidden = !view.classification;
@@ -209,7 +213,7 @@ function show(result) {
   $("replay-record").value = result.recipe_json; $("seed").value = view.recipe.seed; $("task-id").value = view.recipe.task_id;
   $("curve-row").value = 0; $("curve-row").max = view.total_rows - 1;
   $("gp-approximate").checked = false;
-  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair(); resetWorkbench();
+  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair(); resetWorkbench(); nativeViewControls(view);
 }
 async function inspectRow(index) {
   await act("Loading row…", async () => {

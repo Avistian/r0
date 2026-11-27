@@ -3,6 +3,7 @@
 import json
 import math
 from collections.abc import Sequence
+from dataclasses import asdict
 from typing import Any
 
 import numpy as np
@@ -58,6 +59,19 @@ def inspect_rows(task: TrainingTask, indices: Sequence[int]) -> list[dict[str, A
             "index": i,
             "role": "context" if i in context else "query",
             "inputs": inputs[i].tolist(),
+            **(
+                {
+                    "display_inputs": [
+                        f.decode(float(v))
+                        for f, v in zip(task.feature_schema, inputs[i], strict=True)
+                    ],
+                    "target_label": task.classes[int(targets[i])]
+                    if task.classes
+                    else float(targets[i]),
+                }
+                if task.feature_schema
+                else {}
+            ),
             "target": float(targets[i]) if task.task_type == "regression" else int(targets[i]),
             "scores": scores[i].tolist(),
             "probabilities": None if probabilities is None else probabilities[i].tolist(),
@@ -80,7 +94,7 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         record_fingerprint(("explorer-rows-v1", record["seed"], record["task_id"], len(x))), 16
     )
     indices = _sample_rows(len(x), sample_rows, np.random.default_rng(sample_seed))
-    active = set(mechanism["active"])
+    active = set(mechanism.get("active", ()))
     view: dict[str, Any] = {
         "version": "inspection-v1",
         "source_task_id": task.source_task_id,
@@ -109,6 +123,23 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         "classification": None,
         "noise": None,
     }
+    if task.feature_schema:
+        view["feature_schema"] = [asdict(f) for f in task.feature_schema]
+        view["target_origin"] = task.target_origin
+        view["target_emission"] = record["recipe"]["nodes"][record["recipe"]["target"][0]][
+            "domain"
+        ]["emission"]
+        for feature, schema in zip(view["features"], task.feature_schema, strict=True):
+            feature["kind"] = schema.kind
+            feature["role"] = "native observed variable"
+            if schema.kind != "continuous":
+                feature["summary"] = {
+                    "categories": list(schema.vocabulary),
+                    "counts": np.bincount(
+                        x[:, feature["index"]].astype(np.int64), minlength=len(schema.vocabulary)
+                    ).tolist(),
+                    "count": len(x),
+                }
     if task.probabilities is None:
         view["noise"] = _summary(y - scores[:, 0])
     else:
