@@ -90,7 +90,9 @@ class JointFunctionPlan:
                 or len(self.children) != 2
                 or any(type(child) is not JointFunctionPlan for child in self.children)
             ):
-                raise ValueError("product requires exactly its two cheap function children")
+                raise ValueError(
+                    "product requires exactly its two source-eligible non-product children"
+                )
             for name, child in zip(("left", "right"), self.children, strict=True):
                 if (
                     not child.cheap

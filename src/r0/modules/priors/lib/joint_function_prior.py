@@ -8,6 +8,7 @@ from r0.modules.priors.lib.joint_matrix_plans import JointMatrixPrior
 _DEFAULT = ("mlp", "tree", "disc", "lin", "quad", "gp", "em", "prod")
 _PRESETS = {"default": _DEFAULT, "tabpfnv2": ("mlp", "tree", "disc")}
 _FORCED = {"r0-linear-projection-v1": "lin", "r0-neural-reducer-v1": "mlp"}
+_KUMO_NONPRODUCT = ("mlp", "tree", "disc", "lin", "quad", "gp", "em")
 _CHEAP = ("gp", "tree", "disc", "lin", "quad")
 
 
@@ -16,9 +17,14 @@ def _expand(functions: str) -> tuple[str, ...]:
         raise ValueError("function catalog must be a nonempty bounded source token string")
     if functions in _FORCED:
         return (_FORCED[functions],)
+    tokens = functions.split(",")
+    if "kumo-prod" in tokens and any(token in ("prod", "default") for token in tokens):
+        raise ValueError("legacy and Kumo product selectors require separate priors")
     families: list[str] = []
     for token in functions.split(","):
-        if token in _PRESETS:
+        if token == "kumo-prod":
+            families.append("prod")
+        elif token in _PRESETS:
             families.extend(_PRESETS[token])
         elif token in _DEFAULT:
             families.append(token)
@@ -57,15 +63,27 @@ class JointFunctionPrior:
         ):
             raise ValueError("function counts must obey their explicit positive integer bounds")
 
+    @property
+    def kumo_product(self) -> bool:
+        return "kumo-prod" in self.functions.split(",")
+
+    @property
+    def product_children(self) -> tuple[str, ...]:
+        return _KUMO_NONPRODUCT if self.kumo_product else _CHEAP
+
     def request(self, *, cheap: bool = False) -> CategoricalParameter:
         if type(cheap) is not bool:
             raise ValueError("function selector scope must be Boolean")
-        families = _CHEAP if cheap else _expand(self.functions)
+        families = self.product_children if cheap else _expand(self.functions)
         return CategoricalParameter(
-            "cheap_random_function_fct_type"
+            "kumo_product_function_fct_type_v1"
+            if cheap and self.kumo_product
+            else "cheap_random_function_fct_type"
             if cheap
             else self.functions
             if self.functions in _FORCED
+            else "kumo_random_function_fct_type_v1"
+            if self.kumo_product
             else "random_function_fct_type",
             tuple(f"function-slot-{i}-{family}-v1" for i, family in enumerate(families)),
         )
@@ -74,5 +92,5 @@ class JointFunctionPrior:
         request = self.request(cheap=cheap)
         if type(slot) is not str or slot not in request.choices:
             raise ValueError("function slot is absent from its declared selector")
-        families = _CHEAP if cheap else _expand(self.functions)
+        families = self.product_children if cheap else _expand(self.functions)
         return families[request.choices.index(slot)]

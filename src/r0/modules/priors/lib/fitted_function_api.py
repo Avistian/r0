@@ -53,8 +53,10 @@ from r0.modules.priors.lib.frozen_function_primitives import FrozenRFFFunction a
 from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenTreeFunction as FrozenTreeFunction,
 )
+from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 
 __all__ = [
+    "FrozenKumoProductFunction",
     "inspect_fitted_tree_scores",
     "FittedFunctionalCausalRecipe",
     "FittedNodeFit",

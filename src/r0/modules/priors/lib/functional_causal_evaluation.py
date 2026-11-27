@@ -11,6 +11,7 @@ from r0.modules.priors.lib.construction_provenance import construction_source_co
 from r0.modules.priors.lib.exogenous import sample_exogenous
 from r0.modules.priors.lib.fitted_tree_metadata import fitted_card
 from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_function
+from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.functional_analysis import functional_certificates
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
@@ -21,6 +22,7 @@ from r0.modules.priors.lib.functional_target_calibration import (
 )
 from r0.modules.priors.lib.joint_root_base import draw_root_base
 from r0.modules.priors.lib.joint_sampling_records import validate_path
+from r0.modules.priors.lib.kumo_product_inspection import kumo_product_steps
 from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
 from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions
@@ -224,6 +226,16 @@ def _evaluate_functional_nodes(
                     node.function, inputs, node=index, parents=parents, indices=indices, add=add
                 )
                 equation = f"{node.function.aggregation}(ordered parent members)"
+            elif isinstance(node.function, FrozenKumoProductFunction):
+                parents = kumo_product_steps(
+                    node.function,
+                    inputs,
+                    prefix=f"kumo-product-{index}",
+                    parents=parents,
+                    indices=indices,
+                    add=add,
+                )
+                equation = "f_left(same input) * f_right(same input)"
             add(
                 f"function-{index}",
                 f"Frozen function {index}",

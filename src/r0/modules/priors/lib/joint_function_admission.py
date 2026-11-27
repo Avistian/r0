@@ -196,7 +196,7 @@ def admit_em_function(
     return report
 
 
-def _cheap_frozen_parameters(plan: JointFunctionPlan) -> int:
+def _product_frozen_parameters(plan: JointFunctionPlan) -> int:
     i, o = plan.input_width, plan.output_width
     if plan.family == "lin":
         return i * o
@@ -212,7 +212,20 @@ def _cheap_frozen_parameters(plan: JointFunctionPlan) -> int:
         values = dict(plan.parameters)
         trees, depth = int(values["trees"]), int(values["depth"])
         return 1 + 2 * trees * depth + trees * 2**depth * o
-    raise ValueError("product children must be nonrecursive cheap functions")
+    if plan.family == "em":
+        count = int(dict(plan.parameters)["components"])
+        return count * (i + 1 + o) + 2
+    if plan.family == "mlp":
+        count = 2 + sum(m.rows * m.columns for m in plan.matrices)
+        width = i
+        for child in plan.ordered_children:
+            if isinstance(child, JointActivationPlan):
+                count += child.activation.parameter_count + 6 * width + 2
+            else:
+                assert isinstance(child, JointMatrixPlan)
+                width = child.rows
+        return count
+    raise ValueError("product children must be nonrecursive non-product functions")
 
 
 def admit_product_function(
@@ -228,15 +241,17 @@ def admit_product_function(
         "gp": admit_rff_function,
         "tree": admit_tree_function,
         "disc": admit_discretization_function,
+        "em": admit_em_function,
+        "mlp": admit_mlp_function,
     }
     children = tuple(admitters[child.family](child, decisions, limits) for child in plan.children)
     metadata, metadata_bytes = function_record_cost((plan, decisions), limits)
-    fitted = any(child.family in ("tree", "disc") for child in plan.children)
+    fitted = any(child.family in ("tree", "disc", "em", "mlp") for child in plan.children)
     rows = plan.calibration_rows if fitted else 1
     sample = rows * plan.input_width if fitted else 0
     # Child budgets retain their complete constructions. The outer equation
     # serializes a second copy of each frozen child equation, not just references.
-    frozen = sum(_cheap_frozen_parameters(child) for child in plan.children)
+    frozen = sum(_product_frozen_parameters(child) for child in plan.children)
     report = limits.admit_dimensions(
         (max(plan.input_width, plan.output_width),),
         ((),),

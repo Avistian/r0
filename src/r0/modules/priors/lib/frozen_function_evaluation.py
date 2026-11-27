@@ -21,6 +21,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenRFFFunction,
     FrozenTreeFunction,
 )
+from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.weight_geometry import Matrix
 
@@ -31,6 +32,7 @@ type FrozenFunction = (
     | FrozenDiscretizationFunction
     | FrozenRFFFunction
     | FrozenEMFunction
+    | FrozenKumoProductFunction
     | FrozenProductFunction
     | FrozenMLPFunction
     | FrozenParentFunction
@@ -45,6 +47,7 @@ _FUNCTION_TYPES = (
     FrozenRFFFunction,
     FrozenEMFunction,
     FrozenProductFunction,
+    FrozenKumoProductFunction,
     FrozenMLPFunction,
     FrozenParentFunction,
     FrozenFittedTreeFunction,
@@ -86,7 +89,7 @@ def function_geometry(function: FrozenFunction) -> tuple[tuple[int, ...], int, i
     if type(function) is FrozenRFFFunction:
         k = len(function.phases)
         return (*widths, k), 4 * k + 4 * sum(widths), 0
-    if type(function) is FrozenProductFunction:
+    if isinstance(function, (FrozenProductFunction, FrozenKumoProductFunction)):
         left, left_work, left_floor = function_geometry(function.left)
         right, right_work, right_floor = function_geometry(function.right)
         return (
@@ -252,7 +255,7 @@ def _evaluate(
         indices = _closest(inputs, centers, function.p)
         targets = _evaluate(function.linear, centers)
         result = targets[indices]
-    elif type(function) is FrozenProductFunction:
+    elif isinstance(function, (FrozenProductFunction, FrozenKumoProductFunction)):
         result = _evaluate(function.left, inputs) * _evaluate(function.right, inputs)
     elif type(function) is FrozenMLPFunction:
         result, index = inputs, 0

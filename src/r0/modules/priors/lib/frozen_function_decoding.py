@@ -20,6 +20,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenRFFFunction,
     FrozenTreeFunction,
 )
+from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
 
@@ -33,11 +34,24 @@ _REGISTRY = {
     "frozen-discretization-function-v1": FrozenDiscretizationFunction,
     "frozen-em-function-v1": FrozenEMFunction,
     "frozen-product-function-v1": FrozenProductFunction,
+    "frozen-kumo-product-function-v1": FrozenKumoProductFunction,
     "frozen-mlp-function-v1": FrozenMLPFunction,
     "frozen-parent-function-v1": FrozenParentFunction,
 }
 _LINEAR = frozenset(("frozen-linear-function-v1",))
+_KUMO = frozenset(
+    (
+        "frozen-linear-function-v1",
+        "frozen-quadratic-function-v1",
+        "frozen-oblivious-tree-function-v1",
+        "frozen-rff-function-v1",
+        "frozen-discretization-function-v1",
+        "frozen-em-function-v1",
+        "frozen-mlp-function-v1",
+    )
+)
 _CHEAP = frozenset(_REGISTRY) - {
+    "frozen-kumo-product-function-v1",
     "frozen-parent-function-v1",
     "frozen-fitted-tree-function-v1",
     "frozen-em-function-v1",
@@ -128,9 +142,10 @@ def _decode(data: Any, allowed: frozenset[str]) -> FrozenFunction:
         fields["linear"] = _decode(fields["linear"], _LINEAR)
         if record_type is FrozenEMFunction:
             fields["scales"] = tuple(_array(fields["scales"]))
-    elif record_type is FrozenProductFunction:
-        fields["left"] = _decode(fields["left"], _CHEAP)
-        fields["right"] = _decode(fields["right"], _CHEAP)
+    elif record_type in (FrozenProductFunction, FrozenKumoProductFunction):
+        allowed_children = _KUMO if record_type is FrozenKumoProductFunction else _CHEAP
+        fields["left"] = _decode(fields["left"], allowed_children)
+        fields["right"] = _decode(fields["right"], allowed_children)
     else:
         fields["linears"] = tuple(_decode(layer, _LINEAR) for layer in _array(fields["linears"]))
         fields["activations"] = tuple(_activation(a) for a in _array(fields.get("activations", ())))

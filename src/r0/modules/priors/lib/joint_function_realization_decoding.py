@@ -10,6 +10,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenLinearFunction,
     FrozenQuadraticFunction,
 )
+from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.joint_discretization_decoding import decode_joint_discretization
 from r0.modules.priors.lib.joint_discretization_realization import (
@@ -62,7 +63,10 @@ def joint_function_realization_from_dict(
         raise ValueError("function realization must be a JSON object")
     if data.get("version") == "joint-mlp-function-realization-v1":
         return decode_joint_mlp(data, decisions, limits)
-    if data.get("version") == "joint-product-function-realization-v1":
+    if data.get("version") in (
+        "joint-product-function-realization-v1",
+        "joint-kumo-product-function-realization-v1",
+    ):
         return _decode_product(data, decisions, limits)
     if data.get("version") == "joint-em-function-realization-v1":
         return decode_joint_em(data, decisions, limits)
@@ -111,7 +115,7 @@ def _decode_product(
         raise ValueError("product record has unknown fields or lacks required fields")
     plan = joint_function_plan_from_dict(data["plan"], decisions=decisions, limits=limits)
     admit_product_function(plan, decisions, limits)
-    # Child plans are closed cheap selections; checking their ownership before
+    # Child plans are closed source-specific non-product selections; checking their ownership before
     # descent also prevents recursive payloads from entering this branch again.
     for name, expected in zip(("left", "right"), plan.children, strict=True):
         child = data[name]
@@ -130,12 +134,14 @@ def _decode_product(
         JointRFFFunctionRealization,
         JointTreeFunctionRealization,
         JointDiscretizationFunctionRealization,
+        JointEMFunctionRealization,
+        JointMLPFunctionRealization,
     )
     if not isinstance(left, cheap) or not isinstance(right, cheap):
         raise ValueError("product requires nonrecursive cheap child realizations")
     calibration = None
     raw_calibration = data.get("calibration")
-    fitted = any(child.family in ("tree", "disc") for child in plan.children)
+    fitted = any(child.family in ("tree", "disc", "em", "mlp") for child in plan.children)
     if fitted:
         if type(raw_calibration) is not dict:
             raise ValueError("fitted product requires a calibration record")
@@ -154,8 +160,10 @@ def _decode_product(
     elif raw_calibration is not None:
         raise ValueError("product of unfitted functions cannot own calibration")
     equation = frozen_function_from_dict(data["function"], limits=limits)
-    if type(equation) is not FrozenProductFunction:
+    if not isinstance(equation, (FrozenProductFunction, FrozenKumoProductFunction)):
         raise ValueError("product construction requires a frozen product equation")
-    result = JointProductFunctionRealization(plan, left, right, equation, calibration)
+    result = JointProductFunctionRealization(
+        plan, left, right, equation, calibration, version=data["version"]
+    )
     result.validate(decisions)
     return result

@@ -25,6 +25,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenRFFFunction,
     FrozenTreeFunction,
 )
+from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 
 if TYPE_CHECKING:
@@ -138,7 +139,7 @@ def function_certificates(
             )
             for matrix in function.matrices
         ]
-    if type(function) is FrozenProductFunction:
+    if isinstance(function, (FrozenProductFunction, FrozenKumoProductFunction)):
         return [
             _product(a, b)
             for a, b in zip(

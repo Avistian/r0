@@ -1,16 +1,21 @@
 """Atomic raw matrix function constructions bound to their frozen equations."""
 
 from dataclasses import dataclass
+from typing import cast
 
 import numpy as np
 from numpy.typing import NDArray
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
-from r0.modules.priors.lib.frozen_function_composites import FrozenProductFunction
+from r0.modules.priors.lib.frozen_function_composites import (
+    CheapFrozenFunction,
+    FrozenProductFunction,
+)
 from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenLinearFunction,
     FrozenQuadraticFunction,
 )
+from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.joint_discretization_realization import (
     JointDiscretizationFunctionRealization,
     materialize_joint_discretization,
@@ -123,32 +128,73 @@ _CHEAP_REALIZATION_TYPES = (
 )
 
 
+type NonProductJointFunctionRealization = (
+    CheapJointFunctionRealization | JointEMFunctionRealization | JointMLPFunctionRealization
+)
+_KUMO_REALIZATION_TYPES = (
+    *_CHEAP_REALIZATION_TYPES,
+    JointEMFunctionRealization,
+    JointMLPFunctionRealization,
+)
+
+
+def product_equation(
+    plan: JointFunctionPlan,
+    left: NonProductJointFunctionRealization,
+    right: NonProductJointFunctionRealization,
+) -> FrozenProductFunction | FrozenKumoProductFunction:
+    if plan.prior.kumo_product:
+        return FrozenKumoProductFunction(left.function, right.function)
+    # The historical constructor remains the runtime authority for cheap membership.
+    return FrozenProductFunction(
+        cast(CheapFrozenFunction, left.function), cast(CheapFrozenFunction, right.function)
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class JointProductFunctionRealization:
     plan: JointFunctionPlan
-    left: CheapJointFunctionRealization
-    right: CheapJointFunctionRealization
-    function: FrozenProductFunction
+    left: NonProductJointFunctionRealization
+    right: NonProductJointFunctionRealization
+    function: FrozenProductFunction | FrozenKumoProductFunction
     calibration: FunctionCalibrationSample | None = None
     version: str = "joint-product-function-realization-v1"
 
     def __post_init__(self) -> None:
+        if type(self.plan) is not JointFunctionPlan:
+            raise ValueError("product requires its frozen plan")
+        broad = self.plan.prior.kumo_product
+        version = (
+            "joint-kumo-product-function-realization-v1"
+            if broad
+            else "joint-product-function-realization-v1"
+        )
+        allowed = _KUMO_REALIZATION_TYPES if broad else _CHEAP_REALIZATION_TYPES
+        equation_type = FrozenKumoProductFunction if broad else FrozenProductFunction
         if (
-            self.version != "joint-product-function-realization-v1"
+            self.version != version
             or type(self.plan) is not JointFunctionPlan
             or self.plan.family != "prod"
-            or type(self.left) not in _CHEAP_REALIZATION_TYPES
-            or type(self.right) not in _CHEAP_REALIZATION_TYPES
-            or type(self.function) is not FrozenProductFunction
+            or type(self.left) not in allowed
+            or type(self.right) not in allowed
+            or type(self.function) is not equation_type
         ):
-            raise ValueError("product realization requires its plan and two cheap children")
+            raise ValueError(
+                "product realization requires its source plan and eligible nonrecursive children"
+            )
         if (self.left.plan, self.right.plan) != self.plan.children:
             raise ValueError("product children differ from their ordered owned plans")
         fitted = tuple(
             child
             for child in (self.left, self.right)
             if isinstance(
-                child, (JointTreeFunctionRealization, JointDiscretizationFunctionRealization)
+                child,
+                (
+                    JointTreeFunctionRealization,
+                    JointDiscretizationFunctionRealization,
+                    JointEMFunctionRealization,
+                    JointMLPFunctionRealization,
+                ),
             )
         )
         if fitted:
@@ -158,7 +204,7 @@ class JointProductFunctionRealization:
                 raise ValueError("product fitted children must share the same retained calibration")
         elif self.calibration is not None:
             raise ValueError("product of unfitted functions cannot own a calibration sample")
-        if self.function != FrozenProductFunction(self.left.function, self.right.function):
+        if self.function != product_equation(self.plan, self.left, self.right):
             raise ValueError("frozen product differs from its retained child constructions")
 
     def validate(self, decisions: JointSamplingRecord) -> None:
@@ -297,7 +343,7 @@ def _materialize_product(
     limits: CausalLimits,
     capture: RawDrawLedger | None = None,
 ) -> JointProductFunctionRealization:
-    fitted = any(child.family in ("tree", "disc") for child in plan.children)
+    fitted = any(child.family in ("tree", "disc", "em", "mlp") for child in plan.children)
     if (fitted and fit_rng is None) or (
         fit_rng is not None
         and (type(fit_rng) is not np.random.Generator or fit_rng.bit_generator is rng.bit_generator)
@@ -310,7 +356,7 @@ def _materialize_product(
         {"raw": rng, **({"fit": fit_rng} if fit_rng is not None else {})}, capture
     ) as (streams, capture):
         raw, fit = streams["raw"], streams.get("fit")
-        children: list[CheapJointFunctionRealization] = []
+        children: list[NonProductJointFunctionRealization] = []
         for child_plan in plan.children:
             child = materialize_joint_function(
                 child_plan,
@@ -329,6 +375,8 @@ def _materialize_product(
                     JointRFFFunctionRealization,
                     JointTreeFunctionRealization,
                     JointDiscretizationFunctionRealization,
+                    JointEMFunctionRealization,
+                    JointMLPFunctionRealization,
                 ),
             ):
                 raise ValueError("product construction requires cheap child realizations")
@@ -338,8 +386,11 @@ def _materialize_product(
             plan,
             left,
             right,
-            FrozenProductFunction(left.function, right.function),
+            product_equation(plan, left, right),
             sample,
+            version="joint-kumo-product-function-realization-v1"
+            if plan.prior.kumo_product
+            else "joint-product-function-realization-v1",
         )
         result.validate(decisions)
         return result
