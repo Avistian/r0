@@ -1,0 +1,64 @@
+{
+  "source": "ae9b3b8b64c226d1532e7cb7939ab99b907fc2ad",
+  "baseline": "f5efdc34ad75012e9d24c7b69a221fa86cf396ee",
+  "archive_bytes": 7897854,
+  "archive_sha256": "979d60c3aa6076dba35afe5eaab2e0898d5aff18421a1aedb868c0da3d0bed7d",
+  "logical_retained_files": 192,
+  "excluded_source_files": 153,
+  "parts": [
+    {
+      "path": "0028-node-pipeline-spec.zip.part01",
+      "bytes": 900000,
+      "sha256": "4a91e4b5dc68eb7c2c3d79d06cd3d8befb2b050aa1abf36e7f60e90475b16c3b"
+    },
+    {
+      "path": "0028-node-pipeline-spec.zip.part02",
+      "bytes": 900000,
+      "sha256": "ad4f4b5c09788736b9c24a37218753192ee36efc7f06a9f0990b119db7769321"
+    },
+    {
+      "path": "0028-node-pipeline-spec.zip.part03",
+      "bytes": 900000,
+      "sha256": "7d28a9f1a2fbba1a30b9c5549f6d6f199c230a7cfbc1eee13234e4d14214c165"
+    },
+    {
+      "path": "0028-node-pipeline-spec.zip.part04",
+      "bytes": 900000,
+      "sha256": "c207234d18178fd37f65ecb74596484fef66739c183ac463363f622a8312338b"
+    },
+    {
+      "path": "0028-node-pipeline-spec.zip.part05",
+      "bytes": 900000,
+      "sha256": "fa8f84cb170b6c557f3f58149afb765915a4063c0538943b91592a4bd9023438"
+    },
+    {
+      "path": "0028-node-pipeline-spec.zip.part06",
+      "bytes": 900000,
+      "sha256": "7bd6dd8221bab8912d0b56922a0896d73306a85844aa1b475fd9a9328690fdc6"
+    },
+    {
+      "path": "0028-node-pipeline-spec.zip.part07",
+      "bytes": 900000,
+      "sha256": "ecea2a5a3447eadcd1c2eb1f7ad32787b907c45fd2bb58fc39566cccf3a6f8d0"
+    },
+    {
+      "path": "0028-node-pipeline-spec.zip.part08",
+      "bytes": 900000,
+      "sha256": "7c8405dd273694c39ca79522fbb80cb5909d0f49cd11d0b3c7c126b488308d89"
+    },
+    {
+      "path": "0028-node-pipeline-spec.zip.part09",
+      "bytes": 697854,
+      "sha256": "f62849ce35b1b9b32d3a16d1f7320bd30d34fcf3b2e18c00a25259a9a2a99077"
+    }
+  ],
+  "duplicate_paths": [
+    {
+      "path": "legacy-candidate.json",
+      "copy_from": "legacy-baseline.json",
+      "bytes": 46139750,
+      "sha256": "3ce283b561dbc081a772093772a79a548af1fe4bd9d1bded14eecdffb2cc2dae"
+    }
+  ],
+  "qualification": "Concatenate ordered parts without separators and verify each part and complete archive SHA256 before extracting. Restore the byte-identical candidate legacy capture using duplicate-paths.json. MANIFEST.json retains all original hashes including excluded baseline/src files: reconstruct those with git archive at the stated baseline before full-manifest validation. Original local evidence is untouched. Four published scripts match executed bytes; copy them to a fresh evidence directory for reproduction because outputs are relative to script location."
+}

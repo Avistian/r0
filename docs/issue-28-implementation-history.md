@@ -227,3 +227,22 @@ graph/network/tree/GP mechanisms, typed states, interventions and the full workb
 remain required. No whole-issue or complete source joint-prior acceptance is claimed.
 Earlier implementation entries were moved verbatim to the linked checkpoint history
 to keep files within the repository size limit. The full goal remains active.
+
+## Named numerical preference checkpoint
+
+At `593c924`, a public retained sampler supports independent local draws, fixed
+global values and shared named Beta hyperparameters. Records preserve unit draws,
+linear/log mapping, endpoint mass, round/floor conversion, batch shape, effective
+scope and explicit strict/quantile reuse policy. Loading validates realizations,
+references and first-use provenance. Draw/value/retained-parameter admission occurs
+before random sampling or allocation. [Laws and evidence](issue-28-parameter-preferences.md).
+
+Full checks pass **628 tests, one skipped**, including all static gates. Independent
+spec review passes 708 bounded numerical/contract checks with no scoped defects;
+standards finds no hard violations and one nonblocking accounting-duplication
+heuristic. Earlier mechanism/profile implementation files are byte-identical to
+`12ad190`. This is a numerical API checkpoint: categorical shared/refreshed weights,
+generator binding/admission and profiles remain required. All wider #28 stages,
+including full source activation weighting, typed states, interventions and actual
+browser/Colab delivery, remain in scope. Smoke/eval-smoke are NOT_AVAILABLE; no
+scientific or full-issue acceptance is claimed. The full goal stays active.

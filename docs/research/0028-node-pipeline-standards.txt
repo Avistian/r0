@@ -1,0 +1,13 @@
+Standards review — ae9b3b8b64c226d1532e7cb7939ab99b907fc2ad against f5efdc34ad75012e9d24c7b69a221fa86cf396ee (three-dot diff).
+
+Hard documented-standard violations: none identified. Reviewed AGENTS.md, CODING_STANDARDS.md, protocol-review.md, issue-tracker.md, applicable ADRs, requirements, accepted #28 scope, and src/r0/modules/README.md. The diff preserves module-entry-point imports for consumers/tests and explicitly injected randomness. Accepted spec decision 12 authorizes independent mechanism calibration; this is distinct from fitting predictive preprocessing on query rows. The increment explicitly leaves full checks, independent review, browser/Colab, sampled binding and wider acceptance pending. This source review does not upgrade those statuses.
+
+Advisory judgement calls:
+
+1. Possible Duplicated Code — src/r0/modules/priors/lib/causal_evaluation.py:66–72 and :109–115 repeat the same finalization/collection hunk: `value, readout = pipeline.finish(value) if pipeline is not None else (value, value)`, followed by readout/step/state/innovation appends. Future collection changes must update both stochastic and ordinary paths. Consider a shared tail after the two arithmetic branches; preserve existing arithmetic and RNG ordering.
+
+2. Possible Repeated Switches — src/r0/modules/priors/lib/node_pipeline.py:171–175 and causal_moments.py:150–154 both implement the variant policy using `variant != "readout-only"` and `variant == "historical-tuple"`. A new variant can change emitted tensors while leaving certificates inconsistent. Consider exposing semantic predicates on NumericalConverter (whether it changes state and whether it captures the unwarped value), used by both consumers. Keep numerical evaluation and moment calculations otherwise independent.
+
+Both findings are maintenance heuristics, not documented-rule breaches or demonstrated runtime defects. No tests, dependency operations, cloud calls, or source edits were performed. Preflight HEAD matched the candidate, with only existing .venv untracked. Subsequent author changes to the increment document and development evidence were outside this pinned review.
+
+Total: 0 hard violations; 2 advisory findings. Worst advisory: duplicated converter policy can drift between values and moment certificates.

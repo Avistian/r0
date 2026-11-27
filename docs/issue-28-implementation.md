@@ -96,8 +96,9 @@ condition, checks the sole appended section, then reads back the current issue.
 
 ## Source gate result
 
-[The finite inventory](research/0028-source-option-inventory.md) contains 581
-source/extension/disposition records and 140 specification anchors. The eight JSON
+[The finite inventory](research/0028-source-option-inventory.md) contains 583
+source/extension/disposition records and 140 specification anchors, including two
+converter graph-alias variants discovered after the initial 581-record gate. The eight JSON
 chunks have unique IDs and explicit ownership/unknown states. These are traceability
 records, not unique algorithms or implementation counts. Exact peer/checkpoint
 reproduction is not claimed. Documented choices are ready for implementation;
@@ -117,29 +118,10 @@ repository wrapper and the explicitly selected interpreter/environment.
 ## Earlier checkpoints
 
 The original causal-core, topology, nonlinear, activation-preference, exogenous,
-factorized, importance-weighted and matrix-family entries are preserved verbatim in the
+factorized, importance-weighted, matrix-family and named numerical-preference
+entries are preserved verbatim in the
 [checkpoint history](issue-28-implementation-history.md), with their original
 findings and evidence links.
-
-## Named numerical preference checkpoint
-
-At `593c924`, a public retained sampler supports independent local draws, fixed
-global values and shared named Beta hyperparameters. Records preserve unit draws,
-linear/log mapping, endpoint mass, round/floor conversion, batch shape, effective
-scope and explicit strict/quantile reuse policy. Loading validates realizations,
-references and first-use provenance. Draw/value/retained-parameter admission occurs
-before random sampling or allocation. [Laws and evidence](issue-28-parameter-preferences.md).
-
-Full checks pass **628 tests, one skipped**, including all static gates. Independent
-spec review passes 708 bounded numerical/contract checks with no scoped defects;
-standards finds no hard violations and one nonblocking accounting-duplication
-heuristic. Earlier mechanism/profile implementation files are byte-identical to
-`12ad190`. This is a numerical API checkpoint: categorical shared/refreshed weights,
-generator binding/admission and profiles remain required. All wider #28 stages,
-including full source activation weighting, typed states, interventions and actual
-browser/Colab delivery, remain in scope. Smoke/eval-smoke are NOT_AVAILABLE; no
-scientific or full-issue acceptance is claimed. The full goal stays active.
-
 
 ## Shared categorical and matrix preference checkpoint
 
@@ -282,3 +264,31 @@ pipelines must certify moments at the actual L2 input before independent fitting
 Shared shape sampling, node pipelines/converters, broader source mechanisms,
 typed states, interventions and actual browser/Colab delivery remain required.
 No supported-size, GPU or scientific acceptance is claimed. The full goal stays active.
+
+## Authored node-pipeline and converter checkpoint
+
+At `ae9b3b8`, ordered frozen stages, channel importance and L2 precede explicit
+numerical converter state/readout branches; structural innovation and whole-node
+importance follow. Three named variants preserve historical tuple intent, actual
+historical graph behavior and corrected readout-only behavior. Descendants consume
+state; converted columns retain their earlier readouts. Moments, normalization,
+ancestry, original-row stage traces and saved replay honor that distinction.
+[Laws and evidence](issue-28-node-pipelines.md).
+
+Full checks pass **770 tests, one skipped**, all static gates. Independent scoped
+ACCEPT covers 50 numerical comparisons (maximum absolute error 8.88e-16), 20
+expected contract rejections, nine saved variant/task-type workflows, moment and
+ancestry cases, alias independence and frozen-control invariance. Independent
+resource arithmetic matches 87 parameters / 32,768 estimated bytes; all-node trace
+buffers are summed. Four exact executed programs and raw outcomes retain custody.
+All 168 legacy proposals are byte-identical: 164 successes and four retained
+failures. Standards finds no hard violations and two advisory duplication risks.
+
+The source inventory adds explicit graph-alias variants for both Kumaraswamy and
+activation converters: 583 source records plus 140 anchors, not implementation
+counts. The follow-up preserves source redraw behavior and separate root-point and
+later-noise paths. Authored roots currently have deterministic pre-pipeline bias;
+source root-law and independent sampled-pipeline integration remain required.
+Shared shape/weight preferences, activation converters, source standardization,
+source profiles, all wider mechanisms and actual browser/Colab/GPU/scale evidence
+remain in scope. The full #28 goal stays active.

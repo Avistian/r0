@@ -24,13 +24,20 @@ checkpoint reproduction remains UNKNOWN**, and an unqualified full-paper-coverag
 claim still requires resolution or the specification's explicit disposition of
 those disclosure gaps. This gate does not declare those gaps resolved.
 
-There are **581 source/extension/disposition records**, plus **140 specification
+There are **583 source/extension/disposition records**, plus **140 specification
 anchors**. Counts include the same operation's occurrence in different sources,
 source variants, sibling-ticket interfaces and unresolved disclosures; they are
 **not counts of unique algorithms or implemented generators**. Specification
 anchors preserve the previous grouped checklist; atomic records supply the
 implementation units. The finite scope is their union, with aliases allowed only
 when the semantics and verification truly coincide.
+
+The initial gate contained 581 source records. Two additional source-code variants
+were recorded during implementation: `I2.converter.02.graph` and
+`I2.converter.03.graph` distinguish actual historical graph alias behavior from
+reconstructed tuple intent. The [source audit](0028-wrapper-source-laws.md) and
+[sampling follow-up](0028-node-pipeline-sampling-laws.md) retain the distinction.
+This addition expands traceability; it does not mark either complete.
 
 ## Machine-readable inventory
 
@@ -41,7 +48,7 @@ when the semantics and verification truly coincide.
 | [03](0028-source-options-03.json) | 95 | O-prior through activation catalog |
 | [04](0028-source-options-04.json) | 91 | Activation catalog and specification anchors |
 | [05](0028-source-options-05.json) | 71 | Specification anchors and accepted r0 extensions |
-| [06](0028-source-options-06.json) | 101 | Pinned I2 mechanisms, matrices, roots, node processing |
+| [06](0028-source-options-06.json) | 103 | Pinned I2 mechanisms, matrices, roots, node processing |
 | [07](0028-source-options-07.json) | 110 | I2 converters/activations through A1 |
 | [08](0028-source-options-08.json) | 56 | K1/G1/P35/P25/P3 and adjacent corpus boundaries |
 

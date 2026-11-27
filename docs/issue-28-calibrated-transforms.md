@@ -10,7 +10,7 @@ A primitive wrapper alone does not complete `I2.converter.02` or all of #28.
 ## Source laws and boundaries
 
 The reference is TabICL commit `9530bd65a7b806f6ad4f9f4335af745577e9d3cc`,
-[`L2Normalize` and `KumaraswamyWarping`](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_activation.py#L172-L201).
+[`L2Normalize` and `KumaraswamyWarping`](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_activation.py#L185-L217).
 The [primary-source investigation](research/0028-wrapper-source-laws.md) records
 the complete node order, first-call fitting and optional source `ensure_iid`
 calibration. Implementation is independently written; upstream code was not copied.

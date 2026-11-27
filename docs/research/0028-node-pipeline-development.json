@@ -1,0 +1,108 @@
+{
+  "source": "ae9b3b8b64c226d1532e7cb7939ab99b907fc2ad",
+  "archive": "0028-node-pipeline-development.zip",
+  "archive_sha256": "b5a68a8756a680144b08bc5f3b983982f05d5ef2f6b4a7cf3f71f9b9d968f111",
+  "entries": [
+    {
+      "path": "r0-28-pipeline-variants-red.log",
+      "bytes": 6155,
+      "sha256": "86b2d3b1ad051a3071c082403fdfa45dda07841d955879556cab63e2b41686a7"
+    },
+    {
+      "path": "r0-28-pipeline-variants-green.log",
+      "bytes": 98,
+      "sha256": "b7a4163613de2e239568e4b2927a0a2351dfac27188c98bd0af5fd2d1de9b9bb"
+    },
+    {
+      "path": "r0-28-pipeline-moments-red.log",
+      "bytes": 14488,
+      "sha256": "a2623ee334531449f6ef7727482e145e00c7f624bbb8cbb267098f4e35188c9f"
+    },
+    {
+      "path": "r0-28-pipeline-moments-green.log",
+      "bytes": 98,
+      "sha256": "d792cb3d2b63f99ae860f4d0bdf4ed30680288b4b885b963895ba7ec8ff5816d"
+    },
+    {
+      "path": "r0-28-pipeline-ancestry-red.log",
+      "bytes": 1692,
+      "sha256": "9610548444382a9f4e6b55752d91902c5695d1e13376e957a2695de9eb3eab3e"
+    },
+    {
+      "path": "r0-28-pipeline-ancestry-green.log",
+      "bytes": 98,
+      "sha256": "db642d347e992ce6165864a2d7bc81335813b1ff4b913e60d28547404f005500"
+    },
+    {
+      "path": "r0-28-pipeline-stages-red.log",
+      "bytes": 1858,
+      "sha256": "1a75c4d5e3ca823dd3442c36e67f6c990564ffffd098cc7f6c352d4e365038a2"
+    },
+    {
+      "path": "r0-28-pipeline-stages-green.log",
+      "bytes": 98,
+      "sha256": "7ac91feaf1544c8c4f062d676ada92000da2f8f1998b1bc29beaf1c1f7e07352"
+    },
+    {
+      "path": "r0-28-pipeline-l2-moments-red.log",
+      "bytes": 1642,
+      "sha256": "e3f52e6082363ca98bb289d93cc5319ec01c60d2d46cea1279f32ad85724c830"
+    },
+    {
+      "path": "r0-28-pipeline-l2-moments-green.log",
+      "bytes": 98,
+      "sha256": "60509118c2cf3627c4bb5b2fdede98df72c1d7b135920fab71ae652962dc5d26"
+    },
+    {
+      "path": "r0-28-pipeline-trace-red.log",
+      "bytes": 2563,
+      "sha256": "5852e004820e840fe64b04efbf8797dd4f74814fac56fe563929bca6cfce12e3"
+    },
+    {
+      "path": "r0-28-pipeline-trace-green.log",
+      "bytes": 98,
+      "sha256": "eb89e2b25528b4b0f8477dc39579f0a808fc3a7dd53920e9fb08eb142c46d8b9"
+    },
+    {
+      "path": "r0-28-pipeline-targeted.log",
+      "bytes": 100,
+      "sha256": "fc0b9100a596f1f4d9449f4815e875a53cf3cd3b7cb756b9cf9265426370e508"
+    },
+    {
+      "path": "r0-28-pipeline-targeted-final.log",
+      "bytes": 100,
+      "sha256": "7b77816c57bbb6b1b6ea92b0d5c0827e30596e462ff28058e22dbf9906a7aca1"
+    },
+    {
+      "path": "r0-28-pipeline-trace-budget-red.log",
+      "bytes": 2222,
+      "sha256": "550c03eec4ebbcc9fb2120c3df0cb9cca151adc8de04978757e8df14af660fb9"
+    },
+    {
+      "path": "r0-28-pipeline-trace-budget-green.log",
+      "bytes": 98,
+      "sha256": "c1984e50a497955ad2ec6e06b4efc97843ea1db757602ce01378f51eb315e057"
+    },
+    {
+      "path": "r0-28-pipeline-static.log",
+      "bytes": 4627,
+      "sha256": "0b5eb2170371cd91a6f2bfd52117bec596fe979c4f7f742e1ef9f328cf650b33"
+    },
+    {
+      "path": "r0-28-pipeline-static-fixed.log",
+      "bytes": 1155,
+      "sha256": "1bec9c6aa09618bfb82f2a5fa475e2857cffbd38b7d11f5369f17a616a20bd85"
+    },
+    {
+      "path": "r0-28-pipeline-final-static.log",
+      "bytes": 214,
+      "sha256": "4f72882d7f778f91342d31daa24b403bde100a10c72175beb9416b617b7850a0"
+    },
+    {
+      "path": "r0-28-pipeline-precommit.log",
+      "bytes": 347,
+      "sha256": "2d08966fc2c2c72ead9e7554b8883b875f4991d67bf40514f4e4b99b99e56a8d"
+    }
+  ],
+  "qualification": "Author working-tree development RED/GREEN, not immutable intermediate source snapshots. Initial variant test used an incorrect TrainingTask.episode.x access that was corrected to public inputs before first implementation run; initial RED was the missing pipeline API. The initial 18-case targeted run preceded the summed trace-buffer reserve correction; the final 9-case unit run includes that correction. Nine saved workflows passed before that accounting-only correction; final repository checks are separate. Static failures and repairs are retained where logged. Complete intermediate source snapshots NOT_RETAINED."
+}

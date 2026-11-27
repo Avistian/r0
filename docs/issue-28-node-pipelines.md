@@ -9,7 +9,7 @@ The full accepted #28 scope remains in force.
 
 ## Source order and explicit variants
 
-The pinned [TabICL node function](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_node_function.py#L37-L65)
+The pinned [TabICL node function](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_node_function.py#L44-L73)
 places optional standardization/channel importance and L2 before converters, then
 adds Gaussian innovation and whole-node importance to the propagated state.
 Converters expose separate columns. The [source audit](research/0028-wrapper-source-laws.md)
@@ -31,6 +31,11 @@ The normal stochastic noise response still depends on the pre-noise affine
 response. Its broader exogenous laws and signal-dependent scaling are explicit
 r0 extensions to this source pipeline order. The authored stage list also permits
 broader compositions; it does not claim each composition is a published recipe.
+An authored root currently has its deterministic bias before the declared
+after-output innovation. This is not the source's separate RandomPoints root draw
+followed by later Gaussian innovation. Sampled source integration must retain
+both random inputs at their distinct positions; the current single root
+innovation is not claimed to reproduce both.
 Signed and zero channel-importance factors are allowed; whole-node importance is
 finite and positive. Channel factors are recorded realizations, not silently
 renormalized or sampled. The source standardization/importance sampling law remains
@@ -120,6 +125,87 @@ the example agrees to the retained floating-point tolerance.
 Development checks include this example, ordered-stage arithmetic, readout-aware
 heavy-tail moments and ancestry, actual-input L2 admission, exact/minus-one resource
 limits, malformed records, JSON loading and nine saved workflows across the three
-converter variants and task types. Full checks and independent review are PENDING.
-Raw development failures and current commands will be retained with publication;
-this document is not yet an acceptance report.
+converter variants and task types.
+[Raw development logs](research/0028-node-pipeline-development.json) retain the
+missing-API, readout-moment/ancestry, stage/trace and actual-input-normalization
+REDs and their subsequent GREEN runs. A later budget correction sums each node's
+pipeline reserve, because tracing can retain all node stages simultaneously.
+The worked two-node fixture accounts for 17 parameters and 9,344 estimated bytes;
+exact limits pass and one-less budgets reject. These are working-tree logs, not
+immutable snapshots of every intermediate source. The manifest preserves that
+qualification and distinguishes the earlier saved-workflow run from the final
+accounting regression. Reproduce the current targeted checks with:
+
+```sh
+UV_PROJECT_ENVIRONMENT=/path/to/existing/venv \
+python3 scripts/run_check.py pytest tests/priors/test_causal_pipeline.py \
+  tests/explorer/test_pipeline_session.py
+```
+
+The [standards review](research/0028-node-pipeline-standards.txt) finds no hard
+violations and two advisory duplication risks: evaluator finalization and
+converter-variant decisions shared between runtime and moment calculations.
+The scoped source review is separate from later publication additions.
+
+## Full checks and independent acceptance
+
+Full `make check` at `ae9b3b8b64c226d1532e7cb7939ab99b907fc2ad` passes
+**770 tests, one skipped**, in 400.40 seconds, with all static gates passing.
+[Full output](research/0028-node-pipeline-check-ae9b3b8.txt).
+The skip is the existing CUDA case on this CPU environment. Smoke/eval-smoke are
+NOT_AVAILABLE: the [current CLI help](research/0028-node-pipeline-cli-help.txt)
+has no train/eval commands. Publication preserves the checked source/test bytes.
+
+The [independent spec review](research/0028-node-pipeline-spec-review.txt) gives
+scoped ACCEPT with no implementation findings. Its 81 recorded checks include
+**50 independent numerical comparisons**, 20 expected malformed-record or
+compatibility rejections, nine saved workflows, moment checks and ancestry checks.
+NumPy equations reconstruct mixed captured/unconverted channels, all three
+variants, signed/zero factors, L2, Gaussian roots, matrix descendants and
+affine-dependent innovation. Maximum absolute error is **8.88e-16**, within the
+predeclared `rtol=atol=2e-12`.
+
+The supplemental [audit](research/0028-node-pipeline-audit.json) independently
+counts **87 parameters and 32,768 estimated bytes** for its mixed fixture.
+Pipeline reserves contribute 46 + 43 channels, plus 24 stochastic scratch channels.
+Exact budgets admit and minus-one budgets reject. It also checks readout/state
+mutation independence and unchanged frozen records across context/calibration-row
+controls. These are declared-array estimates, not measured RSS or scale acceptance.
+
+All **168 legacy proposals** across 28 profiles, three graph families and two task
+ids retain identical recipes, tasks, diagnostics, traces and statuses against
+`f5efdc3`: 164 successes and four unchanged explicit failures. Nothing was dropped
+or retried. Imported-source custody binds 76 baseline modules, 80 legacy candidate
+modules and 100 numerical/workflow modules to their pinned Git bytes.
+
+[Raw artifacts](research/0028-node-pipeline-spec-artifacts.json) retain 192 logical
+files in nine ordered ZIP byte parts, including exact programs, inputs, outcomes,
+saved sessions and the complete original manifest. One byte-identical legacy
+capture uses `duplicate-paths.json` to reconstruct its second path. Verify part
+and joined-archive hashes, extract, restore the duplicate and reconstruct the
+153 excluded baseline source files with Git before checking the full manifest.
+The local originals remain unchanged. Four final programs in
+[`scripts/verify_node_pipelines/`](../scripts/verify_node_pipelines/) are
+byte-identical to executed copies. [Reproduction instructions](research/0028-node-pipeline-reproduction.txt)
+require copying them into a fresh evidence directory because outputs are relative
+to the program location. The initial successful audit and its later portable
+revision are both retained; the final portable program was actually executed.
+
+## Source coverage and next integration
+
+The authored identity/Kumaraswamy converter surface advances `I2.converter.01`,
+`I2.converter.02`, the newly explicit `I2.converter.02.graph`, and the
+`I2.measurement.01` interface. It does not close their full sampled/environment
+evidence. Activation converters `I2.converter.03` / `.03.graph` and the corrected
+activation interface remain required; an arbitrary upstream stage is not their
+substitute. The inventory now distinguishes both historical graph-alias variants,
+with 583 source/extension/disposition records plus 140 specification anchors.
+
+The [sampling-law follow-up](research/0028-node-pipeline-sampling-laws.md) establishes
+separate root inputs and later innovations, source per-pass parameter redraws,
+shared matrix/channel-weight preferences and target-restricted selector catalogs.
+Freezing those parameters for independent calibration is an explicit r0 adaptation.
+Sampled bindings, root-law integration, standalone source standardization, source
+profiles/census, wider #28 mechanisms, typed states, interventions and actual
+browser/Colab/GPU/scale delivery remain required. This is component acceptance,
+not full issue acceptance.

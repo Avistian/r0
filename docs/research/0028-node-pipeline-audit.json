@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "parameters": 87,
+  "estimated_working_bytes": 32768,
+  "frozen_records": "unchanged with context and calibration row count",
+  "alias_independence": "PASS",
+  "custody": [
+    {
+      "run": "legacy-baseline",
+      "commit": "f5efdc34ad75012e9d24c7b69a221fa86cf396ee",
+      "imported_modules": 76
+    },
+    {
+      "run": "legacy-candidate",
+      "commit": "ae9b3b8b64c226d1532e7cb7939ab99b907fc2ad",
+      "imported_modules": 80
+    },
+    {
+      "run": "verify-start",
+      "commit": "ae9b3b8b64c226d1532e7cb7939ab99b907fc2ad",
+      "imported_modules": 100
+    },
+    {
+      "run": "verify-end",
+      "commit": "ae9b3b8b64c226d1532e7cb7939ab99b907fc2ad",
+      "imported_modules": 100
+    }
+  ],
+  "legacy_sha256": "3ce283b561dbc081a772093772a79a548af1fe4bd9d1bded14eecdffb2cc2dae"
+}

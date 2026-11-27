@@ -697,13 +697,27 @@
     "option": "Historical hidden-state Kumaraswamy converter",
     "source": "I2 E; I2S _converter.py",
     "disposition": "REQUIRED_28",
-    "notes": ""
+    "notes": "Historical tuple intent retains a copied raw readout in r0; actual pinned graph alias behavior is separately recorded as I2.converter.02.graph. See 0028-wrapper-source-laws.md and 0028-node-pipeline-sampling-laws.md."
   },
   {
     "id": "I2.converter.03",
     "option": "Historical hidden-state activation converter",
     "source": "I2 E; I2S _converter.py",
     "disposition": "REQUIRED_28",
-    "notes": ""
+    "notes": "Historical tuple intent retains a copied raw readout in r0; actual pinned graph alias behavior is separately recorded as I2.converter.03.graph. See 0028-wrapper-source-laws.md and 0028-node-pipeline-sampling-laws.md."
+  },
+  {
+    "id": "I2.converter.02.graph",
+    "option": "Historical graph Kumaraswamy converter alias behavior",
+    "source": "I2S _converter.py historical branch; _node_function.py slice replacement at commit 9530bd65a7b806f6ad4f9f4335af745577e9d3cc",
+    "disposition": "REQUIRED_28",
+    "notes": "Propagated state and extracted column both receive transformed values before later innovation and node importance. Preserve by value as a named variant; distinguish from copied-raw historical tuple reconstruction. Source contradiction discovered during implementation; sampled source integration and full evidence remain required."
+  },
+  {
+    "id": "I2.converter.03.graph",
+    "option": "Historical graph activation converter alias behavior",
+    "source": "I2S _converter.py historical branch; _node_function.py slice replacement at commit 9530bd65a7b806f6ad4f9f4335af745577e9d3cc",
+    "disposition": "REQUIRED_28",
+    "notes": "Propagated state and extracted column both receive transformed values before later innovation and node importance. Preserve by value as a named variant; distinguish from copied-raw historical tuple reconstruction. Source contradiction discovered during implementation; sampled source integration and full evidence remain required."
   }
 ]

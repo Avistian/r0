@@ -11,14 +11,19 @@ copied. Scope authority: [accepted decisions 10–13 and completion rule](../spe
 All I2 links below pin `soda-inria/tabicl` commit
 `9530bd65a7b806f6ad4f9f4335af745577e9d3cc`:
 
-- [A: activation laws, lines 173–202](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_activation.py#L173-L202).
-- [B: sampler and first-call fitting](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_base.py#L22-L70).
-- [C: converter contract and numerical branches](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_converter.py#L10-L67).
-- [N: node construction and evaluation](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_node_function.py#L17-L66).
-- [G: graph evaluation](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_graph_function.py#L15-L39).
-- [D: separate fitting pass](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_dataset.py#L54-L62).
+- [A: activation laws, lines 185–217](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_activation.py#L185-L217).
+- [B: sampler and first-call fitting](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_base.py#L25-L75).
+- [C: converter contract and numerical branches](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_converter.py#L46-L73).
+- [N: node construction and evaluation](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_node_function.py#L17-L73).
+- [G: graph evaluation](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_graph_function.py#L32-L42).
+- [D: separate fitting pass](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_dataset.py#L40-L67).
 - [Q: configuration defaults and IID help](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_config.py#L10-L39).
 - [M: MITRA-v2, arXiv 2609.04540v1, 2026-09-03, §2.3](https://arxiv.org/html/2609.04540v1#S2.SS3).
+
+Line anchors were corrected during pipeline integration using the exact pinned
+raw files: web-extracted text removes blank lines and has different line numbers.
+The [sampling follow-up](0028-node-pipeline-sampling-laws.md) retains raw-file
+hashes and line provenance; the source revision and mathematical laws are unchanged.
 
 ## Laws and sharing
 
@@ -39,7 +44,7 @@ scalar parameter name: its factor comes from calibration. [B][C][A]
 
 First invocation fits a transformer, subsequent invocations reuse it. A shared
 context shares the sampler across components. This is first-call dependence, not
-automatic recalibration on every evaluation. [B] (lines 118–182)
+automatic recalibration on every evaluation. [B] (lines 172–197)
 
 ## Source calibration versus accepted decision 12
 
@@ -87,7 +92,7 @@ The historical converter's second value is the supplied tensor itself. The node
 supplies a basic slice of its state, then replaces that same slice with the first
 returned value before retaining the second value. Basic slices are views, so the
 nominal raw readout shares storage with the overwritten state. Inference from
-[C, lines 57–65][C] and [N, lines 51–56][N], supported by
+[C, lines 63–73][C] and [N, lines 61–63][N], supported by
 [PyTorch 2.15 tensor-view semantics](https://docs.pytorch.org/docs/2.15/tensor_view.html):
 the pinned graph's historical numerical branch exposes warped state **and warped
 readout**, before later noise/importance. Corrected mode has raw propagated state
@@ -204,11 +209,11 @@ A primitive wrapper is useful and independently reviewable, but it cannot close
 the M2 reconstruction also need placement and calibration evidence, not only a
 function named L2. These are proposed completion checks, not implementation claims.
 
-[A]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_activation.py#L173-L202
-[B]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_base.py#L22-L182
-[C]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_converter.py#L10-L67
-[N]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_node_function.py#L17-L66
-[G]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_graph_function.py#L15-L39
-[D]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_dataset.py#L54-L62
+[A]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_activation.py#L185-L217
+[B]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_base.py#L25-L197
+[C]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_converter.py#L46-L73
+[N]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_node_function.py#L17-L73
+[G]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_graph_function.py#L32-L42
+[D]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_dataset.py#L40-L67
 [Q]: https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/graph_lib/_config.py#L10-L39
 [M]: https://arxiv.org/html/2609.04540v1#S2.SS3
