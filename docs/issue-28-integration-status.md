@@ -7,30 +7,31 @@ scientific acceptance or whole-issue completion.
 
 ## Latest verified publication checkpoint
 
-Source `723ceef4b55d8914e252cf22f50040553559b7d2` passed full `make check`:
-2,050 passed, one skipped, one warning, 804.46 seconds, with all static gates
+Source `01a4a4c7dc20a43381c5b35070c49acea15a9d31` passed full `make check`:
+2,162 passed, one skipped, one warning, 926.69 seconds, with all static gates
 passing. The warning is sklearn's high-class-count diagnostic in the observed
-class-map regression fixture; its exact output is retained with the suite log.
-This combines sampled-native domains and explorer support, parent compositions
-through geometry/pipelines/native domains, and fitted structural-tree primitives
-with their reviewed repairs. Original rejected candidates remain historical evidence.
+class-map regression fixture; its exact output remains in the suite log.
+This combines the previous parent/fitted/native checkpoint with parent/fitted
+explorer workflows, broad Kumo products, reviewed causal intervention APIs and
+asymmetric native priors. Original rejected candidates remain historical evidence.
 
 The exact-head receipt, runner and full output are retained locally under
-`docs/evidence/issue-28-parent-tree-release/`. The [atomic delivery map](issue-28-atomic-delivery.md)
+`docs/evidence/issue-28-combined-release/`. The [atomic delivery map](issue-28-atomic-delivery.md)
 links individual inventory IDs to scoped implementations and explicit gaps.
 Unlisted IDs remain unaudited by that map; no whole-issue completion follows.
-Parent/fitted-specific explorer controls, broader product variants and causal
-interventions are separate follow-on work. Hosted Colab, GPU, measured supported
-maxima and full paper-option coverage remain open. Training/evaluation CLI
-commands are absent, so smoke/eval-smoke remain NOT_AVAILABLE.
+Heterogeneous native vectors, intervention explorer controls, additional stage
+interventions and standalone network variants are separate follow-on candidates.
+Hosted Colab, GPU, measured supported maxima and full paper-option coverage remain
+open. Training/evaluation CLI commands are absent, so smoke/eval-smoke remain
+NOT_AVAILABLE.
 
-## Combined candidate under verification
+## Combined checkpoint scoped evidence
 
 Frozen candidate `01a4a4c7dc20a43381c5b35070c49acea15a9d31` adds parent/fitted
 explorer workflows, source-specific Kumo products and mixed catalogs, explicit
 causal intervention pairs with the reviewed metadata repair, and asymmetric
-native Dirichlet priors. Its full `make check` is RUNNING; no full-suite pass is
-claimed yet. The exact-head process receipt and log are ignored under
+native Dirichlet priors. Its full `make check` passed as recorded above. The
+exact-head process receipt and log are ignored under
 `docs/evidence/issue-28-combined-release/`.
 
 - Explorer: root-authored Chromium checks cover RF majority construction, large
@@ -61,6 +62,7 @@ are separate active work; they are not claimed by this candidate.
 
 | Source checkpoint | Result and limits |
 | --- | --- |
+| `723ceef` | Previous parent/fitted/native full checkpoint: 2,050 passed, one skipped, one warning, 804.46 seconds. |
 | `665db66` | Explicit sampled graph candidate rejected for partial RNG publication with impersonating bit-generator subclasses. |
 | `d56da97` | Concrete engine admission repair; scoped specification continuation passed. Full check: 1,705 passed, one skipped. |
 | `6579ade` | Shared archive candidate rejected for source identity changing with episode partitions. |
@@ -88,7 +90,7 @@ are separate active work; they are not claimed by this candidate.
 
 ## Parent, fitted-tree and sampled-native follow-on review
 
-These integrations are included in the 2,050-test checkpoint above. Scoped
+These integrations were included in the earlier 2,050-test checkpoint. Scoped
 independent reviews establish only the behavior described below.
 
 - Parent composition `8097c3b` passed bounded independent review of all 22 changed

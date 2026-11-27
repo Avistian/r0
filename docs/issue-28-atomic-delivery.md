@@ -105,5 +105,6 @@ must remain visible in implementation and diversity evidence. Existing scalar
 native nodes, parent reductions and task-control pairs do not close these gaps.
 Hosted execution, measured supported maxima, throughput and full structural and
 functional diversity qualification remain unaccepted. The latest combined source
-candidate is `01a4a4c`; its full verification is pending, and the last published
-full-suite checkpoint remains `723ceef` until the retained receipt proves otherwise.
+checkpoint is `01a4a4c`; full `make check` passed 2,162 tests with one skip and one
+warning. Later stage-intervention, native-vector, explorer and network candidates
+are not covered by that result.
