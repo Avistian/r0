@@ -99,9 +99,17 @@ def functional_pipeline(value: Any) -> CausalNodePipeline:
     return CausalNodePipeline(**fields)
 
 
-def functional_root(value: Any) -> JointRootBase | SourceRootBase:
+def functional_root(
+    value: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
+) -> JointRootBase | SourceRootBase:
     if type(value) is dict:
         raw_root = cast(dict[str, Any], value)
+        if raw_root.get("version") == "sampled-source-root-base-v1":
+            from r0.modules.priors.lib.sampled_source_root_decoding import (
+                sampled_source_root_base_from_dict,
+            )
+
+            return sampled_source_root_base_from_dict(raw_root, limits=limits)
         if raw_root.get("version") == "source-root-base-v1":
             return source_root_base_from_dict(raw_root)
     fields = functional_record(value, JointRootBase)
@@ -183,7 +191,7 @@ def functional_recipe_from_dict(
             raise ValueError("functional graph node limit exceeded")
         nodes: list[FunctionalCausalNode] = []
         for raw in raw_nodes:
-            nodes.append(functional_node_from_dict(raw))
+            nodes.append(functional_node_from_dict(raw, limits=effective))
         fields["nodes"] = tuple(nodes)
         for key in ("observed", "target"):
             fields[key] = tuple(functional_array(ref) for ref in functional_array(fields[key]))
@@ -214,13 +222,15 @@ def functional_recipe_from_dict(
         raise ValueError("malformed functional graph record") from error
 
 
-def functional_node_from_dict(raw: Any) -> FunctionalCausalNode:
+def functional_node_from_dict(
+    raw: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
+) -> FunctionalCausalNode:
     """Decode an equation after the enclosing record has passed metadata admission."""
     node = functional_record(raw, FunctionalCausalNode)
     node["parents"] = functional_array(node["parents"])
     node["function"] = decode_admitted_function(node["function"])
     if node.get("root") is not None:
-        node["root"] = functional_root(node["root"])
+        node["root"] = functional_root(node["root"], limits=limits)
     node["noise_scale"] = functional_array(node.get("noise_scale", ()))
     exogenous = functional_record(node.get("exogenous", {}), ExogenousDistribution)
     exogenous["inputs"] = InputDistribution(

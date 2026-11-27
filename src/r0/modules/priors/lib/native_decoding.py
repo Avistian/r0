@@ -39,7 +39,7 @@ def native_recipe_from_dict(data: dict[str, Any], *, limits: CausalLimits) -> Na
         nodes: list[NativeCausalNode] = []
         for raw in raw_nodes:
             node = functional_record(raw, NativeCausalNode)
-            node["equation"] = functional_node_from_dict(node["equation"])
+            node["equation"] = functional_node_from_dict(node["equation"], limits=declared)
             raw_domain = node.get("domain", {})
             if type(raw_domain) is not dict:
                 raise ValueError("native variable domain must be an object")

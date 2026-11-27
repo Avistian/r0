@@ -65,7 +65,7 @@ def native_vector_recipe_from_dict(data: object, *, limits: CausalLimits) -> Nat
             raise ValueError("native vector node limit exceeded before decoding")
         for raw in raw_nodes:
             n = functional_record(raw, NativeVectorNode)
-            n["equation"] = functional_node_from_dict(n["equation"])
+            n["equation"] = functional_node_from_dict(n["equation"], limits=declared)
             raw_domains = functional_array(n["domains"])
             if not 1 <= len(raw_domains) <= declared.node_channels:
                 raise ValueError("native vector variable count limit exceeded before decoding")
