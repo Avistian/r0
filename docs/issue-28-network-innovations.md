@@ -79,12 +79,39 @@ Neither reference is a conditional expectation or class probability. Supplied
 innovations are standardized draws after the configured exogenous transform.
 Every configured noise node must be supplied, even if its scale is zero.
 
-## Delivery boundary
+## Explorer and shared local notebook delivery
 
-Library construction, archive decoding, keyed generation, source custody,
-interventions, trace inspection and explicit reference evaluation belong to this
-slice. Explorer and shared local-Colab controls, guarded reference plotting,
-original-row innovation selection, source-aware presets, and browser workflows
-remain required follow-on work. Hosted execution is NOT_RUN. This slice does
-not claim learned neural training, complete source SCM topology/root laws, or
-conditional-mean integration over nonlinear stochastic networks.
+The construction selector includes all seven architectures, authored sparse/gated/
+skip combinations, all 28 architecture-hyperprior presets with noise/importance,
+three qualified paper/pinned placement presets, and five authored non-Gaussian/
+signal-dependent extension presets. JSON controls expose the complete source,
+statistics request or explicit plan. A noisy construction wraps an existing
+standalone source; it never silently substitutes a fixed MLP.
+
+The architecture editor displays original blocks and a separate compiled-node
+mapping. Preparation, validation, decoding, recompilation and saved generation
+run in the bounded subprocess. Edits freeze an authored architecture and explicit
+statistics plan; the original sampled archive and its raw records remain intact.
+Invalid plans retain the editable text and accepted diagram. Frozen Next/replay
+retains source, sampled statistics and raw custody while advancing exact task IDs.
+Local edit export/reopen uses the existing linked archive format.
+
+Response controls explicitly select zero innovations or fixed innovations from
+the selected original row. `network_innovation_row` reconstructs every configured
+noise channel (including channels beyond 32-column trace previews) from the
+original keyed streams, after admission. Query geometry, finite scans, decode,
+row reconstruction and evaluation run inside the guarded curve worker. Exported
+JSON identifies the reference and original task/row. These raw latent responses
+never claim conditional means or classification probabilities.
+
+Compiled state/noise/activation nodes are available in the existing guarded
+intervention controls and original-row before/after traces. Task-only noise and
+separation pairs preserve equations and statistics, updating the source task
+binding consistently. Width and importance changes remain explicit mechanism
+edits; no implicit architecture rewrite is introduced.
+
+The same HTML and `ExplorerSession` callback support local notebook delivery.
+Actual Chromium local workflows are author-tested; independent UI review remains
+separate. Hosted Colab execution is NOT_RUN. This implementation does not claim
+complete source SCM topology/root laws, learned neural training, or integrating
+nonlinear stochastic networks to obtain conditional expectations.

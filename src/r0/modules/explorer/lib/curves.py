@@ -157,9 +157,15 @@ def inspect_network_curve_guarded(
         data.get("bounds"),
         maximum=512,
     )
+    record = json.loads(task.recipe_json)
+    noisy = record["recipe"].get("version") == "standalone-network-innovations-v1"
     result = run_guarded_document(
         {
             "validation": "network-curve",
+            "reference": data.get("reference", "zero"),
+            "seed": record["seed"],
+            "task_id": record["task_id"],
+            "anchor_row": metadata["anchor_row"],
             "recipe": json.loads(task.recipe_json)["recipe"],
             "anchor": metadata["anchor_inputs"],
             "feature": metadata["feature"],
@@ -180,8 +186,13 @@ def inspect_network_curve_guarded(
         **metadata,
         **result.summary,
         "version": "response-curve-v1",
-        "kind": "analytic_response",
+        "kind": "network_innovation_reference" if noisy else "analytic_response",
         "score_semantics": (
+            "raw latent zero-innovation or original-row fixed-innovation reference; "
+            "not conditional mean or class probability"
+        )
+        if noisy
+        else (
             "frozen latent network channels, including retained matching; not class probabilities"
         ),
     }

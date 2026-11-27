@@ -16,6 +16,8 @@ from r0.modules.priors.lib.network_innovation_plan import (
 from r0.modules.priors.lib.network_innovation_recipe import NetworkInnovationRecipe
 from r0.modules.priors.lib.network_recipe import NetworkRecipe, network_recipe_from_dict
 
+_DEFAULT_LIMITS = CausalLimits()
+
 
 def decode_innovation_plan(data: Any) -> NetworkInnovationPlan:
     fields = record(data, NetworkInnovationPlan)
@@ -91,3 +93,26 @@ def decode_sampled_innovations(data: Any, source: NetworkRecipe):
     if not construction_matches(result, data):
         raise ValueError("network noise statistics archive differs from full construction replay")
     return result
+
+
+def network_innovation_plan_from_dict(
+    data: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
+) -> NetworkInnovationPlan:
+    admit_function_metadata(data, limits)
+    return decode_innovation_plan(data)
+
+
+def network_innovation_request_from_dict(data: Any, *, limits: CausalLimits = _DEFAULT_LIMITS):
+    from r0.modules.priors.lib.network_innovation_sampling_records import NetworkInnovationRequest
+    from r0.modules.priors.lib.network_scalar_priors import NetworkScalarPrior
+    from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
+
+    admit_function_metadata(data, limits)
+    fields = record(data, NetworkInnovationRequest)
+    for name in ("scale", "mean", "importance"):
+        if fields[name] is not None:
+            prior = record(fields[name], NetworkScalarPrior)
+            prior["choices"] = array(prior["choices"])
+            fields[name] = NetworkScalarPrior(**prior)
+    fields["raw_limits"] = RawDrawLimits(**record(fields["raw_limits"], RawDrawLimits))
+    return NetworkInnovationRequest(**fields)

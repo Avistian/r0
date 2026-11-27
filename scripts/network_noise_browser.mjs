@@ -1,0 +1,56 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import assert from "node:assert/strict";
+import {openBrowser} from "./explorer_browser.mjs";
+
+const [port,url,out]=process.argv.slice(2),b=await openBrowser(Number(port),url,out);
+try {
+  await b.evaluate("$('construction-panel').open=true;$('construction-family').value='Noisy network: gated';$('construction-family').onchange();$('construction-seed').value='7';$('seed').value='11';$('task-id').value='18014398509481987';{const c=JSON.parse($('construction-controls').value);c.source.task.rows=16;c.source.task.context_rows=8;$('construction-controls').value=JSON.stringify(c);}");
+  assert.equal(await b.evaluate("$('network-noise-controls-note').hidden"),false);
+  await b.click("construct");
+  const original=await b.evaluate("current.recipe_json");
+  assert.equal(JSON.parse(original).recipe.version,"standalone-network-innovations-v1");
+  await b.click("mechanism-load");
+  assert.equal(await b.evaluate("$('network-noise-edit').hidden"),false);
+  assert.ok((await b.evaluate("$('network-noise-compiled').textContent")).includes("block_nodes"));
+  const plan=await b.evaluate("$('network-noise-plan').value");
+  await b.evaluate("$('network-noise-plan').value='{}'");
+  let rejected=false;try{await b.click("network-apply");}catch{rejected=true;}assert.ok(rejected);
+  assert.equal(await b.evaluate("$('network-noise-plan').value"),"{}");
+  assert.equal(await b.evaluate("current.recipe_json"),original);
+  await b.evaluate(`$('network-noise-plan').value=${JSON.stringify(plan)};document.querySelector('[aria-label="Select network block 2"]').dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));`);
+  await b.waitFor("!busy");
+  assert.equal(await b.evaluate("$('network-block').value"),"1");
+  await b.evaluate("{const block=JSON.parse($('network-block-json').value);block.experts[0].bias[0]+=.25;$('network-block-json').value=JSON.stringify(block);const p=JSON.parse($('network-noise-plan').value);p.importance=[1,2];$('network-noise-plan').value=JSON.stringify(p);}");
+  await b.click("network-apply");await b.click("network-save");
+  assert.equal(await b.evaluate("current.edit.after.recipe.recipe.sampling"),null);
+  assert.deepEqual(await b.evaluate("current.edit.after.recipe.recipe.plan.importance"),[1,2]);
+  assert.equal(await b.evaluate("current.recipe_json"),original);
+  await b.click("edit-open");await b.click("edit-export");await b.downloaded("mechanism-edit.zip");
+  await b.click("intervention-load");
+  await b.evaluate("$('intervention-node').value=String(JSON.parse(current.recipe_json).recipe.target[0][0]);$('intervention-node').onchange();$('intervention-values').value='[0.7]';$('intervention-channels').value='[0]';$('intervention-location').value='state_and_readout';");
+  await b.click("intervention-add");await b.click("intervention-create");await b.click("intervention-inspect");
+  assert.equal(await b.evaluate("current.recipe_json"),original);
+  assert.ok(await b.evaluate("interventionTrace.after.nodes.some(n=>n.id==='targets' && n.values.every(row=>row[0]===0.7))"));
+
+  await b.evaluate("$('curve-row').value='15';$('curve-points').value='17';$('network-reference').value='zero';");
+  await b.click("curve");const zero=await b.evaluate("curve");
+  await b.evaluate("$('network-reference').value='original-row';$('network-reference').onchange();");
+  await b.click("curve");const fixed=await b.evaluate("curve");
+  assert.equal(fixed.reference,"original-row");assert.equal(fixed.original_task_id,"18014398509481987");
+  assert.notDeepEqual(zero.scores,fixed.scores);
+  assert.ok(fixed.score_semantics.includes("not conditional mean"));
+  await b.click("curve-json");await b.downloaded("response-curve.json");
+  await b.screenshot("noise-fixed-reference.png");
+  const before=await b.evaluate("current.recipe_json");
+  await b.evaluate("$('seconds').value='0.001'");
+  rejected=false;try{await b.click("curve");}catch{rejected=true;}assert.ok(rejected);
+  assert.equal(await b.evaluate("current.recipe_json"),before);
+  await b.evaluate("$('seconds').value='60'");await b.click("next");
+  assert.equal(await b.evaluate("$('task-id').value"),"18014398509481988");
+  assert.deepEqual(JSON.parse(await b.evaluate("current.recipe_json")).recipe,JSON.parse(original).recipe);
+  await b.evaluate(`$('replay-record').value=${JSON.stringify(original)}`);await b.click("replay");
+  await b.screenshot("noise-replayed.png");
+  assert.equal(b.exceptions.length,0);
+  await fs.writeFile(path.join(out,"receipt.json"),JSON.stringify({status:"PASS",cases:["guarded_construct","source_compiled_inspection","invalid_plan_preservation","keyboard_block_selection","authored_noise_importance_edit","reopen_export","compiled_intervention_and_trace","zero_reference","original_row_reference","curve_timeout_preservation","exact_id_next","frozen_replay"],zero,fixed,exceptions:b.exceptions,downloads:b.downloads},null,2));
+} finally {b.close();}

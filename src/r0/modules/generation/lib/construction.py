@@ -29,6 +29,12 @@ def construct_graph(
         raise ValueError("construction seed must be an integer in [0, 2**63)")
     fields = _tuples(controls)
     topology = fields.pop("topology")
+    if topology == "network-innovations":
+        from r0.modules.generation.lib.network_innovation_construction import (
+            construct_network_innovations,
+        )
+
+        return construct_network_innovations(fields, seed=seed, limits=limits)
     if topology == "network-hyperprior":
         from r0.modules.generation.lib.network_hyperprior_construction import (
             construct_hyperprior_network,
@@ -162,6 +168,8 @@ class GraphConstruction:
     def task_record(self) -> dict[str, Any]:
         """Return preconstruction row geometry; sampled native target type is not yet known."""
         controls = json.loads(self.controls_json)
+        if controls.get("topology") == "network-innovations":
+            return controls["source"]["task"]
         if controls.get("topology") == "sampled-converted":
             request = priors.converted_request_from_dict(
                 controls["request"],

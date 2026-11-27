@@ -73,3 +73,42 @@ def evaluate_network_innovation_reference(
             raise ValueError("nonfinite stochastic network reference; not retried")
         values.append(output)
     return torch.stack([values[i][:, j] for i, j in recipe.target], dim=1)
+
+
+def network_innovation_row(
+    recipe: NetworkInnovationRecipe, *, seed: int, task_id: int, row: int
+) -> dict[int, torch.Tensor]:
+    """Regenerate every configured noise node's original standardized row draw.
+
+    Returned tensors have shape (1, channels), including channels beyond trace
+    previews. No statistics or architecture resampling occurs. The observed root
+    is not redrawn; existing keyed innovation streams define these values.
+    """
+    from r0.modules.priors.lib.exogenous import sample_exogenous
+    from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
+
+    if (
+        type(recipe) is not NetworkInnovationRecipe
+        or any(type(v) is not int or not 0 <= v < 2**63 for v in (seed, task_id))
+        or type(row) is not int
+        or not 0 <= row < recipe.task.rows
+    ):
+        raise ValueError("original innovation row requires exact bounded seed/task/row identities")
+    recipe.admit()
+    assert recipe.plan is not None
+    result: dict[int, torch.Tensor] = {}
+    node = 1
+    for stage in recipe.plan.stages:
+        node += 1
+        if stage is not None:
+            equation = recipe.nodes[node]
+            values = sample_exogenous(
+                equation.exogenous,
+                recipe.task.rows,
+                equation.function.output_width,
+                lambda *keys: functional_rng(seed, task_id, *keys),
+                node,
+            )
+            result[node] = torch.tensor(values[row : row + 1], dtype=torch.float64)
+            node += 1 + int(stage.placement == "pre-activation")
+    return result

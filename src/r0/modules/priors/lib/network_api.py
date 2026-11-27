@@ -31,6 +31,10 @@ from r0.modules.priors.lib.network_hyperprior_records import (
 from r0.modules.priors.lib.network_hyperprior_sampling import (
     sample_hyperprior_network as sample_hyperprior_network,
 )
+from r0.modules.priors.lib.network_innovation_decoding import (
+    network_innovation_plan_from_dict,
+    network_innovation_request_from_dict,
+)
 from r0.modules.priors.lib.network_innovation_plan import (
     NetworkInnovationPlan as NetworkInnovationPlan,
 )
@@ -46,6 +50,7 @@ from r0.modules.priors.lib.network_innovation_recipe import (
 from r0.modules.priors.lib.network_innovation_reference import (
     evaluate_network_innovation_reference as evaluate_network_innovation_reference,
 )
+from r0.modules.priors.lib.network_innovation_reference import network_innovation_row
 from r0.modules.priors.lib.network_innovation_sampling import (
     sample_network_innovations as sample_network_innovations,
 )
@@ -71,6 +76,9 @@ from r0.modules.priors.lib.network_variance_match import (
 )
 
 __all__ = [
+    "network_innovation_plan_from_dict",
+    "network_innovation_request_from_dict",
+    "network_innovation_row",
     "FrozenNetworkBlockFunction",
     "NetworkInnovationPlan",
     "NetworkInnovationStage",

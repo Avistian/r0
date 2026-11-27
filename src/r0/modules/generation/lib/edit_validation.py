@@ -33,3 +33,12 @@ def validate_edit_request(request: RunRequest, policy: object) -> None:
         raise ValueError(
             "network edits require an authored frozen function, not sampled construction"
         )
+
+    if isinstance(recipe, priors.NetworkInnovationRecipe) and (
+        recipe.sampling is not None
+        or recipe.source is None
+        or not isinstance(recipe.source.network, priors.FrozenNetworkFunction)
+    ):
+        raise ValueError(
+            "noise edits require authored architecture and statistics; prepare an explicit draft"
+        )

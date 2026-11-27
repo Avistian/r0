@@ -13,6 +13,7 @@ from r0.modules.explorer.lib.native import (
     sampled_native_example,
 )
 from r0.modules.explorer.lib.network_hyperprior_examples import network_hyperprior_examples
+from r0.modules.explorer.lib.network_innovation_examples import network_innovation_examples
 from r0.modules.explorer.lib.networks import network_editor, network_examples
 
 
@@ -78,6 +79,7 @@ def construction_examples() -> dict[str, Any]:
         **fitted_examples(),
         **network_examples(),
         **network_hyperprior_examples(),
+        **network_innovation_examples(),
         **converted_examples(),
         **{
             f"Numerical pipeline: {variant}": {
@@ -192,6 +194,7 @@ def frozen_archive_version(version: object) -> bool:
     return str(version).startswith("sampled-") or version in (
         "fitted-functional-causal-v1",
         "standalone-network-v1",
+        "standalone-network-innovations-v1",
         "population-fitted-functional-causal-v1",
         "network-input-view-v1",
         "network-input-view-v2",

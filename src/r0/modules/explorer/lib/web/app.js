@@ -195,7 +195,7 @@ function charts() {
 function show(result) {
   current = result; const view = result.view;
   $("empty").hidden = true; $("results").hidden = false;
-  $("family-title").textContent = view.family;
+  $("family-title").textContent = view.recipe.recipe.version === "standalone-network-innovations-v1" ? "standalone network · internal innovations" : view.family;
   $("task-title").textContent = view.task_type === "regression" ? "Regression dataset" : `${view.classes.length}-class dataset`;
   $("metrics").replaceChildren();
   for (const [label, value] of [["TOTAL ROWS", view.total_rows], ["FEATURES", view.features.length], ["CONTEXT ROWS", view.split_counts.context], ["QUERY ROWS", view.split_counts.query]]) {

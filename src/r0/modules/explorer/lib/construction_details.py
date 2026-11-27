@@ -4,6 +4,21 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
+    if recipe.get("version") == "standalone-network-innovations-v1":
+        from r0.modules.explorer.lib.networks import network_details
+
+        return {
+            **network_details(recipe["source"]),
+            "kind": "standalone-network-innovations",
+            "innovation_plan": recipe["plan"],
+            "statistics_sampling": recipe["sampling"],
+            "compiled_node_count": len(recipe["nodes"]),
+            "notice": (
+                "Original network plus explicit internal row innovations; "
+                "fixed masks and statistics stay frozen. Source placement/law profiles "
+                "do not claim full prior reproduction."
+            ),
+        }
     if recipe.get("version") in (
         "standalone-network-v1",
         "network-input-view-v1",

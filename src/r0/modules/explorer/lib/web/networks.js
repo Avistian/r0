@@ -1,13 +1,16 @@
 "use strict";
+let networkNoiseMode = false;
 let networkMatchingEdit = false;
 let networkDraft = null, networkBlockDrafts = new Map(), networkSelectedBlock = null;
-function isStandaloneNetwork(recipe) { return ["standalone-network-v1","network-input-view-v1","network-input-view-v2"].includes(recipe?.version); }
+function isStandaloneNetwork(recipe) { return ["standalone-network-innovations-v1","standalone-network-v1","network-input-view-v1","network-input-view-v2"].includes(recipe?.version); }
 function networkArchitecture(recipe) { return recipe?.base?.network || recipe?.network; }
 function networkConstructionNote(example) {
+  $("network-noise-controls-note").hidden = example.topology !== "network-innovations";
   $("network-hyperprior-controls-note").hidden = example.topology !== "network-hyperprior";
   $("network-controls-note").hidden = !["network", "network-authored"].includes(example.topology);
 }
 function resetNetworkWorkbench() {
+  networkNoiseMode=false; $("network-noise-edit").hidden=true;
   networkDraft = null; networkMatchingEdit = false;
   networkBlockDrafts.clear(); networkSelectedBlock = null;
   $("network-workbench-content").hidden = true;
@@ -18,6 +21,9 @@ function resetNetworkWorkbench() {
   $("mechanism-load").textContent = network ? "Inspect architecture and prepare edit" : "Inspect graph and prepare edit";
 }
 function showNetworkEditor(info) {
+  networkNoiseMode=!!info.noise;
+  $("network-noise-edit").hidden=!networkNoiseMode;
+  if(networkNoiseMode) {$("network-noise-plan").value=pretty(info.innovation_plan); $("network-noise-compiled").textContent=pretty(info.compiled);}
   networkDraft = info.editable_recipe;
   networkMatchingEdit = !!info.matching_edit;
   $("network-matching-policy-label").hidden = !networkMatchingEdit;
@@ -81,9 +87,12 @@ $("network-apply").onclick=()=>act("Validating network architecture draft…",as
   if ($("network-recipe").value!==pretty(networkDraft)) throw new Error("Complete recipe has unapplied edits. Save that recipe or restore it before applying a block; both drafts are retained.");
   const candidate=JSON.parse(JSON.stringify(networkDraft));
   networkArchitecture(candidate).blocks[index]=JSON.parse(text);
-  const validated=await request("network_draft",networkEditRequest(candidate));
+  const planText=$("network-noise-plan").value;
+  const validated=await request(networkNoiseMode ? "network_noise_draft" : "network_draft",networkNoiseMode ? {recipe:candidate,innovation_plan:JSON.parse(planText),...limits()} : networkEditRequest(candidate));
+  if(networkNoiseMode && $("network-noise-plan").value!==planText) throw new Error("Noise plan changed during validation; all draft text retained. Apply again.");
   if ($("network-block-json").value!==text || Number($("network-block").value)!==index || $("network-recipe").value!==pretty(networkDraft)) throw new Error("Draft changed during validation; edits retained. Apply again.");
   networkDraft=validated.recipe;
+  if(networkNoiseMode) {$("network-noise-plan").value=pretty(validated.innovation_plan); $("network-noise-compiled").textContent=pretty(validated.compiled);}
   networkBlockDrafts.delete(index); networkSelectedBlock=null;
   $("network-recipe").value=pretty(networkDraft);
   $("network-block").replaceChildren(...networkArchitecture(networkDraft).blocks.map((block,i)=>new Option(`Block ${i+1} · ${block.experts[0].bias.length} units · ${block.experts.length} expert(s)`,i)));
@@ -92,9 +101,17 @@ $("network-apply").onclick=()=>act("Validating network architecture draft…",as
   $("workbench-note").textContent="Validated architecture draft applied. Generate the linked edit to save it. Unapplied block text is retained while selecting other blocks.";
 });
 $("network-save").onclick=()=>act("Validating, generating and saving standalone network edit…",async()=>{
-  let recipe=JSON.parse($("network-recipe").value);
+  const sourceText=$("network-recipe").value, planText=$("network-noise-plan").value;
+  let recipe=JSON.parse(sourceText);
+  if(networkNoiseMode) {
+    const validated=await request("network_noise_draft",{recipe,innovation_plan:JSON.parse(planText),...limits()});
+    if($("network-recipe").value!==sourceText || $("network-noise-plan").value!==planText) throw new Error("Draft changed during validation; text retained. Save again.");
+    recipe=validated.compiled_recipe;
+  }
   if (networkMatchingEdit) recipe=(await request("network_draft",networkEditRequest(recipe))).recipe;
-  show(await request("edit",{recipe,...limits()}));
+  const result=await request("edit",{recipe,...limits()});
+  if(networkNoiseMode && ($("network-recipe").value!==sourceText || $("network-noise-plan").value!==planText)) throw new Error("Draft changed during generation; your text is retained. A linked edit was saved locally; use saved records to reopen it.");
+  show(result);
 });
 
 

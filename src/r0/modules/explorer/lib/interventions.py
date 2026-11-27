@@ -28,6 +28,7 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
         runtime = original["recipe"]
     if runtime.get("version") not in (
         "functional-causal-v1",
+        "standalone-network-innovations-v1",
         "functional-causal-v2",
         "fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
