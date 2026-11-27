@@ -16,6 +16,13 @@ from r0.modules.priors.lib.calibrated_activations import (
 from r0.modules.priors.lib.calibrated_activations import (
     calibrate_source_activation as calibrate_source_activation,
 )
+from r0.modules.priors.lib.calibrated_transforms import CalibratedTransform as CalibratedTransform
+from r0.modules.priors.lib.calibrated_transforms import (
+    calibrate_kumaraswamy as calibrate_kumaraswamy,
+)
+from r0.modules.priors.lib.calibrated_transforms import (
+    calibrate_l2_normalization as calibrate_l2_normalization,
+)
 from r0.modules.priors.lib.categorical_preferences import CategoricalDraw as CategoricalDraw
 from r0.modules.priors.lib.categorical_preferences import (
     CategoricalParameter as CategoricalParameter,

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from r0.modules.priors.lib.calibrated_activations import CalibratedActivation, activation_from_dict
+from r0.modules.priors.lib.calibrated_transforms import CalibratedTransform
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
 from r0.modules.priors.lib.inputs import InputDistribution
@@ -75,18 +76,14 @@ class ActivatedCausalNode(CausalNode):
     @property
     def working_extra_channels(self) -> int:
         return max(
-            (
-                10 * len(a.input_mean)
-                for a in (self.input_activation, self.output_activation)
-                if isinstance(a, CalibratedActivation)
-            ),
+            (a.working_extra_channels for a in (self.input_activation, self.output_activation)),
             default=0,
         )
 
     def __post_init__(self) -> None:
         CausalNode.__post_init__(self)
         if any(
-            type(a) not in (CausalActivation, CalibratedActivation)
+            type(a) not in (CausalActivation, CalibratedActivation, CalibratedTransform)
             for a in (
                 self.input_activation,
                 self.output_activation,

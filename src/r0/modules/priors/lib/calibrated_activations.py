@@ -10,6 +10,7 @@ import torch
 from numpy.typing import NDArray
 
 from r0.modules.priors.lib.activation_sampling import finite_number
+from r0.modules.priors.lib.calibrated_transforms import CalibratedTransform
 from r0.modules.priors.lib.causal_activations import CausalActivation, primitive_activation
 from r0.modules.priors.lib.causal_limits import CausalLimits
 
@@ -102,6 +103,10 @@ class CalibratedActivation(CausalActivation):
     def parameter_count(self) -> int:
         # Five channel vectors, sampled row indices, scalar scale and row count.
         return len(self.parameters) + 6 * len(self.input_mean) + 2
+
+    @property
+    def working_extra_channels(self) -> int:
+        return 10 * len(self.input_mean)
 
     def validate_width(self, width: int) -> None:
         if width != len(self.input_mean):
@@ -211,6 +216,10 @@ def calibrate_source_activation(
 def activation_from_dict(data: dict[str, Any]) -> CausalActivation:
     fields = dict(data)
     fields["parameters"] = tuple(tuple(p) for p in fields.get("parameters", ()))
+    if fields.get("calibration_version") == "independent-transform-v1":
+        for key in ("minimum", "maximum"):
+            fields[key] = tuple(fields.get(key, ()))
+        return CalibratedTransform(**fields)
     if "calibration_version" not in fields:
         return CausalActivation(**fields)
     for key in (

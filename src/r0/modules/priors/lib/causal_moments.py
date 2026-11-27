@@ -6,6 +6,7 @@ from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode, CausalNode, StochasticCausalNode
 
 _BOUNDED = {
+    "kumaraswamy",
     "tanh",
     "sigmoid",
     "relu6",

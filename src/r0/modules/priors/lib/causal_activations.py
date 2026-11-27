@@ -80,8 +80,15 @@ class CausalActivation:
     def parameter_count(self) -> int:
         return len(self.parameters)
 
+    @property
+    def working_extra_channels(self) -> int:
+        return 0
+
     def validate_width(self, width: int) -> None:
         """Primitive activations accept every channel width."""
+
+    def boundary_diagnostic(self, value: torch.Tensor) -> dict[str, object] | None:
+        return None
 
     def diagnostic_input(self, value: torch.Tensor) -> torch.Tensor:
         return value
@@ -198,6 +205,9 @@ def activation_diagnostic(
     value: torch.Tensor, activation: CausalActivation
 ) -> dict[str, object] | None:
     """Describe base-activation boundaries, never filter a draw or fit a parameter."""
+    custom = activation.boundary_diagnostic(value)
+    if custom is not None:
+        return custom
     value = activation.diagnostic_input(value)
     parameters = dict(activation.parameters)
     argument = parameters.get("input_scale", 1.0) * value + parameters.get("input_shift", 0.0)
