@@ -8,6 +8,8 @@ from typing import Any
 import torch
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.feature_conv_inspection import feature_conv_steps
+from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.kumo_product_inspection import kumo_product_steps
@@ -48,7 +50,10 @@ def native_steps(
                 f"{node.equation.function.aggregation}(ordered encoded parent members)"
                 " + structural noise"
             )
-        if isinstance(node.equation.function, (FrozenKumoProductFunction, FrozenNetworkFunction)):
+        if isinstance(
+            node.equation.function,
+            (FrozenKumoProductFunction, FrozenNetworkFunction, FrozenFeatureConv1D),
+        ):
             if node.equation.parents:
                 inputs = torch.cat([result.states[p] for p in node.equation.parents], dim=1)
             else:
@@ -81,6 +86,16 @@ def native_steps(
                     input_parents=parents,
                 )
                 equation = "frozen network(encoded parents) + structural noise"
+            elif isinstance(node.equation.function, FrozenFeatureConv1D):
+                parents = feature_conv_steps(
+                    node.equation.function,
+                    inputs,
+                    prefix=f"convolution-{i}",
+                    parents=parents,
+                    indices=indices,
+                    add=add,
+                )
+                equation = "shared feature convolution(encoded parents) + structural noise"
             else:
                 parents = kumo_product_steps(
                     node.equation.function,
