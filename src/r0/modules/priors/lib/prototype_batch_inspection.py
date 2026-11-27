@@ -8,6 +8,7 @@ from typing import Any
 import torch
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.exact_frozen_record import exact_frozen_equal
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
 from r0.modules.priors.lib.network_inspection import network_steps
 from r0.modules.priors.lib.prototype_batch_decoding import prototype_batch_network_from_dict
@@ -30,8 +31,38 @@ def prototype_batch_steps(
     replay = generate_prototype_batch_network(
         recipe, seed=record["seed"], task_id=record["task_id"]
     )
+    for field in (
+        "source_task_id",
+        "episode_id",
+        "task_type",
+        "classes",
+        "feature_schema",
+        "target_origin",
+    ):
+        if not exact_frozen_equal(getattr(task, field), getattr(replay, field)):
+            raise ValueError("saved prototype semantic metadata differs from original-row replay")
+    expected_record = json.loads(replay.recipe_json)
+    # Historical execution environment is retained, not re-proven by CPU inspection.
+    # Recipe, identities, outer schema and mechanism semantics must still replay.
+    if (
+        set(record) != set(expected_record)
+        or any(
+            json.dumps(record[key], sort_keys=True, allow_nan=False)
+            != json.dumps(expected_record[key], sort_keys=True, allow_nan=False)
+            for key in expected_record
+            if key != "execution"
+        )
+        or json.dumps(json.loads(task.mechanism_json), sort_keys=True, allow_nan=False)
+        != json.dumps(json.loads(replay.mechanism_json), sort_keys=True, allow_nan=False)
+    ):
+        raise ValueError("saved prototype provenance differs from original-row replay")
     for field in ("inputs", "targets", "scores", "context_indices", "query_indices"):
-        if not torch.equal(getattr(replay, field), getattr(task, field).cpu()):
+        actual, expected = getattr(task, field), getattr(replay, field)
+        if (
+            actual.dtype != expected.dtype
+            or actual.layout != expected.layout
+            or not torch.equal(expected, actual.cpu())
+        ):
             raise ValueError("saved prototype population differs from original-row replay")
     if task.classes != replay.classes or (task.probabilities is None) != (
         replay.probabilities is None
@@ -40,7 +71,11 @@ def prototype_batch_steps(
     if (
         task.probabilities is not None
         and replay.probabilities is not None
-        and not torch.equal(task.probabilities.cpu(), replay.probabilities)
+        and (
+            task.probabilities.dtype != replay.probabilities.dtype
+            or task.probabilities.layout != replay.probabilities.layout
+            or not torch.equal(task.probabilities.cpu(), replay.probabilities)
+        )
     ):
         raise ValueError("saved prototype probabilities differ from original-row replay")
     batch = recipe.population
