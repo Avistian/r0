@@ -8,6 +8,9 @@ from typing import Any
 import torch
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.feature_conv_inspection import feature_conv_steps
+from r0.modules.priors.lib.feature_conv_records import FrozenFeatureConv1D
+from r0.modules.priors.lib.feature_conv_sampling_records import SampledFeatureConv1D
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.native_vector_decoding import (
     native_vector_graph_from_dict,
@@ -19,6 +22,8 @@ from r0.modules.priors.lib.native_vector_evaluation import (
 )
 from r0.modules.priors.lib.network_inspection import network_steps
 from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
+from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
+from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_steps
 from r0.modules.priors.lib.source_root_base import functional_root_values
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -59,7 +64,15 @@ def native_vector_steps(
                 indices=indices,
                 add=add,
             )
-        if isinstance(node.equation.function, FrozenNetworkFunction):
+        if isinstance(
+            node.equation.function,
+            (
+                FrozenNetworkFunction,
+                FrozenFeatureConv1D,
+                SampledFeatureConv1D,
+                FrozenRecursiveForestFunction,
+            ),
+        ):
             if node.equation.root is not None:
                 network_inputs = torch.tensor(
                     functional_root_values(
@@ -81,14 +94,33 @@ def native_vector_steps(
                 )
             else:
                 network_inputs = torch.cat([values.states[p] for p in node.equation.parents], dim=1)
-            parents = network_steps(
-                node.equation.function,
-                network_inputs,
-                prefix=f"network-{index}",
-                indices=indices,
-                add=add,
-                input_parents=parents,
-            )
+            if isinstance(node.equation.function, (FrozenFeatureConv1D, SampledFeatureConv1D)):
+                parents = feature_conv_steps(
+                    node.equation.function,
+                    network_inputs,
+                    prefix=f"convolution-{index}",
+                    parents=parents,
+                    indices=indices,
+                    add=add,
+                )
+            elif isinstance(node.equation.function, FrozenRecursiveForestFunction):
+                parents = recursive_function_steps(
+                    node.equation.function,
+                    network_inputs,
+                    prefix=f"recursive-{index}",
+                    parents=parents,
+                    indices=indices,
+                    add=add,
+                )
+            else:
+                parents = network_steps(
+                    node.equation.function,
+                    network_inputs,
+                    prefix=f"network-{index}",
+                    indices=indices,
+                    add=add,
+                    input_parents=parents,
+                )
         add(
             f"function-{index}",
             f"Joint vector score equation {index}",

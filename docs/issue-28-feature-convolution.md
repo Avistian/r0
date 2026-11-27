@@ -1,4 +1,4 @@
-# Feature-axis convolution mechanism core
+# Feature-axis convolution mechanisms
 
 O’Prior v1 §2.1 describes replacing fully connected layers with one-dimensional kernels along feature indices ([primary source](https://arxiv.org/html/2605.18971v1#S2.SS1), inventory `OP.function.07`). It does not supply complete channel-layout, padding, initializer or mixture laws. This core implements that operation with explicitly named r0 controls. It does not assert source-equivalent numeric settings or a full prior reproduction. Rows never enter the convolution axis; LimiX sample-axis convolution is a different scope.
 
@@ -14,4 +14,33 @@ Activation placement is either before convolution (on original inputs, then zero
 
 `admit_feature_conv1d` and sampling preflight bound metadata, kernels, flattened widths, padded inputs, conservative im2col-sized backend workspace and raw/snapshot custody before allocations or RNG cloning. Caller limits remain authoritative on decode/evaluation. These are conservative estimated working bounds, not measured process RSS or an OS memory guarantee. No dense Toeplitz expansion is used.
 
-This is a core-first delivery. Frozen-function registry and certificates, causal/native/converted/parent integration, sampled graph catalogs, stage/row traces, internal innovations/importance composition and the local/shared-notebook workbench remain required follow-ons. Existing network/graph archives and sampler laws are unchanged. Hosted/GPU/scientific reproduction, performance measurements and a full suite are not claimed by this slice. Author evidence is ignored under `docs/evidence/issue-28-feature-convolution/`.
+The core and graph seams below implement shared functions, channel certificates, sampled custody and original-row traces. Sampled graph catalogs, complete internal innovation/importance combinations and the local/shared-notebook workbench remain required follow-ons. Existing network/graph archives and sampler laws are unchanged. Hosted/GPU/scientific reproduction, performance measurements and a full suite are not claimed by this slice. Author evidence is ignored under `docs/evidence/issue-28-feature-convolution/`.
+
+## Shared authored graph seam
+
+Authored `FrozenFeatureConv1D` records now participate in the shared frozen-function registry and parent composition, with strict full-field decoding and the same float64 arithmetic as direct core evaluation. Graph admission accounts for padded tensors and a conservative kernel workspace before tensor operations. Enclosing graph limits govern admitted evaluation; it does not reapply unrelated default limits inside a node.
+
+Channel certificates follow only nonzero in-bounds kernel taps in the archived layout, include grouped-channel restrictions, coupled activation scopes and residual paths, and propagate moment bounds through each activation. This permits bounded activations to certify moments while rejecting normalization of unbounded heavy-tail output. Padding contributes constants, not fabricated input dependencies.
+
+Functional tasks retain authored kernels in their archives, original-row equation traces and intervention bases. The sampled seam below retains complete construction custody without discarding the receipt. Graph sampler catalogs, complete innovation/pipeline combinations and the guarded shared workbench remain required. The authored metadata repair passed bounded independent review; combined integration checks and review of later extensions remain separate.
+
+Shared evaluation also charges the full retained convolution record, including geometry, activation controls and container/text storage. The same applies to complete parent-composition records containing convolution members. Counting only learned coefficients is insufficient for this family; metadata rejection must precede convolution backend allocation. Functional graph admission already counts its full retained node records.
+
+## Authored layer traces
+
+Functional equation and parent-member inspection now emits each convolution's affine, before/after activation and residual stages using the same evaluator as generation. Values retain the archived flattened layout and requested original row order, including repeated rows. Each residual explicitly depends on both the activated output and the unchanged layer input. Joint members and separate parent slices retain distinct trace namespaces. Soft equation interventions trace the effective replacement convolution and link its stages to already emitted inputs.
+
+Trace values are selected as each stage is emitted; ordinary generation does not retain stage tensors. Sampled initializer raw draws are linked separately as described below; a complete native/vector/converter/workbench combination matrix remains required.
+
+Native scalar/vector graph inspection now retains convolution root inputs and layer stages, with the final layer linked to the score equation. Continuous native targets, captured converter readouts, deterministic categorical logits/labels and one-hot categorical descendants are exercised separately. Converted graphs use the shared functional evaluator's stage observer. These checks cover explicit authored paths; the full pipeline/workbench combination matrix remains required.
+
+
+## Sampled shared functions and construction traces
+
+The existing `SampledFeatureConv1D` record also serves as a shared function and parent member. Its serialized schema is unchanged: graph archives retain the entire original request, choice indices, frozen kernel geometry, raw values and initial/final streams. `frozen_function_from_dict` and graph decoding verify exact replay; runtime evaluation rejects forged construction custody. Reopening never substitutes an authored kernel and then claims sampled provenance.
+
+Raw metadata admission reserves every sampled convolution and forest construction together. Whole-task preflight uses only the retained authored geometry for its preview, separately charges full replay costs and actual task/root/encoded-state/emission storage, and rejects over-budget functional/native/vector/converted archives before restoring any construction stream. The original receipt is unchanged and undergoes strict decoding afterward. These remain conservative estimates rather than measured RSS.
+
+Sampled traces expose each named/raw construction draw and a realized kernel-plus-bias node. Affine and activation stages depend on those realized parameters. Construction draws are explicitly global frozen-function provenance, not emitted dataset rows. Layer execution still displays the requested original rows. Normal/uniform/Student-t/Cauchy/Rademacher laws keep their declared raw transform and fan-in settings; no variance equivalence is inferred.
+
+This sampled integration needs independent review and a complete integration check. Workbench controls, broader sampled graph family catalogs and complete combinations remain required. Hosted/GPU/scientific reproduction remain unrun.
