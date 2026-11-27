@@ -3,9 +3,11 @@
 from typing import Any, cast
 
 from r0.modules.priors.lib.activation_sampling import activation_prior_from_dict
+from r0.modules.priors.lib.categorical_preferences import categorical_preferences_from_dict
 from r0.modules.priors.lib.causal import CausalRecipe, causal_node_from_dict, generate_causal
 from r0.modules.priors.lib.causal_graph import CausalGraph, CausalGraphPrior
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.causal_preferred import PreferredCausalRecipe
 from r0.modules.priors.lib.causal_sampled import SampledCausalRecipe
 from r0.modules.priors.lib.compositions import (
     Combination,
@@ -25,7 +27,10 @@ from r0.modules.priors.lib.kernels import (
     StationaryKernel,
 )
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.matrix_preference_prior import CausalMatrixPrior
+from r0.modules.priors.lib.parameter_preferences import parameter_preferences_from_dict
 from r0.modules.priors.lib.polynomial import PolynomialRecipe
+from r0.modules.priors.lib.preference_binding import PreferenceBinding
 from r0.modules.priors.lib.quadratic import QuadraticRecipe
 from r0.modules.priors.lib.sampling import BaseRecipe, generate_base_task
 from r0.modules.priors.lib.smooth import SmoothRecipe
@@ -89,6 +94,25 @@ def recipe_from_dict(data: object) -> Recipe:
         if "activation_prior" in fields:
             fields["activation_prior"] = activation_prior_from_dict(fields["activation_prior"])
             fields["activation_probabilities"] = tuple(fields["activation_probabilities"])
+            if "matrix_prior" in fields:
+                matrix_prior = dict(fields["matrix_prior"])
+                for key in ("families", "simple_families", "point_laws", "covariance_bases"):
+                    if key in matrix_prior:
+                        matrix_prior[key] = tuple(matrix_prior[key])
+                fields["matrix_prior"] = CausalMatrixPrior(**matrix_prior)
+                fields["numerical_preferences"] = parameter_preferences_from_dict(
+                    fields["numerical_preferences"]
+                )
+                fields["categorical_preferences"] = categorical_preferences_from_dict(
+                    fields["categorical_preferences"]
+                )
+                bindings: list[PreferenceBinding] = []
+                for raw in fields["preference_bindings"]:
+                    binding = dict(raw)
+                    binding["path"] = tuple(binding["path"])
+                    bindings.append(PreferenceBinding(**binding))
+                fields["preference_bindings"] = tuple(bindings)
+                return PreferredCausalRecipe(**fields)
             return SampledCausalRecipe(**fields)
         return CausalRecipe(**fields)
     if version == "composite-v1":

@@ -34,6 +34,7 @@ from r0.modules.priors.lib.causal_graph import CausalGraph as CausalGraph
 from r0.modules.priors.lib.causal_graph import CausalGraphPrior as CausalGraphPrior
 from r0.modules.priors.lib.causal_graph import sample_causal_graph as sample_causal_graph
 from r0.modules.priors.lib.causal_limits import CausalLimits as CausalLimits
+from r0.modules.priors.lib.causal_preferred import PreferredCausalRecipe as PreferredCausalRecipe
 from r0.modules.priors.lib.causal_sampled import SampledCausalRecipe as SampledCausalRecipe
 from r0.modules.priors.lib.causal_sampling import sample_causal_recipe as sample_causal_recipe
 from r0.modules.priors.lib.compositions import Combination as Combination
@@ -58,6 +59,7 @@ from r0.modules.priors.lib.kernels import SpectralKernel as SpectralKernel
 from r0.modules.priors.lib.kernels import StationaryKernel as StationaryKernel
 from r0.modules.priors.lib.linear import LinearRecipe as LinearRecipe
 from r0.modules.priors.lib.linear import generate_linear as generate_linear
+from r0.modules.priors.lib.matrix_preference_prior import CausalMatrixPrior as CausalMatrixPrior
 from r0.modules.priors.lib.pairs import TaskPair as TaskPair
 from r0.modules.priors.lib.pairs import compare_pair as compare_pair
 from r0.modules.priors.lib.pairs import generate_pair as generate_pair
@@ -71,7 +73,11 @@ from r0.modules.priors.lib.parameter_preferences import (
     parameter_preferences_from_dict as parameter_preferences_from_dict,
 )
 from r0.modules.priors.lib.polynomial import PolynomialRecipe as PolynomialRecipe
+from r0.modules.priors.lib.preference_binding import PreferenceBinding as PreferenceBinding
 from r0.modules.priors.lib.preference_limits import PreferenceLimits as PreferenceLimits
+from r0.modules.priors.lib.preferred_matrix_sampling import (
+    sample_preferred_matrices as sample_preferred_matrices,
+)
 from r0.modules.priors.lib.profile import diagnostic_profile as diagnostic_profile
 from r0.modules.priors.lib.quadratic import QuadraticRecipe as QuadraticRecipe
 from r0.modules.priors.lib.recipe_sampling import sample_recipe as sample_recipe

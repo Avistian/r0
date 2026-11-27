@@ -20,6 +20,11 @@ class SampledCausalRecipe(CausalRecipe):
     activation_probabilities: tuple[float, ...] = (1.0,)
 
     def __post_init__(self) -> None:
+        if (
+            self.construction == "activation-shared-matrices-v1"
+            and type(self) is SampledCausalRecipe
+        ):
+            raise ValueError("shared matrix construction requires its preference bindings")
         CausalRecipe.__post_init__(self)
         if self.version != "causal-v2" or self.construction not in (
             "gaussian-activation-prior-v1",
@@ -28,6 +33,7 @@ class SampledCausalRecipe(CausalRecipe):
             "activation-importance-v1",
             "activation-matrices-v1",
             "activation-gaussian-matrices-v1",
+            "activation-shared-matrices-v1",
         ):
             raise ValueError("sampled activation recipes require their v2 construction")
         if type(self.activation_prior) is not CausalActivationPrior:
@@ -61,6 +67,7 @@ class SampledCausalRecipe(CausalRecipe):
                 "activation-importance-v1": ImportanceWeights,
                 "activation-matrices-v1": NormalizedWeights,
                 "activation-gaussian-matrices-v1": NormalizedWeights,
+                "activation-shared-matrices-v1": NormalizedWeights,
             }.get(self.construction)
             if (
                 expected is not None

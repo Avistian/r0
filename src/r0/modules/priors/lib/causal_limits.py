@@ -34,6 +34,7 @@ class CausalLimits:
         calibration_rows: int,
         features: int,
         outputs: int,
+        extra_parameters: int = 0,
     ) -> dict[str, int]:
         """Bound declared geometry before tensors; this is not measured process RSS."""
         return self.admit_dimensions(
@@ -43,7 +44,8 @@ class CausalLimits:
             calibration_rows=calibration_rows,
             features=features,
             outputs=outputs,
-            extra_parameters=sum(node.structural_parameter_count for node in nodes),
+            extra_parameters=extra_parameters
+            + sum(node.structural_parameter_count for node in nodes),
             extra_working_channels=max(node.working_extra_channels for node in nodes),
             row_floor=max(node.working_row_floor for node in nodes),
         )

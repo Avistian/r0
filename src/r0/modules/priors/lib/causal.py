@@ -50,6 +50,10 @@ class CausalRecipe:
     def sampling_record(self) -> dict[str, Any] | None:
         return None
 
+    @property
+    def sampling_parameter_count(self) -> int:
+        return 0
+
     def __post_init__(self) -> None:
         if self.version not in ("causal-v1", "causal-v2") or type(self.task) is not LinearRecipe:
             raise ValueError("causal recipes require shared linear-v1 task controls")
@@ -83,6 +87,7 @@ class CausalRecipe:
             "activation-importance-v1",
             "activation-matrices-v1",
             "activation-gaussian-matrices-v1",
+            "activation-shared-matrices-v1",
         ) or (self.construction != "authored" and self.topology is None):
             raise ValueError("sampled construction requires its saved topology")
         if (
@@ -94,6 +99,7 @@ class CausalRecipe:
                 "activation-importance-v1",
                 "activation-matrices-v1",
                 "activation-gaussian-matrices-v1",
+                "activation-shared-matrices-v1",
             )
             and type(self) is CausalRecipe
         ):
@@ -125,6 +131,7 @@ class CausalRecipe:
             calibration_rows=self.calibration_rows if self.normalize else 0,
             features=self.task.features,
             outputs=outputs,
+            extra_parameters=self.sampling_parameter_count,
         )
         for node in self.nodes:
             if (
@@ -360,6 +367,7 @@ def generate_causal(
             calibration_rows=recipe.calibration_rows if recipe.normalize else 0,
             features=recipe.task.features,
             outputs=len(recipe.target),
+            extra_parameters=recipe.sampling_parameter_count,
         ),
     }
     if any(isinstance(node, StochasticCausalNode) for node in recipe.nodes):

@@ -29,7 +29,11 @@ from r0.modules.priors.lib.weight_matrices import (
     LaplaceKernelWeights,
 )
 from r0.modules.priors.lib.weight_vector_sampling import sample_polynomial_weights
-from r0.modules.priors.lib.weight_vectors import UniformWeightVector, WeightVector
+from r0.modules.priors.lib.weight_vectors import (
+    PolynomialWeightVector,
+    UniformWeightVector,
+    WeightVector,
+)
 
 _FAMILIES = ("gaussian", "importance", "factorized", "kernel", "transformed")
 _POINT_DIMENSION = 3
@@ -47,6 +51,11 @@ class MatrixPlan:
     base_law: str = "gaussian"
     activation: CausalActivation = CausalActivation()
     child: MatrixPlan | None = None
+    vector_parameters: tuple[tuple[float, float] | None, ...] = ()
+    distance_scale: float | None = None
+
+    def vector_at(self, index: int) -> tuple[float, float] | None:
+        return self.vector_parameters[index] if self.vector_parameters else None
 
     @property
     def parameter_count(self) -> int:
@@ -169,7 +178,7 @@ def sample_matrix_profile(
             nodes.append(node)
             continue
         assert isinstance(node, ActivatedCausalNode)
-        record = _sample(plan, rng)
+        record = sample_matrix_plan(plan, rng)
         nodes.append(
             MatrixCausalNode(
                 parents=node.parents,
@@ -190,7 +199,19 @@ def _gaussian(rows: int, columns: int, rng: np.random.Generator) -> Matrix:
     return tuple(tuple(float(v) for v in row) for row in rng.normal(size=(rows, columns)))
 
 
-def _weight(width: int, polynomial: bool, rng: np.random.Generator) -> WeightVector:
+def _weight(
+    width: int,
+    polynomial: bool,
+    rng: np.random.Generator,
+    parameters: tuple[float, float] | None = None,
+) -> WeightVector:
+    if parameters is not None:
+        return PolynomialWeightVector(
+            tuple(float(v) for v in rng.normal(size=width)),
+            decay=parameters[0],
+            log_noise_scale=parameters[1],
+            permutation=tuple(int(i) for i in rng.permutation(width)),
+        )
     return (
         sample_polynomial_weights(width, rng)
         if polynomial
@@ -198,7 +219,7 @@ def _weight(width: int, polynomial: bool, rng: np.random.Generator) -> WeightVec
     )
 
 
-def _sample(plan: MatrixPlan, rng: np.random.Generator) -> NormalizedWeights:
+def sample_matrix_plan(plan: MatrixPlan, rng: np.random.Generator) -> NormalizedWeights:
     n, m = plan.rows, plan.columns
     raw: SimpleWeights | TransformedWeights
     if plan.family == "gaussian":
@@ -206,14 +227,14 @@ def _sample(plan: MatrixPlan, rng: np.random.Generator) -> NormalizedWeights:
     elif plan.family == "importance":
         raw = ImportanceWeights(
             gaussian=_gaussian(n, m, rng),
-            importance=tuple(_weight(m, plan.polynomial, rng) for _ in range(n)),
+            importance=tuple(_weight(m, plan.polynomial, rng, plan.vector_at(i)) for i in range(n)),
         )
     elif plan.family == "factorized":
         k = min(n, m)
         raw = ImportanceFactorizedWeights(
             left=_gaussian(n, k, rng),
             right=_gaussian(k, m, rng),
-            diagonal=_weight(k, plan.polynomial, rng),
+            diagonal=_weight(k, plan.polynomial, rng, plan.vector_at(0)),
         )
     elif plan.family == "kernel":
         cloud = _point_cloud(plan, rng)
@@ -222,21 +243,25 @@ def _sample(plan: MatrixPlan, rng: np.random.Generator) -> NormalizedWeights:
             left_points=points[:n],
             right_points=points[n:],
             signs=tuple(tuple(float(np.sign(v)) for v in row) for row in _gaussian(n, m, rng)),
-            distance_scale=math.exp(float(rng.uniform(math.log(0.1), math.log(10)))),
+            distance_scale=math.exp(float(rng.uniform(math.log(0.1), math.log(10))))
+            if plan.distance_scale is None
+            else plan.distance_scale,
             point_construction=cloud,
         )
     else:
         assert plan.family == "transformed"
         assert plan.child is not None
         raw = TransformedWeights(
-            child=_sample(plan.child, rng), activation=plan.activation, jitter=_gaussian(n, m, rng)
+            child=sample_matrix_plan(plan.child, rng),
+            activation=plan.activation,
+            jitter=_gaussian(n, m, rng),
         )
     return NormalizedWeights(source=raw, jitter=_gaussian(n, m, rng))
 
 
 def _point_cloud(plan: MatrixPlan, rng: np.random.Generator) -> KernelPointCloud:
     k, d, count = plan.components, _POINT_DIMENSION, plan.rows + plan.columns
-    component_weights = _weight(k, plan.component_polynomial, rng)
+    component_weights = _weight(k, plan.component_polynomial, rng, plan.vector_at(0))
     weights = component_weights.values()
     largest = max(weights)
     if largest == 0:
@@ -246,7 +271,9 @@ def _point_cloud(plan: MatrixPlan, rng: np.random.Generator) -> KernelPointCloud
     assignments = tuple(int(i) for i in rng.choice(k, size=count, p=probabilities))
     centers = _gaussian(k, d, rng) if plan.point_law == "gaussian-mixture" else ((0.0,) * d,)
     factors = tuple(_gaussian(d, d, rng) for _ in range(k))
-    factor_weights = tuple(_weight(d, plan.polynomial, rng) for _ in range(k))
+    factor_weights = tuple(
+        _weight(d, plan.polynomial, rng, plan.vector_at(i + 1)) for i in range(k)
+    )
     if plan.point_law == "gaussian-mixture":
         mean, coefficient = float(rng.normal()), float(rng.normal())
         scale_draws = tuple(float(z) for z in rng.normal(size=k))
