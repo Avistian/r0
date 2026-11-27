@@ -34,7 +34,9 @@ input routing is rejected. Replay uses PyTorch split traversal and never fits,
 unpickles, or imports sklearn through the fitting backend.
 
 Regression forests average predictions. Classifier forests average leaf class
-probabilities, then argmax in retained class order. `classification_rule="majority"`
+probabilities, then argmax in retained class order. Nonfinite ensemble scores reject before
+class selection or link conversion, and linked probabilities are checked before
+returning; a finite class code cannot hide invalid score arithmetic. `classification_rule="majority"`
 is a separately named extension counting per-tree argmax votes; it is not
 sklearn's classifier rule. Ties choose the first retained class. Absent target
 classes stay absent in the class map; single observed classes are valid for

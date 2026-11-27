@@ -25,6 +25,12 @@ def _tree(table: FittedSplitTable, inputs: torch.Tensor) -> torch.Tensor:
     return torch.tensor(table.values, dtype=torch.float64, device=device)[indices]
 
 
+def _finite_scores(scores: torch.Tensor) -> torch.Tensor:
+    if not torch.isfinite(scores).all():
+        raise ValueError("nonfinite fitted tree scores; no retry")
+    return scores
+
+
 def fitted_output_scores(output: FittedTreeOutput, inputs: torch.Tensor) -> torch.Tensor:
     if output.combiner in ("mean", "probability_mean", "majority"):
         total = torch.zeros(
@@ -37,7 +43,7 @@ def fitted_output_scores(output: FittedTreeOutput, inputs: torch.Tensor) -> torc
                     torch.float64
                 )
             total += value / len(output.trees)
-        return total
+        return _finite_scores(total)
     scores = (
         torch.tensor(output.initial, dtype=torch.float64, device=inputs.device)
         .expand(len(inputs), -1)
@@ -45,11 +51,12 @@ def fitted_output_scores(output: FittedTreeOutput, inputs: torch.Tensor) -> torc
     )
     for index, tree in enumerate(output.trees):
         scores[:, index % len(output.initial)] += output.learning_rate * _tree(tree, inputs)[:, 0]
+    _finite_scores(scores)
     if output.combiner == "boost_sigmoid":
         probability = scores.sigmoid()
-        return torch.cat((1 - probability, probability), dim=1)
+        return _finite_scores(torch.cat((1 - probability, probability), dim=1))
     if output.combiner == "boost_softmax":
-        return scores.softmax(dim=1)
+        return _finite_scores(scores.softmax(dim=1))
     return scores
 
 
