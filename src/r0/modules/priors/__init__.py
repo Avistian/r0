@@ -396,6 +396,7 @@ from .lib.prototype_root_api import *  # noqa: F403
 from .lib.quadratic import QuadraticRecipe as QuadraticRecipe
 from .lib.raw_draw_api import *  # noqa: F403
 from .lib.recipe_sampling import sample_recipe as sample_recipe
+from .lib.recursive_forest_api import *  # noqa: F403
 from .lib.representatives import FAMILIES as FAMILIES
 from .lib.representatives import GeneratedTask as GeneratedTask
 from .lib.representatives import Proposal as Proposal
