@@ -233,8 +233,6 @@ def generate_population_graph_pair(
     base: RecursivePopulationGraph, change: CausalInterventionRecipe
 ):
     """Compare explicit causal changes without refitting or rewriting the baseline archive."""
-    import torch
-
     from r0.modules.priors.lib.pairs import TaskPair
     from r0.modules.priors.lib.recursive_population_graph_output import (
         generate_recursive_population_graph,
@@ -244,33 +242,6 @@ def generate_population_graph_pair(
     changed = intervene_recursive_population_graph(base, change)
     before = generate_recursive_population_graph(base, seed=base.seed, task_id=base.task_id)
     after = generate_population_graph_intervention(changed, seed=base.seed, task_id=base.task_id)
-    return TaskPair(
-        before,
-        after,
-        encode(
-            {
-                "version": "recursive-population-graph-pair-v1",
-                "mode": change.mode,
-                "population": change.population,
-                "before_episode": before.episode_id,
-                "after_episode": after.episode_id,
-                "base_archive_unchanged": exact_frozen_equal(base, changed.base),
-                "forests_equal": exact_frozen_equal(
-                    tuple(b.sample for b in base.bindings), changed.samples
-                ),
-                "node_inputs_equal": [
-                    {
-                        "node": b.node,
-                        "equal": exact_frozen_equal(b.inputs, dict(changed.inputs)[b.node]),
-                    }
-                    for b in base.bindings
-                ],
-                "inputs_equal": bool(torch.equal(before.inputs, after.inputs)),
-                "targets_equal": bool(torch.equal(before.targets, after.targets)),
-                "split_equal": bool(torch.equal(before.context_indices, after.context_indices)),
-                "variance_semantics": (
-                    "raw row-owned mechanisms; no variance matching or query calibration"
-                ),
-            }
-        ),
-    )
+    from r0.modules.priors.lib.population_graph_comparison import population_graph_pair_card
+
+    return TaskPair(before, after, encode(population_graph_pair_card(base, changed, before, after)))

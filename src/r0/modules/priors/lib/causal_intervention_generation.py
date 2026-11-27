@@ -185,6 +185,19 @@ def compare_causal_pair(
     from r0.modules.priors.lib.generate import generate_task, recipe_from_dict
 
     b, a = json.loads(before.recipe_json), json.loads(after.recipe_json)
+    if any(
+        type(record) is dict
+        and type(record.get("recipe")) is dict
+        and cast(dict[str, Any], record["recipe"]).get("version")
+        in ("recursive-population-graph-v1", "recursive-population-graph-intervention-v1")
+        for record in (b, a)
+    ) or any(
+        type(card) is dict and card.get("family") == "recursive_population_graph"
+        for card in (json.loads(before.mechanism_json), json.loads(after.mechanism_json))
+    ):
+        from r0.modules.priors.lib.population_graph_comparison import compare_population_graph_pair
+
+        return compare_population_graph_pair(before, after, limits=limits)
     recipe = recipe_from_dict(a["recipe"], limits=limits)
     if not isinstance(recipe, CausalInterventionRecipe) or b["recipe"] != asdict_json(recipe.base):
         raise ValueError("causal comparison must retain its original base recipe")
