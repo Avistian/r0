@@ -1,6 +1,5 @@
 """Raw source Fourier draws and their fixed, reconstructible numerical equation."""
 
-import copy
 from dataclasses import dataclass
 
 import numpy as np
@@ -14,6 +13,7 @@ from r0.modules.priors.lib.joint_matrix_realization import bind_weight_batch
 from r0.modules.priors.lib.joint_point_realization import frozen_matrix
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
 from r0.modules.priors.lib.joint_weight_plans import materialize_joint_weights
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transaction, recorded_draw
 from r0.modules.priors.lib.weight_geometry import Matrix, matrix_shape
 from r0.modules.priors.lib.weight_vectors import WeightVector
 
@@ -126,24 +126,77 @@ def materialize_joint_rff(
     *,
     rng: np.random.Generator,
     limits: CausalLimits,
+    capture: RawDrawLedger | None = None,
 ) -> JointRFFFunctionRealization:
     admit_rff_function(plan, decisions, limits)
-    staged = copy.deepcopy(rng)
-    i, o, k = plan.input_width, plan.output_width, plan.prior.frequencies
-    product = dict(plan.parameters)["product_kernel"] is True
-    uniform = frozen_matrix(staged.random((i if product else 1, k)))
-    directions, factor, weights = None, None, None
-    if not product:
-        directions = frozen_matrix(staged.normal(size=(i, k)))
-        factor = frozen_matrix(staged.normal(size=(i, i)))
-        assert plan.weights is not None
-        weights = materialize_joint_weights(plan.weights, decisions, rng=staged, limits=limits)[0]
-    phase = tuple(float(u) for u in staged.random(k))
-    coefficients = frozen_matrix(staged.normal(size=(k, o)))
-    function = rff_equation(plan, uniform, phase, coefficients, directions, factor, weights)
-    result = JointRFFFunctionRealization(
-        plan, uniform, phase, coefficients, function, directions, factor, weights
-    )
-    result.validate(decisions)
-    rng.bit_generator.state = staged.bit_generator.state
-    return result
+    with raw_transaction(rng, capture) as (staged, capture):
+        i, o, k = plan.input_width, plan.output_width, plan.prior.frequencies
+        product = dict(plan.parameters)["product_kernel"] is True
+        uniform = frozen_matrix(
+            recorded_draw(
+                staged,
+                capture,
+                owner=plan.operation,
+                role="frequency-uniforms",
+                distribution="random",
+                shape=(i if product else 1, k),
+                parameters=(),
+            )
+        )
+        directions, factor, weights = None, None, None
+        if not product:
+            directions = frozen_matrix(
+                recorded_draw(
+                    staged,
+                    capture,
+                    owner=plan.operation,
+                    role="frequency-directions",
+                    distribution="normal",
+                    shape=(i, k),
+                    parameters=(),
+                )
+            )
+            factor = frozen_matrix(
+                recorded_draw(
+                    staged,
+                    capture,
+                    owner=plan.operation,
+                    role="frequency-factor",
+                    distribution="normal",
+                    shape=(i, i),
+                    parameters=(),
+                )
+            )
+            assert plan.weights is not None
+            weights = materialize_joint_weights(
+                plan.weights, decisions, rng=staged, limits=limits, capture=capture
+            )[0]
+        phase = tuple(
+            float(u)
+            for u in recorded_draw(
+                staged,
+                capture,
+                owner=plan.operation,
+                role="phase-uniforms",
+                distribution="random",
+                shape=(k,),
+                parameters=(),
+            )
+        )
+        coefficients = frozen_matrix(
+            recorded_draw(
+                staged,
+                capture,
+                owner=plan.operation,
+                role="fourier-coefficients",
+                distribution="normal",
+                shape=(k, o),
+                parameters=(),
+            )
+        )
+        function = rff_equation(plan, uniform, phase, coefficients, directions, factor, weights)
+        result = JointRFFFunctionRealization(
+            plan, uniform, phase, coefficients, function, directions, factor, weights
+        )
+        result.validate(decisions)
+        return result

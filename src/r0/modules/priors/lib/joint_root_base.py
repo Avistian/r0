@@ -8,6 +8,11 @@ import numpy as np
 from r0.modules.priors.lib.activation_sampling import finite_number
 from r0.modules.priors.lib.frozen_function_primitives import function_width
 from r0.modules.priors.lib.joint_point_realization import frozen_matrix
+from r0.modules.priors.lib.raw_draw_capture import (
+    RawDrawLedger,
+    raw_transaction,
+    recorded_draw,
+)
 from r0.modules.priors.lib.weight_geometry import Matrix, matrix_shape
 from r0.modules.priors.lib.weight_vectors import (
     PolynomialWeightVector,
@@ -116,8 +121,46 @@ class JointRootBaseSample:
             raise ValueError("root sample differs from its retained base construction")
 
 
-def draw_root_base(base: JointRootBase, rows: int, rng: np.random.Generator) -> JointRootBaseSample:
+def draw_root_base(
+    base: JointRootBase,
+    rows: int,
+    rng: np.random.Generator,
+    *,
+    capture: RawDrawLedger | None = None,
+    owner: tuple[str, ...] = (),
+) -> JointRootBaseSample:
     """Draw into a staged RNG after the enclosing root has admitted full geometry."""
+    if capture is not None:
+        with raw_transaction(rng, capture) as (staged, capture):
+            uniform = base.family == "uniform" or base.covariance_base == "uniform"
+            draws = frozen_matrix(
+                recorded_draw(
+                    staged,
+                    capture,
+                    owner=owner,
+                    role="root-base-values",
+                    distribution="random" if uniform else "normal",
+                    shape=(rows, base.width),
+                )
+            )
+            radii = (
+                tuple(
+                    map(
+                        float,
+                        recorded_draw(
+                            staged,
+                            capture,
+                            owner=owner,
+                            role="root-base-radii",
+                            distribution="random",
+                            shape=(rows,),
+                        ),
+                    )
+                )
+                if base.family == "ball"
+                else ()
+            )
+            return JointRootBaseSample(base, draws, radii, root_base_values(base, draws, radii))
     uniform = base.family == "uniform" or base.covariance_base == "uniform"
     draws = frozen_matrix(
         rng.random((rows, base.width)) if uniform else rng.normal(size=(rows, base.width))

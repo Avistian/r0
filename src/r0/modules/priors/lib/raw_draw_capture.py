@@ -1,6 +1,7 @@
 """Explicit raw-draw capture staged atomically with each construction RNG."""
 
 import copy
+import hashlib
 import math
 from collections.abc import Generator
 from contextlib import contextmanager
@@ -10,6 +11,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from r0.modules.priors.lib.joint_sampling_records import validate_name, validate_path
+from r0.modules.priors.lib.joint_streams import JointStreamLimits, stream_states
 from r0.modules.priors.lib.raw_draw_records import (
     RawDrawLimits,
     RawDrawRecord,
@@ -32,8 +34,8 @@ class RawDrawLedger:
         self._busy = False
         self._closed = False
         self._staged = False
-        self._rng: np.random.Generator | None = None
-        self._expected_state: str | None = None
+        self._bindings: dict[str, np.random.Generator] = {}
+        self._expected: dict[str, str] = {}
 
     @property
     def limits(self) -> RawDrawLimits:
@@ -47,40 +49,63 @@ class RawDrawLedger:
         self._available()
         return tuple(self._records)
 
+    def _stream_for(self, rng: np.random.Generator) -> str:
+        for name, bound in self._bindings.items():
+            if rng is bound:
+                return name
+        raise ValueError("raw draw requires its bound transaction RNG")
+
     @contextmanager
     def transaction(
         self, rng: np.random.Generator
     ) -> Generator[tuple[np.random.Generator, "RawDrawLedger"]]:
         self._available()
-        if self._staged and rng is not self._rng:
-            raise ValueError("nested capture requires its bound transaction RNG")
-        before = state_digest(rng, self.limits.state_bytes)
-        if self._staged and before != self._expected_state:
+        role = self._stream_for(rng) if self._staged else "raw"
+        with self.transactions({role: rng}) as (streams, ledger):
+            yield streams[role], ledger
+
+    @contextmanager
+    def transactions(
+        self, streams: dict[str, np.random.Generator]
+    ) -> Generator[tuple[dict[str, np.random.Generator], "RawDrawLedger"]]:
+        self._available()
+        validate_raw_streams(streams)
+        bindings = streams.copy()
+        if self._staged and any(
+            self._bindings.get(name) is not rng for name, rng in streams.items()
+        ):
+            raise ValueError("nested capture requires its bound transaction RNG names")
+        before = raw_stream_states(streams, self.limits)
+        if self._staged and any(before[name] != self._expected[name] for name in streams):
             raise ValueError("unrecorded RNG draw before nested capture")
         if self._bytes + 2 * self.limits.state_bytes > self.limits.working_bytes:
             raise ValueError("raw draw working byte limit exceeded")
-        staged_rng = copy.deepcopy(rng)
+        staged_streams = copy.deepcopy(streams)
         staged = RawDrawLedger(limits=self.limits)
         staged._records = self._records.copy()
         staged._numbers, staged._bytes = self._numbers, self._bytes
         staged._staged = True
-        staged._rng = staged_rng
-        staged._expected_state = before
+        staged._bindings = staged_streams.copy()
+        staged._expected = before.copy()
         self._busy = True
         try:
-            yield staged_rng, staged
+            yield staged_streams, staged
             staged._available()
-            if state_digest(rng, self.limits.state_bytes) != before:
+            validate_stream_bindings(streams, bindings)
+            validate_stream_bindings(staged_streams, staged._bindings)
+            if raw_stream_states(streams, self.limits) != before:
                 raise ValueError("caller RNG changed during raw draw transaction")
-            if state_digest(staged_rng, self.limits.state_bytes) != staged._expected_state:
+            if raw_stream_states(staged_streams, self.limits) != staged._expected:
                 raise ValueError("unrecorded RNG draw during raw capture")
-            state = staged_rng.bit_generator.state
-            # Prepare every fallible record/state copy before committing caller state.
+            # Prepare all fallible copies before any caller state or ledger changes.
+            states = {name: rng.bit_generator.state for name, rng in staged_streams.items()}
             records = staged._records.copy()
-            rng.bit_generator.state = state
+            expected = {**self._expected, **staged._expected}
+            for name, rng in streams.items():
+                rng.bit_generator.state = states[name]
             self._records = records
             self._numbers, self._bytes = staged._numbers, staged._bytes
-            self._expected_state = staged._expected_state
+            self._expected = expected
         finally:
             self._busy = False
             staged._closed = True
@@ -94,13 +119,15 @@ class RawDrawLedger:
         distribution: str,
         shape: tuple[int, ...],
         parameters: tuple[tuple[str, Any], ...] = (),
-        stream: str = "raw",
+        stream: str | None = None,
     ) -> NDArray[Any]:
         self._available()
         if not self._staged:
             raise ValueError("raw draws require an active staged ledger transaction")
-        if rng is not self._rng:
-            raise ValueError("raw draw requires its bound transaction RNG")
+        bound = self._stream_for(rng)
+        if stream is not None and stream != bound:
+            raise ValueError("raw draw stream label differs from its bound RNG")
+        stream = bound
         validate_path(owner)
         validate_name(role, "raw draw role")
         validate_name(stream, "raw draw stream")
@@ -122,7 +149,7 @@ class RawDrawLedger:
         ):
             raise ValueError("raw draw retained record limit exceeded")
         before = state_digest(rng, self.limits.state_bytes)
-        if before != self._expected_state:
+        if before != self._expected[stream]:
             raise ValueError("unrecorded RNG draw before raw capture")
         values = numpy_draw(rng, distribution, shape, parameters)
         integer = values.dtype.kind in "iu"
@@ -141,10 +168,68 @@ class RawDrawLedger:
             state_digest(rng, self.limits.state_bytes),
         )
         self._records.append(record)
-        self._expected_state = record.state_after
+        self._expected[stream] = record.state_after
         self._numbers += count
         self._bytes += cost
         return values
+
+
+def validate_raw_streams(streams: dict[str, np.random.Generator]) -> None:
+    if type(streams) is not dict or not 1 <= len(streams) <= 64:
+        raise ValueError("raw capture requires one to 64 named streams")
+    identities: set[int] = set()
+    for name, rng in streams.items():
+        validate_name(name, "raw stream name")
+        state_digest(rng)
+        identity = id(rng.bit_generator)
+        if identity in identities:
+            raise ValueError("raw capture streams must have distinct bit generators")
+        identities.add(identity)
+
+
+def raw_stream_states(
+    streams: dict[str, np.random.Generator], limits: RawDrawLimits
+) -> dict[str, str]:
+    states = stream_states(
+        tuple(streams.values()), JointStreamLimits(state_bytes=limits.state_bytes)
+    )
+    return {
+        name: hashlib.sha256(state).hexdigest() for name, state in zip(streams, states, strict=True)
+    }
+
+
+def validate_stream_bindings(
+    streams: dict[str, np.random.Generator], bindings: dict[str, np.random.Generator]
+) -> None:
+    if streams.keys() != bindings.keys() or any(
+        streams[name] is not rng for name, rng in bindings.items()
+    ):
+        raise ValueError("raw transaction stream bindings changed")
+
+
+@contextmanager
+def raw_transactions(
+    streams: dict[str, np.random.Generator], capture: RawDrawLedger | None
+) -> Generator[tuple[dict[str, np.random.Generator], RawDrawLedger | None]]:
+    if capture is None:
+        validate_raw_streams(streams)
+        bindings = streams.copy()
+        before = raw_stream_states(streams, _DEFAULT_LIMITS)
+        staged = copy.deepcopy(streams)
+        staged_bindings = staged.copy()
+        yield staged, None
+        validate_stream_bindings(streams, bindings)
+        validate_stream_bindings(staged, staged_bindings)
+        if raw_stream_states(streams, _DEFAULT_LIMITS) != before:
+            raise ValueError("caller RNG changed during construction")
+        states = {name: rng.bit_generator.state for name, rng in staged.items()}
+        for name, rng in streams.items():
+            rng.bit_generator.state = states[name]
+    elif type(capture) is RawDrawLedger:
+        with capture.transactions(streams) as pair:
+            yield pair
+    else:
+        raise ValueError("raw capture must be a RawDrawLedger")
 
 
 @contextmanager

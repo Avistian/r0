@@ -1,7 +1,5 @@
 """Root bases followed by frozen functions, fitted on a separately sampled stream."""
 
-import copy
-import pickle
 from dataclasses import dataclass
 
 import numpy as np
@@ -32,6 +30,7 @@ from r0.modules.priors.lib.joint_root_plans import JointRootPlan
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord, validate_name
 from r0.modules.priors.lib.joint_tree_realization import JointTreeFunctionRealization
 from r0.modules.priors.lib.joint_weight_plans import materialize_joint_weights
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions, recorded_draw
 from r0.modules.priors.lib.weight_geometry import Matrix, matrix_shape
 
 type RootFunctionRealization = (
@@ -131,6 +130,7 @@ def materialize_joint_root(
     fit_rng: np.random.Generator,
     calibration_id: str,
     limits: CausalLimits = _DEFAULT_LIMITS,
+    capture: RawDrawLedger | None = None,
 ) -> JointRootRealization:
     if (
         type(plan) is not JointRootPlan
@@ -147,38 +147,53 @@ def materialize_joint_root(
     validate_name(calibration_id, "root calibration identity")
     plan.validate(decisions)
     admit_root_realization(plan, decisions, limits)
-    before = tuple(pickle.dumps(generator.bit_generator.state) for generator in generators)
-    raw, sample_rng, fit = tuple(copy.deepcopy(generator) for generator in generators)
-    gaussian, factor, weights = None, None, None
-    if plan.family == "covariance":
-        gaussian = frozen_matrix(raw.normal(size=(plan.width, plan.width)))
-        assert plan.weights is not None
-        weights = materialize_joint_weights(plan.weights, decisions, rng=raw, limits=limits)[0]
-        with np.errstate(over="ignore", invalid="ignore"):
-            factor = frozen_matrix(
-                np.asarray(gaussian, dtype=np.float64)
-                * np.asarray(weights.values(), dtype=np.float64)[None, :]
+    with raw_transactions(
+        {"raw": rng, "calibration": calibration_rng, "fit": fit_rng}, capture
+    ) as (streams, capture):
+        raw, sample_rng, fit = streams["raw"], streams["calibration"], streams["fit"]
+        gaussian, factor, weights = None, None, None
+        if plan.family == "covariance":
+            gaussian = frozen_matrix(
+                recorded_draw(
+                    raw,
+                    capture,
+                    owner=plan.operation,
+                    role="root-covariance-factor",
+                    distribution="normal",
+                    shape=(plan.width, plan.width),
+                    parameters=(),
+                )
             )
-    base = JointRootBase(plan.family, plan.width, gaussian, weights, factor, plan.covariance_base)
-    calibration = draw_root_base(base, plan.calibration_rows, sample_rng)
-    function = materialize_joint_function(
-        plan.function,
-        decisions,
-        rng=raw,
-        fit_rng=fit,
-        calibration=np.asarray(calibration.values, dtype=np.float64),
-        calibration_id=calibration_id,
-        limits=limits,
-    )
-    outputs = frozen_matrix(
-        evaluate_admitted_function(
-            function.function, torch.tensor(calibration.values, dtype=torch.float64)
-        ).numpy()
-    )
-    result = JointRootRealization(plan, calibration, function, outputs, calibration_id)
-    result.validate(decisions)
-    if tuple(pickle.dumps(generator.bit_generator.state) for generator in generators) != before:
-        raise ValueError("caller RNG changed during root construction")
-    for original, staged in zip(generators, (raw, sample_rng, fit), strict=True):
-        original.bit_generator.state = staged.bit_generator.state
-    return result
+            assert plan.weights is not None
+            weights = materialize_joint_weights(
+                plan.weights, decisions, rng=raw, limits=limits, capture=capture
+            )[0]
+            with np.errstate(over="ignore", invalid="ignore"):
+                factor = frozen_matrix(
+                    np.asarray(gaussian, dtype=np.float64)
+                    * np.asarray(weights.values(), dtype=np.float64)[None, :]
+                )
+        base = JointRootBase(
+            plan.family, plan.width, gaussian, weights, factor, plan.covariance_base
+        )
+        calibration = draw_root_base(
+            base, plan.calibration_rows, sample_rng, capture=capture, owner=plan.operation
+        )
+        function = materialize_joint_function(
+            plan.function,
+            decisions,
+            rng=raw,
+            fit_rng=fit,
+            calibration=np.asarray(calibration.values, dtype=np.float64),
+            calibration_id=calibration_id,
+            limits=limits,
+            capture=capture,
+        )
+        outputs = frozen_matrix(
+            evaluate_admitted_function(
+                function.function, torch.tensor(calibration.values, dtype=torch.float64)
+            ).numpy()
+        )
+        result = JointRootRealization(plan, calibration, function, outputs, calibration_id)
+        result.validate(decisions)
+        return result

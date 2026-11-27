@@ -1,7 +1,5 @@
 """Source EM anchor constructions and soft assignments before the lazy linear fit."""
 
-import copy
-import pickle
 from dataclasses import dataclass
 
 import numpy as np
@@ -25,6 +23,7 @@ from r0.modules.priors.lib.joint_matrix_realization import (
 )
 from r0.modules.priors.lib.joint_point_realization import frozen_matrix
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions, recorded_draw
 from r0.modules.priors.lib.weight_geometry import Matrix, matrix_shape
 
 
@@ -147,41 +146,70 @@ def materialize_joint_em(
     calibration: NDArray[np.float64] | None,
     calibration_id: str,
     limits: CausalLimits,
+    capture: RawDrawLedger | None = None,
 ) -> JointEMFunctionRealization:
     if type(fit_rng) is not np.random.Generator or fit_rng.bit_generator is rng.bit_generator:
         raise ValueError("EM fitting requires a separate injected fit RNG")
     admit_em_function(plan, decisions, limits)
     sample = freeze_function_calibration(plan, calibration, calibration_id)
-    raw_before, fit_before = (
-        pickle.dumps(rng.bit_generator.state),
-        pickle.dumps(fit_rng.bit_generator.state),
-    )
-    raw, fit = copy.deepcopy(rng), copy.deepcopy(fit_rng)
-    count = int(dict(plan.parameters)["components"])
-    rows = tuple(map(int, fit.integers(plan.calibration_rows, size=count)))
-    jitter = frozen_matrix(raw.normal(size=(count, plan.input_width)))
-    spread = tuple(map(float, raw.normal(size=count)))
-    centers, scales = em_geometry(plan, sample, rows, jitter, spread)
-    assignments = em_fit_assignments(plan, sample, centers, scales)
-    # The source output linear is lazy: realize it only after assignment evaluation.
-    matrix = materialize_joint_matrix(plan.matrices[0], decisions, rng=raw, limits=limits)
-    parameters = dict(plan.parameters)
-    function = FrozenEMFunction(
-        centers,
-        scales,
-        FrozenLinearFunction(matrix.materialize()[0]),
-        float(parameters["distance_p"]),
-        float(parameters["distance_q"]),
-    )
-    result = JointEMFunctionRealization(
-        plan, sample, rows, jitter, spread, assignments, matrix, function
-    )
-    result.validate(decisions)
-    if (
-        pickle.dumps(rng.bit_generator.state) != raw_before
-        or pickle.dumps(fit_rng.bit_generator.state) != fit_before
-    ):
-        raise ValueError("caller RNG changed during EM construction")
-    rng.bit_generator.state = raw.bit_generator.state
-    fit_rng.bit_generator.state = fit.bit_generator.state
-    return result
+    with raw_transactions({"raw": rng, "fit": fit_rng}, capture) as (streams, capture):
+        raw, fit = streams["raw"], streams["fit"]
+        count = int(dict(plan.parameters)["components"])
+        rows = tuple(
+            map(
+                int,
+                recorded_draw(
+                    fit,
+                    capture,
+                    owner=plan.operation,
+                    role="em-anchor-rows",
+                    distribution="integers",
+                    shape=(count,),
+                    parameters=(("high", plan.calibration_rows),),
+                ),
+            )
+        )
+        jitter = frozen_matrix(
+            recorded_draw(
+                raw,
+                capture,
+                owner=plan.operation,
+                role="em-jitter",
+                distribution="normal",
+                shape=(count, plan.input_width),
+                parameters=(),
+            )
+        )
+        spread = tuple(
+            map(
+                float,
+                recorded_draw(
+                    raw,
+                    capture,
+                    owner=plan.operation,
+                    role="em-spread",
+                    distribution="normal",
+                    shape=(count,),
+                    parameters=(),
+                ),
+            )
+        )
+        centers, scales = em_geometry(plan, sample, rows, jitter, spread)
+        assignments = em_fit_assignments(plan, sample, centers, scales)
+        # The source output linear is lazy: realize it only after assignment evaluation.
+        matrix = materialize_joint_matrix(
+            plan.matrices[0], decisions, rng=raw, limits=limits, capture=capture
+        )
+        parameters = dict(plan.parameters)
+        function = FrozenEMFunction(
+            centers,
+            scales,
+            FrozenLinearFunction(matrix.materialize()[0]),
+            float(parameters["distance_p"]),
+            float(parameters["distance_q"]),
+        )
+        result = JointEMFunctionRealization(
+            plan, sample, rows, jitter, spread, assignments, matrix, function
+        )
+        result.validate(decisions)
+        return result
