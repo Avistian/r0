@@ -10,6 +10,8 @@ No whole-issue completion percentage is inferred from these rows.
 it does not establish its entire paper's sampling law, every composition, hosted
 execution, resource envelope or predictive quality. `PARTIAL` identifies an
 explicit semantic/lifecycle gap. `PENDING` identifies missing implementation.
+The [recent option progress map](issue-28-option-progress.md) updates observations,
+recursive forests, convolution and policy coverage with explicit remaining gaps.
 Raw review records and worked examples are retained in ignored `docs/evidence/`;
 [retention limits](issue-28-evidence-retention.md) apply to fresh clones.
 
@@ -67,9 +69,9 @@ mobile rendering. Hosted Colab remains NOT_RUN.
 | K1.structure.16 | Native argmax emission | SCOPED; deterministic first-class tie policy; complete Kumo prior is not reproduced. |
 | M1.tree.05 | `FittedTreePlan(family="gbdt", task="classification")` | PARTIAL; frozen synthetic fitted classifier exists; explicit mixed-independent and support/batch lifecycles exist; source/backend equivalence remains open. |
 | M1.tree.06 | `FittedTreePlan(family="gbdt", task="regression")` | PARTIAL; frozen synthetic fitted regressor exists; source-specific fitting laws remain open. |
-| I1.function.07 | XGBoost multi-output fitted-noise layer | PENDING; sklearn GBDT is not a substitute. |
-| I1.code.09 | XGBoost histogram multi-output regressor | PENDING; no backend implementation or comparison. |
-| OP.function.02 | Fitted XGBoost structural regressor | PENDING; support-only lifecycle exists for the implemented sklearn backends; XGBoost is not substituted. |
+| I1.function.07 | XGBoost multi-output fitted-noise layer | PARTIAL; numerical vector-leaf CPU backend and independent fixed fitting are implemented; source parameter and refit-on-forward laws remain open. |
+| I1.code.09 | XGBoost histogram multi-output regressor | PARTIAL; actual CPU histogram backend comparisons and retained model/raw-draw custody exist; broader lifecycle and categorical-input variants remain open. |
+| OP.function.02 | Fitted XGBoost structural regressor | PARTIAL; shared frozen equations and independent fixed fitting exist; XGBoost ancestor/support/batch fitting remains required. |
 
 Native contracts and limitations are documented in
 [sampled native graphs](sampled-native-graphs.md). Public fitted-tree exports,
@@ -80,7 +82,10 @@ probability/majority distinctions, ancestral fits, raw replay and budget rejecti
 Original nonfinite-score and contradictory-metadata rejections remain preserved;
 repairs have separate independent probes. Local fitted-tree explorer creation,
 majority voting, exact large-identity replay, inspection and export passed bounded
-independent Chromium checks. XGBoost equivalence and predictive quality remain open.
+independent Chromium checks. See the [XGBoost adapter](issue-28-xgboost-vector.md) and
+[workbench](issue-28-xgboost-workbench.md). Backend agreement is bounded to the
+reported numerical cases; complete source-prior equivalence and predictive quality
+remain open.
 
 ## Broad products and interventions
 
@@ -145,8 +150,9 @@ one skip and one warning; see the
 Network input views and matching/save guards are included in source0935822's
 2,488-test checkpoint; see [scoped evidence](issue-28-network-view-checkpoint.md).
 Neural hyperprior/noise and source-root profiles remain later candidates.
-Source-specific neural/noise/root profiles, XGBoost and every unimplemented
-inventory option remain required.
+Source-specific neural/noise/root profiles, the remaining XGBoost lifecycles and
+every unimplemented inventory option remain required. The recent option progress
+map distinguishes later delivery from these historical checkpoints.
 
 Nine bounded CPU cases have measurements; this does not establish maximal
 combinations, sustained throughput, hosted/GPU or scientific acceptance. Original
