@@ -24,10 +24,12 @@ function clearCurve() {
   if(observed) {$("curve-title").textContent="Observation causal reference"; $("curve-description").textContent="Vary one selected observed channel, clamping every observed channel at both state and readout. Hidden roots stay at the selected original row; choose zero or original structural innovations. Target aliases propagate their parent clamps. These are raw target readouts, not conditional means, class probabilities or target-adapted scores."; $("curve-note").textContent="The full source and selection receipt remains attached to this original-row causal reference."; $("curve").textContent="Evaluate causal reference";}
   if(isConvolutionRecipe(current?.view?.recipe?.recipe) && !functional){$("curve").disabled=true;$("curve").dataset.unavailable="true";$("curve-description").textContent="Typed convolution curves remain pending explicit category/capture reference semantics. Inspect original-row kernel stages or use causal interventions; no continuous response is substituted for native emissions.";}
 
+  gpColumnCurveControls();
 }
 function drawCurve() {
   if (!curve) return;
-  if (curve.kind === "gp_conditional_curve") drawGP();
+  if (curve.kind === "gp_column_target_reference") drawGPColumnCurve();
+  else if (curve.kind === "gp_conditional_curve") drawGP();
   else {
     const channel = Math.min(number("channel"), curve.scores[0].length - 1);
     const values = curve.scores.map(row => row[channel]);
@@ -65,7 +67,7 @@ function drawGP() {
   $("curve-note").textContent = `${numerical}. ${curve.points} points; ${samples.length} additional draws${samples.length ? ` with seed ${curve.sampling.seed}` : ""}. The band is pointwise uncertainty of the latent function, not observation noise. Lines connect evaluated points. Dots match the fixed active coordinates; irrelevant inputs may differ. ${diagnostics.approximate ? "The reported error is the largest normalized change to the saved support projection. Original values still take precedence at exact saved coordinates." : ""}`;
 }
 function curveArguments() {
-  return {feature: number("feature"), anchor_row: number("curve-row"), points: number("curve-points"), ...((isNoisyNetwork() || isFunctionalReference() || isObservation(current?.view?.recipe?.recipe)) ? {reference:$("network-reference").value} : {}), ...(isGP() ? {draws: number("gp-draws"), seed: number("gp-draws") ? $("gp-seed").value : null, allow_rank_truncation: $("gp-approximate").checked} : {})};
+  return {...(isGPColumns()?gpColumnCurveArguments():{}), feature: number("feature"), anchor_row: number("curve-row"), points: number("curve-points"), ...((isNoisyNetwork() || isFunctionalReference() || isObservation(current?.view?.recipe?.recipe)) ? {reference:$("network-reference").value} : {}), ...(isGP() ? {draws: number("gp-draws"), seed: number("gp-draws") ? $("gp-seed").value : null, allow_rank_truncation: $("gp-approximate").checked} : {})};
 }
 for (const id of ["network-reference", "curve-row", "curve-points", "gp-draws", "gp-seed", "gp-approximate"]) $(id).onchange = clearCurve;
 $("curve").onclick = () => act("Evaluating saved function…", async () => {

@@ -40,7 +40,7 @@ its public test was RED before the repair and GREEN afterward. Browser results
 remain tied to the preceding source; independent review is pending.
 
 Still required: explicit target
-edit/comparison controls and paired persistence; response/reference semantics;
+edit/comparison controls and paired persistence;
 hybrid DAG roots; broader population/location catalog coverage; Colab/shared
 callback coverage; resource/diversity qualification. This checkpoint is not
 complete issue #28 or complete workbench acceptance. The source-related core
@@ -55,3 +55,33 @@ a valid control still completes. Five public cases retain three genuine baseline
 failures (two already rejected early). The combined52-case GP/workbench/admission
 check passes. Historical rejection remains retained; independent repair review
 and broader UI review remain pending.
+
+## Frozen target reference
+
+`evaluate_gp_column_reference` evaluates a one-column grid with all other inputs
+fixed to a retained original row. The raw-record counterpart validates complete
+source metadata, controls and aggregate source-replay/query budgets before any
+covariance replay or grid allocation. The original population, target parameters,
+independent calibration, seed and task ID stay unchanged. Query points never fit
+or update normalization. This CPU reference is a target-equation counterfactual,
+not a conditional GP feature posterior, fresh feature population or general DAG
+do-operator. Combinations can be outside joint feature support even within the
+observed marginal range; explicit bounds may extrapolate.
+
+The returned raw target is `f(x)`, and the normalized score uses the original
+`(f(x) - centers) / scales`. Regression reports this score as the expected target
+under independent zero-mean Gaussian observation noise, with the original
+`noise_ratio` as its standard deviation. Classification reports the shared task
+adapter's sigmoid/softmax probabilities including separation and class offsets;
+no labels or observation noise are drawn. A single binary score is the positive
+class score. All three target families and task adapters use the same semantics.
+
+The explorer exposes raw, normalized and expected-target/class-probability views,
+original-row anchors, grid resolution, optional explicit bounds and JSON export.
+Replay and evaluation stay in the bounded worker. Failed queries and timeouts
+preserve the original active task and saved archive. Original population identity,
+frozen target and calibration constants remain visible in the reference artifact.
+Generic task-pair, mechanism-editor and DAG-policy controls are marked unavailable
+for this finite-population family. Target editing/comparison controls with paired
+persistence, hybrid graphs, full covariance interactive views and hosted Colab
+verification remain REQUIRED follow-ons, not excluded scope.

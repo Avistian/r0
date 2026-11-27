@@ -36,6 +36,11 @@ def main() -> int:
 
         print(json.dumps(observation_editor(raw_request), allow_nan=False))
         return 0
+    if raw_request.get("validation") == "gp-column-curve":
+        from r0.modules.generation.lib.gp_column_curve import gp_column_curve
+
+        print(json.dumps(gp_column_curve(raw_request), allow_nan=False))
+        return 0
     if raw_request.get("validation") == "observation-curve":
         from r0.modules.generation.lib.observation_curve import observation_curve
 
