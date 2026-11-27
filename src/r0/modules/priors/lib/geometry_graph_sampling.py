@@ -4,16 +4,20 @@ import numpy as np
 
 from r0.modules.priors.lib.generator_snapshot import snapshot_generator
 from r0.modules.priors.lib.geometry_graph_request import GeometryGraphRequest
+from r0.modules.priors.lib.geometry_pipeline_request import GeometryPipelineRequest
 from r0.modules.priors.lib.geometry_topology import sample_geometry_topology
 from r0.modules.priors.lib.joint_graph_materialization import materialize_joint_graph
 from r0.modules.priors.lib.joint_graph_plans import sample_joint_graph_plan
 from r0.modules.priors.lib.joint_observation_plans import sample_joint_observations
 from r0.modules.priors.lib.joint_observation_realization import materialize_joint_observations
+from r0.modules.priors.lib.joint_pipeline_plans import sample_joint_pipeline
+from r0.modules.priors.lib.joint_pipeline_realization import JointPipelineRealization
 from r0.modules.priors.lib.joint_sampling import JointSamplingContext
 from r0.modules.priors.lib.joint_width_plans import sample_joint_widths
 from r0.modules.priors.lib.observation_channel_layout import allocate_observation_channels
 from r0.modules.priors.lib.raw_draw_capture import raw_transactions
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
+from r0.modules.priors.lib.sampled_pipeline_geometry import SampledPipelineGeometry
 
 
 def sample_geometry_graph(
@@ -24,7 +28,7 @@ def sample_geometry_graph(
     calibration_rng: np.random.Generator,
     fit_rng: np.random.Generator,
 ) -> SampledGeometryGraph:
-    if type(request) is not GeometryGraphRequest:
+    if type(request) not in (GeometryGraphRequest, GeometryPipelineRequest):
         raise ValueError("geometry sampling requires its frozen request")
     request.mechanism_raw_limits()
     callers = {"named": named_rng, "raw": raw_rng, "calibration": calibration_rng, "fit": fit_rng}
@@ -83,14 +87,53 @@ def sample_geometry_graph(
             function_prior=request.function_prior,
             limits=child_limits,
         )
+        pipeline_plans = ()
+        pipeline_records: list[JointPipelineRealization] = []
+        if type(request) is GeometryPipelineRequest:
+            converter_groups = [[""] * count for count in layout.converter_channels]
+            for group, spans in zip(request.groups, layout.spans, strict=True):
+                for node, start, width in spans:
+                    converter_groups[node][start : start + width] = [group.name] * width
+            pipeline_plans = tuple(
+                sample_joint_pipeline(
+                    context,
+                    f"pipeline:{i}",
+                    width=width,
+                    groups=tuple(converter_groups[i]),
+                    prior=request.pipeline_prior,
+                )
+                for i, width in enumerate(widths.widths)
+            )
         registry = context.freeze_registry()
-        graph = materialize_joint_graph(graph_request, plan, registry, staged, initial)
+        graph = materialize_joint_graph(
+            graph_request,
+            plan,
+            registry,
+            staged,
+            initial,
+            pipeline_plans=pipeline_plans,
+            pipeline_records=pipeline_records,
+        )
         final = tuple(
             snapshot_generator(rng, byte_limit=request.raw_limits.state_bytes)
             for rng in staged.values()
         )
-        result = SampledGeometryGraph(
-            request, topology, observations, layout, widths, graph, initial, final
+        result = (
+            SampledPipelineGeometry(
+                request,
+                topology,
+                observations,
+                layout,
+                widths,
+                graph,
+                initial,
+                final,
+                pipelines=tuple(pipeline_records),
+            )
+            if type(request) is GeometryPipelineRequest
+            else SampledGeometryGraph(
+                request, topology, observations, layout, widths, graph, initial, final
+            )
         )
         result.validate_structure()
         return result
