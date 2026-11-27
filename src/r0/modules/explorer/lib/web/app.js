@@ -12,7 +12,7 @@ const format = value => {
 };
 
 async function request(action, data = {}) {
-  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export", "mechanism", "edit", "edit_export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
+  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export", "mechanism", "edit", "edit_export", "intervention_controls", "intervene", "intervention_graph", "intervention_export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
   if (["graph", "pair", "open_pair", "mechanism", "edit"].includes(action)) data = {...data, ...explorationLimits()};
   if (window.r0request) return window.r0request(action, data);
   const response = await fetch("/api", {
@@ -220,7 +220,7 @@ function show(result) {
   $("construction-details").hidden=!view.construction_details;
   $("construction-detail-notice").textContent=view.construction_details?.notice || "";
   $("construction-detail-record").textContent=pretty(view.construction_details || {});
-  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair(); resetWorkbench(); nativeViewControls(view);
+  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair(); resetWorkbench(); nativeViewControls(view); resetIntervention();
 }
 async function inspectRow(index) {
   await act("Loading row…", async () => {

@@ -1,0 +1,25 @@
+<article id="intervention-panel">
+<p class="eyebrow">CAUSAL INTERVENTIONS</p><h3>Change a variable's equation or value</h3>
+<p class="muted">This comparison retains the original graph and frozen calibration. It is distinct from the authored mechanism editor and from observational conditioning. The original dataset remains active.</p>
+<button id="intervention-load">Prepare causal intervention</button>
+<p id="intervention-notice" class="muted">CPU execution. Hosted Colab and GPU verification remain pending.</p>
+<div id="intervention-controls" hidden>
+<div class="fields"><label>Node<select id="intervention-node"></select></label><label>Change<select id="intervention-kind"><option value="hard">Hard clamp</option><option value="soft">Soft equation / noise change</option></select></label></div>
+<p id="intervention-node-note" class="muted"></p>
+<div id="intervention-hard">
+<label id="intervention-category-label" hidden>Declared category<select id="intervention-category"></select></label>
+<div id="intervention-numerical" class="fields"><label>Channels (JSON array)<input id="intervention-channels" value="[0]"></label><label>Constant values (JSON array)<input id="intervention-values" value="[4]"></label><label>Location<select id="intervention-location"><option value="state">Propagated state</option><option value="readout">Captured / observed readout only</option><option value="state_and_readout">State and readout explicitly</option></select></label></div>
+<p id="intervention-location-note" class="muted"></p>
+</div>
+<div id="intervention-soft" hidden><label>Replacement frozen function (JSON; null keeps it)<textarea id="intervention-function" rows="7"></textarea></label><label>Noise changes (JSON; omit fields to retain them)<textarea id="intervention-noise" rows="3">{}</textarea></label><p class="muted">Function input/output dimensions stay fixed. Optional fields: noise_scale, noise_response, exogenous. Original pipeline and calibration stay frozen; this does not refit a tree or network.</p></div>
+<button id="intervention-add">Add change to comparison</button>
+<label>All interventions (editable JSON array; multiple disjoint changes)<textarea id="intervention-json" rows="8">[]</textarea></label>
+<div class="fields"><label>Draw coupling<select id="intervention-mode"><option value="matched">Matched original exogenous draws</option><option value="population">Fresh population draws</option></select></label><label>Population key (exact integer)<input id="intervention-population" value="1" inputmode="numeric"></label></div>
+<p id="intervention-mode-note" class="muted"></p><button id="intervention-create" class="primary">Generate and save causal comparison</button>
+</div>
+<div class="fields"><label>Saved causal comparison directory<input id="intervention-path" placeholder="interventions/…/pair"></label><button id="intervention-open">Open causal comparison</button></div>
+<section id="intervention-results" hidden><h4>Saved causal comparison</h4><p id="intervention-result-note" class="muted"></p><div class="chart-grid"><div id="intervention-before-plot" class="plot"></div><div id="intervention-after-plot" class="plot"></div></div>
+<label>Original row indices (comma separated)<input id="intervention-rows" value="0,1,2"></label><button id="intervention-inspect">Inspect before / after traces</button>
+<div id="intervention-traces" hidden><label>Trace stage<select id="intervention-stage"></select></label><div id="intervention-trace-table" class="table-wrap"></div><details><summary>Actual replayed trace equations and parameters</summary><pre id="intervention-trace-json"></pre></details></div>
+<button id="intervention-export">Download replayable causal pair</button><details><summary>Comparison card and draw equality checks</summary><pre id="intervention-card"></pre></details></section>
+</article>

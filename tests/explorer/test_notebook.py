@@ -77,3 +77,23 @@ def test_notebook_registers_callback_and_returns_structured_errors(
     assert changed["edit"]["card"]["kind"] == "mechanism-edit"
     reopened = callbacks[name]("open_edit", {"path": changed["edit"]["path"]})["application/json"]
     assert reopened["edit"]["card"] == changed["edit"]["card"]
+    if example == "Explicit causal graph":
+        assert 'id="intervention-controls"' in displayed[0]
+        baseline = reopened["recipe_json"]
+        pair = callbacks[name](
+            "intervene",
+            {
+                "interventions_json": '[{"version":"hard-causal-intervention-v1",'
+                '"node":2,"channels":[0],"values":[4],'
+                '"category":null,"location":"state_and_readout"}]',
+                "mode": "matched",
+                "population": "1",
+            },
+        )["application/json"]
+        assert "error" not in pair
+        assert pair["recipe_json"] == baseline
+        assert all(row["target"] == 4 for row in pair["intervention"]["after"]["rows"])
+        loaded_pair = callbacks[name]("open_intervention", {"path": pair["intervention"]["path"]})[
+            "application/json"
+        ]
+        assert loaded_pair["intervention"]["card"] == pair["intervention"]["card"]

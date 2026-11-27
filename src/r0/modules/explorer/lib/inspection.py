@@ -130,6 +130,8 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         view["target_origin"] = task.target_origin
         native = record["recipe"]
         view["native_construction"] = native["version"]
+        if native["version"] == "causal-intervention-v1":
+            native = native["base"]
         if native["version"] in ("sampled-native-graph-v1", "sampled-native-vector-graph-v1"):
             native = native["recipe"]
         target_node = native["nodes"][native["target"][0]]
@@ -139,6 +141,12 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
             else target_node["domain"]
         )
         view["target_emission"] = domain["emission"]
+        if record["recipe"]["version"] == "causal-intervention-v1" and any(
+            c.get("category") is not None and c["node"] == native["target"][0]
+            for c in record["recipe"]["interventions"]
+        ):
+            view["original_target_emission"] = domain["emission"]
+            view["target_emission"] = "forced-category indicator"
         view["target_frequency_weights"] = domain.get("frequencies")
         for feature, schema in zip(view["features"], task.feature_schema, strict=True):
             feature["kind"] = schema.kind

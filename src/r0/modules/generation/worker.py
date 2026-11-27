@@ -21,6 +21,11 @@ from r0.modules.priors import TrainingTask, compare_pair, paired_recipe
 def main() -> int:
     data = json.load(sys.stdin)
     raw_request = dict(data["request"])
+    if "causal_action" in raw_request:
+        from r0.modules.generation.lib.causal_jobs import causal_job
+
+        print(json.dumps(causal_job(raw_request, Path(data["out"])), sort_keys=True))
+        return 0
     pairing = raw_request.pop("pairing", None)
     request = request_from_dict(raw_request)
     if pairing is not None:

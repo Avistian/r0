@@ -16,6 +16,12 @@ from r0.modules.explorer.lib.curves import inspect_curve, inspect_gp_curve
 from r0.modules.explorer.lib.edits import SavedEdit, create_edit, open_edit
 from r0.modules.explorer.lib.exports import replay_bundle
 from r0.modules.explorer.lib.inspection import inspect_rows, inspect_task
+from r0.modules.explorer.lib.interventions import (
+    guarded_intervention,
+    intervention_controls,
+    intervention_download,
+    saved_intervention,
+)
 from r0.modules.explorer.lib.saved import load_saved, run_saved, run_saved_document
 from r0.modules.generation import RecipeSampling, RunRequest
 from r0.modules.priors import (
@@ -44,7 +50,7 @@ def _identity_numbers(value: Any, *, for_browser: bool) -> Any:
         return value
     result: dict[str, Any] = {}
     for key, item in cast(dict[str, Any], value).items():
-        if key in ("seed", "task_id", "split"):
+        if key in ("seed", "task_id", "split", "population"):
             if for_browser and type(item) is int and item > 2**53 - 1:
                 item = str(item)
             elif not for_browser and isinstance(item, str) and item.isascii() and item.isdecimal():
@@ -83,6 +89,7 @@ class ExplorerSession:
         self.run: dict[str, Any] | None = None
         self.pair: SavedPair | None = None
         self.edit: SavedEdit | None = None
+        self.intervention: SavedPair | None = None
 
     def _view(self) -> dict[str, Any]:
         view = None if self.task is None else inspect_task(self.task)
@@ -99,6 +106,18 @@ class ExplorerSession:
                 "after": _identity_numbers(inspect_task(self.edit.after), for_browser=True),
                 "after_archive": self.edit.document["after_archive"],
             },
+            "intervention": None
+            if self.intervention is None
+            else _identity_numbers(
+                {
+                    "path": self.intervention.path,
+                    "card": self.intervention.document["card"],
+                    "before_id": self.intervention.before.episode_id,
+                    "after_id": self.intervention.after.episode_id,
+                    "after": inspect_task(self.intervention.after),
+                },
+                for_browser=True,
+            ),
             "archive": self.archive,
             "run": self.run,
             "pair": None
@@ -124,6 +143,7 @@ class ExplorerSession:
         self.archive = str(path.resolve().relative_to(self.output_dir))
         self.pair = None
         self.edit = None
+        self.intervention = None
 
     def request(self, action: str, data: dict[str, Any]) -> dict[str, Any]:
         if action == "construction_examples":
@@ -151,11 +171,20 @@ class ExplorerSession:
             }
             self.task, self.archive, self.run = run_saved_document(self.output_dir, request)
             self.pair, self.edit = None, None
+            self.intervention = None
+            return self._view()
+        if action == "open_intervention":
+            result = guarded_intervention(self.output_dir, "open", data)
+            pair = saved_intervention(self.output_dir, result)
+            self.task, self.archive = pair.before, pair.document["before_archive"]
+            self.intervention = pair
+            self.pair, self.edit, self.run = None, None, None
             return self._view()
         if action == "open_edit":
             edit = open_edit(self.output_dir, data["path"])
             self.task, self.archive, self.edit = edit.before, edit.document["before_archive"], edit
             self.pair, self.run = None, None
+            self.intervention = None
             return self._view()
         if action == "examples":
             return {"examples": recipe_examples(), "output_dir": str(self.output_dir)}
@@ -166,6 +195,7 @@ class ExplorerSession:
             self.task, self.archive = pair.before, pair.document["before_archive"]
             self.run, self.pair = pair.document["before_run"], pair
             self.edit = None
+            self.intervention = None
             return self._view()
         if action == "open":
             self._open(
@@ -229,6 +259,7 @@ class ExplorerSession:
                     request["causal_limits"] = asdict(caller_limits(data))
                 self.task, self.archive, self.run = run_saved_document(self.output_dir, request)
                 self.pair, self.edit = None, None
+                self.intervention = None
                 return self._view()
             recipe = recipe_from_dict(record["recipe"], limits=caller_limits(data))
             sampling = None
@@ -270,12 +301,41 @@ class ExplorerSession:
             self.task, self.archive, self.run = run_saved(self.output_dir, request)
             self.pair = None
             self.edit = None
+            self.intervention = None
             return self._view()
         if self.task is None:
             raise ValueError("generate or open a dataset first")
         if data.get("expected_episode_id", self.task.episode_id) != self.task.episode_id:
             raise ValueError(
                 "The active dataset changed in another view. Reopen or replay this dataset first."
+            )
+        if action == "intervention_controls":
+            return intervention_controls(self.task)
+        if action == "intervene":
+            result = guarded_intervention(
+                self.output_dir,
+                "create",
+                _identity_numbers(data, for_browser=False),
+                before=self.task,
+                archive=self.archive,
+            )
+            self.intervention = saved_intervention(self.output_dir, result)
+            return self._view()
+        if action in ("intervention_graph", "intervention_export"):
+            if self.intervention is None:
+                raise ValueError("create or reopen a causal intervention comparison first")
+            if data.get("expected_intervention_id") != self.intervention.after.episode_id:
+                raise ValueError("The causal comparison changed in another view. Reopen it first.")
+            result = guarded_intervention(
+                self.output_dir,
+                "inspect" if action == "intervention_graph" else "export",
+                data,
+                pair_path=self.intervention.path,
+            )
+            if action == "intervention_export":
+                return intervention_download(self.output_dir, result)
+            return _identity_numbers(
+                {"before": result["before"], "after": result["after"]}, for_browser=True
             )
         if action == "mechanism":
             return mechanism_editor(self.task, limits=caller_limits(data))

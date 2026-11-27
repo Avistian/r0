@@ -25,6 +25,8 @@ window.r0request = async (action, data) => {
         .replace("/* CURVES */", (assets / "curves.js").read_text())
         .replace("/* GRAPHS */", (assets / "graphs.js").read_text())
         .replace("/* PAIRS */", (assets / "pairs.js").read_text())
+        .replace("<!-- INTERVENTIONS -->", (assets / "interventions.html").read_text())
+        .replace("/* INTERVENTIONS */", (assets / "interventions.js").read_text())
         .replace("/* WORKBENCH */", (assets / "workbench.js").read_text())
         .replace("/* NATIVE */", (assets / "native.js").read_text())
         .replace("/* TRANSPORT */", transport)
