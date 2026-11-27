@@ -36,7 +36,7 @@
 <label>Construction controls<textarea id="construction-controls" rows="18" spellcheck="false"></textarea></label>
 <p class="muted">Explicit/Cauchy controls edit parents, widths and channel pairs. Geometry sampling chooses widths and feature-node assignments. Attachment is an r0 extension; recursive motifs and rewrites are r0 adaptations, not exact published prior reproductions. Edit all topology controls in the topology_prior object. Choose root families and function priors. Plain geometry defaults to identity numerical readouts and adapter-score targets. An optional pipeline_prior object enables channel importance, L2, Gaussian noise, node importance and numerical converters for any geometry topology. Pipeline presets expose all switches, weight/scalarization choices and converter restrictions. Historical tuple transforms descendant state but captures the raw readout; historical graph transforms both; readout-only transforms the readout and preserves descendant state. Readouts precede innovation and node importance. Readout-only and frozen independent fitting are explicit adaptations; these are numerical pipelines, not native categorical variables. Keep noise_scale zero when using the sampled pipeline noise prior. These controls are separate from the dataset settings above.</p>
 <label>Exploration caps (JSON)<textarea id="exploration-limits" rows="3" spellcheck="false">{}</textarea></label>
-<p class="muted">Empty uses default causal limits. Explicit larger caps also authorize replay and inspection. Graph inspection, the mechanism editor and pair reopening run synchronously under these caps, outside the generation timeout. Workloads are not promised at every combination of maxima.</p>
+<p class="muted">Empty uses default causal limits. Explicit larger caps also authorize replay and inspection. Standalone network trace and editor preparation use the timeout guard. Other graph inspection, mechanism editors and pair reopening run synchronously under these caps, outside the generation timeout. Workloads are not promised at every combination of maxima.</p>
 <button id="construct" type="button">Construct mechanism and save dataset</button>
 </details>
 <details><summary>Replay or open saved data</summary>
@@ -103,6 +103,7 @@
 </section>
 </article>
 <article><h3 id="curve-title">Response curve</h3><p id="curve-description" class="muted">Vary the feature selected above. Every other input stays fixed at the chosen row. This shows the saved function, without observation noise or class-separation adjustments.</p>
+<label id="network-reference-label" hidden>Internal innovation reference<select id="network-reference"><option value="zero">Zero innovations (means retained)</option><option value="original-row">Fixed innovations from original selected row</option></select><span class="muted">Raw latent channels; neither a conditional mean nor a class probability.</span></label>
 <div class="chart-controls"><label>Fixed inputs from row<input id="curve-row" type="number" min="0" value="0"></label><label>Curve points<input id="curve-points" type="number" min="2" max="512" value="129"></label></div>
 <div id="gp-options" hidden>
 <div class="chart-controls"><label>Additional draws<input id="gp-draws" type="number" min="0" max="8" value="0"></label><label>Draw seed<input id="gp-seed" inputmode="numeric" value="42"></label></div>

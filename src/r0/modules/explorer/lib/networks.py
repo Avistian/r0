@@ -3,7 +3,7 @@
 import json
 from dataclasses import asdict, replace
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from r0.modules import priors
 
@@ -91,25 +91,69 @@ def network_editor(recipe: priors.NetworkRecipe | priors.NetworkInputView) -> di
         if isinstance(recipe, priors.NetworkInputView)
         else authored
     )
+    return network_editor_record(
+        asdict(editable), recipe.version, isinstance(recipe, priors.MatchedNetworkInputView)
+    )
+
+
+def network_editor_record(editable: dict[str, Any], version: str, matched: bool) -> dict[str, Any]:
+    base = editable.get("base", editable)
     return {
         "kind": "mechanism-edit",
         "network": True,
-        "matching_edit": isinstance(recipe, priors.MatchedNetworkInputView),
-        "construction": recipe.version,
-        "editable_recipe": asdict(editable),
+        "matching_edit": matched,
+        "construction": version,
+        "editable_recipe": editable,
         "notice": NOTICE,
         "nodes": [
             {
                 "index": i,
-                "parents": list(b.parents),
-                "width": b.output_width,
-                "experts": len(b.experts),
-                "gated": b.gate is not None,
-                "skip_sources": [s.source for s in b.skips],
+                "parents": b["parents"],
+                "width": len(b["experts"][0]["bias"]),
+                "experts": len(b["experts"]),
+                "gated": b["gate"] is not None,
+                "skip_sources": [s["source"] for s in b["skips"]],
             }
-            for i, b in enumerate(base.function.blocks)
+            for i, b in enumerate(base["network"]["blocks"])
         ],
     }
+
+
+def guarded_network_editor(
+    task: priors.TrainingTask,
+    data: dict[str, Any],
+    output_dir: Path,
+    *,
+    limits: priors.CausalLimits,
+) -> dict[str, Any] | None:
+    from r0.modules.generation import run_guarded_document
+
+    raw = json.loads(task.recipe_json)["recipe"]
+    if raw.get("version") not in (
+        "standalone-network-v1",
+        "network-input-view-v1",
+        "network-input-view-v2",
+    ):
+        return None
+    result = run_guarded_document(
+        {
+            "validation": "network-editor",
+            "recipe": raw,
+            "causal_limits": asdict(limits),
+            "max_seconds": data.get("max_seconds", 60),
+            "max_bytes": data.get("max_bytes", 256 * 1024**2),
+        },
+        output_dir / "network-editor",
+    )
+    if result.timed_out:
+        raise ValueError("Network editor preparation timed out; dataset unchanged")
+    if result.returncode or result.summary is None:
+        raise ValueError("Network editor preparation failed: " + result.stderr[-2000:])
+    return network_editor_record(
+        cast(dict[str, Any], result.summary["recipe"]),
+        raw["version"],
+        raw["version"] == "network-input-view-v2",
+    )
 
 
 def network_details(recipe: dict[str, Any]) -> dict[str, Any]:
@@ -133,8 +177,11 @@ def network_details(recipe: dict[str, Any]) -> dict[str, Any]:
             f"{effective['weight_scale']:.6g}; width scope {profile['width_scope']}. "
             "Scalar source laws do not make the surrounding architecture a full paper reproduction."
         )
+    from r0.modules.explorer.lib.source_root_details import source_root_details
+
     return {
         "kind": "standalone-network",
+        "source_root": source_root_details((view["base"] if view else recipe).get("root")),
         "input_view": None
         if view is None
         else {
@@ -223,3 +270,51 @@ def validate_editor_draft(
             "Invalid network draft: " + (detail[-1] if detail else "validation failed")
         )
     return {"recipe": result.summary["recipe"]}
+
+
+def noise_editor_guarded(
+    data: dict[str, Any],
+    output_dir: Path,
+    *,
+    limits: priors.CausalLimits,
+    recipe: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    from r0.modules.generation import run_guarded_document
+
+    result = run_guarded_document(
+        {
+            "validation": "network-noise-editor" if recipe is not None else "network-noise-draft",
+            "recipe": recipe if recipe is not None else data["recipe"],
+            "innovation_plan": data.get("innovation_plan"),
+            "causal_limits": asdict(limits),
+            "max_seconds": data.get("max_seconds", 60),
+            "max_bytes": data.get("max_bytes", 256 * 1024**2),
+        },
+        output_dir / "noise-editor-validation",
+    )
+    if result.timed_out:
+        raise ValueError("Network noise editor timed out; accepted draft unchanged")
+    if result.returncode or result.summary is None:
+        detail = result.stderr.strip().splitlines()
+        raise ValueError(
+            "Invalid network noise draft: " + (detail[-1] if detail else "validation failed")
+        )
+    return result.summary
+
+
+def network_editor_action(
+    action: str,
+    data: dict[str, Any],
+    task: priors.TrainingTask,
+    output_dir: Path,
+    *,
+    limits: priors.CausalLimits,
+) -> dict[str, Any] | None:
+    if action == "network_noise_draft":
+        return noise_editor_guarded(data, output_dir, limits=limits)
+    if action == "network_draft":
+        return validate_editor_draft(data, output_dir, limits=limits, source=task.recipe_json)
+    raw = json.loads(task.recipe_json)["recipe"]
+    if raw.get("version") == "standalone-network-innovations-v1":
+        return noise_editor_guarded(data, output_dir, limits=limits, recipe=raw)
+    return None

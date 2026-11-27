@@ -1,6 +1,7 @@
 """Workbench controls adapt to public sampled-graph construction APIs."""
 
 from dataclasses import asdict, replace
+from pathlib import Path
 from typing import Any, cast
 
 from r0.modules import priors
@@ -13,7 +14,9 @@ from r0.modules.explorer.lib.native import (
     sampled_native_example,
 )
 from r0.modules.explorer.lib.network_hyperprior_examples import network_hyperprior_examples
+from r0.modules.explorer.lib.network_innovation_examples import network_innovation_examples
 from r0.modules.explorer.lib.networks import network_editor, network_examples
+from r0.modules.explorer.lib.source_root_examples import source_root_examples
 
 
 def caller_limits(data: dict[str, Any]) -> priors.CausalLimits:
@@ -77,7 +80,9 @@ def construction_examples() -> dict[str, Any]:
         **composed_examples(common, geometry, sampled_native_example()),
         **fitted_examples(),
         **network_examples(),
+        **source_root_examples(),
         **network_hyperprior_examples(),
+        **network_innovation_examples(),
         **converted_examples(),
         **{
             f"Numerical pipeline: {variant}": {
@@ -192,7 +197,18 @@ def frozen_archive_version(version: object) -> bool:
     return str(version).startswith("sampled-") or version in (
         "fitted-functional-causal-v1",
         "standalone-network-v1",
+        "standalone-network-innovations-v1",
         "population-fitted-functional-causal-v1",
         "network-input-view-v1",
         "network-input-view-v2",
     )
+
+
+def prepare_mechanism_editor(
+    task: priors.TrainingTask, data: dict[str, Any], output_dir: Path
+) -> dict[str, Any]:
+    from r0.modules.explorer.lib.networks import guarded_network_editor
+
+    limits = caller_limits(data)
+    prepared = guarded_network_editor(task, data, output_dir, limits=limits)
+    return prepared if prepared is not None else mechanism_editor(task, limits=limits)

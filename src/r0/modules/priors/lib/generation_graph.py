@@ -176,6 +176,7 @@ def explain_generation(
             "causal-v1",
             "causal-v2",
             "functional-causal-v1",
+            "standalone-network-innovations-v1",
             "fitted-functional-causal-v1",
             "sampled-fitted-functional-causal-v1",
             "population-fitted-functional-causal-v1",
@@ -196,6 +197,7 @@ def explain_generation(
             "causal-v1",
             "causal-v2",
             "functional-causal-v1",
+            "standalone-network-innovations-v1",
             "fitted-functional-causal-v1",
             "sampled-fitted-functional-causal-v1",
             "population-fitted-functional-causal-v1",
@@ -220,6 +222,7 @@ def explain_generation(
                     "causal-v1",
                     "causal-v2",
                     "functional-causal-v1",
+                    "standalone-network-innovations-v1",
                     "fitted-functional-causal-v1",
                     "sampled-fitted-functional-causal-v1",
                     "population-fitted-functional-causal-v1",
@@ -239,6 +242,7 @@ def explain_generation(
         "causal-v1",
         "causal-v2",
         "functional-causal-v1",
+        "standalone-network-innovations-v1",
         "fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
         "population-fitted-functional-causal-v1",
@@ -253,6 +257,7 @@ def explain_generation(
     observed_step = nodes.pop(0) if causal else None
     if card["version"] in (
         "functional-causal-v1",
+        "standalone-network-innovations-v1",
         "fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
         "population-fitted-functional-causal-v1",
@@ -298,6 +303,7 @@ def explain_generation(
         recipe = record["recipe"]
         if recipe["version"] in (
             "functional-causal-v1",
+            "standalone-network-innovations-v1",
             "fitted-functional-causal-v1",
             "sampled-fitted-functional-causal-v1",
             "population-fitted-functional-causal-v1",

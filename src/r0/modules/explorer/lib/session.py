@@ -11,7 +11,7 @@ from r0.modules.explorer.lib.construction import (
     caller_limits,
     construction_examples,
     frozen_archive_version,
-    mechanism_editor,
+    prepare_mechanism_editor,
 )
 from r0.modules.explorer.lib.curves import inspect_curve, inspect_gp_curve
 from r0.modules.explorer.lib.edits import SavedEdit, create_edit, open_edit
@@ -37,7 +37,6 @@ from r0.modules.priors import (
     QuadraticRecipe,
     SmoothRecipe,
     TrainingTask,
-    explain_generation,
     recipe_from_dict,
     sample_recipe,
 )
@@ -332,14 +331,16 @@ class ExplorerSession:
             return _identity_numbers(
                 {"before": result["before"], "after": result["after"]}, for_browser=True
             )
-        if action == "network_draft":
-            from r0.modules.explorer.lib.networks import validate_editor_draft
+        if action in ("network_noise_draft", "network_draft", "mechanism"):
+            from r0.modules.explorer.lib.networks import network_editor_action
 
-            return validate_editor_draft(
-                data, self.output_dir, limits=caller_limits(data), source=self.task.recipe_json
+            result = network_editor_action(
+                action, data, self.task, self.output_dir, limits=caller_limits(data)
             )
+            if result is not None:
+                return result
         if action == "mechanism":
-            return mechanism_editor(self.task, limits=caller_limits(data))
+            return prepare_mechanism_editor(self.task, data, self.output_dir)
         if action == "edit":
             if self.archive is None:
                 raise ValueError("save the active dataset before editing")
@@ -384,13 +385,9 @@ class ExplorerSession:
         if action == "parameters":
             return {"parameters": json.loads(self.task.mechanism_json)}
         if action == "graph":
-            graph = explain_generation(
-                self.task,
-                data["indices"],
-                component=data.get("component"),
-                column_start=data.get("column_start", 0),
-                limits=caller_limits(data),
-            )
+            from r0.modules.explorer.lib.network_graph import inspect_graph
+
+            graph = inspect_graph(self.task, self.archive, self.output_dir, data)
             return {"graph": _identity_numbers(graph, for_browser=True)}
         if action == "gp_curve":
             data = _identity_numbers(data, for_browser=False)
@@ -408,6 +405,7 @@ class ExplorerSession:
         if action == "curve":
             if json.loads(self.task.recipe_json)["recipe"].get("version") in (
                 "standalone-network-v1",
+                "standalone-network-innovations-v1",
                 "network-input-view-v1",
                 "network-input-view-v2",
             ):

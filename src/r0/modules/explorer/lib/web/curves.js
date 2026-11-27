@@ -1,14 +1,17 @@
 "use strict";
 let curve = null;
+function isNoisyNetwork() {return current?.view.recipe.recipe.version === "standalone-network-innovations-v1";}
 function isGP() { return current?.view.recipe.recipe.version === "exact-gp-v1"; }
 function clearCurve() {
   curve = null;
   $("response-plot").replaceChildren(); $("curve-values").textContent = ""; $("curve-json").hidden = true;
+  const noisy=isNoisyNetwork(); $("network-reference-label").hidden=!noisy;
   const gp = isGP(); $("gp-options").hidden = !gp;
   $("curve-title").textContent = gp ? "Conditional GP view" : "Response curve";
   $("curve-description").textContent = gp
     ? "Vary one feature while fixing the others to the selected row. Condition on the complete saved GP draw, including calibration points. The mean and additional draws are new values; dots show original dataset values on this slice. Observation noise and class adjustments are excluded."
     : "Vary the feature selected above. Every other input stays fixed at the chosen row. This shows the saved function, without observation noise or class-separation adjustments.";
+  if(noisy) {$("curve-title").textContent="Internal-noise latent reference"; $("curve-description").textContent="Vary one observed feature while fixing other inputs. Choose zero innovations (mean terms retained), or hold every internal innovation at the selected original row's draw. Root transformations and target adapters are not reapplied. This is not a conditional mean or class probability.";}
   $("curve").textContent = gp ? "Evaluate conditional view" : "Evaluate response curve";
   $("curve-points").max = gp ? 256 : 512;
   $("curve-note").textContent = gp
@@ -21,7 +24,7 @@ function drawCurve() {
   else {
     const channel = Math.min(number("channel"), curve.scores[0].length - 1);
     const values = curve.scores.map(row => row[channel]);
-    const {svg, x, y} = plotFrame("response-plot", "Saved function response", `x${curve.feature}`, `Raw latent signal ${channel}`, ...curve.bounds, Math.min(...values), Math.max(...values));
+    const {svg, x, y} = plotFrame("response-plot", curve.kind === "network_innovation_reference" ? `${curve.reference} innovation reference` : "Saved function response", `x${curve.feature}`, `Raw latent signal ${channel}`, ...curve.bounds, Math.min(...values), Math.max(...values));
     svg.append(element("polyline", {points: curve.values.map((value, i) => `${x(value)},${y(values[i])}`).join(" "), fill: "none", stroke: "#17826b", "stroke-width": 2}));
     $("curve-note").textContent = `${curve.points} evaluated points across the observed range of x${curve.feature} (${curve.feature_role}). All other inputs are fixed to row ${curve.anchor_row}. Lines connect these points; behavior between them is not resolved. ${curve.score_semantics || ""}`;
   }
@@ -55,9 +58,9 @@ function drawGP() {
   $("curve-note").textContent = `${numerical}. ${curve.points} points; ${samples.length} additional draws${samples.length ? ` with seed ${curve.sampling.seed}` : ""}. The band is pointwise uncertainty of the latent function, not observation noise. Lines connect evaluated points. Dots match the fixed active coordinates; irrelevant inputs may differ. ${diagnostics.approximate ? "The reported error is the largest normalized change to the saved support projection. Original values still take precedence at exact saved coordinates." : ""}`;
 }
 function curveArguments() {
-  return {feature: number("feature"), anchor_row: number("curve-row"), points: number("curve-points"), ...(isGP() ? {draws: number("gp-draws"), seed: number("gp-draws") ? $("gp-seed").value : null, allow_rank_truncation: $("gp-approximate").checked} : {})};
+  return {feature: number("feature"), anchor_row: number("curve-row"), points: number("curve-points"), ...(isNoisyNetwork() ? {reference:$("network-reference").value} : {}), ...(isGP() ? {draws: number("gp-draws"), seed: number("gp-draws") ? $("gp-seed").value : null, allow_rank_truncation: $("gp-approximate").checked} : {})};
 }
-for (const id of ["curve-row", "curve-points", "gp-draws", "gp-seed", "gp-approximate"]) $(id).onchange = clearCurve;
+for (const id of ["network-reference", "curve-row", "curve-points", "gp-draws", "gp-seed", "gp-approximate"]) $(id).onchange = clearCurve;
 $("curve").onclick = () => act("Evaluating saved function…", async () => {
   clearCurve();
   const parameters = curveArguments();

@@ -222,3 +222,41 @@ sampled wrapper and can be reopened without discarding it to an authored law.
 The wrapper does not add a source-profile explorer, prototype-mixture law,
 source-scale hyperprior or source-root replacement intervention. Those remain
 separate required slices; accepting this record alone is not whole-issue acceptance.
+
+## Source-root explorer delivery
+
+The shared explorer and local notebook callback expose 107 source-root construction
+presets: all seven standalone architecture families crossed with the three pinned
+P1 selectors (standard or presampled Gaussian parameters), the explicitly labeled
+P2 node-mixture reconstruction, seven forced coordinate choices, and a heterogeneous
+seven-coordinate root. Additional heterogeneous presets demonstrate independent
+centering and standardization. Full JSON controls can compose the root wrapper with
+an authored network or a source-profiled network hyperprior, set coordinate-wise
+normalization modes, choose profile parameters and raw limits, and retain an exact
+root construction seed separately from architecture and dataset identities.
+
+The `source-root-network` wrapper retains the `SampledSourceRootBase` envelope.
+The root seed owns separate model-parameter, coordinate-selection and independent
+calibration streams. Identity uses no calibration rows or stream; other modes use
+explicit independent rows. Frozen Next changes the dataset identity while retaining
+all root selection, calibration and raw records. Construction details expose these
+records and distinguish pinned code, paper omissions and r0 adaptations.
+
+Network editor preparation and original-row trace replay decode inside the bounded
+worker, with the saved archive and exact task identity. Architecture edits retain
+the sampled root by default. The explicit authored-root policy copies its law and
+optional independent calibration into `SourceRootBase`; it does not claim the edited
+law was sampled. The original archive stays unchanged. Invalid text remains editable,
+validated diagrams remain intact, and timeout/failure cannot publish a replacement.
+Save, reopen, local export and response curves use the shared workflows. Curves
+consume observed inputs (after any root normalization), so they do not apply the
+root transform a second time.
+
+This delivery does not implement source batch refitting as a frozen independent
+root, resolve the P1 paper's underspecified multivariate law, or assert P2 prototype
+coupling. Root plus internal neural-noise composition is available through a nested
+`network-innovations` wrapper: all 107 root presets have noisy counterparts, with
+separate architecture, root-profile/calibration and noise-statistics streams. The
+compiled root uses node-v2 and retains the exact sampled-root envelope; zero/fixed
+noise references consume observed root outputs once. Root edits validate the
+complete noise plan before accepting the draft. Hosted Colab execution is NOT_RUN; the local shared callback is covered.

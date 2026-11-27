@@ -1,7 +1,7 @@
 """Read-only authored network admission inside the killable generation worker."""
 
 import json
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from typing import Any
 
 from r0.modules import priors
@@ -17,6 +17,16 @@ def validate_network_draft(data: dict[str, Any]) -> dict[str, Any]:
     limits = priors.CausalLimits(**data.get("causal_limits", {}))
     recipe = priors.recipe_from_dict(data["recipe"], limits=limits)
     base = recipe.base if isinstance(recipe, priors.NetworkInputView) else recipe
+    if data.get("validation") == "network-editor":
+        if not isinstance(base, priors.NetworkRecipe):
+            raise ValueError("network editor requires a network recipe")
+        authored = replace(base, network=base.function)
+        editable = (
+            priors.NetworkInputView(authored, recipe.task, recipe.active_inputs)
+            if isinstance(recipe, priors.NetworkInputView)
+            else authored
+        )
+        return {"status": "VALIDATED", "recipe": asdict(editable)}
     if not isinstance(base, priors.NetworkRecipe) or not isinstance(
         base.network, priors.FrozenNetworkFunction
     ):

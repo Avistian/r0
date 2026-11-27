@@ -1,0 +1,48 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import assert from "node:assert/strict";
+import {openBrowser} from "./explorer_browser.mjs";
+
+const [port,url,out]=process.argv.slice(2),b=await openBrowser(Number(port),url,out);
+try {
+  const preset="Source root: heterogeneous / gated / independent standardize (r0)";
+  await b.evaluate(`$('construction-panel').open=true;$('construction-family').value=${JSON.stringify(preset)};$('construction-family').onchange();$('construction-seed').value='7';$('seed').value='11';$('task-id').value='18014398509481987';{const c=JSON.parse($('construction-controls').value);c.source.task.rows=16;c.source.task.context_rows=8;$('construction-controls').value=JSON.stringify(c);}`);
+  assert.equal(await b.evaluate("$('source-root-controls').hidden"),false);
+  await b.evaluate("$('source-root-rows').value='32';$('source-root-seed').value='9007199254740997'");
+  await b.click("source-root-apply");await b.click("construct");
+  const raw=await b.evaluate("current.recipe_json"), original=JSON.parse(raw).recipe.root;
+  assert.equal(original.version,"sampled-source-root-base-v1");
+  assert.equal(original.calibration_rows,32);
+  assert.equal(await b.evaluate("current.view.construction_details.source_root.independent_calibration.rows"),32);
+  await b.click("next");
+  assert.equal(await b.evaluate("$('task-id').value"),"18014398509481988");
+  assert.deepEqual(JSON.parse(await b.evaluate("current.recipe_json")).recipe.root,original);
+  await b.evaluate(`$('replay-record').value=${JSON.stringify(raw)}`);await b.click("replay");
+  await b.click("mechanism-load");
+  assert.equal(await b.evaluate("$('source-root-editor').hidden"),false);
+  assert.equal(await b.evaluate("$('source-root-json').readOnly"),true);
+  await b.evaluate("$('source-root-edit-policy').value='authored';$('source-root-edit-policy').onchange();$('source-root-json').value='{}'");
+  const diagram=await b.evaluate("$('network-structure').innerHTML");
+  let invalid=false;try{await b.click("source-root-edit-apply");}catch{invalid=true;}assert.ok(invalid);
+  assert.equal(await b.evaluate("$('source-root-json').value"),"{}");
+  assert.equal(await b.evaluate("$('network-structure').innerHTML"),diagram);
+  assert.equal(await b.evaluate("current.recipe_json"),raw);
+  const authored={law:original.law,calibration:null,version:"source-root-base-v1"};
+  authored.law.coordinates[0].location=3;
+  await b.evaluate(`$('source-root-json').value=${JSON.stringify(JSON.stringify(authored))}`);
+  await b.click("source-root-edit-apply");await b.screenshot("authored-root-editor.png");await b.click("network-save");
+  assert.deepEqual(await b.evaluate("current.edit.after.recipe.recipe.root"),authored);
+  assert.equal(await b.evaluate("current.recipe_json"),raw);
+  await b.click("edit-open");await b.click("edit-export");await b.downloaded("mechanism-edit.zip",1);
+  await b.waitFor("!busy");
+  const trace=await b.evaluate("request('graph',{indices:[15,0,15],...limits()})");
+  assert.deepEqual(trace.graph.rows,[15,0,15]);
+  const curve=await b.evaluate("request('curve',{feature:0,points:7,...limits()})");
+  assert.equal(curve.curve.scores.length,7);
+  await fs.writeFile(path.join(out,"curve.json"),JSON.stringify(curve,null,2));
+  const timeout=await b.evaluate("request('graph',{indices:[0],...limits(),max_seconds:0.000001}).then(()=>false,()=>true)");
+  assert.ok(timeout);assert.equal(await b.evaluate("current.recipe_json"),raw);
+  await b.evaluate("$('construction-details').open=true");await b.screenshot("source-root-provenance.png");
+  assert.deepEqual(b.exceptions,[]);
+  await fs.writeFile(path.join(out,"receipt.json"),JSON.stringify({status:"PASS",preset,raw,authored,normalizedRows:32,exactIdentity:true,invalidDraftRetained:true,guardedTraceRows:trace.graph.rows,timeoutPreserved:true,exceptions:b.exceptions},null,2));
+} finally {b.close();}
