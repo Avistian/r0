@@ -167,3 +167,17 @@ def test_grouped_convolution_intervention_archive_and_channel_ancestry(layout: s
         p.recipe_from_dict(json.loads(restored.recipe_json)["recipe"]), seed=23, task_id=2**54 + 3
     )
     assert torch.equal(replay.targets, pair.after.targets)
+
+
+@pytest.mark.parametrize("wrapped", [False, True])
+def test_shared_function_counts_complete_convolution_metadata_before_backend(wrapped: bool):
+    layer = p.FeatureConv1DLayer(p.Conv1DGeometry(1, 1), (((1.0,),),), (0.0,))
+    function = p.FrozenFeatureConv1D(1, 1, (layer,) * 32)
+    member = p.FrozenParentFunction((function,), "mean") if wrapped else function
+    with (
+        patch("torch.nn.functional.conv1d", side_effect=AssertionError("backend before metadata")),
+        pytest.raises(ValueError, match="metadata|parameter"),
+    ):
+        p.evaluate_frozen_function(
+            member, torch.ones((1, 1), dtype=torch.float64), limits=p.CausalLimits(parameters=200)
+        )

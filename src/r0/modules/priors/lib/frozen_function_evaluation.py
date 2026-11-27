@@ -340,17 +340,35 @@ def admit_frozen_function(
     if type(rows) is not int or not 1 <= rows < 2**63:
         raise ValueError("function evaluation rows must be positive integers below 2**63")
     widths, working, floor = function_geometry(function)
-    return limits.admit_dimensions(
+    parameters, storage_adjustment = function.parameter_count, 0
+    if isinstance(function, FrozenFeatureConv1D) or (
+        isinstance(function, FrozenParentFunction)
+        and any(
+            isinstance(member, FrozenFeatureConv1D)
+            for member in (*function.children, *((function.joint,) if function.joint else ()))
+        )
+    ):
+        from r0.modules.priors.lib.joint_function_admission import function_record_cost
+
+        # Retained layer geometry, activation controls and containers count too.
+        # Parent composition must charge its complete record before any child runs.
+        parameters, storage = function_record_cost(function, limits)
+        storage_adjustment = storage - 64 * parameters
+    report = limits.admit_dimensions(
         widths,
         tuple(() for _ in widths),
         rows=rows,
         calibration_rows=0,
         features=function.input_width,
         outputs=function.output_width,
-        extra_parameters=function.parameter_count,
+        extra_parameters=parameters,
         extra_working_channels=working,
         row_floor=floor,
     )
+    report["estimated_working_bytes"] += storage_adjustment
+    if report["estimated_working_bytes"] > limits.working_bytes:
+        raise ValueError("convolution complete metadata and working storage exceed limits")
+    return report
 
 
 def evaluate_admitted_function(
