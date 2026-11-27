@@ -6,6 +6,8 @@ the integration surface for the next sampled-pipeline increment. Independent
 ancestral fitting, named shared shape choices, source pipeline profiles and their
 unfiltered census are still required; an authored pipeline does not claim those.
 The full accepted #28 scope remains in force.
+The subsequent [root-input and activation-converter increment](issue-28-root-input-converters.md)
+extends the authored surface; the checkpoint evidence below remains historical.
 
 ## Source order and explicit variants
 
@@ -31,7 +33,7 @@ The normal stochastic noise response still depends on the pre-noise affine
 response. Its broader exogenous laws and signal-dependent scaling are explicit
 r0 extensions to this source pipeline order. The authored stage list also permits
 broader compositions; it does not claim each composition is a published recipe.
-An authored root currently has its deterministic bias before the declared
+At this checkpoint an authored root had its deterministic bias before the declared
 after-output innovation. This is not the source's separate RandomPoints root draw
 followed by later Gaussian innovation. Sampled source integration must retain
 both random inputs at their distinct positions; the current single root
@@ -41,7 +43,7 @@ finite and positive. Channel factors are recorded realizations, not silently
 renormalized or sampled. The source standardization/importance sampling law remains
 part of the upcoming sampled construction.
 
-Each `NumericalConverter` selects one unique channel and an identity or frozen
+At this checkpoint each `NumericalConverter` selected one unique channel and an identity or frozen
 one-channel Kumaraswamy transform. Let x be that channel before conversion and K
 its frozen warp:
 

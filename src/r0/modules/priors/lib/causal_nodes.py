@@ -138,6 +138,67 @@ class StochasticCausalNode(ActivatedCausalNode):
 
 
 @dataclass(frozen=True, slots=True)
+class RootInputCausalNode(StochasticCausalNode):
+    """Independent root input before activation and separate structural innovation."""
+
+    root_exogenous: ExogenousDistribution = ExogenousDistribution()
+    root_scale: tuple[float, ...] = (1.0,)
+    root_version: str = "root-input-v1"
+    noise_position: str = "after_output"
+
+    @property
+    def structural_parameter_count(self) -> int:
+        return (
+            super(RootInputCausalNode, self).structural_parameter_count
+            + self.root_exogenous.parameter_count
+            + len(self.root_scale)
+        )
+
+    @property
+    def working_extra_channels(self) -> int:
+        return super(RootInputCausalNode, self).working_extra_channels + 8 * len(self.bias)
+
+    @property
+    def working_row_floor(self) -> int:
+        return max(
+            super(RootInputCausalNode, self).working_row_floor,
+            256 if self.root_exogenous.inputs.bound is not None else 0,
+        )
+
+    def root_sources(self) -> tuple[set[int], ...]:
+        return tuple(
+            sources if scale != 0 else set[int]()
+            for sources, scale in zip(
+                self.root_exogenous.channel_sources(len(self.bias)), self.root_scale, strict=True
+            )
+        )
+
+    def has_noise_scale(self, channel: int) -> bool:
+        response = self.noise_response
+        root_varies = self.root_scale[channel] != 0 and (
+            not self.root_exogenous.factor
+            or any(row[channel] != 0 for row in self.root_exogenous.factor)
+        )
+        zero_affine = self.bias[channel] == 0 and not root_varies
+        zero_response = response.offset == 0 and (response.strength == 0 or zero_affine)
+        return self.noise_scale[channel] != 0 and not zero_response
+
+    def __post_init__(self) -> None:
+        StochasticCausalNode.__post_init__(self)
+        if self.parents or self.weights or self.root_version != "root-input-v1":
+            raise ValueError("root inputs require a parentless root-input-v1 node")
+        if type(self.root_exogenous) is not ExogenousDistribution:
+            raise ValueError("root input requires a frozen exogenous law")
+        self.root_exogenous.validate_width(len(self.bias))
+        if (
+            type(self.root_scale) is not tuple
+            or len(self.root_scale) != len(self.bias)
+            or any(type(v) not in (int, float) or not math.isfinite(v) for v in self.root_scale)
+        ):
+            raise ValueError("root scales must be finite and match the node width")
+
+
+@dataclass(frozen=True, slots=True)
 class MatrixCausalNode(StochasticCausalNode):
     weight_construction: WeightConstruction = FactorizedWeights()
 
@@ -162,7 +223,7 @@ class MatrixCausalNode(StochasticCausalNode):
 def causal_node_from_dict(data: dict[str, Any]) -> CausalNode:
     """One decoder shared by recipe loading and original-row inspection."""
     fields = dict(data)
-    for key in ("parents", "bias", "noise_scale"):
+    for key in ("parents", "bias", "noise_scale", "root_scale"):
         if key in fields:
             fields[key] = tuple(fields[key])
     if "weights" in fields:
@@ -180,12 +241,28 @@ def causal_node_from_dict(data: dict[str, Any]) -> CausalNode:
             fields[key] = activation_from_dict(fields[key])
     if "weight_construction" in fields:
         fields["weight_construction"] = weight_construction_from_dict(fields["weight_construction"])
-    if any(key in fields for key in ("exogenous", "noise_response", "weight_construction")):
+    if any(
+        key in fields
+        for key in (
+            "exogenous",
+            "noise_response",
+            "weight_construction",
+            "root_exogenous",
+            "root_scale",
+            "root_version",
+        )
+    ):
         spec = dict(fields.get("exogenous", {}))
         spec["inputs"] = InputDistribution(**spec.get("inputs", {}))
         spec["factor"] = tuple(tuple(row) for row in spec.get("factor", ()))
         fields["exogenous"] = ExogenousDistribution(**spec)
         fields["noise_response"] = NoiseResponse(**fields.get("noise_response", {}))
+        if any(key in fields for key in ("root_exogenous", "root_scale", "root_version")):
+            root = dict(fields.get("root_exogenous", {}))
+            root["inputs"] = InputDistribution(**root.get("inputs", {}))
+            root["factor"] = tuple(tuple(row) for row in root.get("factor", ()))
+            fields["root_exogenous"] = ExogenousDistribution(**root)
+            return RootInputCausalNode(**fields)
         return (
             MatrixCausalNode(**fields)
             if "weight_construction" in fields

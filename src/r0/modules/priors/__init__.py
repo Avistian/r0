@@ -47,6 +47,7 @@ from r0.modules.priors.lib.causal_graph import CausalGraph as CausalGraph
 from r0.modules.priors.lib.causal_graph import CausalGraphPrior as CausalGraphPrior
 from r0.modules.priors.lib.causal_graph import sample_causal_graph as sample_causal_graph
 from r0.modules.priors.lib.causal_limits import CausalLimits as CausalLimits
+from r0.modules.priors.lib.causal_nodes import RootInputCausalNode as RootInputCausalNode
 from r0.modules.priors.lib.causal_pipeline import CausalPipelineRecipe as CausalPipelineRecipe
 from r0.modules.priors.lib.causal_preferred import PreferredCausalRecipe as PreferredCausalRecipe
 from r0.modules.priors.lib.causal_sampled import SampledCausalRecipe as SampledCausalRecipe

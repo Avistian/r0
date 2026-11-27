@@ -1,7 +1,12 @@
 """Potential exogenous ancestry distinguishes converted readouts from later state noise."""
 
 from r0.modules.priors.lib.causal_activations import CausalActivation
-from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode, CausalNode, StochasticCausalNode
+from r0.modules.priors.lib.causal_nodes import (
+    ActivatedCausalNode,
+    CausalNode,
+    RootInputCausalNode,
+    StochasticCausalNode,
+)
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline
 
 type Sources = list[set[tuple[int, int]]]
@@ -31,6 +36,11 @@ def pipeline_ancestry(
             )
             for channel in range(len(node.bias))
         ]
+        if isinstance(node, RootInputCausalNode):
+            affine = [
+                {(index, len(node.bias) + source) for source in sources}
+                for sources in node.root_sources()
+            ]
         before = activation_sources(affine, node.output_activation)
         for stage in pipeline.stages:
             before = activation_sources(before, stage)
@@ -55,9 +65,15 @@ def pipeline_ancestry(
                 {(index, j)} if scale != 0 else set[tuple[int, int]]()
                 for j, scale in enumerate(node.noise_scale)
             ]
+        captured: dict[int, set[tuple[int, int]]] = {}
+        for converter in pipeline.converters:
+            channel = converter.channel
+            warped = activation_sources([before[channel]], converter.transform)[0]
+            captured[channel] = set(before[channel] if converter.captures_raw else warped)
+            if converter.changes_state:
+                before[channel] = warped
         state = [a | n for a, n in zip(before, noise, strict=True)]
-        captured = {c.channel for c in pipeline.converters}
         for channel, sources in enumerate(state):
-            readouts[index, channel] = set(before[channel] if channel in captured else sources)
+            readouts[index, channel] = set(captured.get(channel, sources))
         states.append(state)
     return readouts

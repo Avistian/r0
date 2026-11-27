@@ -14,6 +14,7 @@ from r0.modules.priors.lib.causal_moments import causal_moment_orders
 from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode as ActivatedCausalNode
 from r0.modules.priors.lib.causal_nodes import CausalNode as CausalNode
 from r0.modules.priors.lib.causal_nodes import MatrixCausalNode as MatrixCausalNode
+from r0.modules.priors.lib.causal_nodes import RootInputCausalNode as RootInputCausalNode
 from r0.modules.priors.lib.causal_nodes import StochasticCausalNode as StochasticCausalNode
 from r0.modules.priors.lib.causal_nodes import causal_node_from_dict as causal_node_from_dict
 from r0.modules.priors.lib.linear import LinearRecipe
@@ -73,6 +74,7 @@ class CausalRecipe:
                 ActivatedCausalNode,
                 StochasticCausalNode,
                 MatrixCausalNode,
+                RootInputCausalNode,
             ) or any(p >= i for p in node.parents):
                 raise ValueError("causal nodes must be in acyclic parent-before-child order")
             if isinstance(node, ActivatedCausalNode) and self.version != "causal-v2":
@@ -238,8 +240,11 @@ def generate_causal(
                 for j, indices in enumerate(node.exogenous.channel_sources(len(node.bias)))
             ]
         projected: list[set[tuple[int, int]]] = []
+        root_sources = node.root_sources() if isinstance(node, RootInputCausalNode) else ()
         for channel in range(len(node.bias)):
             related = set(sources[channel])
+            if root_sources:
+                related.update((i, len(node.bias) + source) for source in root_sources[channel])
             for incoming, parents in enumerate(incoming_ancestry):
                 if node.weights[incoming][channel] != 0:
                     related.update(parents)
@@ -256,7 +261,7 @@ def generate_causal(
             elif node.output_activation.mixes_channels:
                 shared = set[tuple[int, int]]().union(*projected)
                 if node.noise_position == "after_output":
-                    shared = {ref for ref in shared if ref[0] != i}
+                    shared = {ref for ref in shared if ref[0] != i or ref[1] >= len(node.bias)}
                 projected = [shared | source for source in sources]
         if (
             isinstance(node, StochasticCausalNode)

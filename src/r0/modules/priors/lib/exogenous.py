@@ -45,6 +45,17 @@ class ExogenousDistribution:
         return tuple(set(range(width)) if s and self.geometry == "ball" else s for s in sources)
 
     @property
+    def moment_order(self) -> float:
+        """Positive absolute moments strictly below this bound are finite."""
+        return (
+            self.inputs.df
+            if self.inputs.distribution == "student_t"
+            and self.inputs.bound is None
+            and self.geometry == "independent"
+            else math.inf
+        )
+
+    @property
     def parameter_count(self) -> int:
         return 4 + int(self.inputs.bound is not None) + len(self.factor) ** 2
 

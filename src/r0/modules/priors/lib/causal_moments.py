@@ -4,7 +4,12 @@ import math
 
 from r0.modules.priors.lib.calibrated_activations import CalibratedActivation
 from r0.modules.priors.lib.causal_activations import CausalActivation
-from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode, CausalNode, StochasticCausalNode
+from r0.modules.priors.lib.causal_nodes import (
+    ActivatedCausalNode,
+    CausalNode,
+    RootInputCausalNode,
+    StochasticCausalNode,
+)
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline
 
 _BOUNDED = {
@@ -108,17 +113,16 @@ def causal_moment_orders(
             )
             for j in range(len(node.bias))
         ]
+        if isinstance(node, RootInputCausalNode):
+            affine_fixed = [not sources for sources in node.root_sources()]
+            affine = [
+                math.inf if fixed else node.root_exogenous.moment_order for fixed in affine_fixed
+            ]
         noise = [math.inf] * len(node.bias)
         noise_fixed = [scale == 0 for scale in node.noise_scale]
         if isinstance(node, StochasticCausalNode):
             spec, response = node.exogenous, node.noise_response
-            base = (
-                spec.inputs.df
-                if spec.inputs.distribution == "student_t"
-                and spec.inputs.bound is None
-                and spec.geometry == "independent"
-                else math.inf
-            )
+            base = spec.moment_order
             for j, sources in enumerate(spec.channel_sources(len(node.bias))):
                 noise_fixed[j] = not node.has_noise_scale(j) or not sources
                 if not noise_fixed[j]:
@@ -144,13 +148,11 @@ def causal_moment_orders(
                     output, output_fixed = transform(output, output_fixed, pipeline.l2)
                 for converter in pipelines[index].converters:
                     channel = converter.channel
-                    warped, fixed_warped = _transform(
+                    warped, fixed_warped = _pipeline_transform(
                         [output[channel]], [output_fixed[channel]], converter.transform
                     )
-                    captured[channel] = (
-                        output[channel] if converter.variant == "historical-tuple" else warped[0]
-                    )
-                    if converter.variant != "readout-only":
+                    captured[channel] = output[channel] if converter.captures_raw else warped[0]
+                    if converter.changes_state:
                         output[channel], output_fixed[channel] = warped[0], fixed_warped[0]
             moments.append([min(a, n) for a, n in zip(output, noise, strict=True)])
             constants.append([a and n for a, n in zip(output_fixed, noise_fixed, strict=True)])

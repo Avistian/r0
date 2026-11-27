@@ -7,7 +7,12 @@ import numpy as np
 import torch
 
 from r0.modules.priors.lib.causal_activations import activate, activation_diagnostic
-from r0.modules.priors.lib.causal_nodes import ActivatedCausalNode, CausalNode, StochasticCausalNode
+from r0.modules.priors.lib.causal_nodes import (
+    ActivatedCausalNode,
+    CausalNode,
+    RootInputCausalNode,
+    StochasticCausalNode,
+)
 from r0.modules.priors.lib.causal_stochastic import stochastic_value
 from r0.modules.priors.lib.exogenous import sample_exogenous
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline, PipelineEvaluation
@@ -26,6 +31,7 @@ def causal_values(
     pipelines: tuple[CausalNodePipeline, ...] | None = None,
     readout_values: list[torch.Tensor] | None = None,
     pipeline_steps: list[list[tuple[str, torch.Tensor]]] | None = None,
+    root_values: list[torch.Tensor | None] | None = None,
 ) -> tuple[list[torch.Tensor], list[torch.Tensor]]:
     """Replay selected original rows without retaining all intermediate task values."""
     values: list[torch.Tensor] = []
@@ -49,6 +55,20 @@ def causal_values(
             noise = noise[list(indices)]
         if exogenous_values is not None:
             exogenous_values.append(torch.tensor(noise, dtype=torch.float64, device=device))
+        root_input = None
+        if isinstance(node, RootInputCausalNode):
+            root_draw = sample_exogenous(
+                node.root_exogenous,
+                rows,
+                len(node.bias),
+                lambda *keys: rng("root-input-v1", *keys),
+                i,
+            )
+            if indices is not None:
+                root_draw = root_draw[list(indices)]
+            root_input = torch.tensor(root_draw, dtype=torch.float64, device=device)
+        if root_values is not None:
+            root_values.append(root_input)
         if isinstance(node, StochasticCausalNode):
             parent_values = (
                 torch.cat([values[p] for p in node.parents], dim=1) if node.parents else None
@@ -60,6 +80,7 @@ def causal_values(
                 i,
                 diagnostics,
                 before_noise=pipeline.before_noise if pipeline is not None else None,
+                root_input=root_input,
             )
             if noise_scales is not None:
                 noise_scales.append(scale)

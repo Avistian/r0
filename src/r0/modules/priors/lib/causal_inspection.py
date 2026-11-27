@@ -10,6 +10,7 @@ import torch
 from r0.modules.priors.lib.causal import (
     ActivatedCausalNode,
     MatrixCausalNode,
+    RootInputCausalNode,
     StochasticCausalNode,
     causal_node_from_dict,
     causal_rng,
@@ -31,6 +32,7 @@ def causal_steps(
 
     exogenous: list[torch.Tensor] = []
     scales: list[torch.Tensor] = []
+    root_values: list[torch.Tensor | None] = []
     readouts: list[torch.Tensor] = []
     pipeline_steps: list[list[tuple[str, torch.Tensor]]] = []
     pipelines = (
@@ -44,12 +46,31 @@ def causal_steps(
         indices,
         exogenous_values=exogenous,
         noise_scales=scales,
+        root_values=root_values,
         pipelines=pipelines,
         readout_values=readouts,
         pipeline_steps=pipeline_steps if pipelines is not None else None,
     )
     for i, (node, value, noise) in enumerate(zip(nodes, values, innovations, strict=True)):
         stochastic = isinstance(node, StochasticCausalNode)
+        root_parents: list[str] = []
+        if isinstance(node, RootInputCausalNode):
+            raw_root = root_values[i]
+            assert raw_root is not None
+            add(
+                f"root-input-{i}",
+                f"Node {i} root input",
+                [],
+                "independent root law before output activation and pipeline",
+                raw_root,
+                {
+                    "distribution": asdict(node.root_exogenous),
+                    "root_scale": node.root_scale,
+                    "stream": node.root_version,
+                    "row_indices": list(indices),
+                },
+            )
+            root_parents = [f"root-input-{i}"]
         if stochastic:
             add(
                 f"exogenous-{i}",
@@ -62,7 +83,7 @@ def causal_steps(
             add(
                 f"noise-scale-{i}",
                 f"Node {i} structural-noise scale",
-                [f"causal-{p}" for p in node.parents],
+                [f"causal-{p}" for p in node.parents] + root_parents,
                 "noise_scale * (offset + strength * abs(pre-noise affine response)**power)",
                 scales[i],
                 {
@@ -71,6 +92,11 @@ def causal_steps(
                     "weights": node.weights,
                     "bias": node.bias,
                     "input_activation": asdict(node.input_activation),
+                    **(
+                        {"root_scale": node.root_scale}
+                        if isinstance(node, RootInputCausalNode)
+                        else {}
+                    ),
                 },
             )
         add(
@@ -97,6 +123,11 @@ def causal_steps(
                 if node.parents
                 else "bias"
             )
+            if isinstance(node, RootInputCausalNode):
+                affine = "bias + root_scale * independent_root_input"
+                parameters.update(
+                    root_exogenous=asdict(node.root_exogenous), root_scale=node.root_scale
+                )
             equation = (
                 f"output_activation({affine} + innovation)"
                 if node.noise_position == "before_output"
@@ -110,9 +141,9 @@ def causal_steps(
                 output_activation=asdict(node.output_activation),
                 noise_position=node.noise_position,
             )
-        node_parents = [*[f"causal-{p}" for p in node.parents], f"innovation-{i}"]
+        node_parents = [*[f"causal-{p}" for p in node.parents], *root_parents, f"innovation-{i}"]
         if pipelines is not None:
-            previous = [f"causal-{p}" for p in node.parents]
+            previous = [f"causal-{p}" for p in node.parents] + root_parents
             for name, stage_value in pipeline_steps[i]:
                 key = f"pipeline-{i}-{name}"
                 formula = {
@@ -122,6 +153,8 @@ def causal_steps(
                     "converter-state": "converter state before innovation",
                     "converted-readout": "converter readouts before innovation",
                 }.get(name, "apply frozen ordered stage")
+                if name == "input" and isinstance(node, RootInputCausalNode):
+                    formula = "output_activation(bias + root_scale * independent_root_input)"
                 add(
                     key,
                     f"Node {i} {name}",

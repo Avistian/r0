@@ -7,7 +7,7 @@ from typing import Any
 import torch
 
 from r0.modules.priors.lib.causal_activations import activate, activation_diagnostic
-from r0.modules.priors.lib.causal_nodes import StochasticCausalNode
+from r0.modules.priors.lib.causal_nodes import RootInputCausalNode, StochasticCausalNode
 
 
 def stochastic_value(
@@ -18,8 +18,12 @@ def stochastic_value(
     diagnostics: list[dict[str, Any]] | None,
     *,
     before_noise: Callable[[torch.Tensor], torch.Tensor] | None = None,
+    root_input: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     affine = torch.zeros_like(raw) + torch.tensor(node.bias, dtype=raw.dtype, device=raw.device)
+    if isinstance(node, RootInputCausalNode):
+        assert root_input is not None
+        affine = affine + root_input * root_input.new_tensor(node.root_scale)
     if parents is not None:
         if diagnostics is not None:
             entry = activation_diagnostic(parents, node.input_activation)

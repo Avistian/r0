@@ -22,14 +22,29 @@ class NumericalConverter:
             raise ValueError("numerical converter channel must be nonnegative")
         if self.variant not in ("historical-tuple", "historical-graph", "readout-only"):
             raise ValueError("unsupported numerical converter variant")
-        if not (
-            type(self.transform) is CausalActivation and self.transform == CausalActivation()
-        ) and not (
-            type(self.transform) is CalibratedTransform
-            and self.transform.kind == "kumaraswamy"
-            and self.transform.channels == 1
+        if (
+            not (type(self.transform) is CausalActivation and self.transform == CausalActivation())
+            and not (
+                type(self.transform) is CalibratedTransform
+                and self.transform.kind == "kumaraswamy"
+                and self.transform.channels == 1
+            )
+            and not (
+                type(self.transform) is CalibratedActivation and len(self.transform.input_mean) == 1
+            )
         ):
-            raise ValueError("numerical converter requires identity or a one-channel frozen warp")
+            raise ValueError(
+                "numerical converter requires identity or a one-channel "
+                "frozen warp/standard activation"
+            )
+
+    @property
+    def changes_state(self) -> bool:
+        return self.variant != "readout-only"
+
+    @property
+    def captures_raw(self) -> bool:
+        return self.variant == "historical-tuple"
 
     @property
     def parameter_count(self) -> int:
@@ -168,11 +183,9 @@ class PipelineEvaluation:
                         {"node": self.node, "stage": "converter", "channel": channel, **entry}
                     )
             warped = converter.transform.apply(raw)
-            if converter.variant != "readout-only":
+            if converter.changes_state:
                 state[:, channel : channel + 1] = warped
-            self.captured[channel] = (
-                raw if converter.variant == "historical-tuple" else warped
-            ).clone()
+            self.captured[channel] = (raw if converter.captures_raw else warped).clone()
         self.retain("converter-state", state)
         if self.record_steps:
             readout = value.clone()
