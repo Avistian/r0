@@ -7,21 +7,22 @@ scientific acceptance or whole-issue completion.
 
 ## Latest verified publication checkpoint
 
-Source `738670c19017c78abb87683dc04a632f46db7528` passed full `make check`:
-1,893 passed, one skipped, 716.96 seconds, with all static gates passing.
-This combines numerical pipelines (including the half-open converter-span repair)
-and authored-native explorer controls with the previous published checkpoint.
-The span defect and its failed regressions remain retained alongside the repair;
-independent allocation/replay and six public workbench flows passed afterward.
-Authored-native explorer independently passed typed CSV, vocabulary editing,
-Chromium construction/export and six unchanged legacy archive cases.
+Source `723ceef4b55d8914e252cf22f50040553559b7d2` passed full `make check`:
+2,050 passed, one skipped, one warning, 804.46 seconds, with all static gates
+passing. The warning is sklearn's high-class-count diagnostic in the observed
+class-map regression fixture; its exact output is retained with the suite log.
+This combines sampled-native domains and explorer support, parent compositions
+through geometry/pipelines/native domains, and fitted structural-tree primitives
+with their reviewed repairs. Original rejected candidates remain historical evidence.
 
 The exact-head receipt, runner and full output are retained locally under
-`docs/evidence/issue-28-pipeline-release/`. This result does not cover newer
-sampled-native priors/UI, parent-function compositions or fitted structural trees
-in separate integration worktrees. Hosted Colab, GPU, measured supported maxima,
-causal interventions and full paper-option coverage remain open. Training and
-evaluation CLI commands are absent, so smoke/eval-smoke remain NOT_AVAILABLE.
+`docs/evidence/issue-28-parent-tree-release/`. The [atomic delivery map](issue-28-atomic-delivery.md)
+links individual inventory IDs to scoped implementations and explicit gaps.
+Unlisted IDs remain unaudited by that map; no whole-issue completion follows.
+Parent/fitted-specific explorer controls, broader product variants and causal
+interventions are separate follow-on work. Hosted Colab, GPU, measured supported
+maxima and full paper-option coverage remain open. Training/evaluation CLI
+commands are absent, so smoke/eval-smoke remain NOT_AVAILABLE.
 
 ## Retained construction checkpoints
 
@@ -47,20 +48,22 @@ evaluation CLI commands are absent, so smoke/eval-smoke remain NOT_AVAILABLE.
 | `39ae972` | Sampled numerical pipelines passed independent stage arithmetic, but subsequent public workbench composition rejected converter allocation: half-open channel spans were incorrectly interpreted as start plus width. Original failures retained. |
 | `d11390d` | Both allocation and validation now use half-open spans. Two public regressions failed before repair; 36 focused checks and six public workbench flows passed afterward. Independent six-case assignment/replay review passed. |
 | `30468e7` | Authored native explorer independently checked for typed CSV labels, vocabulary editing, construction/export in Chromium and unchanged legacy archives. Hosted Colab not run. |
-| `738670c` | Combined repaired numerical pipelines and native explorer release candidate. Full check is pending; the earlier 1,852-test result does not cover this source. |
+| `738670c` | Combined repaired numerical pipelines and native explorer checkpoint: full check passed 1,893 tests, one skipped, in 716.96 seconds. |
 | `be03845` | Sampled native-domain graphs initially rejected because a malformed domain leaked AttributeError before validation. Original rejection retained. |
 | `c7495bd` | Native decoder repaired. Independent bounded review passed 15 emission/frequency/cutpoint combinations, eight function families, five RNG engines, typed ancestor calibration, raw replay, limits and archive corruption checks. This is not whole-issue acceptance. |
 | `30a8cb3` | Sampled-native integration atop `738670c`; public exports preserved. Focused native, pipeline and explorer checks passed. Research-only successor `123c0b7` adds fitted-tree source contracts. Full integrated suite remains pending. |
 
 ## Parent, fitted-tree and sampled-native follow-on review
 
-These integrations remain unpublished and are not covered by the 1,893-test
-publication result above.
+These integrations are included in the 2,050-test checkpoint above. Scoped
+independent reviews establish only the behavior described below.
 
 - Parent composition `8097c3b` passed bounded independent review of all 22 changed
   files, 84 multioutput arithmetic cases, six raw-custody/archive cases and 14
   reconstructed ancestor/slice/reducer calibration populations. Geometry/native
-  integration and UI delivery are separate follow-on work.
+  integration `365a9a5` subsequently passed independent review of all 27 files,
+  30 native fit populations, mutation/rollback probes and nine legacy hashes.
+  Parent-specific UI delivery remains separate follow-on work.
 - Sampled-native UI `7b625ce` was rejected because malformed row geometry failed
   before the attempt receipt. Repair `575d347` moved task decoding inside the
   guarded worker. Independent reruns checked invalid row count, context count and
@@ -72,7 +75,10 @@ publication result above.
   argmax. Repair `ddf1c5b` rejects those scores. Independent checks exercised both
   public inference interfaces for identity/sigmoid/softmax boosting and preserved
   a finite `1e308` leaf. Further review then found contradictory learning-rate
-  plan/backend/output metadata; that second rejection remains open pending repair.
+  plan/backend/output metadata. Repair `2122622` binds declared backend settings,
+  observed classes, boosted learning rates and depth bounds. Independent repair
+  probes rejected 52 metadata/class-map mutations; remaining independent fitted
+  review passed 12 family/task configurations, ancestry, raw replay and budgets.
 - Authored fitted-tree parent and joint membership `75ebb93` has ten public
   regressions that failed before implementation; 69 combined focused checks and
   commit hooks passed afterward. This does not extend the sampled eight-family
