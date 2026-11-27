@@ -1,7 +1,7 @@
 """One admitted evaluator for frozen DAG generation and original-row inspection."""
 
 from collections.abc import Callable, Sequence
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from typing import Any
 
 import numpy as np
@@ -12,6 +12,8 @@ from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_f
 from r0.modules.priors.lib.functional_analysis import functional_certificates
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_decoding import functional_recipe_from_dict
+from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
+from r0.modules.priors.lib.functional_prefix import FunctionalPrefix
 from r0.modules.priors.lib.functional_target_calibration import (
     fit_target_calibration,
     target_calibration_from_dict,
@@ -64,8 +66,53 @@ def functional_values(
 ) -> list[torch.Tensor]:
     rows = recipe.task.rows if rows is None else rows
     recipe.admit(evaluation_rows=rows)
+    return _evaluate_functional_nodes(
+        recipe.nodes,
+        rows,
+        rng,
+        device,
+        add=add,
+        indices=indices,
+        readouts=readouts,
+        diagnostics=diagnostics,
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class PrefixEvaluation:
+    states: tuple[torch.Tensor, ...]
+    readouts: tuple[torch.Tensor, ...]
+
+
+def evaluate_functional_prefix(
+    prefix: FunctionalPrefix, *, rng: Callable[..., np.random.Generator], device: str = "cpu"
+) -> PrefixEvaluation:
+    """Evaluate admitted ancestors; the builder supplies fresh streams for each receiving fit."""
+    if type(prefix) is not FunctionalPrefix:
+        raise ValueError("functional prefix evaluation requires its admitted frozen record")
+    if device not in ("cpu", "cuda"):
+        raise ValueError("device must be cpu or cuda; no implicit fallback")
+    if device == "cuda" and not torch.cuda.is_available():
+        raise ValueError("CUDA is unavailable; select CPU explicitly")
+    prefix.admit()
+    readouts: list[torch.Tensor] = []
+    states = _evaluate_functional_nodes(prefix.nodes, prefix.rows, rng, device, readouts=readouts)
+    return PrefixEvaluation(tuple(states), tuple(readouts))
+
+
+def _evaluate_functional_nodes(
+    nodes: tuple[FunctionalCausalNode, ...],
+    rows: int,
+    rng: Callable[..., np.random.Generator],
+    device: str,
+    *,
+    add: Callable[..., None] | None = None,
+    indices: Sequence[int] = (),
+    readouts: list[torch.Tensor] | None = None,
+    diagnostics: list[dict[str, Any]] | None = None,
+) -> list[torch.Tensor]:
     values: list[torch.Tensor] = []
-    for index, node in enumerate(recipe.nodes):
+    for index, node in enumerate(nodes):
         parents = [f"causal-{p}" for p in node.parents]
         if node.root is not None:
             sample = draw_root_base(node.root, rows, rng("root-base", index))
