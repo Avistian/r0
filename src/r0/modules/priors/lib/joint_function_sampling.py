@@ -113,7 +113,7 @@ def sample_joint_function(
                     input_width=input_width,
                     output_width=output_width,
                     calibration_rows=calibration_rows,
-                    prior=prior,
+                    prior=prior.child_prior(slot),
                     cheap=True,
                 )
                 for child in ("left", "right")

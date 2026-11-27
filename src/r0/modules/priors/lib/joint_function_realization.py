@@ -143,7 +143,7 @@ def product_equation(
     left: NonProductJointFunctionRealization,
     right: NonProductJointFunctionRealization,
 ) -> FrozenProductFunction | FrozenKumoProductFunction:
-    if plan.prior.kumo_product:
+    if plan.kumo_product:
         return FrozenKumoProductFunction(left.function, right.function)
     # The historical constructor remains the runtime authority for cheap membership.
     return FrozenProductFunction(
@@ -163,7 +163,7 @@ class JointProductFunctionRealization:
     def __post_init__(self) -> None:
         if type(self.plan) is not JointFunctionPlan:
             raise ValueError("product requires its frozen plan")
-        broad = self.plan.prior.kumo_product
+        broad = self.plan.kumo_product
         version = (
             "joint-kumo-product-function-realization-v1"
             if broad
@@ -389,7 +389,7 @@ def _materialize_product(
             product_equation(plan, left, right),
             sample,
             version="joint-kumo-product-function-realization-v1"
-            if plan.prior.kumo_product
+            if plan.kumo_product
             else "joint-product-function-realization-v1",
         )
         result.validate(decisions)

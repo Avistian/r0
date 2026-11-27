@@ -1,6 +1,8 @@
 """Source RandomFunction catalogs with stable identities for duplicated slots."""
 
-from dataclasses import dataclass
+from __future__ import annotations
+
+from dataclasses import dataclass, replace
 
 from r0.modules.priors.lib.categorical_preferences import CategoricalParameter
 from r0.modules.priors.lib.joint_matrix_plans import JointMatrixPrior
@@ -18,12 +20,11 @@ def _expand(functions: str) -> tuple[str, ...]:
     if functions in _FORCED:
         return (_FORCED[functions],)
     tokens = functions.split(",")
-    if "kumo-prod" in tokens and any(token in ("prod", "default") for token in tokens):
-        raise ValueError("legacy and Kumo product selectors require separate priors")
+    mixed = "kumo-prod" in tokens and any(token in ("prod", "default") for token in tokens)
     families: list[str] = []
     for token in functions.split(","):
         if token == "kumo-prod":
-            families.append("prod")
+            families.append("kumo-prod" if mixed else "prod")
         elif token in _PRESETS:
             families.extend(_PRESETS[token])
         elif token in _DEFAULT:
@@ -71,6 +72,27 @@ class JointFunctionPrior:
     def product_children(self) -> tuple[str, ...]:
         return _KUMO_NONPRODUCT if self.kumo_product else _CHEAP
 
+    def is_kumo_slot(self, slot: str, *, cheap: bool = False) -> bool:
+        request = self.request(cheap=cheap)
+        if slot not in request.choices:
+            raise ValueError("function slot is absent from its declared selector")
+        if cheap:
+            return False
+        token = _expand(self.functions)[request.choices.index(slot)]
+        return token == "kumo-prod" or (
+            token == "prod" and self.kumo_product and not self.mixed_products
+        )
+
+    @property
+    def mixed_products(self) -> bool:
+        tokens = self.functions.split(",")
+        return "kumo-prod" in tokens and any(t in ("prod", "default") for t in tokens)
+
+    def child_prior(self, slot: str) -> JointFunctionPrior:
+        if not self.mixed_products:
+            return self
+        return replace(self, functions="kumo-prod" if self.is_kumo_slot(slot) else "prod")
+
     def request(self, *, cheap: bool = False) -> CategoricalParameter:
         if type(cheap) is not bool:
             raise ValueError("function selector scope must be Boolean")
@@ -93,4 +115,5 @@ class JointFunctionPrior:
         if type(slot) is not str or slot not in request.choices:
             raise ValueError("function slot is absent from its declared selector")
         families = self.product_children if cheap else _expand(self.functions)
-        return families[request.choices.index(slot)]
+        family = families[request.choices.index(slot)]
+        return "prod" if family == "kumo-prod" else family

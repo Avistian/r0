@@ -115,8 +115,6 @@ def test_historical_catalog_cannot_be_relabelled_as_broad_product() -> None:
         priors.JointFunctionPrior(functions="lin,kumo-prod").family("function-slot-1-prod-v1")
         == "prod"
     )
-    with pytest.raises(ValueError, match="separate priors"):
-        priors.JointFunctionPrior(functions="prod,kumo-prod")
     context = priors.JointSamplingContext(np.random.default_rng(72), mode="local")
     plan = priors.sample_joint_function(
         context, "f", input_width=3, output_width=2, calibration_rows=8, prior=prior()

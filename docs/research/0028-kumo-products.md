@@ -9,8 +9,11 @@ correlated Dirichlet sampling, clustering distance/scale distributions, or other
 separately inventoried source options.
 
 `JointFunctionPrior(functions="kumo-prod")` selects that broader product
-catalog. Non-product tokens may be mixed with it; combining it with legacy
-`prod` or `default` is rejected because the source catalogs would be ambiguous.
+catalog. It may be mixed with
+non-product tokens, legacy `prod`, and `default`. Mixed products bind their
+variant to distinct selected-slot identities; their child plans retain the
+corresponding narrowed prior, validated against the parent selection. Pure
+legacy and pure Kumo records preserve their existing slot identities.
 Historical `prod`, its five cheap children, selector names, and archive versions
 remain unchanged. New ordinary and child selector names isolate the broader
 catalog in shared sampling contexts. The historical plan field `cheap` denotes
@@ -45,3 +48,10 @@ Legacy product archive, generated recipe and mechanism bytes are compared with
 base `52b4e10`. Raw logs and comparison scripts are retained only under ignored
 `docs/evidence/issue-28-kumo-products/`. These are bounded software checks, not
 scientific reproduction or browser evidence; root owns the combined full suite.
+
+The mixed-catalog successor verifies `prod,kumo-prod` and `default,kumo-prod`
+in local, global and meta modes, retaining both variants' child eligibility and
+realization replay. Explicit, native and parent graph checks exercise mixed
+catalog replay, generation and rejection without advancing any of four streams.
+Swapping only a selected product variant is rejected against its child plans.
+Evidence is ignored under `docs/evidence/issue-28-kumo-mixtures/`.

@@ -97,7 +97,7 @@ class JointFunctionPlan:
                 if (
                     not child.cheap
                     or child.operation != (*self.operation, name)
-                    or child.prior != self.prior
+                    or child.prior != self.prior.child_prior(self.slot)
                     or (child.input_width, child.output_width, child.calibration_rows)
                     != (self.input_width, self.output_width, self.calibration_rows)
                 ):
@@ -186,6 +186,10 @@ class JointFunctionPlan:
                 children.append(self.activations[index])
                 index += 1
         return tuple(children)
+
+    @property
+    def kumo_product(self) -> bool:
+        return self.prior.is_kumo_slot(self.slot, cheap=self.cheap)
 
     @property
     def family(self) -> str:
