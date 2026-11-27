@@ -72,7 +72,10 @@ native, vector and converted graph use, parent/joint composition, sampled raw
 custody and a guarded workbench with 17 presets. The mixed convolution/XGBoost
 draft repair has independent browser and exported-value evidence. Typed reference
 curves, internal innovation/importance compositions, broader source profiles and
-sampled-convolution soft-policy replacements remain required. See the
+complete workbench composition remain required. Sampled-convolution soft-policy
+replacements at `6bb5ecd`, with shared-draw rendering repair `1a120893`, now have
+bounded independent arithmetic/archive and browser acceptance; see their
+[retained replacement contract](issue-28-sampled-convolution-policies.md) and the
 [convolution contract](issue-28-feature-convolution.md).
 
 `OP.function.08`–`.11` remain distinct: finite joint GP column draws followed by

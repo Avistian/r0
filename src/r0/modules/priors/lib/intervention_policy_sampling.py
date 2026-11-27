@@ -13,10 +13,10 @@ from r0.modules.priors.lib.causal_intervention_records import (
     SoftIntervention,
 )
 from r0.modules.priors.lib.causal_limits import CausalLimits
-from r0.modules.priors.lib.frozen_function_decoding import frozen_function_from_dict
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
 from r0.modules.priors.lib.functional_node_evaluation import evaluate_functional_nodes
 from r0.modules.priors.lib.generator_snapshot import snapshot_generator
+from r0.modules.priors.lib.intervention_policy_function import finish_policy_function
 from r0.modules.priors.lib.intervention_policy_laws import (
     numeric_leaves,
     parameter_group,
@@ -262,13 +262,12 @@ def sample_intervention_policy(
                     if not np.isfinite(values).all():
                         raise ValueError("nonfinite resampled parameter; no retry")
                     parent[key] = replace_leaves(group, iter(values))
-                function = frozen_function_from_dict(record, limits=request.limits)
-                if (
-                    type(function) is not type(original)
-                    or function.input_width != original.input_width
-                    or function.output_width != original.output_width
-                ):
-                    raise ValueError("soft resampling must preserve function family and geometry")
+                function = finish_policy_function(
+                    original,
+                    record,
+                    tuple(law.path for law in request.parameter_laws if law.node == node),
+                    request.limits,
+                )
                 changes.append(SoftIntervention(node, function=function))
         runtime = CausalInterventionRecipe(
             request.base, tuple(changes), mode=request.mode, population=request.population

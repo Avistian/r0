@@ -10,6 +10,7 @@ from r0.modules.priors.lib.causal_intervention_generation import generate_interv
 from r0.modules.priors.lib.causal_intervention_inspection import intervention_steps
 from r0.modules.priors.lib.causal_intervention_records import HardIntervention
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.intervention_policy_construction import policy_construction_steps
 from r0.modules.priors.lib.intervention_policy_decoding import intervention_policy_from_dict
 from r0.modules.priors.lib.intervention_policy_records import SampledInterventionPolicy
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
@@ -72,15 +73,39 @@ def policy_steps(
         {"eligible": recipe.request.eligible, "profile": recipe.request.profile},
     )
     for change in recipe.runtime.interventions:
+        original_construction = policy_construction_steps(
+            recipe.request.base.nodes[change.node].function,
+            tuple(law.path for law in recipe.request.parameter_laws if law.node == change.node),
+            node=change.node,
+            add=add,
+        )
+        policy_draws: list[str] = []
+        if original_construction:
+            for index, draw in enumerate(recipe.raw):
+                if draw.owner != ("policy", f"node:{change.node}"):
+                    continue
+                identifier = f"policy-replacement-{change.node}-{index}"
+                metadata = asdict(draw)
+                metadata.pop("values")
+                add(
+                    identifier,
+                    "Explicit r0 replacement parameter draw",
+                    [],
+                    draw.distribution,
+                    torch.tensor([draw.values], dtype=torch.float64),
+                    {**metadata, "scope": "intervention environment; not an emitted dataset row"},
+                )
+                policy_draws.append(identifier)
         values = change.values if isinstance(change, HardIntervention) else (float(change.node),)
         add(
             f"policy-node-{change.node}",
             "Sampled intervention parameters",
-            ["policy-selection"],
+            ["policy-selection", *policy_draws],
             "one retained parameter realization per environment",
             torch.tensor(values, dtype=torch.float64).expand(len(indices), -1),
             {
                 "change": asdict(change),
+                "original_sampled_construction": original_construction,
                 "bounds": [asdict(b) for b in recipe.bounds if b.node == change.node],
                 "bounds_lifecycle": recipe.request.bounds_lifecycle
                 if recipe.request.kind == "hard"

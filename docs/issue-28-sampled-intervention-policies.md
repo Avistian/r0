@@ -54,8 +54,11 @@ architecture, activation selection and other unlisted parameters remain fixed.
 Soft resampling acts before the existing pipeline/readout; readout-only soft location
 aliases reject. Hard-bound controls and the calibration stream are unused for soft
 policies; their card reports `not-used-soft` and no reference seed.
-The rebuilt frozen equation must preserve its type and input/output widths and
-pass normal schema/geometry validation. Invalid sampled domains reject atomically,
+The rebuilt frozen equation must preserve its mechanism family and input/output widths and
+pass normal schema/geometry validation. A sampled convolution wrapper becomes an
+authored same-geometry convolution replacement, retaining its original receipt in
+the base; see [sampled convolution policies](issue-28-sampled-convolution-policies.md).
+Invalid sampled domains reject atomically,
 without retries, clipping, normalization or family substitutions. Four different
 function families and all four laws have public coverage; the generic path seam
 also accepts other registered frozen function records when their declared groups
