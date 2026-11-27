@@ -39,7 +39,7 @@ def typed_policy_base_preview(raw: dict[str, Any], limits: CausalLimits):
             raise ValueError("typed policy requires original graph metadata")
         graph = cast(dict[str, Any], nested)
     functions = tuple(node.get("equation", node)["function"] for node in graph["nodes"])
-    preview = _roots(recursive_authored_preview(graph))
+    preview = typed_authored_preview(graph)
     if graph["version"] in (
         "fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
@@ -54,3 +54,8 @@ def typed_policy_base_preview(raw: dict[str, Any], limits: CausalLimits):
     ):
         raise ValueError("typed policy requires a supported retained graph")
     return result, functions
+
+
+def typed_authored_preview(value: Any) -> Any:
+    """Discard construction wrappers only for metadata validation, never for replay."""
+    return _roots(recursive_authored_preview(value))

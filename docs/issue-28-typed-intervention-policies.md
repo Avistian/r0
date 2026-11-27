@@ -86,3 +86,11 @@ the original before.zip and save another comparison. Direct mechanism editing of
 a realized policy envelope and intervention-aware reference curves remain explicit
 required follow-ons; those controls are unavailable rather than stripping policy
 custody. Hosted Colab, full-suite and complete #28 acceptance are not claimed.
+
+## Receipt-envelope admission repair
+
+Independent review of `0b7aaa4b2229174919d8480c888fcf5ca16f4180` found a separate receipt-envelope defect: replacing only the outer initial-snapshot array with an empty array replayed eight sampled-source snapshots before rejection. The historical REJECT remains retained. Earlier request-field admission and numerical acceptance, and the independent 35-stage Chromium workflow, remain qualified evidence rather than complete archive admission acceptance.
+
+Receipt decode now validates snapshot cardinalities and headers, complete raw-record schemas and value shapes, stream/state chains, selection membership/count/permutation, reference identity/lifecycle, bound address/width/order/finiteness, and runtime original-base/comparison/address consistency before replaying the request. Snapshot metadata checks are shared with actual restoration; raw records use their existing strict constructor; request metadata and runtime previews use the same validators as live records. Numerical construction replay still verifies snapshot state/digests, sampled values and reference extrema afterward. The temporary preview never replaces retained sampled or fitted originals, and existing aggregate admission runs before it.
+
+The bounded repair packet is ignored `docs/evidence/issue-28-typed-receipt-preflight/`: public malformed-envelope RED/GREEN, the original outside-test zero-restore probe, focused checks and complete valid policy/pair artifact comparisons. Independent repair acceptance remains a separate gate. No new browser run, full suite, hosted execution or whole-issue acceptance is claimed by this repair.

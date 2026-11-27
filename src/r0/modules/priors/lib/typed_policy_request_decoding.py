@@ -14,12 +14,9 @@ from r0.modules.priors.lib.typed_policy_request import TypedInterventionPolicyRe
 _DEFAULT_LIMITS = CausalLimits()
 
 
-def typed_intervention_policy_request_from_dict(
+def typed_request_metadata(
     data: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
-) -> TypedInterventionPolicyRequest:
-    from r0.modules.priors.lib.generate import recipe_from_dict
-    from r0.modules.priors.lib.typed_policy_admission import admit_typed_policy
-    from r0.modules.priors.lib.typed_policy_decoding import restore_typed_base
+) -> tuple[dict[str, Any], Any, CausalLimits]:
     from r0.modules.priors.lib.typed_policy_planning import admit_typed_record
 
     admit_function_metadata(data, limits)
@@ -64,10 +61,21 @@ def typed_intervention_policy_request_from_dict(
         validate_typed_policy_values(
             {**request, "base": preview}, preview, function_records=functions
         )
-        recipe_from_dict(request["base"], limits=effective)
-        request["base"] = restore_typed_base(request["base"])
-        typed = TypedInterventionPolicyRequest(**request)
-        admit_typed_policy(replace(typed, limits=effective))
-        return typed
+        return request, preview, effective
     except (KeyError, TypeError, AttributeError, IndexError, OverflowError) as error:
         raise ValueError("malformed typed intervention policy request") from error
+
+
+def typed_intervention_policy_request_from_dict(
+    data: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
+) -> TypedInterventionPolicyRequest:
+    from r0.modules.priors.lib.generate import recipe_from_dict
+    from r0.modules.priors.lib.typed_policy_admission import admit_typed_policy
+    from r0.modules.priors.lib.typed_policy_decoding import restore_typed_base
+
+    request, _, effective = typed_request_metadata(data, limits=limits)
+    recipe_from_dict(request["base"], limits=effective)
+    request["base"] = restore_typed_base(request["base"])
+    typed = TypedInterventionPolicyRequest(**request)
+    admit_typed_policy(replace(typed, limits=effective))
+    return typed

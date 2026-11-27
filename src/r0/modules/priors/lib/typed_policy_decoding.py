@@ -85,6 +85,9 @@ def typed_policy_from_dict(data: Any, *, limits: CausalLimits) -> SampledTypedIn
         reserved = 6 * raw_limits.state_bytes + retained
         if reserved > bounded_raw.working_bytes:
             raise ValueError("typed policy raw/snapshot reservation exceeds caller limits")
+        from r0.modules.priors.lib.typed_receipt_preflight import preflight_typed_receipt
+
+        preflight_typed_receipt(raw, limits=effective)
         typed = typed_intervention_policy_request_from_dict(request, limits=effective)
         if type(raw["initial"]) not in (list, tuple) or len(raw["initial"]) != 3:
             raise ValueError("typed policy requires three initial snapshots")
