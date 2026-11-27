@@ -191,3 +191,13 @@ def test_comparison_decoder_admits_replacement_before_original_replay(
     monkeypatch.setattr(np.random, "default_rng", forbidden)
     with pytest.raises(ValueError, match="aggregate"):
         p.gp_column_comparison_from_dict(raw, limits=limits)
+
+
+def test_realized_population_rejects_boolean_identity_alias():
+    original = p.realize_gp_columns(p.GPColumnRequest(rows=16), seed=1, task_id=2)
+    recipe = p.GPColumnRecipe(
+        original,
+        p.LinearRecipe(rows=16, context_rows=10, features=2, signal_features=2, active_features=2),
+    )
+    with pytest.raises(ValueError, match="integer identity"):
+        p.generate_task(recipe, seed=True, task_id=2)

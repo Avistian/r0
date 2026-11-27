@@ -55,6 +55,8 @@ def generate_gp_columns(
 ) -> TrainingTask:
     from r0.modules.priors.lib.gp_column_decoding import validate_gp_population
 
+    if any(type(v) is not int or not 0 <= v < 2**63 for v in (seed, task_id)):
+        raise ValueError("GP generation requires exact integer identity")
     if device not in ("cpu", "cuda") or (device == "cuda" and not torch.cuda.is_available()):
         raise ValueError("select an available CPU/CUDA device; no fallback")
     recipe.request.admit()
