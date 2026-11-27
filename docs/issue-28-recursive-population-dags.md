@@ -34,3 +34,20 @@ The decoder now validates the complete outer comparison schema, versions, identi
 Repair evidence is retained under ignored `docs/evidence/issue-28-population-dag-preflight/`. The original public invalid-mode probe now requires zero snapshot restores, with a valid control. The initial 21-case public RED run exposed 18 failures; the repaired checks also cover additional malformed receipt, identity, nonfinite-input and unknown-field cases. A sampled prototype root with sampled recursive source and soft replacement verifies preservation of the original records. Separate valid-artifact comparisons cover four graph families, five RNG engines and matched/fresh populations, including JSON replay, tensors and repeated-row traces.
 
 These are bounded repair checks. Independent repair acceptance and continuation of the stopped broad DAG review remain separate gates; no whole-issue acceptance or full-suite result is claimed.
+
+### Nested archive reservation repair
+
+Independent review of `b6e39b1` found a generated16-row, two-output/two-estimator
+population pair that could not decode under its original256MiB limits. The outer
+pair decoder had already reserved the complete archive and two separate runtime
+workspaces; passing a reduced runtime allowance to the standalone baseline
+decoder charged baseline archive metadata again. The repair keeps the outer
+aggregate admission and restores the baseline under the original caller ceiling.
+Original source/plan limits and archive bytes remain unchanged.
+
+The worked case reserves11,038,130 bytes of outer archive storage (with the
+existing8x factor), while each forest requires79,268,864 estimated working bytes.
+Its base alone and the repaired pair decode at256MiB. Public regression checks
+also verify1/64/128/224MiB callers reject before any snapshot restoration. The
+49-case focused pair/preflight run passes. Broader numerical continuation and
+independent repair acceptance are recorded separately; earlier rejections remain.

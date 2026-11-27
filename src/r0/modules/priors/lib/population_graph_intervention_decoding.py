@@ -74,7 +74,11 @@ def population_graph_intervention_from_dict(
         )
         preflight_population_change(raw, baseline, change, limits=effective)
         # Geometry and outer semantics pass before either receipt decoder.
-        base = recursive_population_graph_from_dict(baseline, limits=nested)
+        # The whole archive is already charged above, with a separate nested
+        # workspace reserved for each population. Passing that reduced workspace
+        # to the standalone decoder would charge the baseline archive a second
+        # time. Decode under the original caller ceiling after aggregate admission.
+        base = recursive_population_graph_from_dict(baseline, limits=limits)
         decoded_change = intervention_from_dict(
             {**change, "base": {**change["base"], "limits": asdict(effective)}}, limits=effective
         )
