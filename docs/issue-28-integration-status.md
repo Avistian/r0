@@ -2,8 +2,8 @@
 
 The accepted scope remains [the full specification](specs/0028-causal-network-generators.md),
 including every in-scope option in the recorded paper inventory. This checkpoint
-is incomplete. Component reviews below do not establish workbench delivery,
-scientific acceptance, or whole-issue completion.
+is incomplete. Scoped reviews below establish only the listed behavior. They do not establish
+scientific acceptance or whole-issue completion.
 
 ## Retained construction checkpoints
 
@@ -18,7 +18,13 @@ scientific acceptance, or whole-issue completion.
 | `7bbb608` | Complete topology/mechanism envelope passed scoped specification review. Full check: 1,755 passed, one skipped. Standards found a test importing a private decoder. |
 | `ea25257` | Test now calls the public decoder; narrow standards repair accepted. |
 | `a22eb63` | Latent-width and observation components passed 36 independent checks; standards found logs outside the required ignored evidence directory. Full check: 1,770 passed, one skipped. |
-| `60f13ba` | Converter input-channel allocation added; 17 focused tests and static checks passed. Evidence-location repair independently accepted. Channel-layout code has not yet received independent review or a full-suite result. |
+| `60f13ba` | Converter input-channel allocation added; 17 focused tests and static checks passed. Evidence-location repair independently accepted. |
+| `756ec20` | Complete geometry archive independently checked across eight function families, 24 archive mutations, three resplits and six rollback cases. |
+| `16bfd23` | Combined geometry and structural sampler checkpoint: full check 1,804 passed, one skipped, 661.80 seconds. |
+| `103db8b` | Workbench review rejected parent-side pair reconstruction before the guarded worker and attempt receipt. Original failure evidence retained. |
+| `3411bf9` | Pair reconstruction and comparison moved inside guarded worker. Independent backend and Chromium checks passed; failed timeout preserves active dataset and previous pair. Local construction/edit/reopen/export checked. Standards: no hard findings, P3 lifecycle duplication open. |
+| `e668a1a` | Attachment/motif geometry integration independently checked: 684 budget configurations, 10 archive cases, 40 rollbacks; Cauchy archive unchanged byte-for-byte. |
+| `b8d8234` | Combined workbench/topology successor, with legacy generated evidence removed from tracking. Full check running when this document was updated; no exact-head full-suite pass claimed yet. |
 
 Original rejection probes and failure logs are retained alongside repairs. Local
 copies live under ignored `docs/evidence/issue-28-parallel/`, with a byte-verified
@@ -29,28 +35,30 @@ not covered by that result.
 
 ## Parallel implementation ownership
 
-The integration branch starts at `60f13ba` and includes the previously published
-function/ancestor capture documentation. Workers start from the same source
-checkpoint in separate worktrees:
+The current integration checkpoint is `b8d8234`, in
+`/tmp/r0-28-current-integration`. It remains frozen during its full check.
+Three separate implementation worktrees extend it or its documented ancestors:
 
-- Geometry/archive: complete geometry sampling provenance, shared named context,
-  mechanism construction, archive reopening, generation, inspection and pairs.
-- Topology breadth: source-backed missing preferential attachment, motifs and
-  acyclic rewrites, with explicit adaptation labels and raw replay records.
-- Workbench: local and Colab workflows, construction controls, inspection/edit
-  comparisons, save/reopen/export, and caller limits through generation transport.
+- Native categorical variables: typed outcomes, one-hot descendant inputs,
+  native targets, shared schemas and archive/inspection integration.
+- Topology workbench: attachment/motif construction controls, save/edit/reopen
+  and local-browser coverage; Colab shares the transport but hosted proof is separate.
+- Sampled numerical pipelines: converter plans, independently fitted stage
+  calibration, channel/node importance and structural-noise sampling with replay.
 
-Geometry owns priors construction APIs. Workbench owns explorer and minimal
-`generation.RunRequest` limit propagation. Topology owns new sampler modules.
-Changes are integrated only after reviewing their actual diffs and verification;
-parallel authorship is not independent verification. Full-suite scheduling is
-coordinated to avoid duplicate runs on the same candidate.
+Parallel authorship is not independent verification. Each candidate needs its
+own scoped review before final integration; one full check is scheduled for each
+combined candidate. Generated logs, probes, receipts, archives and screenshots
+stay under gitignored `docs/evidence/`. Authored implementation documentation and
+reusable product verification scripts remain tracked.
 
 ## Remaining delivery obligations
 
-Geometry allocation currently feeds realized widths/readouts into an existing
-request in a focused integration test. Its saved graph does not yet retain the
-width/observation sampling records. This is the immediate geometry-track gap.
+Geometry archives now retain topology, width and observation sampling records,
+shared mechanism decisions and all four stream boundaries. Cauchy, attachment
+and motif/rewrite variants reach shared generation, inspection, resplitting and
+supported task-control comparisons. This does not complete every topology or
+observational profile in the accepted paper inventory.
 
 The remaining scope also includes sampled converter/pipeline and structural-noise
 options, native categorical variables and schemas, paper-specific mechanism and
@@ -89,3 +97,44 @@ Python 3.12.3 and NumPy 2.5.5 were observed. The complete component census
 took 1.67 seconds on this run; this is not a full-generator throughput benchmark.
 Peak memory was not measured. No categorical conversion, generated-table quality,
 intervention, GPU, browser or Colab result follows from this census.
+
+
+## Full-generation geometry census
+
+At `b8d823412afc2fb7e56cc85ca332352048f4240c`, 36 attempted cases completed:
+three topologies (Cauchy, attachment, motif/rewrite), three preference modes and
+four seeds. Each uses nine nodes, 64 rows, four observed features, Gaussian roots,
+linear functions, independent 16-row calibration and widths in [1, 4).
+No attempt was filtered or retried. All recipe records, emitted arrays and
+per-case receipts are retained locally in
+`docs/evidence/issue-28-current-integration/full-geometry-census-v2/`.
+
+Independent parent-order traversal measured four distinct topologies per family
+across the four seeds (the three modes reuse each topology seed). Cauchy depths
+were 0, 4, 5 and 8, retaining a valid completely disconnected draw; attachment and
+motif depths were 3 and 4. All emitted values were finite; no observed feature had
+zero sample variance. These are descriptive observations, not rejection rules.
+
+Reproduce from `/tmp/r0-28-current-integration` using the retained program:
+
+```sh
+UV_CACHE_DIR=/tmp/r0-28-uv-cache \
+UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
+python3 scripts/run_check.py python \
+  docs/evidence/issue-28-current-integration/full_geometry_census.py
+```
+
+The program intentionally refuses to overwrite its output directory; choose a new
+output directory for another run. An initial harness setup omitted the required
+Cauchy offset, failed before attempting any cases, and is retained separately.
+Observed runtime was 6.94 seconds, Python 3.12.3/NumPy 2.5.5. Peak RSS was not
+measured. This small Gaussian-linear census does not establish broad functional
+diversity, filtering effectiveness, supported maxima, GPU or predictive quality.
+
+Local browser evidence for repaired `3411bf9` is retained in
+`/tmp/r0-28-workbench-repair/docs/evidence/issue-28-workbench-integration/`.
+The independent pair probe forced a 0.001-second timeout, verified preserved
+identities, reopened the successful pair and exported a CRC-valid ZIP containing
+both datasets and the comparison card. Graph drill-down reconstructed repeated
+rows with zero signal/target error. Mobile overflow and browser exceptions were
+absent in the checked flow. Hosted Colab remains NOT_RUN.

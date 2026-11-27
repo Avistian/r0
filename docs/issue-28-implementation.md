@@ -3,11 +3,12 @@
 The [accepted specification](specs/0028-causal-network-generators.md) is the
 authoritative scope. This ledger tracks execution, not a smaller replacement goal.
 
-Latest: [fresh prefix raw capture](issue-28-prefix-raw-capture.md) at `1b547ec`
-has bounded independent acceptance; equivalent source/tests pass 1496 tests (one
-skipped). [Function/root capture](issue-28-function-raw-capture.md) and matrix
-capture retain original failures and repairs. Full graph construction, typed
-ownership, receiver fit provenance and local/Colab workbench delivery remain open.
+Latest: [integration status](issue-28-integration-status.md) records complete
+geometry archives, structural topology integration and guarded workbench creation,
+editing and comparisons. The `16bfd23` combined checkpoint passed 1,804 tests
+(one skipped); its successor `b8d8234` is still being checked. Native categorical
+variables, sampled pipelines, remaining paper options and hosted evidence remain
+open. Earlier failures and repair-specific acceptance remain separately recorded.
 
 ## Checkout and scope preservation
 
@@ -61,11 +62,11 @@ requirements and option records to have appropriate evidence.
 | Primary-source option extraction and finite inventory | READY | Source/option record for every documented relevant choice, including variants and scope boundaries |
 | Replayable explicit causal and neural mechanisms | IN_PROGRESS | Independent worked calculations through shared public interfaces |
 | Topology, function, activation, weights, roots/noise and hyperprior sampling | IN_PROGRESS | Every inventory option exercised with traceable recipe and evidence |
-| Mixed typed variables and native/adapted targets | NOT_STARTED | Schema, probabilities, held-out-label separation and saved roundtrips |
-| Matched/population interventions and graph/mechanism edits | NOT_STARTED | Independent invariants, versioned identities and saved comparisons |
+| Mixed typed variables and native/adapted targets | IN_PROGRESS | Schema, probabilities, held-out-label separation and saved roundtrips |
+| Matched/population interventions and graph/mechanism edits | IN_PROGRESS (edits only) | Independent invariants, versioned identities and saved comparisons |
 | Diagnostics and coverage/filtering evidence | IN_PROGRESS | Original/retained denominators, failure reasons and structural/functional diversity |
-| Shared explorer/Colab workbench and exports | NOT_STARTED | Actual interactions and rendered artifacts in each environment |
-| Generation/storage/parallel/restart integration | NOT_STARTED | Retained execution, failure/restart and resource measurements |
+| Shared explorer/Colab workbench and exports | IN_PROGRESS (local browser checked; hosted Colab pending) | Actual interactions and rendered artifacts in each environment |
+| Generation/storage/parallel/restart integration | IN_PROGRESS | Retained execution, failure/restart and resource measurements |
 | Independent review, checks and publication | IN_PROGRESS | Fixed-revision review, required repository checks, PR and approved-specification link |
 
 ## Important semantic constraints
@@ -266,48 +267,7 @@ source profiles/census remain required. No browser/Colab, GPU, scale or scientif
 acceptance is claimed. The full #28 goal remains active.
 
 
-## Standalone Standardize checkpoint
+## Calibration and shared-scope checkpoints
 
-Source `962f0ad` adds immutable population Standardize with epsilon 1e-4 outside
-the square root. It supports node input/output placement and ordered pipeline
-stages, retains calibration identity/digest, preserves one-row and constant-channel
-behavior, and checks finite input second moments before construction. Generation,
-original-row inspection and saved replay use the same frozen constants.
-[Contract and evidence](issue-28-standardization.md).
-
-Full checks pass **809 tests, one skipped**, all static gates. Independent scoped
-review passes 174 checks: 38 numerical comparisons, 58 expected rejections, exact
-fitter/equation resource limits, moment/ancestry cases and three saved task types.
-All 168 legacy proposals are byte-identical, including four retained failures.
-Five exact programs and imported-source custody preserve reproduction. Standards
-finds zero hard violations and one nonblocking duplicated-admission-list advisory.
-Earlier verifier mistakes remain classified and retained separately.
-
-This advances node standardization; sampled source pipeline construction remains
-required. The [integration design](research/0028-pipeline-sampling-integration.md)
-recommends one shared preference context, complete transactional binding ownership,
-explicit global-mode adaptation, source-name adapters and ancestral fitting against
-final parent states. It preserves legacy families. Proposed design oracles are
-NOT_RUN. Full #28 scope, browser/Colab, GPU, scale and scientific evidence remain open.
-
-## Shared sampling context checkpoint
-
-Source `662fb89` adds one transactional numerical/categorical scope across named
-operations, nested ownership, explicit global policies, forced identities and
-aggregate admission before draws/decoding. Existing samplers retain their default
-behavior. [Contract and retained evidence](issue-28-joint-sampling.md).
-
-Full checks pass **825 tests, one skipped**, all static gates. Independent review
-passes 286 assertions including 165 expected rejections; all 156 legacy pairs are
-byte-identical, including three retained failures. Source/import custody verifies
-323 entries each. The original `2812d23` decoder REJECT remains retained: a string
-path was silently coerced into character components. Repaired decoding rejects
-string/dictionary paths. The separate Tensor-output verifier mistake is retained.
-Standards accepts the narrow repair/documentation remedy, with no source-level
-hard finding and one advisory transaction-copy duplication concern.
-
-This is the shared context/ledger foundation, not the sampled graph integration.
-Typed activation/matrix/root/converter plans, semantic destination bindings,
-independent ancestral fitting against finalized parent states, source profiles,
-all wider options and actual browser/Colab/GPU/scale evidence remain required.
-The full #28 goal stays active.
+The historical Standardize and shared sampling context results are retained in
+[calibration and scope checkpoints](issue-28-calibration-scope-checkpoints.md).
