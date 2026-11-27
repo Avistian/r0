@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.exact_frozen_record import exact_frozen_equal
 from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot, snapshot_generator
 from r0.modules.priors.lib.joint_function_admission import function_record_cost
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger
@@ -38,7 +39,7 @@ class SampledSourceRootBase(SourceRootBase):
         if (
             self.version != "sampled-source-root-base-v1"
             or type(self.profile) is not SampledSourceRootProfile
-            or self.law != self.profile.law
+            or not exact_frozen_equal(self.profile.law, self.law)
             or type(self.calibration_raw) is not tuple
             or any(type(r) is not RawDrawRecord for r in self.calibration_raw)
         ):
@@ -87,10 +88,12 @@ class SampledSourceRootBase(SourceRootBase):
             limits=limits,
         )
         if (
-            actual != self.calibration
-            or ledger.freeze() != self.calibration_raw
-            or snapshot_generator(rng, byte_limit=self.raw_limits.state_bytes)
-            != self.calibration_final
+            not exact_frozen_equal(actual, self.calibration)
+            or not exact_frozen_equal(ledger.freeze(), self.calibration_raw)
+            or not exact_frozen_equal(
+                snapshot_generator(rng, byte_limit=self.raw_limits.state_bytes),
+                self.calibration_final,
+            )
         ):
             raise ValueError("sampled root calibration differs from exact independent replay")
 

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.exact_frozen_record import exact_frozen_equal
 from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot, snapshot_generator
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger
 from r0.modules.priors.lib.raw_draw_records import RawDrawRecord
@@ -75,9 +76,9 @@ class SampledSourceRootProfile:
                 for name in ("model", "selection")
             )
             if (
-                result != (self.law, self.model_gaussians, self.thresholds)
-                or capture.freeze() != self.raw
-                or final != self.final_rng
+                not exact_frozen_equal(result, (self.law, self.model_gaussians, self.thresholds))
+                or not exact_frozen_equal(capture.freeze(), self.raw)
+                or not exact_frozen_equal(final, self.final_rng)
             ):
                 raise ValueError("source root profile differs from raw replay")
 
