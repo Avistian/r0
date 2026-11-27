@@ -122,13 +122,14 @@ def guarded_intervention(
         request["causal_limits"] = asdict(caller_limits(data))
         if data.get("device", "cpu") != "cpu":
             raise ValueError("causal intervention workflows support explicit CPU only")
-        if operation == "create":
+        if operation in ("create", "sample_policy"):
             if before is None or archive is None:
                 raise ValueError("save an original dataset before intervening")
             request.update(
                 before_archive=str(inside(output, output / archive)),
                 before_episode_id=before.episode_id,
-                interventions_json=data["interventions_json"],
+                interventions_json=data.get("interventions_json", "[]"),
+                policy_json=data.get("policy_json", "{}"),
                 mode=data.get("mode", "matched"),
                 population=data.get("population", 1),
             )

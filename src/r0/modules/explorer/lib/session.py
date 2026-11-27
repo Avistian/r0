@@ -52,7 +52,7 @@ def _identity_numbers(value: Any, *, for_browser: bool) -> Any:
         return value
     result: dict[str, Any] = {}
     for key, item in cast(dict[str, Any], value).items():
-        if key in ("seed", "task_id", "split", "population"):
+        if key in ("seed", "task_id", "split", "population", "reference_seed", "reference_task_id"):
             if for_browser and type(item) is int and item > 2**53 - 1:
                 item = str(item)
             elif not for_browser and isinstance(item, str) and item.isascii() and item.isdecimal():
@@ -308,10 +308,10 @@ class ExplorerSession:
             )
         if action == "intervention_controls":
             return intervention_controls(self.task)
-        if action == "intervene":
+        if action in ("intervene", "sample_intervention_policy"):
             result = guarded_intervention(
                 self.output_dir,
-                "create",
+                "sample_policy" if action == "sample_intervention_policy" else "create",
                 _identity_numbers(data, for_browser=False),
                 before=self.task,
                 archive=self.archive,
