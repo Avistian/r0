@@ -7,6 +7,7 @@ from typing import Any, cast
 import numpy as np
 
 from r0.modules import priors
+from r0.modules.generation.lib.fitted_construction import construct_fitted
 from r0.modules.generation.lib.native_construction import construct_native
 
 
@@ -26,6 +27,8 @@ def construct_graph(
         raise ValueError("construction seed must be an integer in [0, 2**63)")
     fields = _tuples(controls)
     topology = fields.pop("topology")
+    if topology == "fitted":
+        return construct_fitted(fields, seed=seed, limits=limits)
     if topology == "sampled-native":
         return construct_native(fields, seed=seed, limits=limits)
     task = priors.recipe_from_dict(fields.pop("task"))
@@ -38,6 +41,12 @@ def construct_graph(
         if type(native) is not priors.NativeCausalRecipe:
             raise ValueError("native construction requires an authored native recipe")
         return native
+    raw_composition = fields.pop("composition", None)
+    composition = (
+        None if raw_composition is None else priors.ParentCompositionPrior(**raw_composition)
+    )
+    if composition is not None and topology == "cauchy":
+        raise ValueError("parent composition uses explicit or geometry topology controls")
     functions = fields.pop("function_prior")
     matrix = priors.JointMatrixPrior(**functions.pop("matrix"))
     function = priors.JointFunctionPrior(matrix=matrix, **functions)
@@ -65,6 +74,9 @@ def construct_graph(
             converter = priors.JointNumericalConverterPrior(**pipeline.pop("converter"))
             fields["pipeline_prior"] = priors.JointPipelinePrior(converter=converter, **pipeline)
             request_type = priors.GeometryPipelineRequest
+        if composition is not None:
+            request_type = priors.GeometryParentRequest
+            fields["composition"] = composition
         geometry = request_type(
             task=task,
             topology=geometry_prior,
@@ -90,6 +102,8 @@ def construct_graph(
         request = priors.JointGraphRequest(
             task=task, root_prior=roots, function_prior=function, limits=limits, **fields
         )
+        if composition is not None:
+            return priors.sample_parent_graph(request, composition=composition, **rngs)
         return priors.sample_joint_graph(request, **rngs)
     else:
         raise ValueError("unknown graph construction topology")
@@ -111,6 +125,8 @@ class GraphConstruction:
     def task_record(self) -> dict[str, Any]:
         """Return preconstruction row geometry; sampled native target type is not yet known."""
         controls = json.loads(self.controls_json)
+        if controls.get("topology") == "fitted":
+            return controls["skeleton"]["task"]
         if controls.get("topology") != "sampled-native":
             return controls["task"]
         observed = controls["observed"]

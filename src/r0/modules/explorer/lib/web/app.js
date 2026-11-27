@@ -61,7 +61,7 @@ function fillControls(recipe) {
 }
 function updateRecipe(changed) {
   const recipe = parseRecipe(), task = taskControls(recipe);
-  if (recipe.version?.startsWith("sampled-")) throw new Error("Sampled archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
+  if (recipe.version?.startsWith("sampled-") || recipe.version === "fitted-functional-causal-v1") throw new Error("Frozen construction archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
   const fields = {rows: "rows", context: "context_rows", features: "features", active: "active_features", classes: "classes"};
   if (fields[changed]) task[fields[changed]] = number(changed);
   if (changed === "difficulty") task[task.task_type === "regression" ? "noise_ratio" : "separation"] = number("difficulty");
@@ -86,7 +86,11 @@ function updateRecipe(changed) {
 }
 function limits() { return {...explorationLimits(), device: $("device").value, max_seconds: number("seconds"), max_bytes: number("bytes") * 1024 ** 2}; }
 async function generate() {
-  const result = await request("generate", {recipe: parseRecipe(), seed: $("seed").value, task_id: $("task-id").value, ...limits()});
+  const stored=current?.view?.recipe?.recipe;
+  const frozen=stored && (stored.version?.startsWith("sampled-") || stored.version==="fitted-functional-causal-v1") && $("recipe").value===pretty(stored);
+  const identity={seed:$("seed").value,task_id:$("task-id").value};
+  const payload=frozen ? {record_json:current.recipe_json,frozen_identity:identity} : {recipe:parseRecipe(),...identity};
+  const result = await request("generate", {...payload,...limits()});
   show(result);
 }
 function download(name, blob) {
@@ -213,6 +217,9 @@ function show(result) {
   $("replay-record").value = result.recipe_json; $("seed").value = view.recipe.seed; $("task-id").value = view.recipe.task_id;
   $("curve-row").value = 0; $("curve-row").max = view.total_rows - 1;
   $("gp-approximate").checked = false;
+  $("construction-details").hidden=!view.construction_details;
+  $("construction-detail-notice").textContent=view.construction_details?.notice || "";
+  $("construction-detail-record").textContent=pretty(view.construction_details || {});
   fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair(); resetWorkbench(); nativeViewControls(view);
 }
 async function inspectRow(index) {

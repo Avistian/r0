@@ -1,0 +1,64 @@
+// Installed-browser walkthrough for parent composition and independently fitted trees.
+import fs from "node:fs/promises";
+import path from "node:path";
+import assert from "node:assert/strict";
+import {openBrowser} from "./explorer_browser.mjs";
+const [port,url,directory]=process.argv.slice(2);
+const b=await openBrowser(Number(port),url,directory);
+const results=[];
+async function select(label) {
+  await b.evaluate(`{ $('construction-panel').open=true;$('construction-family').value=${JSON.stringify(label)};$('construction-family').onchange();const c=JSON.parse($('construction-controls').value);if(c.topology==='fitted'){c.skeleton.task.rows=16;c.skeleton.task.context_rows=8;c.fits.forEach(f=>f.plan.rows=32);}else if(c.topology==='sampled-native'){c.rows=16;c.context_rows=8;c.calibration_rows=16;}else{c.task.rows=16;c.task.context_rows=8;c.calibration_rows=16;if(c.width_prior){c.width_prior.low=1;c.width_prior.high=2;}}if(c.composition){c.composition.mode=c.composition.source==='mitra2'?'sample':'aggregate';c.composition.aggregation=c.composition.source==='mitra2'?'mean':'sum';}$('construction-controls').value=JSON.stringify(c); }`);
+  await b.click("construct");
+  assert.equal(await b.evaluate("$('construction-details').hidden"),false);
+  await b.evaluate("$('construction-details').open=true;$('graph-rows').value='15,0,15'");
+  await b.click("graph");
+  assert.deepEqual(await b.evaluate("generationGraph.rows"),[15,0,15]);
+  return await b.evaluate("({episode:current.view.episode_id,source:current.view.source_task_id,archive:current.archive,task:current.view.recipe.task_id,details:current.view.construction_details})");
+}
+try {
+  const parent=await select("Parent composition: mitra2 explicit");
+  assert.equal(parent.details.composition.source,"mitra2");
+  assert.equal(await b.evaluate("$('parent-controls-note').hidden"),false);
+  assert.equal(await b.evaluate("generationGraph.signal_max_error"),0);
+  assert.equal(await b.evaluate("generationGraph.nodes.some(n=>n.id==='parent-joint-2')"),true);
+  await b.click("mechanism-load");
+  await b.evaluate("$('mechanism-node').value='2';$('mechanism-node').onchange();{const f=JSON.parse($('mechanism-function').value);f.aggregation='max';$('mechanism-function').value=JSON.stringify(f);}");
+  await b.click("mechanism-apply");await b.click("mechanism-save");
+  assert.notEqual(await b.evaluate("current.edit.card.after_episode_id"),parent.episode);
+  await b.click("edit-open");await b.click("edit-export");await b.downloaded("mechanism-edit.zip");
+  await b.screenshot("parent-composition-edit.png");results.push(parent);
+  const pipeline=await select("Parent composition: pipeline readout-only");
+  assert.equal(await b.evaluate("generationGraph.signal_max_error"),0);
+  await b.click("mechanism-load");assert.equal(await b.evaluate("$('mechanism-pipeline-label').hidden"),false);
+  results.push(pipeline);
+  const native=await select("Parent composition: native domains");
+  assert.equal(await b.evaluate("current.view.target_origin"),"native-variable-v1");
+  assert.deepEqual(await b.evaluate("current.view.feature_schema.map(f=>f.kind)"),["continuous","binary","categorical"]);
+  await b.click("export");await b.downloaded(`dataset-${native.source}.zip`);results.push(native);
+  const fitted=await select("Fitted structural tree: gbdt");
+  assert.equal(fitted.details.kind,"independent-fitted-trees");
+  assert.equal(await b.evaluate("$('fitted-controls-note').hidden"),false);
+  assert.equal(await b.evaluate("generationGraph.signal_max_error"),0);
+  assert.equal(fitted.details.fits.length,2);
+  const fits=await b.evaluate("JSON.stringify(current.view.recipe.recipe.fits)");
+  await b.click("next");
+  assert.equal(await b.evaluate("JSON.stringify(current.view.recipe.recipe.fits)"),fits);
+  await b.evaluate(`$('archive-path').value=${JSON.stringify(fitted.archive)};$('saved-id').value=${JSON.stringify(String(fitted.task))}`);
+  await b.click("open");assert.equal(await b.evaluate("current.view.episode_id"),fitted.episode);
+  await b.click("mechanism-load");
+  assert.equal(await b.evaluate("mechanismDraft.version"),"functional-causal-v1");
+  assert.equal(await b.evaluate("Object.hasOwn(mechanismDraft,'fits')"),false);
+  await b.evaluate("$('mechanism-node').value='0';$('mechanism-node').onchange();{const f=JSON.parse($('mechanism-function').value);f.matrix[0][0]=2;$('mechanism-function').value=JSON.stringify(f);}");
+  await b.click("mechanism-apply");await b.click("mechanism-save");
+  await b.click("edit-open");await b.click("edit-export");await b.downloaded("mechanism-edit.zip",2);
+  await b.click("export");await b.downloaded(`dataset-${fitted.source}.zip`);
+  await b.screenshot("fitted-tree-edit.png");results.push(fitted);
+  await b.evaluate("{const c=JSON.parse($('construction-controls').value);c.fits[0].plan.family='xgboost';$('construction-controls').value=JSON.stringify(c);}$('construct').click()");
+  await b.waitFor("!busy");assert.equal(await b.evaluate("$('status').className"),"error");
+  assert.equal(await b.evaluate("current.view.episode_id"),fitted.episode);
+  await b.send("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:true});
+  assert.equal(await b.evaluate("document.documentElement.scrollWidth>innerWidth+2"),false);
+  await b.screenshot("fitted-mobile.png");
+  assert.deepEqual(b.exceptions,[]);
+  await fs.writeFile(path.join(directory,"receipt.json"),JSON.stringify({results,downloads:b.downloads,exceptions:b.exceptions},null,2));
+} finally {b.close();}

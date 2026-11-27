@@ -22,7 +22,11 @@ def construct_native(
     root["function"] = function(root["function"])
     fields["root_prior"] = priors.JointRootPrior(**root)
     fields["raw_limits"] = priors.RawDrawLimits(**fields["raw_limits"])
-    request = priors.NativeGraphRequest(limits=limits, **fields)
+    request_type = priors.NativeGraphRequest
+    if "composition" in fields:
+        fields["composition"] = priors.ParentCompositionPrior(**fields["composition"])
+        request_type = priors.NativeParentGraphRequest
+    request = request_type(limits=limits, **fields)
     streams = [np.random.default_rng(s) for s in np.random.SeedSequence(seed).spawn(4)]
     return priors.sample_native_graph(
         request,

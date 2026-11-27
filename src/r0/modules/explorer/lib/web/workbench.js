@@ -63,7 +63,7 @@ function selectMechanismNode() {
   $("mechanism-node-info").textContent = pretty({...mechanismInfo.nodes[index], geometry:mechanismInfo.geometry, note:"Green highlights the selected node and its ancestors. Hidden channels are not selected as observed features or targets. Values and equations are available in the generation-process drill-down below."});
   causalStructure();
 }
-$("construction-family").onchange = () => {const example=constructionExamples[$("construction-family").value]; $("construction-controls").value=pretty(example); $("construction-seed").disabled=example.topology==="native"; $("sampled-native-controls-note").hidden=example.topology!=="sampled-native";};
+$("construction-family").onchange = () => {const example=constructionExamples[$("construction-family").value]; $("construction-controls").value=pretty(example); $("construction-seed").disabled=example.topology==="native"; $("sampled-native-controls-note").hidden=example.topology!=="sampled-native"; $("parent-controls-note").hidden=!example.composition; $("fitted-controls-note").hidden=example.topology!=="fitted";};
 $("construct").onclick = () => act("Constructing, generating and saving graph…", async () => show(await request("construct", {controls:JSON.parse($("construction-controls").value), construction_seed:$("construction-seed").value, seed:$("seed").value, task_id:$("task-id").value, ...limits()})));
 $("mechanism-load").onclick = () => act("Verifying mechanism archive…", async () => {
   mechanismInfo = await request("mechanism"); mechanismDraft = mechanismInfo.editable_recipe;

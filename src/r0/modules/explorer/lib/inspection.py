@@ -9,6 +9,7 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
+from r0.modules.explorer.lib.construction_details import construction_details
 from r0.modules.priors import TrainingTask, record_fingerprint
 
 
@@ -103,6 +104,7 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         "classes": list(task.classes),
         "recipe": record,
         "family": mechanism["family"],
+        "construction_details": construction_details(record["recipe"]),
         "total_rows": len(x),
         "shown_rows": len(indices),
         "summary_scope": "all_rows",

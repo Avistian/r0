@@ -182,12 +182,38 @@ class ExplorerSession:
             )
             if not isinstance(record, dict):
                 raise ValueError("recipe record must be an object")
+            record = cast(dict[str, Any], record)
+            if "frozen_identity" in data:
+                identity = data["frozen_identity"]
+                frozen_recipe = record.get("recipe")
+                version = (
+                    cast(dict[str, Any], frozen_recipe).get("version", "")
+                    if type(frozen_recipe) is dict
+                    else ""
+                )
+                if (
+                    "record_json" not in data
+                    or type(identity) is not dict
+                    or set(cast(dict[str, Any], identity)) != {"seed", "task_id"}
+                    or not (
+                        str(version).startswith("sampled-")
+                        or version == "fitted-functional-causal-v1"
+                    )
+                ):
+                    raise ValueError(
+                        "frozen identity changes require an original frozen archive "
+                        "and seed/task keys"
+                    )
+                record = {**record, **cast(dict[str, Any], identity)}
             record = _identity_numbers(record, for_browser=False)
             device = data.get("device", record.get("execution", {}).get("device", "cpu"))
             if (
                 "sampling" not in record
                 and "sampling" not in data
-                and str(record["recipe"].get("version", "")).startswith("sampled-")
+                and (
+                    str(record["recipe"].get("version", "")).startswith("sampled-")
+                    or record["recipe"].get("version") == "fitted-functional-causal-v1"
+                )
             ):
                 request = {
                     "recipe": record["recipe"],

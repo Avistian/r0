@@ -4,6 +4,7 @@ from dataclasses import asdict, replace
 from typing import Any, cast
 
 from r0.modules import priors
+from r0.modules.explorer.lib.composed_examples import composed_examples, fitted_examples
 from r0.modules.explorer.lib.native import native_example, sampled_native_example
 
 
@@ -62,6 +63,8 @@ def construction_examples() -> dict[str, Any]:
         },
         "Native mixed graph (authored)": native_example(),
         "Native mixed graph (sampled domains)": sampled_native_example(),
+        **composed_examples(common, geometry, sampled_native_example()),
+        **fitted_examples(),
         **{
             f"Numerical pipeline: {variant}": {
                 **geometry,
@@ -115,6 +118,11 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
                 for i, node in enumerate(runtime.nodes)
             ],
         }
+    fitted = isinstance(runtime, priors.FittedFunctionalCausalRecipe)
+    if fitted:
+        runtime = priors.FunctionalCausalRecipe(
+            runtime.task, runtime.nodes, runtime.observed, runtime.target, runtime.limits
+        )
     if not isinstance(runtime, priors.FunctionalCausalRecipe):
         raise ValueError("mechanism editing requires a frozen functional causal graph")
     return {
@@ -123,6 +131,12 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
         "editable_recipe": asdict(runtime),
         "geometry": json.loads(task.mechanism_json).get("geometry"),
         "notice": (
+            "Editing frozen split tables creates an authored equation; it does not refit. "
+            "Synthetic fit populations and backend provenance remain in the original archive. "
+            if fitted
+            else ""
+        )
+        + (
             "Editing creates a new authored mechanism linked to the original sampled archive. "
             "It is not a causal intervention or observational conditioning."
         ),
