@@ -16,7 +16,7 @@ def construct_native(
         return priors.JointFunctionPrior(**fields)
 
     fields = dict(fields)
-    fields["domains"] = tuple(priors.NativeDomainPrior(**d) for d in fields["domains"])
+    fields["domains"] = tuple(priors.native_domain_prior_from_dict(d) for d in fields["domains"])
     fields["function_prior"] = function(fields["function_prior"])
     root: dict[str, Any] = dict(fields["root_prior"])
     root["function"] = function(root["function"])

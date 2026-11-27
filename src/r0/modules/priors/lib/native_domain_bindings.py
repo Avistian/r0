@@ -7,13 +7,21 @@ from r0.modules.priors.lib.joint_plan_bindings import (
     operation_events,
 )
 from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord, validate_path
-from r0.modules.priors.lib.native_domain_prior import NativeDomainPlan
+from r0.modules.priors.lib.native_domain_prior import (
+    AsymmetricNativeDomainPlan,
+    AsymmetricNativeDomainPrior,
+    NativeDomainPlan,
+)
 from r0.modules.priors.lib.parameter_preferences import NumericalParameter
 
 
 def validate_native_domain(plan: NativeDomainPlan, decisions: JointSamplingRecord) -> None:
     validate_path(plan.operation)
-    if plan.version != "native-domain-plan-v1":
+    if plan.version != (
+        "native-asymmetric-domain-plan-v1"
+        if type(plan) is AsymmetricNativeDomainPlan
+        else "native-domain-plan-v1"
+    ):
         raise ValueError("unsupported native domain plan version")
     expected: list[
         tuple[str, CategoricalParameter | NumericalParameter | None, str | float, str | None]
@@ -60,7 +68,19 @@ def validate_native_domain(plan: NativeDomainPlan, decisions: JointSamplingRecor
             )
         choice("emission", plan.prior.emissions, plan.emission)
         choice("frequency_law", plan.prior.frequency_laws, plan.frequency_law)
-        if plan.frequency_law != "uniform":
+        if plan.frequency_law == "asymmetric-dirichlet":
+            if (
+                type(plan) is not AsymmetricNativeDomainPlan
+                or type(plan.prior) is not AsymmetricNativeDomainPrior
+                or plan.concentrations != plan.prior.concentrations(plan.cardinality)
+                or plan.concentration != 1.0
+            ):
+                raise ValueError(
+                    "asymmetric concentration vector differs from owned cardinality prior"
+                )
+        elif type(plan) is AsymmetricNativeDomainPlan:
+            raise ValueError("asymmetric plan requires its explicit frequency law")
+        elif plan.frequency_law != "uniform":
             number("concentration", plan.prior.concentration, plan.concentration)
         elif plan.concentration != 1.0:
             raise ValueError("uniform frequencies do not own concentration")
@@ -73,6 +93,8 @@ def validate_native_domain(plan: NativeDomainPlan, decisions: JointSamplingRecor
             number("threshold_scale", plan.prior.threshold_scale, plan.threshold_scale)
         elif plan.threshold_law != "none" or plan.threshold_scale != 1.0:
             raise ValueError("native score emission does not own cutpoint laws")
+    if type(plan) is AsymmetricNativeDomainPlan:
+        expected.append(("concentrations", None, "", "configured-cardinality-vector"))
     events = operation_events(decisions, plan.operation)
     if len(events) != len(expected):
         raise ValueError("native domain decision count differs from its owned plan")

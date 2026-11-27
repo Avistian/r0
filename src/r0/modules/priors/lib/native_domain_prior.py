@@ -22,12 +22,20 @@ class NativeDomainPrior:
     version: str = "native-domain-prior-v1"
 
     def __post_init__(self) -> None:
-        if self.version != "native-domain-prior-v1":
+        if self.version != (
+            "native-asymmetric-domain-prior-v1"
+            if type(self) is AsymmetricNativeDomainPrior
+            else "native-domain-prior-v1"
+        ):
             raise ValueError("unsupported native domain prior")
         for values, allowed in (
             (self.kinds, ("continuous", "binary", "categorical")),
             (self.emissions, ("softmax", "argmax", "threshold")),
-            (self.frequency_laws, ("uniform", "dirichlet", "logistic-normal")),
+            (
+                self.frequency_laws,
+                ("uniform", "dirichlet", "logistic-normal")
+                + (("asymmetric-dirichlet",) if type(self) is AsymmetricNativeDomainPrior else ()),
+            ),
             (self.threshold_laws, ("normal-quantile", "uniform-quantile", "sorted-normal")),
         ):
             if (
@@ -66,6 +74,39 @@ class NativeDomainPrior:
 
 
 @dataclass(frozen=True, slots=True)
+class AsymmetricNativeDomainPrior(NativeDomainPrior):
+    """r0 extension: explicit per-cardinality Gamma concentration vectors."""
+
+    frequency_laws: tuple[str, ...] = ("asymmetric-dirichlet",)
+    concentration_vectors: tuple[tuple[float, ...], ...] = ()
+    version: str = "native-asymmetric-domain-prior-v1"
+
+    def __post_init__(self) -> None:
+        NativeDomainPrior.__post_init__(self)
+        required: set[int] = set(self.cardinalities) if "categorical" in self.kinds else set()
+        if "binary" in self.kinds:
+            required.add(2)
+        vectors = self.concentration_vectors
+        if (
+            type(vectors) is not tuple
+            or len(vectors) != len(required)
+            or any(type(row) is not tuple or len(row) not in required for row in vectors)
+            or {len(row) for row in vectors} != required
+            or any(
+                type(a) not in (int, float) or not math.isfinite(a) or a <= 0
+                for row in vectors
+                for a in row
+            )
+        ):
+            raise ValueError(
+                "asymmetric concentrations require one positive vector per reachable cardinality"
+            )
+
+    def concentrations(self, cardinality: int) -> tuple[float, ...]:
+        return next(row for row in self.concentration_vectors if len(row) == cardinality)
+
+
+@dataclass(frozen=True, slots=True)
 class NativeDomainPlan:
     operation: tuple[str, ...]
     prior: NativeDomainPrior
@@ -90,11 +131,20 @@ class NativeDomainPlan:
         return self.score_width if self.kind == "continuous" else self.cardinality
 
 
+@dataclass(frozen=True, slots=True)
+class AsymmetricNativeDomainPlan(NativeDomainPlan):
+    concentrations: tuple[float, ...] = ()
+    version: str = "native-asymmetric-domain-plan-v1"
+
+
 def sample_native_domain(
     context: JointSamplingContext, name: str, prior: NativeDomainPrior
 ) -> NativeDomainPlan:
     """Fixed choices are explicit forced decisions; stochastic choices share cached names."""
-    if type(context) is not JointSamplingContext or type(prior) is not NativeDomainPrior:
+    if type(context) is not JointSamplingContext or type(prior) not in (
+        NativeDomainPrior,
+        AsymmetricNativeDomainPrior,
+    ):
         raise ValueError("native domain sampling requires its shared context and frozen prior")
     with context.transaction(name) as operation:
 
@@ -129,14 +179,16 @@ def sample_native_domain(
         emission = choose("emission", prior.emissions)
         frequency = choose("frequency_law", prior.frequency_laws)
         concentration = (
-            number("concentration", prior.concentration) if frequency != "uniform" else 1.0
+            number("concentration", prior.concentration)
+            if frequency not in ("uniform", "asymmetric-dirichlet")
+            else 1.0
         )
         temperature = number("temperature", prior.temperature) if emission == "softmax" else 1.0
         threshold = (
             choose("threshold_law", prior.threshold_laws) if emission == "threshold" else "none"
         )
         scale = number("threshold_scale", prior.threshold_scale) if emission == "threshold" else 1.0
-        return NativeDomainPlan(
+        args = (
             operation.operation,
             prior,
             kind,
@@ -148,3 +200,10 @@ def sample_native_domain(
             threshold,
             scale,
         )
+        if frequency == "asymmetric-dirichlet":
+            assert isinstance(prior, AsymmetricNativeDomainPrior)
+            operation.forced_identity("concentrations", reason="configured-cardinality-vector")
+            return AsymmetricNativeDomainPlan(
+                *args, concentrations=prior.concentrations(cardinality)
+            )
+        return NativeDomainPlan(*args)

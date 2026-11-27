@@ -37,6 +37,33 @@ options, not a claim to reproduce either complete prior.
   exponentials of retained Gaussian draws. The concentration control acts as
   their logit standard deviation.
 
+`AsymmetricNativeDomainPrior` opts into `native-asymmetric-domain-prior-v1`.
+Its `concentration_vectors` contains exactly one positive finite tuple for every
+reachable discrete cardinality: tuple length is the cardinality key; duplicate,
+missing and unreachable lengths are rejected. Binary domains require length two.
+For example, a categorical prior with `cardinalities=(3, 4)` accepts
+`concentration_vectors=((0.5, 2.0, 7.0), (1.0, 2.0, 3.0, 4.0))`.
+The explicit `asymmetric-dirichlet` frequency token can be mixed with uniform,
+symmetric Dirichlet and logistic-normal tokens. In shared scopes, stochastic
+frequency catalogs must still agree; vectors are configured per node/cardinality,
+not sampled shared preferences.
+
+These are **absolute per-category concentrations**, not weights multiplied by the
+scalar `concentration` hyperparameter. The asymmetric branch does not sample that
+scalar; its inherited plan scalar stays the unused sentinel 1.0. Its versioned
+plan records the selected tuple plus a forced `configured-cardinality-vector`
+receipt. Each category owns a raw Gamma(alpha_i, 1) record; all are normalized by
+their common sum. This is the standard [NumPy Dirichlet construction](https://numpy.org/doc/2.3/reference/random/generated/numpy.random.Generator.dirichlet.html).
+Admission reserves the per-category records and vector metadata before realization.
+The asymmetric family is a named r0 extension, not a disclosed TabAbax law.
+
+Explorer JSON controls select the new prior version and concentration vectors
+inside any sampled-native domain, including native parent composition. Saved
+records retain those controls and plans; authored runtime recipes reuse the
+existing frequency domain. Inspection, typed export and reopen use the existing
+native path. Historical prior/plan fields, selector names and symmetric draws
+remain unchanged. No query data calibrates these frequency vectors.
+
 `FrequencyVariableDomain` uses `native-frequency-domain-v2`; unchanged authored
 `VariableDomain` records retain their v1 fields and bytes. For softmax the adapted
 scores are `score / temperature + log(frequency)`. Argmax uses
@@ -78,8 +105,7 @@ out-of-budget constructions fail explicitly without retry or category deletion.
 Each node currently contains one vector continuous variable or one scalar
 binary/categorical variable. The indexed `domain:0` ownership seam leaves room
 for ordered heterogeneous variables, but that extension remains required #28
-work. Other remaining work includes asymmetric Dirichlet parameter vectors,
-additional disclosed source-specific frequency laws when available, and native
+work. Other remaining work includes additional disclosed source-specific frequency laws when available, and native
 intervention-pair APIs. The current sampled-native JSON controls and shared
 workbench are described in [Sampled native explorer](sampled-native-explorer.md);
 hosted notebook execution remains separately unverified. Neither a source's mixture

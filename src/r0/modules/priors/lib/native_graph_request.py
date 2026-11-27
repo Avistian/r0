@@ -7,7 +7,7 @@ from r0.modules.priors.lib.joint_function_prior import JointFunctionPrior
 from r0.modules.priors.lib.joint_graph_plans import validate_graph_geometry
 from r0.modules.priors.lib.joint_root_plans import JointRootPrior
 from r0.modules.priors.lib.linear import LinearRecipe
-from r0.modules.priors.lib.native_domain_prior import NativeDomainPrior
+from r0.modules.priors.lib.native_domain_prior import AsymmetricNativeDomainPrior, NativeDomainPrior
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
 
 
@@ -44,7 +44,10 @@ class NativeGraphRequest:
             or type(self.domains) is not tuple
             or (
                 len(self.domains) != len(self.parents)
-                or any(type(d) is not NativeDomainPrior for d in self.domains)
+                or any(
+                    type(d) not in (NativeDomainPrior, AsymmetricNativeDomainPrior)
+                    for d in self.domains
+                )
                 or type(self.root_prior) is not JointRootPrior
                 or type(self.function_prior) is not JointFunctionPrior
                 or type(self.raw_limits) is not RawDrawLimits

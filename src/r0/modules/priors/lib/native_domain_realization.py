@@ -6,7 +6,7 @@ from typing import Literal, cast
 import numpy as np
 
 from r0.modules.priors.lib.native_causal import FrequencyVariableDomain, VariableDomain
-from r0.modules.priors.lib.native_domain_prior import NativeDomainPlan
+from r0.modules.priors.lib.native_domain_prior import AsymmetricNativeDomainPlan, NativeDomainPlan
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
 
 
@@ -20,6 +20,23 @@ def materialize_native_domain(
     k = plan.cardinality
     if plan.frequency_law == "uniform":
         weights = np.ones(k, dtype=np.float64)
+    elif plan.frequency_law == "asymmetric-dirichlet":
+        assert isinstance(plan, AsymmetricNativeDomainPlan)
+        weights = np.array(
+            [
+                recorded_draw(
+                    rng,
+                    capture,
+                    owner=plan.operation,
+                    role=f"frequency:{i}",
+                    distribution="gamma",
+                    shape=(1,),
+                    parameters=(("concentration", alpha),),
+                )[0]
+                for i, alpha in enumerate(plan.concentrations)
+            ],
+            dtype=np.float64,
+        )
     else:
         raw = recorded_draw(
             rng,

@@ -82,6 +82,14 @@ def admit_native_construction(
     working += 512 * total * total + 512 * total
     working += 32 * min(request.raw_limits.state_bytes, 1024**2)
     parameters += 128 * len(domains)
+    # Asymmetric vectors retain one independently parameterized Gamma record per category.
+    asymmetric_draws = sum(
+        d.cardinality for d in domains if d.frequency_law == "asymmetric-dirichlet"
+    )
+    if asymmetric_draws > request.raw_limits.draws or asymmetric_draws > request.raw_limits.numbers:
+        raise ValueError("asymmetric frequency raw draw limit exceeded before materialization")
+    parameters += 32 * asymmetric_draws
+    working += 4096 * asymmetric_draws
     remaining_parameters = limits.parameters - parameters
     remaining_bytes = limits.working_bytes - working
     raw_bytes = min(

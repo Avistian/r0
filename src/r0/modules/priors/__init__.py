@@ -347,6 +347,10 @@ from .lib.kernels import StationaryKernel as StationaryKernel
 from .lib.linear import LinearRecipe as LinearRecipe
 from .lib.linear import generate_linear as generate_linear
 from .lib.matrix_preference_prior import CausalMatrixPrior as CausalMatrixPrior
+from .lib.native_domain_prior import AsymmetricNativeDomainPrior as AsymmetricNativeDomainPrior
+from .lib.native_graph_decoding import (
+    native_domain_prior_from_dict as native_domain_prior_from_dict,
+)
 from .lib.node_pipeline import CausalNodePipeline as CausalNodePipeline
 from .lib.node_pipeline import NumericalConverter as NumericalConverter
 from .lib.pairs import TaskPair as TaskPair
