@@ -59,6 +59,9 @@ from r0.modules.priors.lib.frozen_function_primitives import (
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 
 __all__ = [
+    "XGBoostNodeFit",
+    "XGBoostFittedGraph",
+    "with_xgboost_fits",
     "XGBoostFitPlan",
     "XGBoostFit",
     "fit_xgboost",
@@ -104,6 +107,9 @@ from r0.modules.priors.lib.structural_network import NetworkProjection as Networ
 from r0.modules.priors.lib.xgboost_fit_decoding import (
     xgboost_fit_from_dict as xgboost_fit_from_dict,
 )
+from r0.modules.priors.lib.xgboost_fit_graph import XGBoostFittedGraph as XGBoostFittedGraph
+from r0.modules.priors.lib.xgboost_fit_graph import XGBoostNodeFit as XGBoostNodeFit
+from r0.modules.priors.lib.xgboost_fit_graph import with_xgboost_fits as with_xgboost_fits
 from r0.modules.priors.lib.xgboost_fit_plan import XGBoostFitPlan as XGBoostFitPlan
 from r0.modules.priors.lib.xgboost_fitting import XGBoostFit as XGBoostFit
 from r0.modules.priors.lib.xgboost_fitting import fit_xgboost as fit_xgboost

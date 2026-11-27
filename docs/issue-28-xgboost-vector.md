@@ -88,3 +88,25 @@ backend rollback and admission before backend import. Fit-provenance integration
 into generated graph task archives, source-specific population/support/batch
 lifecycles, categorical backend splits, exploration UI/Colab and independent
 acceptance remain pending. Prior completed checkpoints remain separate.
+
+## Fitted graph task provenance
+
+`with_xgboost_fits` binds ordered `XGBoostNodeFit` records to an authored functional
+skeleton and returns `XGBoostFittedGraph`. Root and nonroot replacements retain
+geometry; pre-fitted pipelines require a separate explicit treatment. Fit rows
+remain independent synthetic construction data, not ancestor or episode rows.
+Generated task archives retain the complete native model, raw draws, backend
+controls and RNG states. Reopening, generation and inspection do not fit or import
+XGBoost. Task-size changes preserve the frozen mechanism and construction rows.
+
+The graph decoder reserves retained fit storage and replay workspace before node
+or fit decoding. The ordinary graph is admitted against the remainder before any
+fit snapshot is restored. Direct construction and archive decoding use equivalent
+costs; exact-boundary roundtrips and below-boundary pre-restore rejection are public
+checks. Every later emission revalidates custody and aggregate admission.
+
+The source card explicitly identifies independent synthetic fitting and records
+its lifecycle adaptation status. Parent, native and converted function use remains
+available through the shared frozen function; provenance-carrying task envelopes
+in this slice use the functional graph protocol. Source-specific ancestor/support/
+batch fitted lifecycles and guarded XGBoost construction UI remain required work.

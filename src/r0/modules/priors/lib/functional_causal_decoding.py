@@ -160,10 +160,14 @@ def functional_recipe_from_dict(
     )
     from r0.modules.priors.lib.sampled_fitted_graph import SampledFittedFunctionalCausalRecipe
     from r0.modules.priors.lib.sampled_population_graph import SampledPopulationFittedGraph
+    from r0.modules.priors.lib.xgboost_fit_decoding import xgboost_fit_from_dict
+    from r0.modules.priors.lib.xgboost_fit_graph import XGBoostFittedGraph, XGBoostNodeFit
 
     try:
         kind = (
-            SampledPopulationFittedGraph
+            XGBoostFittedGraph
+            if data.get("version") == "xgboost-fitted-functional-causal-v1"
+            else SampledPopulationFittedGraph
             if data.get("version") == "sampled-population-fitted-functional-causal-v1"
             else SupportPopulationFunctionalRecipe
             if data.get("version") == "support-population-functional-causal-v1"
@@ -193,13 +197,32 @@ def functional_recipe_from_dict(
         raw_nodes = functional_array(fields["nodes"])
         if len(raw_nodes) > effective.nodes:
             raise ValueError("functional graph node limit exceeded")
+        node_limits = effective
+        if kind is XGBoostFittedGraph:
+            from r0.modules.priors.lib.xgboost_graph_admission import raw_fit_reservation
+
+            node_limits = raw_fit_reservation(fields.get("fits", ()), effective, len(raw_nodes))
         nodes: list[FunctionalCausalNode] = []
         for raw in raw_nodes:
-            nodes.append(functional_node_from_dict(raw, limits=effective))
+            nodes.append(functional_node_from_dict(raw, limits=node_limits))
         fields["nodes"] = tuple(nodes)
         for key in ("observed", "target"):
             fields[key] = tuple(functional_array(ref) for ref in functional_array(fields[key]))
         fields["limits"] = effective
+        if kind is XGBoostFittedGraph:
+            # Validate complete ordinary graph against the reserved remainder before fit replay.
+            FunctionalCausalRecipe(
+                fields["task"], tuple(nodes), fields["observed"], fields["target"], node_limits
+            )
+            raw_fits = functional_array(fields.get("fits", ()))
+            fits: list[XGBoostNodeFit] = []
+            for value in raw_fits:
+                entry = functional_record(value, XGBoostNodeFit)
+                if set(entry) != {f.name for f in dataclass_fields(XGBoostNodeFit)}:
+                    raise ValueError("XGBoost node fit requires complete fields")
+                entry["realization"] = xgboost_fit_from_dict(entry["realization"], limits=effective)
+                fits.append(XGBoostNodeFit(**entry))
+            fields["fits"] = tuple(fits)
         if issubclass(kind, FittedFunctionalCausalRecipe):
             fields["fits"] = tuple(
                 decode_node_fit(f) for f in functional_array(fields.get("fits", ()))

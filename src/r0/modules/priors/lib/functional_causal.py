@@ -32,6 +32,7 @@ class FunctionalCausalRecipe:
                 "functional-causal-v1",
                 "functional-causal-v2",
                 "fitted-functional-causal-v1",
+                "xgboost-fitted-functional-causal-v1",
                 "sampled-fitted-functional-causal-v1",
                 "population-fitted-functional-causal-v1",
                 "sampled-population-fitted-functional-causal-v1",
@@ -42,6 +43,7 @@ class FunctionalCausalRecipe:
             or self.version
             in (
                 "fitted-functional-causal-v1",
+                "xgboost-fitted-functional-causal-v1",
                 "sampled-fitted-functional-causal-v1",
                 "population-fitted-functional-causal-v1",
                 "sampled-population-fitted-functional-causal-v1",
