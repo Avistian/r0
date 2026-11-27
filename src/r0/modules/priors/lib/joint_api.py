@@ -180,7 +180,12 @@ from r0.modules.priors.lib.sampled_geometry_graph import (
     SampledGeometryGraph as SampledGeometryGraph,
 )
 
+from .native_causal import FrequencyVariableDomain as FrequencyVariableDomain
 from .native_causal import NativeCausalNode as NativeCausalNode
 from .native_causal import NativeCausalRecipe as NativeCausalRecipe
 from .native_causal import VariableDomain as VariableDomain
+from .native_domain_prior import NativeDomainPrior as NativeDomainPrior
+from .native_graph_request import NativeGraphRequest as NativeGraphRequest
+from .native_graph_sampling import sample_native_graph as sample_native_graph
+from .sampled_native_graph import SampledNativeGraph as SampledNativeGraph
 from .training_features import TrainingFeature as TrainingFeature

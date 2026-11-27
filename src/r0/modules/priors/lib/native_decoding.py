@@ -11,7 +11,12 @@ from r0.modules.priors.lib.functional_causal_decoding import (
     functional_record,
 )
 from r0.modules.priors.lib.linear import LinearRecipe
-from r0.modules.priors.lib.native_causal import NativeCausalNode, NativeCausalRecipe, VariableDomain
+from r0.modules.priors.lib.native_causal import (
+    FrequencyVariableDomain,
+    NativeCausalNode,
+    NativeCausalRecipe,
+    VariableDomain,
+)
 
 
 def native_recipe_from_dict(data: dict[str, Any], *, limits: CausalLimits) -> NativeCausalRecipe:
@@ -35,11 +40,17 @@ def native_recipe_from_dict(data: dict[str, Any], *, limits: CausalLimits) -> Na
         for raw in raw_nodes:
             node = functional_record(raw, NativeCausalNode)
             node["equation"] = functional_node_from_dict(node["equation"])
-            domain = functional_record(node.get("domain", {}), VariableDomain)
-            for key in ("vocabulary", "thresholds"):
+            raw_domain = node.get("domain", {})
+            kind = (
+                FrequencyVariableDomain
+                if raw_domain.get("version") == "native-frequency-domain-v2"
+                else VariableDomain
+            )
+            domain = functional_record(raw_domain, kind)
+            for key in ("vocabulary", "thresholds", "frequencies"):
                 if key in domain:
                     domain[key] = functional_array(domain[key])
-            node["domain"] = VariableDomain(**domain)
+            node["domain"] = kind(**domain)
             nodes.append(NativeCausalNode(**node))
         fields["nodes"] = tuple(nodes)
         fields["observed"] = tuple(

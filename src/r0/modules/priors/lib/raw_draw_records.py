@@ -76,6 +76,7 @@ def draw_arguments(
         "random": set(),
         "uniform": {"low", "high"},
         "student_t": {"df"},
+        "gamma": {"concentration"},
         "integers": {"high"},
         "permutation": {"count"},
         "choice": {"count", "probabilities"},
@@ -90,6 +91,10 @@ def draw_arguments(
         raise ValueError("raw uniform bounds must be finite and ordered")
     if distribution == "student_t" and (not finite_number(args["df"]) or args["df"] <= 0):
         raise ValueError("raw Student-t degrees must be positive and finite")
+    if distribution == "gamma" and (
+        not finite_number(args["concentration"]) or args["concentration"] <= 0
+    ):
+        raise ValueError("raw Gamma concentration must be finite and positive")
     if distribution in ("integers", "permutation", "choice"):
         bound = args["high" if distribution == "integers" else "count"]
         if type(bound) is not int or not 1 <= bound < 2**63:
@@ -126,6 +131,8 @@ def numpy_draw(
         values = rng.uniform(args["low"], args["high"], size=shape)
     elif distribution == "student_t":
         values = rng.standard_t(args["df"], size=shape)
+    elif distribution == "gamma":
+        values = rng.gamma(args["concentration"], size=shape)
     elif distribution == "integers":
         values = rng.integers(args["high"], size=shape)
     elif distribution == "permutation":

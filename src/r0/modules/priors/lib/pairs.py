@@ -16,6 +16,7 @@ from r0.modules.priors.lib.native_causal import NativeCausalRecipe
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
+from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
 from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -36,7 +37,7 @@ class TaskPair:
 
 def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> Recipe:
     """Construct one explicit change; preserve all other recipe controls."""
-    if isinstance(recipe, NativeCausalRecipe):
+    if isinstance(recipe, (NativeCausalRecipe, SampledNativeGraph)):
         raise ValueError(
             "native graph pairs require domain/equation interventions, not adapter controls"
         )

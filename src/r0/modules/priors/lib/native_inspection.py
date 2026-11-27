@@ -10,6 +10,7 @@ import torch
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.native_decoding import native_recipe_from_dict
 from r0.modules.priors.lib.native_evaluation import evaluate_native_graph
+from r0.modules.priors.lib.native_graph_decoding import native_graph_from_dict
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -21,7 +22,11 @@ def native_steps(
     limits: CausalLimits | None,
 ) -> dict[str, Any]:
     record, card = json.loads(task.recipe_json), json.loads(task.mechanism_json)
-    recipe = native_recipe_from_dict(record["recipe"], limits=limits or CausalLimits())
+    recipe = (
+        native_graph_from_dict(record["recipe"], limits=limits or CausalLimits()).recipe
+        if record["recipe"].get("version") == "sampled-native-graph-v1"
+        else native_recipe_from_dict(record["recipe"], limits=limits or CausalLimits())
+    )
     result = evaluate_native_graph(recipe, seed=record["seed"], task_id=record["task_id"])
     selection = list(indices)
     for i, node in enumerate(recipe.nodes):

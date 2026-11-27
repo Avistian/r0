@@ -24,7 +24,11 @@ class VariableDomain:
     version: str = "native-variable-domain-v1"
 
     def __post_init__(self) -> None:
-        if self.version != "native-variable-domain-v1" or self.kind not in (
+        if self.version != (
+            "native-frequency-domain-v2"
+            if type(self) is FrequencyVariableDomain
+            else "native-variable-domain-v1"
+        ) or self.kind not in (
             "continuous",
             "binary",
             "categorical",
@@ -70,6 +74,32 @@ class VariableDomain:
 
 
 @dataclass(frozen=True, slots=True)
+class FrequencyVariableDomain(VariableDomain):
+    """Adaptation: positive frequency offsets influence logits, not guaranteed marginals."""
+
+    frequencies: tuple[float, ...] = ()
+    version: str = "native-frequency-domain-v2"
+
+    def __post_init__(self) -> None:
+        VariableDomain.__post_init__(self)
+        if (
+            self.kind == "continuous"
+            or type(self.frequencies) is not tuple
+            or (
+                len(self.frequencies) != len(self.vocabulary)
+                or any(
+                    type(p) not in (int, float) or not math.isfinite(p) or p <= 0
+                    for p in self.frequencies
+                )
+                or not math.isclose(math.fsum(self.frequencies), 1.0, rel_tol=1e-12, abs_tol=1e-12)
+            )
+        ):
+            raise ValueError(
+                "frequency domain requires strictly positive normalized category weights"
+            )
+
+
+@dataclass(frozen=True, slots=True)
 class NativeCausalNode:
     equation: FunctionalCausalNode
     domain: VariableDomain = VariableDomain()
@@ -79,7 +109,7 @@ class NativeCausalNode:
         if (
             self.version != "native-causal-node-v1"
             or type(self.equation) is not FunctionalCausalNode
-            or (type(self.domain) is not VariableDomain)
+            or (type(self.domain) not in (VariableDomain, FrequencyVariableDomain))
         ):
             raise ValueError("native node requires a frozen equation and variable domain")
         if self.domain.kind != "continuous" and self.equation.function.output_width != (
@@ -160,23 +190,7 @@ class NativeCausalRecipe:
         if self.task.task_type != expected or self.task.classes != len(target.vocabulary):
             raise ValueError("native target domain must match task type and declared classes")
         self.admit()
-        states: list[list[ChannelCertificate]] = []
-        for index, node in enumerate(self.nodes):
-            state, _ = functional_node_certificates(
-                node.equation, index, [c for p in node.equation.parents for c in states[p]]
-            )
-            if node.domain.kind != "continuous":
-                sources = frozenset[tuple[int, int]]().union(*(c.sources for c in state))
-                if node.domain.emission == "softmax":
-                    sources |= {
-                        (
-                            index,
-                            node.equation.function.output_width
-                            + (node.equation.root.width if node.equation.root else 0),
-                        )
-                    }
-                state = [ChannelCertificate(sources)] * node.state_width
-            states.append(state)
+        native_certificates(self.nodes)
 
     def admit(self) -> dict[str, int]:
         """Bound retained emissions, one-hot states and JSON copies before evaluating."""
@@ -205,3 +219,24 @@ class NativeCausalRecipe:
         if report["estimated_working_bytes"] > self.limits.working_bytes:
             raise ValueError("estimated native graph working memory exceeds declared limit")
         return report
+
+
+def native_certificates(nodes: tuple[NativeCausalNode, ...]) -> None:
+    """Validate population moment contracts using typed parent state certificates."""
+    states: list[list[ChannelCertificate]] = []
+    for index, node in enumerate(nodes):
+        state, _ = functional_node_certificates(
+            node.equation, index, [c for p in node.equation.parents for c in states[p]]
+        )
+        if node.domain.kind != "continuous":
+            sources = frozenset[tuple[int, int]]().union(*(c.sources for c in state))
+            if node.domain.emission == "softmax":
+                sources |= {
+                    (
+                        index,
+                        node.equation.function.output_width
+                        + (node.equation.root.width if node.equation.root else 0),
+                    )
+                }
+            state = [ChannelCertificate(sources)] * node.state_width
+        states.append(state)

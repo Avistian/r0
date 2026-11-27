@@ -1,6 +1,7 @@
 """Evaluate typed DAG states and native targets without a post-hoc label adapter."""
 
 import platform
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 
 import numpy as np
@@ -9,8 +10,13 @@ import torch
 from r0.modules.priors.lib.exogenous import sample_exogenous
 from r0.modules.priors.lib.frozen_function_evaluation import evaluate_admitted_function
 from r0.modules.priors.lib.joint_root_base import draw_root_base
-from r0.modules.priors.lib.native_causal import NativeCausalRecipe
+from r0.modules.priors.lib.native_causal import (
+    FrequencyVariableDomain,
+    NativeCausalNode,
+    NativeCausalRecipe,
+)
 from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
+from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.signal_noise import signal_noise_scale
 from r0.modules.priors.lib.training_features import TrainingFeature
@@ -23,6 +29,7 @@ class NativeEvaluation:
     scores: tuple[torch.Tensor, ...]
     probabilities: dict[int, torch.Tensor]
     uniforms: dict[int, torch.Tensor]
+    states: tuple[torch.Tensor, ...]
 
 
 def native_rng(seed: int, task_id: int, *keys: object) -> np.random.Generator:
@@ -42,21 +49,37 @@ def evaluate_native_graph(
     if device not in ("cpu", "cuda") or device == "cuda" and not torch.cuda.is_available():
         raise ValueError("native device must be available cpu or cuda; no implicit fallback")
     recipe.admit()
-    rows = recipe.task.rows
+    return evaluate_native_nodes(
+        recipe.nodes, recipe.task.rows, lambda *keys: native_rng(seed, task_id, *keys), device
+    )
+
+
+def evaluate_native_nodes(
+    nodes: tuple[NativeCausalNode, ...],
+    rows: int,
+    rng: Callable[..., np.random.Generator],
+    device: str,
+    *,
+    capture: RawDrawLedger | None = None,
+    owner: tuple[str, ...] = ("native",),
+) -> NativeEvaluation:
+    """Evaluate an already admitted prefix; callers own resource and certificate checks."""
     states: list[torch.Tensor] = []
     values: list[torch.Tensor] = []
     scores: list[torch.Tensor] = []
     probabilities: dict[int, torch.Tensor] = {}
     uniforms: dict[int, torch.Tensor] = {}
-
-    def rng(*keys: object) -> np.random.Generator:
-        return native_rng(seed, task_id, *keys)
-
-    for index, node in enumerate(recipe.nodes):
+    for index, node in enumerate(nodes):
         equation, domain = node.equation, node.domain
         if equation.root:
             inputs = torch.tensor(
-                draw_root_base(equation.root, rows, rng("root", index)).values,
+                draw_root_base(
+                    equation.root,
+                    rows,
+                    rng("root", index),
+                    capture=capture,
+                    owner=(*owner, f"node:{index}", "root"),
+                ).values,
                 dtype=torch.float64,
                 device=device,
             )
@@ -64,7 +87,15 @@ def evaluate_native_graph(
             inputs = torch.cat([states[p] for p in equation.parents], dim=1)
         output = evaluate_admitted_function(equation.function, inputs)
         raw = torch.tensor(
-            sample_exogenous(equation.exogenous, rows, equation.function.output_width, rng, index),
+            sample_exogenous(
+                equation.exogenous,
+                rows,
+                equation.function.output_width,
+                rng,
+                index,
+                capture=capture,
+                owner=(*owner, f"node:{index}", "innovation"),
+            ),
             dtype=torch.float64,
             device=device,
         )
@@ -83,19 +114,36 @@ def evaluate_native_graph(
             states.append(state)
             continue
         count = len(domain.vocabulary)
+        emission_scores = state
+        if isinstance(domain, FrequencyVariableDomain) and domain.emission != "threshold":
+            log_weights = torch.tensor(domain.frequencies, dtype=torch.float64, device=device).log()
+            emission_scores = (
+                state - state.max(dim=1, keepdim=True).values
+            ) / domain.temperature + log_weights
         if domain.emission == "threshold":
             cuts = torch.tensor(domain.thresholds, dtype=torch.float64, device=device)
             category = torch.bucketize(state[:, 0].contiguous(), cuts, right=True)
         elif domain.emission == "argmax":
-            category = torch.argmax(state, dim=1)
+            category = torch.argmax(emission_scores, dim=1)
         else:
+            temperature = 1.0 if isinstance(domain, FrequencyVariableDomain) else domain.temperature
             probability = torch.softmax(
-                (state - state.max(dim=1, keepdim=True).values) / domain.temperature, dim=1
+                (emission_scores - emission_scores.max(dim=1, keepdim=True).values) / temperature,
+                dim=1,
             )
             if not torch.isfinite(probability).all():
                 raise ValueError("nonfinite native emission probability; task was not retried")
             uniform = torch.tensor(
-                rng("native-emission", index).random(rows), dtype=torch.float64, device=device
+                recorded_draw(
+                    rng("native-emission", index),
+                    capture,
+                    owner=(*owner, f"node:{index}", "emission"),
+                    role="uniform",
+                    distribution="random",
+                    shape=(rows,),
+                ),
+                dtype=torch.float64,
+                device=device,
             )
             # Force the final CDF endpoint to one to avoid a rounding-created extra category.
             cumulative = probability.cumsum(dim=1)
@@ -106,7 +154,7 @@ def evaluate_native_graph(
         probabilities.setdefault(index, encoded)
         values.append(category[:, None])
         states.append(encoded)
-    return NativeEvaluation(tuple(values), tuple(scores), probabilities, uniforms)
+    return NativeEvaluation(tuple(values), tuple(scores), probabilities, uniforms, tuple(states))
 
 
 def generate_native_causal(

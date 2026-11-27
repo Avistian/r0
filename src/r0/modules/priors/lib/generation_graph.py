@@ -84,7 +84,7 @@ def explain_generation(
             }
         )
 
-    if record["recipe"].get("version") == "native-causal-v1":
+    if record["recipe"].get("version") in ("native-causal-v1", "sampled-native-graph-v1"):
         if component is not None:
             raise ValueError("native graphs do not have composite children")
         return {**native_steps(task, indices, add, limits=limits), "nodes": nodes}

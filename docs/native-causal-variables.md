@@ -47,8 +47,8 @@ schema/origin fields are omitted, preserving old archive member bytes.
 softmax category sampling and consistent cardinality/one-hot width. This increment
 provides authored versions of those emission families; it does not reproduce its
 complete prior or guarantee every declared category occurs in each finite table.
-Its reported frequency-distribution family, including Dirichlet frequencies,
-still needs sampled construction and provenance integration.
+Sampled domain construction, including Dirichlet frequencies and retained
+provenance, is described in [Sampled native graphs](sampled-native-graphs.md).
 
 [Kumo Tabular Appendix A.4](https://arxiv.org/html/2611.23001v1#A1.SS4) describes
 argmax categories for features and targets. The authored deterministic option
@@ -56,7 +56,6 @@ here exposes that behavior; the paper's selection probability is not installed a
 a default mixture.
 
 Still open within #28: heterogeneous vectors containing multiple discrete/native
-variables per node, sampled category/cardinality/frequency/threshold priors in the
-shared preference registry, geometry constructor/UI wiring, and native equation or
+variables per node, geometry constructor/UI wiring, and native equation or
 domain pair interventions. The old adapter-pair interface explicitly rejects native
 recipes. These limitations do not narrow the approved broader specification.
