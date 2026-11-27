@@ -14,6 +14,7 @@ from r0.modules.priors.lib.functional_causal_evaluation import (
 from r0.modules.priors.lib.functional_prefix import FunctionalPrefix
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.network_recipe import NetworkRecipe
+from r0.modules.priors.lib.network_sampling_records import SampledNetwork
 from r0.modules.priors.lib.task_output import complete_task
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -102,6 +103,8 @@ def generate_network_view(
     view: NetworkInputView, *, seed: int, task_id: int, device: str = "cpu"
 ) -> TrainingTask:
     view.admit()
+    if isinstance(view.base.network, SampledNetwork):
+        view.base.network.validate_replay()
     if any(type(v) is not int or not 0 <= v < 2**63 for v in (seed, task_id)):
         raise ValueError("seed and task_id must be integers in [0, 2**63)")
     roots = evaluate_functional_prefix(

@@ -78,3 +78,15 @@ def test_masked_network_does_not_evaluate_overwritten_input_contributions() -> N
     masked = p.generate_task(view, seed=28, task_id=3)
     assert torch.all(masked.scores == 0.5)
     assert "zero_target_dispersion" in json.loads(masked.mechanism_json)["flags"]
+
+
+def test_input_view_rejects_tampered_sampled_network_custody() -> None:
+    sampled = p.sample_network(
+        p.NetworkSamplingRequest(2, (2, 1), families=("dense",)),
+        named_rng=np.random.default_rng(7),
+        raw_rng=np.random.default_rng(8),
+    )
+    original = replace(base(), network=replace(sampled, raw=()))
+    view = p.NetworkInputView(original, replace(original.task, features=3), (0, 1))
+    with pytest.raises(ValueError, match="replay"):
+        p.generate_task(view, seed=17, task_id=19)
