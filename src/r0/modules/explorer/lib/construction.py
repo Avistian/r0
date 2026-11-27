@@ -34,17 +34,30 @@ def construction_examples() -> dict[str, Any]:
         "categorical_policy": "shared",
         "global_policy": "scalar-quantile-v1",
     }
+    geometry = {
+        **{k: v for k, v in common.items() if k not in ("widths", "observed", "target")},
+        "subsample": True,
+        "width_prior": asdict(priors.JointWidthPrior()),
+        "noise_scale": 0.0,
+    }
     return {
         "Explicit causal graph": {**common, "topology": "explicit", "parents": [[], [0], [0, 1]]},
         "Cauchy causal graph": {**common, "topology": "cauchy", "offset": 0.0},
         "Geometry-sampled causal graph": {
-            **{k: v for k, v in common.items() if k not in ("widths", "observed", "target")},
+            **geometry,
             "topology": "geometry",
             "nodes": 3,
             "offset": 0.0,
-            "subsample": True,
-            "width_prior": asdict(priors.JointWidthPrior()),
-            "noise_scale": 0.0,
+        },
+        "Attachment geometry (r0 extension)": {
+            **geometry,
+            "topology": "attachment-geometry",
+            "topology_prior": asdict(priors.AttachmentGraphPrior(nodes=3)),
+        },
+        "Motif geometry (r0 adaptation)": {
+            **geometry,
+            "topology": "motif-geometry",
+            "topology_prior": asdict(priors.MotifGraphPrior(depth=1)),
         },
     }
 

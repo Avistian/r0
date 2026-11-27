@@ -94,3 +94,52 @@ receipts are retained before worker preparation; a timeout preserves the active
 dataset. Inspection actions (the mechanism editor, graph inspection, and reopening
 an existing pair) decode and replay synchronously under caller exploration caps;
 the generation timeout does not cover those inspection actions.
+
+## Attachment and motif geometry controls
+
+The shared local/Colab page offers **Attachment geometry (r0 extension)** and
+**Motif geometry (r0 adaptation)** in the construction menu. Both use the shared
+sampled-geometry archive, named preference scope and guarded worker. The original
+explicit, Cauchy and Cauchy-geometry starting points retain their controls.
+
+Edit the versioned `topology_prior` JSON object:
+
+- Attachment: `nodes`, `components`, `edges_per_node`, `attractiveness` and `power`.
+  This degree-attachment extension is distinct from redirection.
+- Motifs: `depth`, `components`, ordered `motifs`, `rewrite_steps` and ordered
+  `rewrite_kinds`. Motifs are `chain`, `fork` and `collider`; rewrites are `redirect`,
+  `path` and `bypass`. The node count is `components * 3**depth`.
+
+The labels identify r0 extensions/adaptations, not exact reproductions of published
+prior distributions. Version tags remain fixed to their selected prior contract.
+Common geometry controls still include subset mode, latent-width bounds,
+root/function priors, calibration and structural noise. Identity numerical readouts
+and adapter-score targets remain the scope; these controls do not implement native
+categorical variables or causal interventions.
+
+Evidence in ignored `docs/evidence/issue-28-topology-workbench/` retains the two
+missing-menu failures (`red.log`), the initial tuple/list assertion mismatch
+(`green.log`), and nine passing public-session/local-Colab callback cases
+(`checked.log`). `static.log` records formatting, lint, typing, import boundaries
+and module checks. `compatibility.py` records canonical archive hashes and emitted
+source/episode identities for all three original starting points; before/after
+logs match byte-for-byte at base `b8d823412afc2fb7e56cc85ca332352048f4240c`.
+
+Actual local Chromium flows for attachment (four nodes/two components with
+nondefault degree parameters) and motifs (depth two/three rewrites) are retained
+in `attachment-browser/` and `motif-browser/`. Each verifies exact retained prior
+controls, node count, linked edit/save/reopen, complete ZIP download, repeated-row
+reconstruction, visible failure preserving the active task, and mobile overflow.
+The retained `commands.sh` gives exact reproduction commands. With the local server
+and installed Chromium already running, the browser variants are:
+
+```sh
+node scripts/workbench_browser_smoke.mjs 19244 http://127.0.0.1:18894/ EVIDENCE \
+  'Attachment geometry (r0 extension)'
+node scripts/workbench_browser_smoke.mjs 19244 http://127.0.0.1:18894/ EVIDENCE \
+  'Motif geometry (r0 adaptation)'
+```
+
+Full-suite and independent candidate review remain parent-owned. Hosted Colab is
+**NOT_RUN**; publishing/updating the notebook installation pin and hosted
+verification remain separate gates. No full issue #28 acceptance is claimed.

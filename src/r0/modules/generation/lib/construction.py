@@ -36,12 +36,22 @@ def construct_graph(
     rngs = dict(
         named_rng=streams[0], raw_rng=streams[1], calibration_rng=streams[2], fit_rng=streams[3]
     )
-    if topology == "geometry":
-        prior = priors.CauchyGraphPrior(nodes=fields.pop("nodes"), offset=fields.pop("offset"))
+    if topology in ("geometry", "attachment-geometry", "motif-geometry"):
+        geometry_prior: (
+            priors.CauchyGraphPrior | priors.AttachmentGraphPrior | priors.MotifGraphPrior
+        )
+        if topology == "geometry":
+            geometry_prior = priors.CauchyGraphPrior(
+                nodes=fields.pop("nodes"), offset=fields.pop("offset")
+            )
+        elif topology == "attachment-geometry":
+            geometry_prior = priors.AttachmentGraphPrior(**fields.pop("topology_prior"))
+        else:
+            geometry_prior = priors.MotifGraphPrior(**fields.pop("topology_prior"))
         widths = priors.JointWidthPrior(**fields.pop("width_prior"))
         geometry = priors.GeometryGraphRequest(
             task=task,
-            topology=prior,
+            topology=geometry_prior,
             width_prior=widths,
             root_prior=roots,
             function_prior=function,

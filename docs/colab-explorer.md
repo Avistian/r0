@@ -48,3 +48,8 @@ Its construction, mechanism editing, linked comparisons and save/reopen actions
 use the same session through the Colab callback. Local callback tests cover these
 flows; hosted execution and updating the notebook's installation pin to the
 integrated published revision remain required before claiming Colab delivery.
+
+Attachment and recursive-motif geometry are available through that same shared
+construction menu. Their explicit r0 extension/adaptation labels and all prior
+controls are described in the workbench guide. Local callback tests cover both;
+this does not change the pending hosted Colab and installation-pin gates.

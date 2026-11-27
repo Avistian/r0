@@ -13,6 +13,8 @@ from r0.modules.explorer import ExplorerSession
     [
         ("Cauchy causal graph", "sampled-topology-graph-v1"),
         ("Geometry-sampled causal graph", "sampled-geometry-graph-v1"),
+        ("Attachment geometry (r0 extension)", "sampled-geometry-graph-v1"),
+        ("Motif geometry (r0 adaptation)", "sampled-geometry-graph-v1"),
     ],
 )
 def test_sampled_workbench_constructs_edits_and_reopens(
@@ -23,6 +25,12 @@ def test_sampled_workbench_constructs_edits_and_reopens(
     controls = examples[example]
     if "width_prior" in controls:
         controls["width_prior"].update(low=1, high=3)
+    if controls.get("topology") == "attachment-geometry":
+        controls["topology_prior"].update(
+            nodes=4, components=2, edges_per_node=2, attractiveness=0.7, power=1.3
+        )
+    if controls.get("topology") == "motif-geometry":
+        controls["topology_prior"].update(depth=2, rewrite_steps=3)
     controls["task"].update(rows=16, context_rows=8)
     controls["calibration_rows"] = 4
     controls["function_prior"]["functions"] = "lin"
@@ -38,7 +46,11 @@ def test_sampled_workbench_constructs_edits_and_reopens(
             "max_seconds": 120,
         },
     )
-    assert json.loads(result["recipe_json"])["recipe"]["version"] == version
+    archive = json.loads(result["recipe_json"])["recipe"]
+    assert archive["version"] == version
+    if "topology_prior" in controls:
+        assert archive["request"]["topology"] == json.loads(json.dumps(controls["topology_prior"]))
+        assert archive["topology"]["version"] == "structural-graph-v1"
     assert session.request("graph", {"indices": [7, 0, 7], "causal_limits": caps})["graph"][
         "rows"
     ] == [7, 0, 7]
@@ -57,6 +69,7 @@ def test_sampled_workbench_constructs_edits_and_reopens(
     )
     assert reopened["edit"]["card"] == comparison["edit"]["card"]
     assert reopened["view"]["episode_id"] == result["view"]["episode_id"]
+    assert reopened["recipe_json"] == result["recipe_json"]
 
 
 def test_graph_construction_runs_in_worker_and_timeout_keeps_active_task(

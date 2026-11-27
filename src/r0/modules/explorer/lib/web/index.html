@@ -28,7 +28,7 @@
 <label>Graph recipe<select id="construction-family"></select></label>
 <label>Construction seed<input id="construction-seed" value="28" inputmode="numeric"></label>
 <label>Construction controls<textarea id="construction-controls" rows="18" spellcheck="false"></textarea></label>
-<p class="muted">Explicit/Cauchy controls edit parents, widths and channel pairs. Geometry sampling chooses widths and feature-node assignments. Choose root families and function priors. Geometry sampling currently uses identity numerical readouts and adapter-score targets. These controls are separate from the dataset settings above.</p>
+<p class="muted">Explicit/Cauchy controls edit parents, widths and channel pairs. Geometry sampling chooses widths and feature-node assignments. Attachment is an r0 extension; recursive motifs and rewrites are r0 adaptations, not exact published prior reproductions. Edit all topology controls in the topology_prior object. Choose root families and function priors. Geometry sampling currently uses identity numerical readouts and adapter-score targets. These controls are separate from the dataset settings above.</p>
 <label>Exploration caps (JSON)<textarea id="exploration-limits" rows="3" spellcheck="false">{}</textarea></label>
 <p class="muted">Empty uses default causal limits. Explicit larger caps also authorize replay and inspection. Graph inspection, the mechanism editor and pair reopening run synchronously under these caps, outside the generation timeout. Workloads are not promised at every combination of maxima.</p>
 <button id="construct" type="button">Sample graph and save dataset</button>
