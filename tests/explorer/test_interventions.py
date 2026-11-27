@@ -165,3 +165,21 @@ def test_aggregate_reopen_cap_rejects_before_publishing(tmp_path: Path) -> None:
             {"path": completed["intervention"]["path"], "max_seconds": 30, "max_bytes": 65536},
         )
     assert session.request("view", {}) == completed
+
+
+def test_invalid_change_has_concise_message_and_retained_full_diagnostics(tmp_path: Path) -> None:
+    session = ExplorerSession(tmp_path)
+    before = original(session)
+    with pytest.raises(ValueError, match="failed") as failure:
+        session.request("intervene", {**change(), "interventions_json": "not-json"})
+    message = str(failure.value)
+    assert len(message) < 400
+    assert "Traceback" not in message
+    assert 'File "' not in message
+    assert "previous dataset/comparison retained" in message
+    results = [
+        json.loads(p.read_text())
+        for p in (tmp_path / ".intervention-attempts").glob("*-result.json")
+    ]
+    assert any("Traceback" in r["result"]["stderr"] for r in results)
+    assert session.request("view", {}) == before

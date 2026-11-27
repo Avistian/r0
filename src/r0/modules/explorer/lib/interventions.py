@@ -60,6 +60,18 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
     }
 
 
+def _failure_detail(stderr: str, *, timed_out: bool) -> str:
+    if timed_out:
+        return "The time limit was exceeded. Increase it or reduce the request."
+    # Full worker diagnostics stay in the result receipt; only validation messages
+    # belong in the primary user-facing banner.
+    last = next((line.strip() for line in reversed(stderr.splitlines()) if line.strip()), "")
+    for prefix in ("ValueError: ", "json.decoder.JSONDecodeError: "):
+        if last.startswith(prefix):
+            return last[len(prefix) :][:240]
+    return "Check the intervention settings and limits. Details are retained in the attempt record."
+
+
 def guarded_intervention(
     output: Path,
     operation: str,
@@ -110,7 +122,7 @@ def guarded_intervention(
         if failed:
             raise ValueError(
                 f"Intervention {operation} failed; previous dataset/comparison retained. "
-                f"Timed out: {run.timed_out}. {run.stderr[-1500:]}"
+                f"{_failure_detail(run.stderr, timed_out=run.timed_out)}"
             )
         return dict(run.summary or {})
     except (ValueError, TypeError, KeyError, OSError, RuntimeError, KeyboardInterrupt) as error:
