@@ -42,32 +42,7 @@ def draw_source_root(
     if capture is not None and type(capture) is not RawDrawLedger:
         raise ValueError("root capture must be a raw draw ledger")
     ledger = capture if capture is not None else RawDrawLedger()
-    validate_path(owner)
-    declarations: list[RawDrawSpec] = []
-    for column, coordinate in enumerate(law.coordinates):
-        family = coordinate.family
-        distribution = (
-            "normal"
-            if family == "gaussian"
-            else "choice"
-            if family == "categorical"
-            else "zipf"
-            if family == "zipf"
-            else "random"
-        )
-        parameters = (
-            (
-                ("count", len(coordinate.probabilities)),
-                ("probabilities", coordinate.probabilities),
-            )
-            if family == "categorical"
-            else (("exponent", coordinate.exponent),)
-            if family == "zipf"
-            else ()
-        )
-        declarations.append(
-            RawDrawSpec((*owner, f"column:{column}"), "values", distribution, (rows,), parameters)
-        )
+    declarations = source_root_draw_specs(law, rows, owner)
     ledger.admit_draws(rng, tuple(declarations))
     with ledger.transaction(rng) as (stream, staged):
         output = np.empty((rows, width), dtype=np.float64)
@@ -96,3 +71,36 @@ def draw_source_root(
         if not np.isfinite(output).all():
             raise ValueError("nonfinite source root emission; no retry")
     return output
+
+
+def source_root_draw_specs(
+    law: SourceRootLaw, rows: int, owner: tuple[str, ...]
+) -> tuple[RawDrawSpec, ...]:
+    """Declare complete root emissions for enclosing preallocation admission."""
+    validate_path(owner)
+    declarations: list[RawDrawSpec] = []
+    for column, coordinate in enumerate(law.coordinates):
+        family = coordinate.family
+        distribution = (
+            "normal"
+            if family == "gaussian"
+            else "choice"
+            if family == "categorical"
+            else "zipf"
+            if family == "zipf"
+            else "random"
+        )
+        parameters = (
+            (
+                ("count", len(coordinate.probabilities)),
+                ("probabilities", coordinate.probabilities),
+            )
+            if family == "categorical"
+            else (("exponent", coordinate.exponent),)
+            if family == "zipf"
+            else ()
+        )
+        declarations.append(
+            RawDrawSpec((*owner, f"column:{column}"), "values", distribution, (rows,), parameters)
+        )
+    return tuple(declarations)

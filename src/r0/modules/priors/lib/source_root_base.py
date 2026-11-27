@@ -65,7 +65,11 @@ def functional_root_values(
 ) -> NDArray[np.float64]:
     if type(base) is JointRootBase:
         return np.asarray(draw_root_base(base, rows, rng, capture=capture, owner=owner).values)
-    if type(base) is not SourceRootBase:
+    from r0.modules.priors.lib.sampled_source_root_base import SampledSourceRootBase
+
+    if type(base) is SampledSourceRootBase:
+        base.validate_replay(limits=limits)
+    elif type(base) is not SourceRootBase:
         raise ValueError("unsupported functional root descriptor")
     ledger = capture if capture is not None else RawDrawLedger()
     with ledger.transaction(rng) as (stream, staged):

@@ -7,6 +7,7 @@ from r0.modules.priors.lib.exogenous import ExogenousDistribution, NoiseResponse
 from r0.modules.priors.lib.frozen_function_evaluation import FrozenFunction, function_geometry
 from r0.modules.priors.lib.joint_root_base import JointRootBase
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline
+from r0.modules.priors.lib.sampled_source_root_base import SampledSourceRootBase
 from r0.modules.priors.lib.source_root_base import SourceRootBase
 
 
@@ -23,7 +24,7 @@ class FunctionalCausalNode:
 
     def __post_init__(self) -> None:
         if self.version not in ("functional-causal-node-v1", "functional-causal-node-v2") or (
-            type(self.root) is SourceRootBase and self.version != "functional-causal-node-v2"
+            isinstance(self.root, SourceRootBase) and self.version != "functional-causal-node-v2"
         ):
             raise ValueError("unsupported functional node version")
         function_geometry(self.function)
@@ -58,7 +59,7 @@ class FunctionalCausalNode:
                 raise ValueError("only parentless functions have a root base")
         elif (
             self.root is None
-            or type(self.root) not in (JointRootBase, SourceRootBase)
+            or type(self.root) not in (JointRootBase, SourceRootBase, SampledSourceRootBase)
             or self.root.width != self.function.input_width
         ):
             raise ValueError("root base width must match the root function input")

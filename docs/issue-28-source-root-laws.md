@@ -125,9 +125,9 @@ Zipf moment order; finite calibration samples never upgrade a population moment
 certificate. Independent variance matching for network input views uses the same
 root law and frozen transform. Limits accompany graph and network evaluation.
 
-This is authored root integration. Source profile construction custody and replay
-must still be carried by an enclosing sampled artifact. Guarded explorer controls,
-full profile construction and saved-workflow verification remain pending.
+This descriptor is authored root integration. The separate sampled wrapper below
+carries source profile construction custody and replay. Guarded explorer controls
+remain a separate integration slice.
 
 
 ## Frozen source-profile selection
@@ -174,5 +174,51 @@ Whole-profile admission bounds all conditional branches and maximum category
 count before any stochastic parameter draw. It includes both streams, raw
 records and replay snapshots; conditional branches can use less than that
 conservative budget. Public records preserve exact law and parameter custody
-without modifying existing source-root or legacy root record versions. Graph,
-network, intervention and explorer integration remain separately required.
+without modifying existing source-root or legacy root record versions. The sampled
+wrapper below supplies graph/network integration; explorer workflows and explicit
+source-root replacement interventions remain separate required work.
+
+
+## Sampled graph-root provenance
+
+`sample_source_root_base(profile, modes=..., calibration_rows=..., calibration_rng=...)`
+wraps an accepted `SampledSourceRootProfile` in `SampledSourceRootBase`, version
+`sampled-source-root-base-v1`. The source selection record is retained verbatim,
+including unused model parameters, source labels, raw draws and both RNG streams.
+The inherited `.law` must equal the retained profile's selected law. This is a
+separate version from authored `SourceRootBase`; its bytes and version stay unchanged.
+
+Modes are explicit per coordinate: `identity`, `center`, `standardize`. All-identity
+uses zero calibration rows and no calibration RNG. Any nonidentity mode requires
+an independently supplied calibration RNG and positive calibration rows; sample
+standardization requires at least two. The complete initial/final calibration
+snapshots, raw values and frozen statistics are retained. Center uses the finite
+sample mean; standardize uses sample standard deviation with `ddof=1`. Exact
+constants, underflowed scales and nonfinite outcomes reject atomically without
+an epsilon, retry or caller RNG advance. Identity coordinates in a mixed fit
+still have their independent sample draws retained, with location zero/scale one.
+
+This lifecycle is an explicit **r0 independent frozen normalization adaptation**.
+It is not the pinned source's normalization of the current generated batch.
+`profile.source_normalization` continues to describe source behavior, separately
+from the chosen `.modes`. Fitting never takes query rows, generated task values or
+query labels. It does not certify unit population variance or upgrade an
+unbounded Zipf moment certificate. `draw_source_root_batch_reference` remains
+the separate source-batch reference API.
+
+Construction and strict public `sampled_source_root_base_from_dict` reopening
+admit profile metadata, both replay lifecycles, calibration geometry, raw records
+and simultaneous snapshot/workspace reserves before drawing or restoring state.
+The decoder replays the complete construction and compares every serialized field;
+changing a law, fit statistic, raw value, snapshot or source label rejects.
+Functional graph and network generation validate the retained profile and
+calibration again before root emission, then apply the frozen transform to fresh
+root draws. Graph admission also includes this replay work, including native and
+converted graphs that use the common functional-node adapter. Functional root
+nodes require v2, as for authored source roots. Original-row inspection and network
+variance matching use the same adapter; persisted task recipes retain the full
+sampled wrapper and can be reopened without discarding it to an authored law.
+
+The wrapper does not add a source-profile explorer, prototype-mixture law,
+source-scale hyperprior or source-root replacement intervention. Those remain
+separate required slices; accepting this record alone is not whole-issue acceptance.
