@@ -117,7 +117,14 @@ from r0.modules.priors.lib.joint_converter_plans import (
 from r0.modules.priors.lib.joint_converter_plans import (
     sample_joint_converter as sample_joint_converter,
 )
+from r0.modules.priors.lib.joint_function_decoding import (
+    joint_function_plan_from_dict as joint_function_plan_from_dict,
+)
+from r0.modules.priors.lib.joint_function_plans import JointFunctionPlan as JointFunctionPlan
 from r0.modules.priors.lib.joint_function_prior import JointFunctionPrior as JointFunctionPrior
+from r0.modules.priors.lib.joint_function_sampling import (
+    sample_joint_function as sample_joint_function,
+)
 from r0.modules.priors.lib.joint_matrix_decoding import (
     joint_matrix_realization_from_dict as joint_matrix_realization_from_dict,
 )

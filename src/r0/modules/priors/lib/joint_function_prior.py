@@ -43,7 +43,7 @@ class JointFunctionPrior:
             type(self.frequencies) is not int
             or not 1 <= self.frequencies < 2**63
             or type(self.max_discretization_cardinality) is not int
-            or not 2 <= self.max_discretization_cardinality < 2**63
+            or not 1 <= self.max_discretization_cardinality < 2**63
             or (
                 self.discretization_centers is not None
                 and (

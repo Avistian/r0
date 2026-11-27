@@ -18,6 +18,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenRFFFunction,
     FrozenTreeFunction,
 )
+from r0.modules.priors.lib.function_metadata import admit_function_metadata
 
 _DEFAULT_LIMITS = CausalLimits()
 _REGISTRY = {
@@ -36,49 +37,6 @@ _CHEAP = frozenset(_REGISTRY) - {
     "frozen-product-function-v1",
     "frozen-mlp-function-v1",
 }
-
-
-def _raw_budget(data: Any, limits: CausalLimits) -> None:
-    numbers, containers, strings, nodes = 0, 0, 0, 0
-    node_limit = 16 * limits.parameters + 64 * limits.nodes
-
-    def visit(value: Any, depth: int) -> None:
-        nonlocal numbers, containers, strings, nodes
-        nodes += 1
-        if depth > 24 or nodes > node_limit:
-            raise ValueError("function raw traversal limit exceeded")
-        if type(value) in (int, float, bool):
-            numbers += 1
-        elif type(value) is str:
-            if len(value) > limits.working_bytes:
-                raise ValueError("function raw text limit exceeded")
-            strings += len(value.encode("utf-8"))
-        elif type(value) in (dict, list, tuple):
-            containers += 1
-        elif value is not None:
-            raise ValueError("function payload must contain JSON primitives")
-        if (
-            numbers > limits.parameters
-            or 64 * numbers + 32 * containers + strings > limits.working_bytes
-        ):
-            raise ValueError("function raw parameter or estimated storage limit exceeded")
-        if type(value) is dict:
-            mapping = cast(dict[Any, Any], value)
-            if 2 * len(mapping) > node_limit - nodes:
-                raise ValueError("function raw object limit exceeded")
-            for key, item in mapping.items():
-                if type(key) is not str:
-                    raise ValueError("function object keys must be strings")
-                visit(key, depth + 1)
-                visit(item, depth + 1)
-        elif type(value) in (list, tuple):
-            sequence = cast(list[Any] | tuple[Any, ...], value)
-            if len(sequence) > node_limit - nodes:
-                raise ValueError("function raw array limit exceeded")
-            for item in sequence:
-                visit(item, depth + 1)
-
-    visit(data, 0)
 
 
 def _record(data: Any, record_type: type[Any]) -> dict[str, Any]:
@@ -165,7 +123,7 @@ def frozen_function_from_dict(
 ) -> FrozenFunction:
     if type(limits) is not CausalLimits:
         raise ValueError("frozen function decoding requires caller-owned limits")
-    _raw_budget(data, limits)
+    admit_function_metadata(data, limits)
     function = _decode(data, frozenset(_REGISTRY))
     # Admission for one evaluation row includes center-dependent working floors.
     # Every later call separately admits its actual row count before tensors.
