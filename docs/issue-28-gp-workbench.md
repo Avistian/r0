@@ -31,7 +31,15 @@ combined GP/workbench run passes47 tests. Invalid geometry, timeout and caller
 memory limits preserve the accepted active task. Static checks and final commit
 status are recorded separately; no full-suite claim applies yet.
 
-Still required: actual browser and exported numeric verification; explicit target
+Actual installed Chromium at `a036dde` passed construction, all seven selectable
+trace stages, large exact IDs, export, Next and original replay with zero
+exceptions. Its downloaded16-row ZIP passed independent RBF Cholesky, quadratic
+target and calibration arithmetic. A subsequent display-only repair labels
+features as joint GP columns rather than incorrectly calling them irrelevant;
+its public test was RED before the repair and GREEN afterward. Browser results
+remain tied to the preceding source; independent review is pending.
+
+Still required: explicit target
 edit/comparison controls and paired persistence; response/reference semantics;
 hybrid DAG roots; broader population/location catalog coverage; Colab/shared
 callback coverage; resource/diversity qualification. This checkpoint is not

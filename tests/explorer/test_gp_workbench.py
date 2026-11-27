@@ -26,6 +26,7 @@ def test_gp_population_construct_replay_and_inspect(tmp_path: Path):
     assert record["recipe"]["source"]["version"] == "gp-column-population-v1"
     assert record["task_id"] == 2**54 + 3
     assert first["view"]["construction_details"]["kind"] == "finite-gp-columns"
+    assert {f["role"] for f in first["view"]["features"]} == {"joint GP column"}
     replay = session.request("generate", {"record_json": first["recipe_json"]})
     assert replay["recipe_json"] == first["recipe_json"]
     graph = session.request("graph", {"indices": [15, 0, 15]})["graph"]
