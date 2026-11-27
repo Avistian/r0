@@ -31,13 +31,15 @@ are not supported. Input and output nonfiniteness reject explicitly without retr
 | `FrozenMLPFunction` | 1..3 linears; shared hidden width 1..127 when present. Hidden activations plus optional start/end activations retain their actual stage order and calibrated constants. |
 
 Discretization permits one center, covering degenerate source count cases. Its
-distance comparison uses scaled mantissa/exponent pairs so logarithmic rounding
+distance comparison uses power-of-two scaled mantissa/exponent pairs so logarithmic rounding
 does not turn adjacent large represented distances into false ties. Opposite-sign
 finite coordinates whose subtraction overflows are compared using half-scaled
 differences. p below one is a quasi-distance. EM uses the corresponding logarithmic
 distance for spread scaling. These float64 arithmetic adaptations do not promise
 bit identity with the source implementation. Intermediate arithmetic that still
 produces a nonfinite final output rejects; it is not silently clipped or retried.
+Tree averaging rescales only if the ordinary sum overflows, preserving finite
+means such as two leaves both equal to 1e308. This is another arithmetic adaptation.
 
 MLP activations reuse `CalibratedActivation`: population standardization,
 rescale/shift, primitive, population standardization. Their records retain sample
@@ -83,10 +85,15 @@ UV_PROJECT_ENVIRONMENT=/home/avist/Projects/r0/.venv \
 python3 scripts/run_check.py pytest tests/priors/test_frozen_functions.py
 ```
 
-Current focused result: **10 passed**. Development RED/GREEN and static-check logs
+Current focused result: **12 passed**. Development RED/GREEN and static-check logs
 are retained locally under `/tmp/r0-28-functions-*`; the false-logarithmic-tie RED
-remains part of the history. Full repository checks and independent review are
-pending for this component. CPU was exercised; CUDA execution is NOT_RUN.
+remains part of the history. Independent review rejected initial source `690297b`:
+per-center magnitude scaling broke exact L1 ties (expected first-center output 15,
+observed 13). That failure is retained at `/tmp/r0-28-functions-spec-690297b/`.
+The repair uses exact power-of-two scaling. An additional author RED/GREEN verifies
+overflow-safe tree averaging. The initial full check was stopped after the review
+rejection; full checks and independent repair verification are pending.
+CPU was exercised; CUDA execution is NOT_RUN.
 
 ## Remaining integration
 

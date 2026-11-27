@@ -194,3 +194,24 @@ def test_frozen_function_admission_honors_exact_and_one_below_caller_limits() ->
             priors.evaluate_frozen_function(function, values, limits=limits)
     with pytest.raises(ValueError, match="limit"):
         priors.evaluate_frozen_function(function, values.repeat(2, 1), limits=exact)
+
+
+def test_discretization_keeps_first_center_for_equal_integer_l1_distances() -> None:
+    function = priors.FrozenDiscretizationFunction(
+        centers=((15.0, 0.0), (14.0, 1.0), (13.0, 2.0)),
+        linear=priors.FrozenLinearFunction(((1.0, 0.0),)),
+        p=1.0,
+    )
+    result = priors.evaluate_frozen_function(function, torch.zeros((1, 2), dtype=torch.float64))
+    assert result.item() == 15.0
+
+
+def test_frozen_tree_preserves_representable_mean_of_extreme_leaves() -> None:
+    function = priors.FrozenTreeFunction(
+        input_width=1,
+        features=((0,), (0,)),
+        thresholds=((0.0,), (0.0,)),
+        leaves=(((1e308,), (1e308,)), ((1e308,), (1e308,))),
+    )
+    result = priors.evaluate_frozen_function(function, torch.zeros((1, 1), dtype=torch.float64))
+    assert result.item() == 1e308

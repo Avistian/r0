@@ -85,10 +85,14 @@ def _distance_parts(
         difference = torch.where(overflow, half, difference)
     absolute = difference.abs()
     largest = absolute.max(dim=-1).values
-    divisor = torch.where(largest == 0, torch.ones_like(largest), largest)
-    norm = ((absolute / divisor[..., None]) ** p).sum(dim=-1) ** (1 / p)
-    mantissa, exponent = torch.frexp(largest)
-    mantissa, adjustment = torch.frexp(mantissa * norm)
+    _, exponent = torch.frexp(largest)
+    coordinates, coordinate_exponents = torch.frexp(absolute)
+    # Power-of-two scaling is exact, unlike division by each pair's maximum,
+    # which can give unequal rounded norms to exact ties such as (15,0)/(13,2).
+    relative_exponents = torch.where(absolute == 0, 0, coordinate_exponents - exponent[..., None])
+    scaled = torch.ldexp(coordinates, relative_exponents)
+    norm = (scaled**p).sum(dim=-1) ** (1 / p)
+    mantissa, adjustment = torch.frexp(norm)
     exponent = exponent + adjustment + overflow.squeeze(-1).to(exponent.dtype)
     return mantissa, exponent
 
@@ -126,6 +130,11 @@ def _evaluate(function: FrozenFunction, inputs: torch.Tensor) -> torch.Tensor:
         )
         values = inputs.new_tensor(function.leaves)[tree_indices, indices]
         result = values.mean(dim=1)
+        if not torch.isfinite(result).all():
+            magnitude = values.abs().max(dim=1).values
+            divisor = torch.where(magnitude == 0, torch.ones_like(magnitude), magnitude)
+            stable = (values / divisor[:, None, :]).mean(dim=1) * divisor
+            result = torch.where(torch.isfinite(result), result, stable)
     elif type(function) is FrozenRFFFunction:
         argument = inputs @ inputs.new_tensor(function.frequencies) + inputs.new_tensor(
             function.phases
