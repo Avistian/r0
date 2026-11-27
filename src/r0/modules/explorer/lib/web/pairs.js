@@ -3,7 +3,7 @@ const pairNames = {noise: "Noise / signal", irrelevant: "Total feature count", s
 const pairFields = {noise: "noise_ratio", irrelevant: "features", sparsity: "active_features", separation: "separation"};
 function resetPair() {
   const regression = current.view.task_type === "regression";
-  const choices = current.view.family === "causal" ? [regression ? "noise" : "separation"] : [regression ? "noise" : "separation", "irrelevant", "sparsity"];
+  const choices = ["causal", "standalone_network"].includes(current.view.family) ? [regression ? "noise" : "separation"] : [regression ? "noise" : "separation", "irrelevant", "sparsity"];
   $("pair-intervention").replaceChildren(...choices.map(key => new Option(pairNames[key], key)));
   $("pair-metric").replaceChildren(...(regression ? [["Observed target", "target"], ["Latent signal", "scores"], ["Residual noise", "noise"]] : [["Class probability", "probabilities"], ["Latent score", "scores"], ["Sampled label index", "target"]]).map(([label, value]) => new Option(label, value)));
   $("pair-estimate").checked = false;
@@ -20,6 +20,7 @@ function pairControls() {
   $("pair-estimate-label").hidden = !estimated;
   $("pair-estimate").checked = false;
   $("pair-policy-note").textContent = estimated ? "This family uses independent calibration to target unit signal variance. True expected variances may differ. Check the box to request this comparison explicitly." : intervention === "sparsity" ? "Gaussian linear coefficients preserve expected unit signal variance; realized sample variance can differ." : "The saved latent function stays unchanged. Only the selected control changes.";
+  if (current.view.family === "standalone_network") $("pair-policy-note").textContent += " Network input width and connectivity stay fixed in this comparison. Use the network editor for architecture changes; feature-extension and sparsity task comparisons are not yet supported.";
 }
 function showPair() {
   const pair = current?.pair;

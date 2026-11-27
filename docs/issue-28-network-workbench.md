@@ -57,3 +57,9 @@ and page, without invoking hosted services. **Hosted Colab: NOT_RUN.** These are
 bounded author checks; combined integration and independent review are separate.
 GPU agreement, scientific comparisons and the remaining #28 feature breadth remain
 required. This work does not close those requirements.
+
+Task-only comparison controls expose regression noise or classification separation,
+preserving the frozen network and input coordinates. Feature-extension and active-
+feature/sparsity task comparisons remain unsupported required breadth; the UI does
+not advertise them as working. The network editor provides explicit architecture
+changes as a distinct linked edit, not an equivalent task-only comparison.
