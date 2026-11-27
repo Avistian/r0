@@ -93,6 +93,34 @@ def run(destination: Path, profile: str = "causal-affine-v1") -> None:
             "failure_reasons": dict(
                 Counter(r["error"] for r in records if r["status"] == "FAILED")
             ),
+            "numerical_preference_modes": dict(
+                Counter(
+                    p["mode"]
+                    for r in records
+                    for p in r.get("recipe", {})
+                    .get("numerical_preferences", {})
+                    .get("preferences", ())
+                )
+            ),
+            "categorical_preference_modes": dict(
+                Counter(
+                    p["mode"]
+                    for r in records
+                    for p in r.get("recipe", {})
+                    .get("categorical_preferences", {})
+                    .get("preferences", ())
+                )
+            ),
+            "categorical_policies": dict(
+                Counter(
+                    r["recipe"]["categorical_preferences"]["policy"]
+                    for r in records
+                    if "categorical_preferences" in r.get("recipe", {})
+                )
+            ),
+            "preference_bindings": sum(
+                len(r.get("recipe", {}).get("preference_bindings", ())) for r in records
+            ),
             "activation_modes": dict(
                 Counter(
                     r["recipe"]["activation_prior"]["mode"]
@@ -217,6 +245,10 @@ if __name__ == "__main__":
             "causal-importance-v1",
             "causal-matrices-v1",
             "causal-gaussian-matrices-v1",
+            "causal-shared-matrices-v1",
+            "causal-refreshed-matrices-v1",
+            "causal-local-matrices-v1",
+            "causal-global-matrices-v1",
         ),
         default="causal-affine-v1",
     )

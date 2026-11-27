@@ -1,0 +1,31 @@
+Standards documentation delta review — P2 publication-path issue RESOLVED in the inspected working-tree delta.
+
+Scope: only the appended “Reproduction of development checks” section and its three linked `docs/research/0028-shared-development-{categorical,bindings,profiles}.json` records. The original `/tmp/shared-preferences-standards-47630e8.md` report remains unchanged; its candidate finding remains historical evidence.
+
+All three relative links resolve. All ten published outputs reproduce the corresponding `/tmp/r0-28-{slice}-{phase}.log` bytes exactly, and every SHA256 matches. Records retain command argument lists, working directory and environment selection. The selected interpreter reports Python 3.12.3. The documentation explicitly identifies uncommitted development tests and disclaims immutable-revision suite coverage. This resolves the missing publication path without upgrading historical logs into exact-revision evidence; historical source/test snapshots remain unverified.
+
+No tests or source review were rerun. `git diff --exit-code 47630e8a44268622a4fa9ab352ef4167a3458b4d -- src tests` returned zero. This confirmation does not accept the entire increment, the full suite, browser/Colab delivery, or issue #28. The original nonblocking duplication observation is unaffected.
+
+Reproduce the publication checks from the declared Python 3.12.3 environment:
+
+```python
+import hashlib, json, re
+from pathlib import Path
+root = Path('/tmp/r0-28')
+doc = root / 'docs/issue-28-shared-matrix-preferences.md'
+links = re.findall(r'\]\((research/0028-shared-development-[^)]+\.json)\)', doc.read_text())
+assert len(links) == 3
+count = 0
+for link in links:
+    record = json.loads((doc.parent / link).read_text())
+    assert record['command'][:3] == ['python3', 'scripts/run_check.py', 'pytest']
+    assert record['environment']['cwd'] == str(root)
+    assert record['environment']['UV_PROJECT_ENVIRONMENT'] == '/home/avist/Projects/r0/.venv'
+    for log in record['logs']:
+        original = Path('/tmp') / f"r0-28-{log['slice']}-{log['phase']}.log"
+        encoded = log['output'].encode()
+        assert encoded == original.read_bytes()
+        assert hashlib.sha256(encoded).hexdigest() == log['sha256']
+        count += 1
+assert count == 10
+```

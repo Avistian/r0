@@ -1,0 +1,232 @@
+{
+  "archive": "0028-shared-repair-matrices-07.zip",
+  "bytes": 240673,
+  "sha256": "766a2e4a86bf2bbbe0e229b13d21c12107054ced893b5714d76f23b9f371bad9",
+  "files": [
+    {
+      "path": "matrices/meta-refresh-polynomial-transformed-importance-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 6765,
+      "sha256": "42d755a9498f634adcf2e95e0eefeeacdc3bc9f0c2a86d3cce395b70b59df6b1"
+    },
+    {
+      "path": "matrices/meta-refresh-polynomial-transformed-importance-gaussian-mixture-gaussian-generated.json",
+      "bytes": 67178,
+      "sha256": "c01a13a81e5730859c7f6a4a93d6ded04bdf2186e62b1799a0d1f86fcedf7615"
+    },
+    {
+      "path": "matrices/meta-refresh-polynomial-transformed-importance-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 55583,
+      "sha256": "bd333dab42c99325ccfb8007d8ea8921b3fe9abb76f9a77be09c24254b558bcf"
+    },
+    {
+      "path": "matrices/meta-refresh-polynomial-transformed-kernel-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 10346,
+      "sha256": "c3d48f87ff9de70c373483419e1a532c9ffe3e4c77861b95f61afa1918049c5b"
+    },
+    {
+      "path": "matrices/meta-refresh-polynomial-transformed-kernel-gaussian-mixture-gaussian-generated.json",
+      "bytes": 109102,
+      "sha256": "c4328a7f2a4ead42dd4005345ddf86975786ee22a2d8a6f18572a1f07778824d"
+    },
+    {
+      "path": "matrices/meta-refresh-polynomial-transformed-kernel-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 98000,
+      "sha256": "54e6a6538e2ca083b1424a99ad2e0a656a3a17e538b7bb4d64925b52d766213e"
+    },
+    {
+      "path": "matrices/meta-refresh-polynomial-transformed-kernel-random-covariance-gaussian-arithmetic.json",
+      "bytes": 10331,
+      "sha256": "8035e181dbb531c1d6bdfb6c7d62ef98c15b003f072dbd8bb2e51e5c9526e324"
+    },
+    {
+      "path": "matrices/meta-refresh-polynomial-transformed-kernel-random-covariance-gaussian-generated.json",
+      "bytes": 86729,
+      "sha256": "1d0625fb5ec9cbcb349160427a278579d0f07019ff73b8f41b0d3f18076355bf"
+    },
+    {
+      "path": "matrices/meta-refresh-polynomial-transformed-kernel-random-covariance-gaussian-recipe.json",
+      "bytes": 77593,
+      "sha256": "857d9368595748203bf6703275f4ccc7ad7929d6b0d04572a05db446fc3d674e"
+    },
+    {
+      "path": "matrices/meta-refresh-polynomial-transformed-kernel-random-covariance-uniform-arithmetic.json",
+      "bytes": 10302,
+      "sha256": "44c7445d9a11e6c860e8387832f10f399bc3d84e24503459c9e0802a7e43e949"
+    },
+    {
+      "path": "matrices/meta-refresh-polynomial-transformed-kernel-random-covariance-uniform-generated.json",
+      "bytes": 86743,
+      "sha256": "4cc1496f7402b0f4c81ffc177b4fc279c1e2a6af2305aa4884561301d8125cde"
+    },
+    {
+      "path": "matrices/meta-refresh-polynomial-transformed-kernel-random-covariance-uniform-recipe.json",
+      "bytes": 77596,
+      "sha256": "97a185dc93977615d423782fcc3535fd8017ae240487810655098cbc1cb6575c"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-factorized-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 3355,
+      "sha256": "ae6fa6d10108c4622a25d2101f436b6375fdb5ebd2087e2258985bce541f359b"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-factorized-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 28697,
+      "sha256": "fa7931b676b5ba29a49da6cc0c41d84b11f8c0e0e760f9cac192ef2c25bc2d6c"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-factorized-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 21452,
+      "sha256": "748064febd9fbfe174ae8c248213bf86148fb0d3d1fea03dbd693169a8074133"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-gaussian-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 3293,
+      "sha256": "dfead745251468ee6902545837f7f8b2ed6f59381dd169eb462db628cc131fc0"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-gaussian-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 27107,
+      "sha256": "f65114a232edc7151f30e775d768478cce9c742682746681535e66725e23dd25"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-gaussian-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 20015,
+      "sha256": "fc2e8498fcd4b94bb5c0be2f6190eaf479bfd5e00b0f48e2d4c32cdd0eb0ade1"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-importance-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 3403,
+      "sha256": "0db45536406ec03cdd8e5f9166d08bdf51d70ff98bff9a730915b927d06f8df3"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-importance-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 29135,
+      "sha256": "1d2ccb912919703234f45ba3d147f9d8f1d82374b52a70aaf7650125a9f76f48"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-importance-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 22100,
+      "sha256": "30a5b2db28486b25234d8566262d1361fc1af14db91bb00fdbbf46fabf0bc340"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-kernel-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 7082,
+      "sha256": "b1e22feb8aba9ab1323f9a6e4ebb39243a5ce96f1e4e86d7009cf07ea5209d4a"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-kernel-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 63864,
+      "sha256": "5ebb181abb5ac9a0015d3f427c4169c72d55fa337fa1499b43f14d158106a5d0"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-kernel-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 57339,
+      "sha256": "cb03e8a55bfa81ce333dffbc913ad564eb0decadbb07234c04ad99a4ba09b610"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-kernel-gaussian-random-covariance-gaussian-arithmetic.json",
+      "bytes": 7002,
+      "sha256": "feb6b0541577570dc1ace0055c0881316263b58fdbc3808b2b4ba09989bb1671"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-kernel-gaussian-random-covariance-gaussian-generated.json",
+      "bytes": 62906,
+      "sha256": "9aaf8039ad50c810a8449c3a9434a68022c46f771de7d80832338f8a84b586c5"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-kernel-gaussian-random-covariance-gaussian-recipe.json",
+      "bytes": 54530,
+      "sha256": "dfb727f5200379b0e0533c49e75f8002c8bd4214d40c5aa7bb658d4bed603f51"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-kernel-gaussian-random-covariance-uniform-arithmetic.json",
+      "bytes": 6982,
+      "sha256": "b386d051c34332b9f798c99f415bf4157a7868042d5465125b2492bf4d20286c"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-kernel-gaussian-random-covariance-uniform-generated.json",
+      "bytes": 62894,
+      "sha256": "fb33ef3a97beec01d6cbff1d3d394653d7e29087df1bf73c90fd3df8069f57d0"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-kernel-gaussian-random-covariance-uniform-recipe.json",
+      "bytes": 54522,
+      "sha256": "61c2a6be8d698862f64fce0eb02068def7d1b8ebe01d18f95d7ff680802b80d5"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-factorized-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 6739,
+      "sha256": "7a47d816b115b3a40459a9cd08fb2d8fd1033e2eaf5e6b87d10a4e6a7f40169b"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-factorized-gaussian-mixture-gaussian-generated.json",
+      "bytes": 44456,
+      "sha256": "c1887b0c92877f9e472182849e9731e30d7c24e1459b08c40a39dc509d12b8ab"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-factorized-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 36616,
+      "sha256": "46b651c96041fb87955f896b6dc4ff1669f3453ae78d10099a0333b9de50bfc6"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 6650,
+      "sha256": "8beac0c31de008b82f82b69f05127b4d572d8d72cd849138bd3ab58d20731e75"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 42812,
+      "sha256": "b738c478eab14d6ef2a7004671034fcf6d7e99895b6a04209e7ee9546eba7575"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 34962,
+      "sha256": "7a50f29150ebd552349a51df46481c41076f74d0e1e3f0f510d5e7ec7f0cb752"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-importance-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 6753,
+      "sha256": "4a60363523683c4bd9c5d7e52678fe140bd587272c5300336810f9bf60c8a87f"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-importance-gaussian-mixture-gaussian-generated.json",
+      "bytes": 44857,
+      "sha256": "26d4d49f1633fb8e0ed081bb7fc42c79cf856b257bd581d5afa7a8ec4b005e8d"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-importance-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 37346,
+      "sha256": "b768e00bc4209290650586b9651580292fdd5d5eb61c70184c2b46240d4d5bb0"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-kernel-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 10454,
+      "sha256": "04ea75bbf0de8344e36a65dfd0c0d92c30ebc57f228de50e546b379f0a25a34d"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-kernel-gaussian-mixture-gaussian-generated.json",
+      "bytes": 70680,
+      "sha256": "69b448964152a7f0c4b91b36024aa828fb5fb3adadf377df5b0a91ccd9b63698"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-kernel-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 62826,
+      "sha256": "9ef2e46c28f14d595e23a1505359ca4e519091cfe44eab4f3d3b0e50eb24b88f"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-kernel-random-covariance-gaussian-arithmetic.json",
+      "bytes": 10459,
+      "sha256": "0127d4ccdb36fbf854df4934361ddaa0e0bf7099b59ca2f0f6d267f3a195eed4"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-kernel-random-covariance-gaussian-generated.json",
+      "bytes": 79154,
+      "sha256": "614458e469c88453b0d9c156b7964fb6e40197813d47a0cb7079e02319791c82"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-kernel-random-covariance-gaussian-recipe.json",
+      "bytes": 71320,
+      "sha256": "03ecd35adf797e7536a79da3bf30ffd33654598d1aa804d05f65b78be329bb67"
+    }
+  ]
+}

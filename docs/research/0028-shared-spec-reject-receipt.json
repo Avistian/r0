@@ -1,0 +1,151 @@
+{
+  "status": "SCOPED_REJECT",
+  "base": "0341b4c7320d042783b6da1a73e9ad2c28f307b8",
+  "candidate": "47630e8a44268622a4fa9ab352ef4167a3458b4d",
+  "python": "/home/avist/Projects/r0/.venv/bin/python",
+  "source_files": [
+    {
+      "path": "src/r0/modules/priors/__init__.py",
+      "pinned_blob_sha256": "2883e67bf81610c5a930f2bc3b632a4c344237dd424ca9ac040ccd99e00b75de",
+      "archive_sha256": "2883e67bf81610c5a930f2bc3b632a4c344237dd424ca9ac040ccd99e00b75de",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/categorical_preferences.py",
+      "pinned_blob_sha256": "6ba9acb26a9433c0f5f5ead4ad0c5ba129cc7e06fa059a96a9fc375d66b2113d",
+      "archive_sha256": "6ba9acb26a9433c0f5f5ead4ad0c5ba129cc7e06fa059a96a9fc375d66b2113d",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/categorical_sampling.py",
+      "pinned_blob_sha256": "3c56eca1964ff00b9a2a12fcea1afa849e2330d4568e1d82b7ef6ede75308370",
+      "archive_sha256": "3c56eca1964ff00b9a2a12fcea1afa849e2330d4568e1d82b7ef6ede75308370",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/causal.py",
+      "pinned_blob_sha256": "068ea5a50de2a3543ba55a3bb9175e11fba1167eec13ba21e1aa11295fb24377",
+      "archive_sha256": "068ea5a50de2a3543ba55a3bb9175e11fba1167eec13ba21e1aa11295fb24377",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/causal_limits.py",
+      "pinned_blob_sha256": "ebb881c0a5c8a38a3cf33cbf1b802f4932f7eebfa7a5ab3a9d77c6df5cc84112",
+      "archive_sha256": "ebb881c0a5c8a38a3cf33cbf1b802f4932f7eebfa7a5ab3a9d77c6df5cc84112",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/causal_matrix_sampling.py",
+      "pinned_blob_sha256": "6884acb81ea1a4afffdea9a42c7f68fc7cf9b8e30975e11b90fd6e5491aade45",
+      "archive_sha256": "6884acb81ea1a4afffdea9a42c7f68fc7cf9b8e30975e11b90fd6e5491aade45",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/causal_preferred.py",
+      "pinned_blob_sha256": "efdd576760ec330ee03dd9e7c22873a6d960a92b65c456a9c749b1d324c57f9c",
+      "archive_sha256": "efdd576760ec330ee03dd9e7c22873a6d960a92b65c456a9c749b1d324c57f9c",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/causal_sampled.py",
+      "pinned_blob_sha256": "d52eea016737052bd349b2cbf1007ad89abb66eaacacb6ce612102acba71ba0c",
+      "archive_sha256": "d52eea016737052bd349b2cbf1007ad89abb66eaacacb6ce612102acba71ba0c",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/causal_sampling.py",
+      "pinned_blob_sha256": "3c2a58e167ce9a00ec1068edef7b6d335fbaae30c54b3765b9e851e9f34b1e78",
+      "archive_sha256": "3c2a58e167ce9a00ec1068edef7b6d335fbaae30c54b3765b9e851e9f34b1e78",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/generate.py",
+      "pinned_blob_sha256": "37f11a67c209543d0d746641a5bc7aa0e0fa5e768834692d62377846755f6423",
+      "archive_sha256": "37f11a67c209543d0d746641a5bc7aa0e0fa5e768834692d62377846755f6423",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/matrix_preference_prior.py",
+      "pinned_blob_sha256": "b3fb58d73c0037b6f736900b28902b684886ce7c3bca012b32c7757ec888f187",
+      "archive_sha256": "b3fb58d73c0037b6f736900b28902b684886ce7c3bca012b32c7757ec888f187",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/preference_binding.py",
+      "pinned_blob_sha256": "6fc4e471d2a3ef9ce5fddf3ad67db414ad5b65fb71fe6610525f24f3816e18ab",
+      "archive_sha256": "6fc4e471d2a3ef9ce5fddf3ad67db414ad5b65fb71fe6610525f24f3816e18ab",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/preferred_contract.py",
+      "pinned_blob_sha256": "18a71d6e91dae5052faf2ab92b99f4b1ac092b2032aa4da1065093e43a47c916",
+      "archive_sha256": "18a71d6e91dae5052faf2ab92b99f4b1ac092b2032aa4da1065093e43a47c916",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/preferred_matrix_sampling.py",
+      "pinned_blob_sha256": "e53e59bcb1454ce39e86ef00b090fa2b542ba522c8b29df6b4f9b140774a4808",
+      "archive_sha256": "e53e59bcb1454ce39e86ef00b090fa2b542ba522c8b29df6b4f9b140774a4808",
+      "match": true
+    },
+    {
+      "path": "src/r0/modules/priors/lib/recipe_sampling.py",
+      "pinned_blob_sha256": "1e34d8d815684776af5cb82b5ef3e3d2211f57ce830855c7043c3be92db7054f",
+      "archive_sha256": "1e34d8d815684776af5cb82b5ef3e3d2211f57ce830855c7043c3be92db7054f",
+      "match": true
+    }
+  ],
+  "archives": {
+    "base": "8cedfc6ecf5474c6b0ae1adeb1b486ffc26380f51f6679c9e7dd2d4f28676cd2",
+    "candidate": "db1c24dc3e928045be327cfd6d36b1359954b0f88b0d5d792b98952a1553a14f"
+  },
+  "scripts": {
+    "boundaries.py": {
+      "sha256": "db17eddd1c62f664ad37645f6f8604544bd9fd482d7a6e75181b94e55446b31f",
+      "bytes": 3275
+    },
+    "matrices.py": {
+      "sha256": "a0fb50fb1d17d0dabc278c297add04ed88e7e57747332eacb396374107989a05",
+      "bytes": 16824
+    },
+    "numeric.py": {
+      "sha256": "f6db61c5943fac817f5b7d07d5f32049bdf40d3fff2b77a52566d9741b11eb90",
+      "bytes": 11619
+    },
+    "legacy.py": {
+      "sha256": "6831c75b0a964f95d22bb7e3fe2762d065b7643499cae164e8637b13894e0b26",
+      "bytes": 5000
+    },
+    "preserve_extreme.py": {
+      "sha256": "0fe566f400e983e4e0e5137452680be1a2a2209333abc2122ca657a358b23837",
+      "bytes": 4622
+    }
+  },
+  "retained_runs": {
+    "categorical_scoped_doc": "numeric-final",
+    "weighted_boundary_scoped_doc": "boundaries-verified",
+    "matrix_and_delivery": "matrices-retained",
+    "accepted_spec_defect": "extreme-reject",
+    "legacy_base": "legacy-base",
+    "legacy_candidate": "legacy-candidate"
+  },
+  "legacy": {
+    "status": "PASS",
+    "cases": 504,
+    "exact_matches": 504,
+    "base_failed": 4,
+    "candidate_failed": 4,
+    "mismatches": []
+  },
+  "harness_errors": [
+    "matrices-final: invalid activation_choices verifier field",
+    "boundaries-final: chosen test score underflowed the weight itself",
+    "boundaries-retained: same incorrect test fixture; preserved"
+  ],
+  "limitations": [
+    "No browser, Colab, GPU or paid execution",
+    "Parent owns full suite and author census",
+    "Independent controlled matrix transformations used identity activation",
+    "No complete issue28 or source joint-prior acceptance"
+  ]
+}

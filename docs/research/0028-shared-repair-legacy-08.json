@@ -1,0 +1,62 @@
+{
+  "archive": "0028-shared-repair-legacy-08.zip",
+  "bytes": 542319,
+  "sha256": "860d70ebbf1aab54ba4c699d4c6317a8087820b71905d97de877f938d9b8622a",
+  "files": [
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_regression_3_10.json",
+      "bytes": 71268,
+      "sha256": "44559452d96775a18765966a3445f32cfe544291589324b9308672f06606f528"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_regression_45_10.json",
+      "bytes": 114310,
+      "sha256": "a090e05ee5a877c6a3eeb358b6124147b160e067aed86f026d5be7cf6b2187aa"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_binary_0_10.json",
+      "bytes": 557016,
+      "sha256": "de7e9299e9234d66a8e489363a2379e6289f7d49dcf58aa13c71e215db4c7be4"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_binary_1_10.json",
+      "bytes": 220715,
+      "sha256": "ab3d39f5aecdfb9fea0336d07902950bf7ed608dedc62e62ef75e8e2ad93d29c"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_binary_28_10.json",
+      "bytes": 490849,
+      "sha256": "f7073ad78a7e6a47583704868e6a4e91b3922982717f735057ba737a82448519"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_binary_28_50.json",
+      "bytes": 32447,
+      "sha256": "98d2bbdc0762e5fe81fa76a166a0775a35f3cb272e7783a9712cfcb44dc425ad"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_binary_2_10.json",
+      "bytes": 39699,
+      "sha256": "db0ed5cfd339523932c7f53f9aa276761d30d75e2513abfddc25a6350ea3c606"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_binary_3_10.json",
+      "bytes": 53893,
+      "sha256": "8375177f6aabe51f476abaa44a4f06abd603a8842ca010ae351625840766873a"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_binary_45_10.json",
+      "bytes": 28171,
+      "sha256": "0ca3406dbc44f9cdce83e3a7d804236dfa9951e282e86d944cfa30f56363e2dc"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_multiclass_0_10.json",
+      "bytes": 685852,
+      "sha256": "53b5e44d5193b5dd0e98e3de9f85c35d1f430bb6ea0cf8c3749ae268104918d1"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_multiclass_1_10.json",
+      "bytes": 229538,
+      "sha256": "23352ebbc04e93a5a7817e884a265c2df3e1151561bccf393b557ebf4c362327"
+    }
+  ]
+}

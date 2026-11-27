@@ -1,0 +1,429 @@
+[
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 10,
+    "family": "layered",
+    "flags": [],
+    "nodes": 11,
+    "score_std": [
+      0.9646425251502558,
+      0.2170293899380758,
+      1.04239422737735
+    ],
+    "seed": 28,
+    "source_task_id": "3f66000d03dd82750a6ea3f8fe89ed655c52db921e72751809f252b052f075bd",
+    "status": "VALID",
+    "task_id": 32,
+    "recipe_sha256": "94b0f2d7a3ff2d0e92d226a85f75ca36f7667ea01513beb8018951209de37c73"
+  },
+  {
+    "components": 8,
+    "depth": 1,
+    "edges": 4,
+    "family": "layered",
+    "flags": [],
+    "nodes": 12,
+    "score_std": [
+      0.13382510412072335
+    ],
+    "seed": 28,
+    "source_task_id": "8177d549be06830514657dc0683c7f80b321350bbb06342409b82f64925ba631",
+    "status": "VALID",
+    "task_id": 33,
+    "recipe_sha256": "6b242cd10bbbe6bf2b101e0b1bca158ba56e3d79f55b2d9bcbb762fd714c76ab"
+  },
+  {
+    "components": 2,
+    "depth": 3,
+    "edges": 5,
+    "family": "layered",
+    "flags": [],
+    "nodes": 7,
+    "score_std": [
+      0.5091458323450154
+    ],
+    "seed": 28,
+    "source_task_id": "8ba5eac4a2999f5073fde4db8df86714bbfd6230f97e6a8b917096534a7e2800",
+    "status": "VALID",
+    "task_id": 34,
+    "recipe_sha256": "e61817908ea5107a26f4a59c94ce3098468b2841bc8bce627856749ae51bd5f2"
+  },
+  {
+    "components": 1,
+    "depth": 1,
+    "edges": 75,
+    "family": "layered",
+    "flags": [],
+    "nodes": 20,
+    "score_std": [
+      0.2789588243355529,
+      1.0614835789685657,
+      2.90828837014095
+    ],
+    "seed": 28,
+    "source_task_id": "6c7bad310117721c2e771d461d2d9601ec8563cbca996d912594784ecb584c70",
+    "status": "VALID",
+    "task_id": 35,
+    "recipe_sha256": "735819c0fc849ffb3d0bbc290a1b30fc5c9a42544366022e5b6a3f4393b4a9ac"
+  },
+  {
+    "components": 5,
+    "depth": 2,
+    "edges": 4,
+    "family": "layered",
+    "flags": [
+      "disconnected_target",
+      "saturated_activation"
+    ],
+    "nodes": 9,
+    "score_std": [
+      1.0965697427331726
+    ],
+    "seed": 28,
+    "source_task_id": "6ed746a90e3e3bff05f5c57d402fe6c1a995c204082228aec70682ed2b779bdf",
+    "status": "VALID",
+    "task_id": 36,
+    "recipe_sha256": "ef7c849018c612449c87ece2788cc1950292e91f781789a26d0546aa05cadad7"
+  },
+  {
+    "components": 5,
+    "depth": 3,
+    "edges": 13,
+    "family": "layered",
+    "flags": [
+      "saturated_activation"
+    ],
+    "nodes": 17,
+    "score_std": [
+      0.35292680604718357
+    ],
+    "seed": 28,
+    "source_task_id": "c56cecaa2aedf2650dedee03fa75307583966fd6e055dc577ea1d8d133ab46ea",
+    "status": "VALID",
+    "task_id": 37,
+    "recipe_sha256": "791a36a743bebbc0561648ed5fd714913463a2d68ba366df25d287f8bb1ea2db"
+  },
+  {
+    "error": "ValueError: nonfinite signed_power activation output; task was not retried",
+    "family": "layered",
+    "seed": 28,
+    "status": "FAILED",
+    "task_id": 38,
+    "recipe_sha256": "463b225a92bcb9f8e27a77269c101b002a012fa2eb65b2ebd8b23c1e7c4d3c4a"
+  },
+  {
+    "components": 22,
+    "depth": 0,
+    "edges": 0,
+    "family": "layered",
+    "flags": [
+      "disconnected_target",
+      "inactive_relu"
+    ],
+    "nodes": 22,
+    "score_std": [
+      0.4841229182759271
+    ],
+    "seed": 28,
+    "source_task_id": "8047b548f70e39b12602a2a25dcd346399d59443fda5eabb7608fd05d985d76c",
+    "status": "VALID",
+    "task_id": 39,
+    "recipe_sha256": "acabe6439782ea3e68ce107a578753017f4a624a49997a9c33fa6f364ad399e9"
+  },
+  {
+    "components": 11,
+    "depth": 1,
+    "edges": 1,
+    "family": "layered",
+    "flags": [
+      "disconnected_target"
+    ],
+    "nodes": 12,
+    "score_std": [
+      1.0289817864198778
+    ],
+    "seed": 28,
+    "source_task_id": "edb036e17c5e190bc59e02e63d2b9b1c6ff6a4e95539e80b2f034f76cf59414e",
+    "status": "VALID",
+    "task_id": 40,
+    "recipe_sha256": "f406aa6227f42035e3ac4803b1bf69177ac0680c7982a55cf771445ee485a1c7"
+  },
+  {
+    "components": 16,
+    "depth": 0,
+    "edges": 0,
+    "family": "layered",
+    "flags": [
+      "disconnected_target"
+    ],
+    "nodes": 16,
+    "score_std": [
+      0.15903133341630582,
+      1.159271452386011,
+      0.6954466831996338
+    ],
+    "seed": 28,
+    "source_task_id": "9abcce5f0fe37a11f43b73f1241ae3ef15207f872c3330f0731968dae92182ba",
+    "status": "VALID",
+    "task_id": 41,
+    "recipe_sha256": "9631a4aa0a6386a889740d5a318392d3699288710c100288505305a8b5d989cc"
+  },
+  {
+    "components": 2,
+    "depth": 1,
+    "edges": 24,
+    "family": "layered",
+    "flags": [],
+    "nodes": 19,
+    "score_std": [
+      0.26918107220328885
+    ],
+    "seed": 28,
+    "source_task_id": "aa174cccee7621a7722929f46d993a4ef09ed3301154678d5cb8e4d35325e9e3",
+    "status": "VALID",
+    "task_id": 42,
+    "recipe_sha256": "df147d5083517cc7cc32ae7f5343826ae8cbaca99dde5ac7b04dc03c74cb7a04"
+  },
+  {
+    "components": 7,
+    "depth": 2,
+    "edges": 5,
+    "family": "layered",
+    "flags": [
+      "disconnected_target"
+    ],
+    "nodes": 12,
+    "score_std": [
+      0.7208987936350902
+    ],
+    "seed": 28,
+    "source_task_id": "d27f139682e187576b1d33b519bfa065133d08d8f6e808c1b2891cd633e2f57f",
+    "status": "VALID",
+    "task_id": 43,
+    "recipe_sha256": "cffeebfe8985d9517e3d7d0f9d8ff456be4d538cdf7a3952e3911c7df2a92aa6"
+  },
+  {
+    "components": 14,
+    "depth": 1,
+    "edges": 1,
+    "family": "layered",
+    "flags": [
+      "inactive_relu"
+    ],
+    "nodes": 15,
+    "score_std": [
+      0.660897772506868,
+      0.7872672408792148,
+      1.2993028650464427
+    ],
+    "seed": 28,
+    "source_task_id": "2e15eff691c77bfeb187b51cf5f569226deb9ee3ad8a5c1818d5d5aac5aafe42",
+    "status": "VALID",
+    "task_id": 44,
+    "recipe_sha256": "565a4fb9ab892c1cfadece8fc8d6fa4267b090e112a3eda8a0112c788149a953"
+  },
+  {
+    "components": 6,
+    "depth": 1,
+    "edges": 1,
+    "family": "layered",
+    "flags": [
+      "disconnected_target"
+    ],
+    "nodes": 7,
+    "score_std": [
+      1.0
+    ],
+    "seed": 28,
+    "source_task_id": "9276265594e62ec5be9bbe9298b407b87d9d429a713c2c21b4a89d924bf89dee",
+    "status": "VALID",
+    "task_id": 45,
+    "recipe_sha256": "4f340251b0ce6345431891c944a05501bf38562fec36d874bfc0754d7d26afdf"
+  },
+  {
+    "components": 6,
+    "depth": 1,
+    "edges": 8,
+    "family": "layered",
+    "flags": [
+      "disconnected_target"
+    ],
+    "nodes": 14,
+    "score_std": [
+      0.1338446429460337
+    ],
+    "seed": 28,
+    "source_task_id": "8c94c55690be16de3a0393a85b8b4851b4e1e3a2399048370f7928fa367c270c",
+    "status": "VALID",
+    "task_id": 46,
+    "recipe_sha256": "f77611a6f1d79edcd23f8d19ef85494ef197471b01c91eb767750484e54875dc"
+  },
+  {
+    "components": 10,
+    "depth": 0,
+    "edges": 0,
+    "family": "layered",
+    "flags": [
+      "disconnected_target"
+    ],
+    "nodes": 10,
+    "score_std": [
+      0.7340103915579499,
+      1.1188802712943962,
+      0.9183846500226579
+    ],
+    "seed": 28,
+    "source_task_id": "589d3209034d80ff7db64c06b69b579e5aaeeeaf9cc2949bed23663650da5cca",
+    "status": "VALID",
+    "task_id": 47,
+    "recipe_sha256": "ec1ad894b411d1f0becddd9b4fa0aa96a71bf99676e5e4fd52a4eb401c1b39af"
+  },
+  {
+    "components": 3,
+    "depth": 2,
+    "edges": 30,
+    "family": "layered",
+    "flags": [
+      "saturated_activation"
+    ],
+    "nodes": 21,
+    "score_std": [
+      0.6088761458518003
+    ],
+    "seed": 28,
+    "source_task_id": "a8ec0dc28617156a7a7f5d8540e5800d032d5539dca83f2af85e222d351828cc",
+    "status": "VALID",
+    "task_id": 48,
+    "recipe_sha256": "b6282aa77ad06212efdecd0500090ef5f672e5758c727bd1e2db1a221641b3d3"
+  },
+  {
+    "components": 14,
+    "depth": 0,
+    "edges": 0,
+    "family": "layered",
+    "flags": [
+      "disconnected_target"
+    ],
+    "nodes": 14,
+    "score_std": [
+      0.8365772675426015
+    ],
+    "seed": 28,
+    "source_task_id": "4e32e35f9a6796bdbe9e3e7fe5c9f18d2d13556fbf69ab5c4f62d8d0993ac042",
+    "status": "VALID",
+    "task_id": 49,
+    "recipe_sha256": "fa9272a577cdfcc3676ef3038f563a45c0ebf45ba69775a3a545a5c2180c0bb9"
+  },
+  {
+    "components": 15,
+    "depth": 0,
+    "edges": 0,
+    "family": "layered",
+    "flags": [
+      "disconnected_target"
+    ],
+    "nodes": 15,
+    "score_std": [
+      1.0545173831144994,
+      1.199838145891869,
+      1.0297198537169885
+    ],
+    "seed": 28,
+    "source_task_id": "b5c65422cdfa9c9dc8398b6bfeb0f459702406a7752a6aa4d5580c3cab75441d",
+    "status": "VALID",
+    "task_id": 50,
+    "recipe_sha256": "18ca7019c9db6a403c65306fac8361eddd561a15258655a4396ea2df3e59a2b2"
+  },
+  {
+    "components": 9,
+    "depth": 1,
+    "edges": 6,
+    "family": "layered",
+    "flags": [
+      "disconnected_target",
+      "inactive_relu"
+    ],
+    "nodes": 15,
+    "score_std": [
+      1.215917656014983
+    ],
+    "seed": 28,
+    "source_task_id": "0c3cd547b8c27c1861a6c773860e286b1e1842e7b0a0b5ea9008b5ca3cef8a5d",
+    "status": "VALID",
+    "task_id": 51,
+    "recipe_sha256": "278df3700f19f612d960cc7cb8eb2dc362f1a8c1c3a9b708074e6def66f0a567"
+  },
+  {
+    "components": 9,
+    "depth": 3,
+    "edges": 9,
+    "family": "layered",
+    "flags": [
+      "disconnected_target"
+    ],
+    "nodes": 18,
+    "score_std": [
+      0.6168513559151422
+    ],
+    "seed": 28,
+    "source_task_id": "cc6299dab36f8270c176d3936ae1d9c6058f43e76929bc188970100f583a962c",
+    "status": "VALID",
+    "task_id": 52,
+    "recipe_sha256": "8784245f0c37611c3ad93b21e326769b044bcd4ff8b2f0a848438ed44d77ecb7"
+  },
+  {
+    "components": 3,
+    "depth": 2,
+    "edges": 9,
+    "family": "layered",
+    "flags": [],
+    "nodes": 12,
+    "score_std": [
+      0.8875956145438635,
+      0.9050790276150161,
+      0.8717781914807218
+    ],
+    "seed": 28,
+    "source_task_id": "583f51e19752a0cf13a7575e019a9ec0b7764c654ee58a908cf6822e0b6322ca",
+    "status": "VALID",
+    "task_id": 53,
+    "recipe_sha256": "cc54f28ed49a45b2a4b6a336567a7b24284e8df3b0bbbfe3f02369328f48412f"
+  },
+  {
+    "components": 3,
+    "depth": 4,
+    "edges": 26,
+    "family": "layered",
+    "flags": [
+      "inactive_relu"
+    ],
+    "nodes": 19,
+    "score_std": [
+      0.8818809927218396
+    ],
+    "seed": 28,
+    "source_task_id": "912bf268bb32a0c4ffad8c9241a5a2f26f5199a9370cf156c0aa190f8fe0c974",
+    "status": "VALID",
+    "task_id": 54,
+    "recipe_sha256": "02a29b0782dfa2c14a3a29b21904276bb632b4e64be2fdb59ba22788e10419fc"
+  },
+  {
+    "components": 21,
+    "depth": 0,
+    "edges": 0,
+    "family": "layered",
+    "flags": [
+      "disconnected_target"
+    ],
+    "nodes": 21,
+    "score_std": [
+      0.1893779860701212
+    ],
+    "seed": 28,
+    "source_task_id": "b375bcfd93421776ef0d1e42f53b881cb3525b04ebf267d4e11ab12df95f83fb",
+    "status": "VALID",
+    "task_id": 55,
+    "recipe_sha256": "813e954b230b5f5a43e535e9ada8497d03aab850e72e032e0571fb1f000fe1d9"
+  }
+]

@@ -1,0 +1,412 @@
+[
+  {
+    "components": 2,
+    "depth": 1,
+    "edges": 6,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 8,
+    "score_std": [
+      0.0882070290344413
+    ],
+    "seed": 28,
+    "source_task_id": "6a80c78dc9b8211f760a373b8e2d7d5678df1efd8dd336a6a1ef84f2c71269aa",
+    "status": "VALID",
+    "task_id": 40,
+    "recipe_sha256": "b81e8466ffa90242de99eec0da23c05b20ad56c9f2e61b9cae45222b86f3da8e"
+  },
+  {
+    "components": 3,
+    "depth": 2,
+    "edges": 10,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 13,
+    "score_std": [
+      0.09070260252320171,
+      0.10898483795519809,
+      0.132410799650068
+    ],
+    "seed": 28,
+    "source_task_id": "7432eecbe17a945e4b40c36f9401487349df243ddbe05b24103daf498a9f9cda",
+    "status": "VALID",
+    "task_id": 41,
+    "recipe_sha256": "27ae77cd6ef8f9671327a09910ff982bffa5dadc1030230b86592b6f880609e6"
+  },
+  {
+    "components": 2,
+    "depth": 1,
+    "edges": 9,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 11,
+    "score_std": [
+      0.4789602060690197
+    ],
+    "seed": 28,
+    "source_task_id": "87bd089c48911e5207b0660be386e9497f6697718f9bc5bb0c3eea67de044831",
+    "status": "VALID",
+    "task_id": 42,
+    "recipe_sha256": "e926649fd30c43b60c98525ae55d33b11677b91867860bc855fd00de0faa2a9b"
+  },
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 11,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 14,
+    "score_std": [
+      0.08040819022625637
+    ],
+    "seed": 28,
+    "source_task_id": "a420766274cbf3e9a5be21b19350ce7de293576f4282895f5f43219ab60e019b",
+    "status": "VALID",
+    "task_id": 43,
+    "recipe_sha256": "02dbf385bd089110cc9ea29d25b934a0ac04b6becad2dcf517c0350c63ee326c"
+  },
+  {
+    "components": 3,
+    "depth": 4,
+    "edges": 19,
+    "family": "redirection",
+    "flags": [
+      "inactive_relu"
+    ],
+    "nodes": 22,
+    "score_std": [
+      1.0050484207415997,
+      0.7527369867390841,
+      0.0027697107471534544
+    ],
+    "seed": 28,
+    "source_task_id": "4f4949f1bd70530acee0a57254a60a3dfaeb151226be3db73e80d7b8e44b39c4",
+    "status": "VALID",
+    "task_id": 44,
+    "recipe_sha256": "1260f0ae2e1e170b740469242bcc776fd5de59f8d2031b441869a39f4c5a29a9"
+  },
+  {
+    "components": 2,
+    "depth": 2,
+    "edges": 5,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 7,
+    "score_std": [
+      0.33934820377379166
+    ],
+    "seed": 28,
+    "source_task_id": "fa839649c4e8d3d96f8c51c457a8e3ba53d5ff947ecf581642cf3c53f96c6e01",
+    "status": "VALID",
+    "task_id": 45,
+    "recipe_sha256": "0844b122d730f306f7521350d40f77f4c02144c0761a3db83a22a13034d4a920"
+  },
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 11,
+    "family": "redirection",
+    "flags": [
+      "disconnected_target"
+    ],
+    "nodes": 14,
+    "score_std": [
+      0.19869112833167024
+    ],
+    "seed": 28,
+    "source_task_id": "8d4ace2280c886fca0d9c0b066436d17c943c71e5b1bd812d9a21d8f60691afc",
+    "status": "VALID",
+    "task_id": 46,
+    "recipe_sha256": "2f973e560154e1212b63190f841bf444967d00b652ce8b294999a40396ac7fd9"
+  },
+  {
+    "components": 2,
+    "depth": 3,
+    "edges": 14,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 16,
+    "score_std": [
+      0.33710963945208927,
+      1.003547481272805,
+      0.20584190961740675
+    ],
+    "seed": 28,
+    "source_task_id": "b90b301d9fd72fc0508390b87cde995929c30d9d9baaf287ddc74906af4993e5",
+    "status": "VALID",
+    "task_id": 47,
+    "recipe_sha256": "8c537f434a7b0c916098e1385255a90662861440a3af90db5e15ccc76606aabd"
+  },
+  {
+    "components": 3,
+    "depth": 3,
+    "edges": 15,
+    "family": "redirection",
+    "flags": [
+      "zero_target_dispersion"
+    ],
+    "nodes": 18,
+    "score_std": [
+      0.0
+    ],
+    "seed": 28,
+    "source_task_id": "73d2ddf75010b411913e4a9d742374460481fcfbc17b5adfc210b95856beb2df",
+    "status": "VALID",
+    "task_id": 48,
+    "recipe_sha256": "0a795d3a194657a75fb5f6a8e9cbfa4906212daa2e267d6dd03cb1385a1deea1"
+  },
+  {
+    "components": 2,
+    "depth": 2,
+    "edges": 7,
+    "family": "redirection",
+    "flags": [
+      "saturated_activation"
+    ],
+    "nodes": 9,
+    "score_std": [
+      0.9745863806641973
+    ],
+    "seed": 28,
+    "source_task_id": "88cff3be3623552e58b67c3f41bd663ca139cb3569c58e93894df3488b5e5876",
+    "status": "VALID",
+    "task_id": 49,
+    "recipe_sha256": "6e4dd7a40dc68f6684148ed3761f2ec9280ea358591b3882d91ecac55b97ec4c"
+  },
+  {
+    "components": 3,
+    "depth": 3,
+    "edges": 16,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 19,
+    "score_std": [
+      0.15632964742275873,
+      0.19641876100860217,
+      0.9301610147885446
+    ],
+    "seed": 28,
+    "source_task_id": "d22d4f565a1eacf63b857178cb88356f10a7fd071d6a182922c2b47038348ccd",
+    "status": "VALID",
+    "task_id": 50,
+    "recipe_sha256": "b5611af79e603c451ae961416bf959a5a0b90e744d645d7fd98fa0d124b46b39"
+  },
+  {
+    "components": 1,
+    "depth": 1,
+    "edges": 7,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 8,
+    "score_std": [
+      0.8241758500391221
+    ],
+    "seed": 28,
+    "source_task_id": "a8044679b3a77938fa4ba483327371b806fea7ecddc92132428d635111343c65",
+    "status": "VALID",
+    "task_id": 51,
+    "recipe_sha256": "22550fdf8d5c2db68ce427b5b8abcfc1b3ec2ec4476398e6be7b670fa38c8dc6"
+  },
+  {
+    "components": 3,
+    "depth": 2,
+    "edges": 14,
+    "family": "redirection",
+    "flags": [
+      "saturated_activation"
+    ],
+    "nodes": 17,
+    "score_std": [
+      0.2957337137159017
+    ],
+    "seed": 28,
+    "source_task_id": "878f9c8aad6ab50e51765f4c5814866c29da9585aca0dfc2169c666b0a1dad05",
+    "status": "VALID",
+    "task_id": 52,
+    "recipe_sha256": "ca81960c7cf43edbd0638d2d04d4d95d7383d2f0a878c6ad67fc38eae9450d2d"
+  },
+  {
+    "components": 2,
+    "depth": 3,
+    "edges": 12,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 14,
+    "score_std": [
+      0.26660866883879475,
+      0.6052650273777351,
+      1.1259763156900569
+    ],
+    "seed": 28,
+    "source_task_id": "6c85af87a435cf4941b0dd499ba510b7adfa893b49dec5e6e92c54404d9019c0",
+    "status": "VALID",
+    "task_id": 53,
+    "recipe_sha256": "b508a9f9d608d2cc81065e8a7377555cd64758559f3fc745d95ca46b75f1a978"
+  },
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 16,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 19,
+    "score_std": [
+      0.07757234765997957
+    ],
+    "seed": 28,
+    "source_task_id": "47c0afa55588e8e2b6db8ef4f09fd935020dd67feff57133f5843ca35555e8b7",
+    "status": "VALID",
+    "task_id": 54,
+    "recipe_sha256": "8f707e0ebbc9ac857356322b3282c3f1d91e79cae8a2e7d32ba2878d0c20adbb"
+  },
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 15,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 18,
+    "score_std": [
+      0.9423788238406655
+    ],
+    "seed": 28,
+    "source_task_id": "6f8c9f59b390d1296f6cacc9b79d43904e88aa00afd74ecab5ba00dc034c1878",
+    "status": "VALID",
+    "task_id": 55,
+    "recipe_sha256": "8276c647a271cbcee492dd8a75d3cad86842335e29ee93a235c328c9b7525c6a"
+  },
+  {
+    "components": 3,
+    "depth": 3,
+    "edges": 17,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 20,
+    "score_std": [
+      0.5605208682224155,
+      0.39122728897112263,
+      0.8014066853035943
+    ],
+    "seed": 28,
+    "source_task_id": "6bcb9522f1ad5311aa8fd36465499f95da46d6535879067acb0c4d5e77721b68",
+    "status": "VALID",
+    "task_id": 56,
+    "recipe_sha256": "b79a66077ad5a7f5082562146f3e57e1aca4a5d16bb4fa5cdbfba40f17cb1b21"
+  },
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 7,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 10,
+    "score_std": [
+      0.7077902790640336
+    ],
+    "seed": 28,
+    "source_task_id": "a0c912fe54e403ba68cc47976e2000066c6042b7a7384172a96935b08bc6cf48",
+    "status": "VALID",
+    "task_id": 57,
+    "recipe_sha256": "4c08ebde8c6c5102f58be4179b71730d80b50d172a86bea2058ee822b036d65c"
+  },
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 17,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 20,
+    "score_std": [
+      0.22820045119434032
+    ],
+    "seed": 28,
+    "source_task_id": "5bfc67280d2a228fe7c073aec22fb44a928f4bc038289c1841edf23c0397ca79",
+    "status": "VALID",
+    "task_id": 58,
+    "recipe_sha256": "4eb81066af70923dda513b558fc3da0f6c803a2b618a37c2544ebc1b8e34fa6d"
+  },
+  {
+    "components": 2,
+    "depth": 2,
+    "edges": 16,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 18,
+    "score_std": [
+      0.420964028712464,
+      0.111205325556062,
+      0.0
+    ],
+    "seed": 28,
+    "source_task_id": "0b214739c1772b6a814d9575dc352254f6f7bdc560a6411c9e0996dd5a72dbc0",
+    "status": "VALID",
+    "task_id": 59,
+    "recipe_sha256": "5e0bfde87084a9bc05123a56c26d0e740d210203f25a3e1f92c91483d92362b6"
+  },
+  {
+    "components": 3,
+    "depth": 2,
+    "edges": 14,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 17,
+    "score_std": [
+      0.15275855966914081
+    ],
+    "seed": 28,
+    "source_task_id": "31bed2e0a2badff53c0f1fac1ddc786b8ddc5dd55ad6b6ff73c3061c0e9a1edd",
+    "status": "VALID",
+    "task_id": 60,
+    "recipe_sha256": "4aca0d905fbf2d73c6c155417de7f25f9cb79ed77b1e74a99503f85e4601f55b"
+  },
+  {
+    "components": 1,
+    "depth": 1,
+    "edges": 6,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 7,
+    "score_std": [
+      0.6836951542133629
+    ],
+    "seed": 28,
+    "source_task_id": "80191aa9b1f70a8b83d19480e0fcd32e8132e98e1c67b041be345042ffdf4701",
+    "status": "VALID",
+    "task_id": 61,
+    "recipe_sha256": "d23d829ce53f0d775ac044d445838bdd2124a5a9fe38aaf8c38ef73d2137ea83"
+  },
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 15,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 18,
+    "score_std": [
+      1.086499199318798,
+      3.855985410014586,
+      0.9447461678836699
+    ],
+    "seed": 28,
+    "source_task_id": "cfc546a98a82f3c3ef19ba378123cd8f1634edcb65f99adb159f63347510a651",
+    "status": "VALID",
+    "task_id": 62,
+    "recipe_sha256": "fd386d3e216bfc497d01051ff183bf30293c020441fbb0d95d8113856346c4ca"
+  },
+  {
+    "components": 3,
+    "depth": 2,
+    "edges": 15,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 18,
+    "score_std": [
+      0.6817282938237959
+    ],
+    "seed": 28,
+    "source_task_id": "af779dcb137ee7ba79e4754d37db01a257fdd2d1f025bed9b8fb63d9060e9105",
+    "status": "VALID",
+    "task_id": 63,
+    "recipe_sha256": "cde859aa4873815d9dad8dcc68bf06d59c4df75dc07d1ab720c347f958d26235"
+  }
+]

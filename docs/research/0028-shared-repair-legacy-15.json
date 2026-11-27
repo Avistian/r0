@@ -1,0 +1,62 @@
+{
+  "archive": "0028-shared-repair-legacy-15.zip",
+  "bytes": 46224,
+  "sha256": "aa4fffb46265a383a9945da01ef3ff801c5f29d37452719f8aa089ab48c85550",
+  "files": [
+    {
+      "path": "legacy/legacy_cases/causal-preferences-v1_redirection_multiclass_28_50.json",
+      "bytes": 33653,
+      "sha256": "0a5db6043987ac6e460395a4dbfc073eb3757002370608c6f8e7e171a07b687e"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-preferences-v1_redirection_multiclass_2_10.json",
+      "bytes": 32586,
+      "sha256": "cd379e123a588b543ee25f9584406ca3b47ee853e1ebd3e64b77f57e6104ad44"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-preferences-v1_redirection_multiclass_3_10.json",
+      "bytes": 46658,
+      "sha256": "c6c15296133eed56783e9462402f1d746223a5d24169bdb4e4adc9183f4d3371"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-preferences-v1_redirection_multiclass_45_10.json",
+      "bytes": 33840,
+      "sha256": "fd3f2c74419d3ba3482d2bfb27a48ba7f38bd1293725cd44d396debc660bd1f3"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-preferences-v1_redirection_regression_0_10.json",
+      "bytes": 29084,
+      "sha256": "b968380d022f91bdbd2974c5e91fbbe9fe362419884af25f0b0f15f605f6617a"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-preferences-v1_redirection_regression_1_10.json",
+      "bytes": 44860,
+      "sha256": "b431ad2324aa2f7c02eca0e1aa46d82acc565832e6dcda18e76392a2d7f38f4d"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-preferences-v1_redirection_regression_28_10.json",
+      "bytes": 40210,
+      "sha256": "d4d989265b055484a2bb9c5f8e0009b70b222052204cd43b2d774d51f4279d7c"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-preferences-v1_redirection_regression_28_50.json",
+      "bytes": 30645,
+      "sha256": "7578765399969e9bef3eb149201ca6b16e3d943939993e34a57ec5c717f5dbda"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-preferences-v1_redirection_regression_2_10.json",
+      "bytes": 30147,
+      "sha256": "f90d2b5684e3badaf931847c0b4b1232e897a501c9919f37a896647e0cd91c03"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-preferences-v1_redirection_regression_3_10.json",
+      "bytes": 43618,
+      "sha256": "89446e3be6688cf87641590528625c7ac7d8078c196880fe05c81e63ff4dde6d"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-preferences-v1_redirection_regression_45_10.json",
+      "bytes": 31399,
+      "sha256": "e753e7ea32f83736fcb7916aee393799ba0a29788869c27411d694c0e247795e"
+    }
+  ]
+}

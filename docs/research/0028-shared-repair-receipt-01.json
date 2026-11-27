@@ -1,0 +1,12 @@
+{
+  "archive": "0028-shared-repair-receipt-01.zip",
+  "bytes": 9690,
+  "sha256": "860560334f9357a79e63977a1ab0874d5f8ea4f8bb54f6bc0f3571f0cf55b161",
+  "files": [
+    {
+      "path": "receipt/receipt.json",
+      "bytes": 71936,
+      "sha256": "0b895604a8629299e14c389dcb056811f104fc3e239105f26f00d1f299bbe83d"
+    }
+  ]
+}

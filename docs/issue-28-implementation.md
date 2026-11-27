@@ -193,3 +193,31 @@ generator binding/admission and profiles remain required. All wider #28 stages,
 including full source activation weighting, typed states, interventions and actual
 browser/Colab delivery, remain in scope. Smoke/eval-smoke are NOT_AVAILABLE; no
 scientific or full-issue acceptance is claimed. The full goal stays active.
+
+
+## Shared categorical and matrix preference checkpoint
+
+At `639dd2a`, categorical local/global/meta sampling retains named weights, fresh
+or shared distributions, exact mass selection and complete decoding provenance.
+All five matrix families bind controlled fields to retained numerical/categorical
+draws with full parameter accounting. Four profiles expose shared, refreshed,
+local and global matrix preferences through all three topology families and saved
+replay. [Laws, admission, source distinctions and evidence](issue-28-shared-matrix-preferences.md).
+
+Full checks pass **649 tests, one skipped**, including static gates. Independent
+verification passes **167 bounded probes** and **504 exact legacy outcomes**,
+including four failures on both old and new revisions. An initial SCOPED_REJECT
+found loss of a valid positive subnormal category through an unnecessary probability
+view requirement. The repaired construction and decoder preserve the exact mass;
+independent integer and Decimal oracles pass. The rejection, RED/GREEN, final
+receipt and original harness errors remain inspectable. Standards' missing
+publication-path finding is resolved; request-factory duplication is nonblocking.
+
+The unfiltered author census retains **764 valid / 768 attempted** across the four
+profiles, with four complete overflow failures and all five matrix families.
+All **768 recipe identities** reproduce after the repair; this qualifies the prior
+census recipes, not fresh task generation. Backend evidence remains separate from
+browser/Colab/GPU and scientific acceptance. Smoke/eval-smoke are NOT_AVAILABLE.
+Complete source activation selection/calibration, wider graph/network/tree/GP and
+root/noise/weight variants, typed states, interventions and the full workbench remain
+required. The full goal stays active.

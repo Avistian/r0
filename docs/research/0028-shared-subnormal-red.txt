@@ -1,0 +1,16 @@
+...F                                                                     [100%]
+=================================== FAILURES ===================================
+_____ test_positive_subnormal_mass_survives_probability_display_underflow ______
+tests/priors/test_categorical_preferences.py:160: in test_positive_subnormal_mass_survives_probability_display_underflow
+    preference = priors.CategoricalPreference(
+<string>:8: in __init__
+    ???
+src/r0/modules/priors/lib/categorical_preferences.py:84: in __post_init__
+    _ = self.probabilities  # Validate the representable probability view before a choice.
+        ^^^^^^^^^^^^^^^^^^
+src/r0/modules/priors/lib/categorical_preferences.py:104: in probabilities
+    raise ValueError("categorical probabilities underflow; draw was not retried")
+E   ValueError: categorical probabilities underflow; draw was not retried
+=========================== short test summary info ============================
+FAILED tests/priors/test_categorical_preferences.py::test_positive_subnormal_mass_survives_probability_display_underflow
+1 failed, 3 passed in 1.02s

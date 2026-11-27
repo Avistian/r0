@@ -1,0 +1,299 @@
+{
+  "source_head": "47630e8a44268622a4fa9ab352ef4167a3458b4d",
+  "script_sha256": "c7a798146e76e774c945005f08802bcd5180807a24ed5baaace1b9cfeed4a794",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "PYTHONPATH": "/tmp/r0-28/src",
+    "python": "/home/avist/Projects/r0/.venv/bin/python"
+  },
+  "filter": "none",
+  "reconstruction": "Concatenate failed-record parts in order without separators; verify bytes and SHA256. Successful raw recipes/archives remain local; headers retain recipe hash and reproducible profile/seed/task identity.",
+  "profile": "causal-refreshed-matrices-v1",
+  "attempted": 192,
+  "valid": 189,
+  "headers": [
+    {
+      "path": "0028-shared-headers-refreshed-01.json",
+      "bytes": 10678,
+      "sha256": "fc4a443c498a20d0d3c2ec7f9e0bb81b4aa63e858e20465c72ab42d4d6f672dc",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-refreshed-02.json",
+      "bytes": 10737,
+      "sha256": "72c904f5dd79e07a4b4a0cfc6658176485ea9e2b26f1663b4c17faa7b55a14e2",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-refreshed-03.json",
+      "bytes": 10663,
+      "sha256": "33dfd61be47909804f0255fec8faf962ecc1055e25692b11b13a4e3e537f2175",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-refreshed-04.json",
+      "bytes": 10740,
+      "sha256": "87ce67e05685eaa71f8c724f882ef4f54c4165fae3a56cfd30f53d7c29e5466f",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-refreshed-05.json",
+      "bytes": 10642,
+      "sha256": "7476d7fc51ba62095733f7b57ca17396747bd142866f0792b1c06503a79790a4",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-refreshed-06.json",
+      "bytes": 10674,
+      "sha256": "4c78843f760d0363632d5a9ad28910b511775fedfdc2836be99d60054bd5bd5d",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-refreshed-07.json",
+      "bytes": 10517,
+      "sha256": "0f5a32e01d84fd4235320c0a5c63ed9cb90966b097e496131472831bab6303b8",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-refreshed-08.json",
+      "bytes": 10496,
+      "sha256": "ecc903f364d217390f7b229af07472678b47df1539f152795db966bf7cbe0345",
+      "records": 24
+    }
+  ],
+  "failed_records": [
+    {
+      "family": "forward",
+      "task_id": 18,
+      "bytes": 197007,
+      "sha256": "e8239028b51e0048da3d364a29796808bb6e4d48d92f210d8f1efc4eedc88599",
+      "parts": [
+        {
+          "path": "0028-shared-failed-refreshed-forward-18-01.txt",
+          "bytes": 18000,
+          "sha256": "c9e8d18440ef6ad4a5a184a197c9d378fcd7d4ae981014bfdad84d4ef7884d9c"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-18-02.txt",
+          "bytes": 18000,
+          "sha256": "5c4fd948d00c00afed95dce4493708e25d682b8fedf64e154f9cf3e700442a0e"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-18-03.txt",
+          "bytes": 18000,
+          "sha256": "2daae41594feb7ec4ae8c9bcbdff63a88ce688676fb14d19aa9a2efb4a15c90a"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-18-04.txt",
+          "bytes": 18000,
+          "sha256": "28f118a7254a9695f23e7dc23b08a9ba30ca1d5f8971d6e19f29b81f01b8f15d"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-18-05.txt",
+          "bytes": 18000,
+          "sha256": "fb08b542503f15e06ad1a68ea9fdadcb05ddbf419cd6f2d792a8da92b8bf35e7"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-18-06.txt",
+          "bytes": 18000,
+          "sha256": "5ed41eafcf49375a611a8b809cc64e63d357edc2b49bc988574a8b8af3c0e3a6"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-18-07.txt",
+          "bytes": 18000,
+          "sha256": "7700ad9fc23b6a2ecf2c82caad648ee5fa4b772045fc6e8974904d306b556245"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-18-08.txt",
+          "bytes": 18000,
+          "sha256": "927ba9e288db1201b16b8c125e02dc9eba87c5cdd2604613e33d843f560a1b23"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-18-09.txt",
+          "bytes": 18000,
+          "sha256": "0af1b59d2cf8d2b9606a33a033cf7cb4dace625b9da4cc11bbe2a192f6816371"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-18-10.txt",
+          "bytes": 18000,
+          "sha256": "81f6a85780c93163e45af7e5d1e839ab60a155953fc01eafca157814927986d0"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-18-11.txt",
+          "bytes": 17007,
+          "sha256": "16c5b2337671759fb18b33b6e1f662701cf44b892d86e2d7e7bb0c274eb2cde6"
+        }
+      ]
+    },
+    {
+      "family": "forward",
+      "task_id": 63,
+      "bytes": 186295,
+      "sha256": "8f8998ce464f9e0f4340dd662c191ebe7442585446a195d77dfaaa0a79a51998",
+      "parts": [
+        {
+          "path": "0028-shared-failed-refreshed-forward-63-01.txt",
+          "bytes": 18000,
+          "sha256": "0ca71bc64ec862784b6a67933317594fad6074d15086ea20af178aa24420b1f7"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-63-02.txt",
+          "bytes": 18000,
+          "sha256": "ef63ab5c36a41b0f3ac6515afcb87ee5301afd4d67f21c9bf5f7cc9b7a27d51c"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-63-03.txt",
+          "bytes": 18000,
+          "sha256": "73395d9b09246adbc338894f7a12d0a4f5fc02e6cfd1c34fbed7dbfcfec8a7cc"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-63-04.txt",
+          "bytes": 18000,
+          "sha256": "20fad886b7d7651ac98300bc21bbcd6b41c1fda716a37c92ba9247f1ff2c71b1"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-63-05.txt",
+          "bytes": 18000,
+          "sha256": "f031621306ab82601d99d89cfa9db7bfc410838bd4247d1665f04e73d3f2b663"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-63-06.txt",
+          "bytes": 18000,
+          "sha256": "d1f4f87c0e8bbc349d90a5781ca0965d0a3085ed51852b52cd603ac0e2037766"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-63-07.txt",
+          "bytes": 18000,
+          "sha256": "46cbeae4fa3bec60c593660f6c65e388d09974df642b6312bd555ad01710f92e"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-63-08.txt",
+          "bytes": 18000,
+          "sha256": "7a4e7cfbaead37f2f8eea217d0951025d630afaf2e9ef91ec93cc23d376a54ee"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-63-09.txt",
+          "bytes": 18000,
+          "sha256": "85a2edaaea58a13c7eeebff3d6dd7904c748e4ff17df4aa5d3c4ef50be6204a0"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-63-10.txt",
+          "bytes": 18000,
+          "sha256": "7829c9a3366ece661911de846630cd0b579884a232bb82746f8b8c165f891b50"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-forward-63-11.txt",
+          "bytes": 6295,
+          "sha256": "2e9536fec3b8bb5df0fdf438d5786b39d0857de3101c7cfe0ae997f2529fd382"
+        }
+      ]
+    },
+    {
+      "family": "layered",
+      "task_id": 38,
+      "bytes": 109832,
+      "sha256": "d058ba726a01fb67cf6dccc75f37291d5f023c7e629b866e374bc8085c5832c2",
+      "parts": [
+        {
+          "path": "0028-shared-failed-refreshed-layered-38-01.txt",
+          "bytes": 18000,
+          "sha256": "cde3d6e8f30885db466ea60dd2d90f4e060c3588b9f474ef0066e6ef3f28e38b"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-layered-38-02.txt",
+          "bytes": 18000,
+          "sha256": "7d3ac0c81eb11638beae83918498e861f285ad53a3579d798c6c18b4ce95772c"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-layered-38-03.txt",
+          "bytes": 18000,
+          "sha256": "a4ff6a9740a4fde02861fafef75cfe40cb0b490f9f9179435b6b71e1688cd5b2"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-layered-38-04.txt",
+          "bytes": 18000,
+          "sha256": "67eb92e07e684fc8ef24629d2bbda8f6de190708231da45eeac02b21852dc694"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-layered-38-05.txt",
+          "bytes": 18000,
+          "sha256": "40ddad02c60930b5a5fd154998abc0735e181ffadabf37eab81e43068fa33be2"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-layered-38-06.txt",
+          "bytes": 18000,
+          "sha256": "83294714e16d6572ac9904bb644a600328bc2cd75ec289791c44a678d81ad9ff"
+        },
+        {
+          "path": "0028-shared-failed-refreshed-layered-38-07.txt",
+          "bytes": 1832,
+          "sha256": "88ef7db13fc65991204e9c0d8e31a5f168b3c694f9eedd0150b1adb4fad25e2d"
+        }
+      ]
+    }
+  ],
+  "raw_files": [
+    {
+      "name": "forward.json",
+      "bytes": 383,
+      "sha256": "b34efb15bb89791214cc8afddf5a8475ea9f166a8cf8fb111acef1e21f12f287",
+      "availability": "published summary"
+    },
+    {
+      "name": "forward.jsonl",
+      "bytes": 5281387,
+      "sha256": "5406145b2d41ae2424c2a55064bbbf6be6253e44c091e9e7c616a07f591e18c9",
+      "availability": "LOCAL_ONLY"
+    },
+    {
+      "name": "forward.zip",
+      "bytes": 10052001,
+      "sha256": "6655c7c55bbcf4b0188bb3f14c0d6ee8f0844ba1c2bbd6cb631910a28ae9850e",
+      "availability": "LOCAL_ONLY"
+    },
+    {
+      "name": "layered.json",
+      "bytes": 386,
+      "sha256": "2a0a278a1a9eec394b657ecea517cc5a74e63de3ba60da227d293163d0c19019",
+      "availability": "published summary"
+    },
+    {
+      "name": "layered.jsonl",
+      "bytes": 2998697,
+      "sha256": "b793d88369ca140698de1e0082848e4e5a73c96ad193f08542ddc42c56035a56",
+      "availability": "LOCAL_ONLY"
+    },
+    {
+      "name": "layered.zip",
+      "bytes": 6037608,
+      "sha256": "1549c19564e10122bff15c4c5d79596ff7daa870ef2a0c2bfb52db54d725c97c",
+      "availability": "LOCAL_ONLY"
+    },
+    {
+      "name": "redirection.json",
+      "bytes": 391,
+      "sha256": "1b0f012ad011b9f711c2381cd85f77a85ddb1101817b705d9b7069a3e1a4d80e",
+      "availability": "published summary"
+    },
+    {
+      "name": "redirection.jsonl",
+      "bytes": 6592550,
+      "sha256": "513490fcb81eef9e129f0ae4d95865d53bf64c2b188cdcd27853621ded151fbe",
+      "availability": "LOCAL_ONLY"
+    },
+    {
+      "name": "redirection.zip",
+      "bytes": 13455773,
+      "sha256": "5d7732289ffa794439b6cd2a7989dbf0cb753381620767fc2a3a2dfd8c8a6938",
+      "availability": "LOCAL_ONLY"
+    },
+    {
+      "name": "summary.json",
+      "bytes": 8864,
+      "sha256": "99c0b99c2e1ea867359ceb9596c10f3ee79766f94bd38f89ab70e2278cc0a61e",
+      "availability": "published summary"
+    }
+  ]
+}

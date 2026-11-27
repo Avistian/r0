@@ -1,0 +1,212 @@
+{
+  "archive": "0028-shared-repair-matrices-09.zip",
+  "bytes": 174619,
+  "sha256": "0deff3a2f414c99a5f49c41b329574e3f23ca94d51f302274582bdbdbc7beb82",
+  "files": [
+    {
+      "path": "matrices/meta-shared-uniform-importance-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 3399,
+      "sha256": "ce2fbc829d1ed77a94c71b815157ac6826e8cd4afc33719d04f7852bfa6d6548"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-importance-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 22493,
+      "sha256": "56ae7dd8cf8a269236dc2399fec07d170f9f2be71f34e370cd86cac53fb683b9"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-importance-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 15740,
+      "sha256": "c4e280bb84d1b67e880ad698ffb7e08b4f480e3a3da102b6ac08c1e1c51d522c"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-kernel-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 7013,
+      "sha256": "53f97bbe541dc9b6ed6ef96f7d31a526ba4cf5b682ce966b03e1f218e5a6022a"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-kernel-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 52866,
+      "sha256": "12aadc560d9290aaf1089eb92ae353e2dc0e50cd6e236bc08da2ecc0c7c4914a"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-kernel-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 47420,
+      "sha256": "9531b5fa6b5ffbdff3a268006118ed3769184271fe375eca6575cc11284c5e8a"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-kernel-gaussian-random-covariance-gaussian-arithmetic.json",
+      "bytes": 7022,
+      "sha256": "65710f4db1e5769e3f79294ff12f1350dfaf98b36c3ca302834446cd777bf4d0"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-kernel-gaussian-random-covariance-gaussian-generated.json",
+      "bytes": 42877,
+      "sha256": "888bc56b832d9811d97d52220571768c0fa838b8b3d91aad7164d60352584f9c"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-kernel-gaussian-random-covariance-gaussian-recipe.json",
+      "bytes": 35389,
+      "sha256": "5ac37335d34a0a506b779ee034668f94da09b21bd61523d44f80813bc108c4bd"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-kernel-gaussian-random-covariance-uniform-arithmetic.json",
+      "bytes": 7037,
+      "sha256": "78fd377296c73df662df316d47fb6c14f2356a99274b2aa1d0b38884a5e32adb"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-kernel-gaussian-random-covariance-uniform-generated.json",
+      "bytes": 42797,
+      "sha256": "533d29290fda67727aab6ba9b608d59d369cabdcc60683f708cd2b8e30d833af"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-kernel-gaussian-random-covariance-uniform-recipe.json",
+      "bytes": 35355,
+      "sha256": "51a7ada72bb6229bdd69442640b4d1fa0f13763cc441ab16e3a982bbaecca659"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-factorized-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 6741,
+      "sha256": "7a3023101912a6b8bc549e4aff478392efad979f18b9862b55c1333f60e7ce9e"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-factorized-gaussian-mixture-gaussian-generated.json",
+      "bytes": 30987,
+      "sha256": "387adaf39cce1ebf0ed07a2600e9945a54bca549c1a6cf464f05bd5154a07334"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-factorized-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 23805,
+      "sha256": "a16ecae9c3bbb5997b193465222d22cc3fc548e9683338a48e49f54a67c3da2a"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 6650,
+      "sha256": "33bb798941dc7ad489c761de2ba4366fee9b0ed22999b2e0737aa3dfb580d217"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 29405,
+      "sha256": "281f6c0cd38dfbe01dd35c4ac7903458bdd0d4521b7eb666c7accd3b005d1f08"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 22183,
+      "sha256": "d62dcd53fc12f0be9b2e23651a2042ed5086de12563c55064b66fb539b043e0e"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-importance-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 6812,
+      "sha256": "3afac8e5df782f143c564c20eda5d2ea512b2bc06c5112027c51fc21835f3c02"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-importance-gaussian-mixture-gaussian-generated.json",
+      "bytes": 31462,
+      "sha256": "89a302cb878f3b1313f245c35824c96e81169bc32f0b5bacba62bf3c3484ea98"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-importance-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 24572,
+      "sha256": "48c64970200a9d6b0598d04cad8f3fc5859e225a6fcb81094b42611229d55a3b"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-kernel-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 10564,
+      "sha256": "c63a04ec9fc6fd1f0a9b364e187e0a8543d9c7bac97a00f7076fc11bacc0e498"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-kernel-gaussian-mixture-gaussian-generated.json",
+      "bytes": 50387,
+      "sha256": "cb087adfef60e0bb1263e9c112bc3aba815b4ea9d094efde877f7b4886927b85"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-kernel-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 43561,
+      "sha256": "e159b3525c2daa256dc644cb94a65b511bbcfd29a6c1370b39ff3391d31133b4"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-kernel-random-covariance-gaussian-arithmetic.json",
+      "bytes": 10435,
+      "sha256": "4d58bb04ad88e27e55c293b819a2f4a655211804740ffd075ff36b272b8b793c"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-kernel-random-covariance-gaussian-generated.json",
+      "bytes": 52312,
+      "sha256": "a129cc7482ec3bbc8f50481796ef6be9c1a9dfc6aa85616cb3ab8b9517445c7a"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-kernel-random-covariance-gaussian-recipe.json",
+      "bytes": 45740,
+      "sha256": "c27f9348589b9733fa387a79fec7644b1d03b255d0259cff78e2cf69bf4c3e85"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-kernel-random-covariance-uniform-arithmetic.json",
+      "bytes": 10340,
+      "sha256": "bfeed448b2b5b22fdd9fdec95033e1625df086e4d04df294756ab8e2fdc1239a"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-kernel-random-covariance-uniform-generated.json",
+      "bytes": 52284,
+      "sha256": "f1a16ba4bf9bc4dc64f1faf8648199a15f6620d6629bddf36f019ef833e56c9c"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-transformed-kernel-random-covariance-uniform-recipe.json",
+      "bytes": 45734,
+      "sha256": "52c45c3e4b5c03cb5556c2c70ac066d14d3d6785788669dbdc0066fcb141bddf"
+    },
+    {
+      "path": "matrices/outcomes.json",
+      "bytes": 21608,
+      "sha256": "5655158e67c36f7c603c2d76f78180d7889bc178d8662c4ab941c4884bb33f73"
+    },
+    {
+      "path": "matrices/summary.json",
+      "bytes": 115,
+      "sha256": "b94055fbaf3bc21fe213a2c395bfb26b5a66f21ed2b02504b545260614f6bf75"
+    },
+    {
+      "path": "matrices/tamper-absent-input.json",
+      "bytes": 32807,
+      "sha256": "937eaf5055ecdfa57a68eb8d5c4830da4c2d86b902aceee52a798a7cbd5e7585"
+    },
+    {
+      "path": "matrices/tamper-drop-input.json",
+      "bytes": 32567,
+      "sha256": "ffcf61e1733b2695e7ba16ca81aae5e0ab442a67d987f161a9e4fa6782b9bfb1"
+    },
+    {
+      "path": "matrices/tamper-duplicate-input.json",
+      "bytes": 33032,
+      "sha256": "188a2315ccb8aa68e15b469976f3012ffb98ed69f52371d5bb619f74c55d6c07"
+    },
+    {
+      "path": "matrices/tamper-orphan-input.json",
+      "bytes": 33118,
+      "sha256": "82961de0a8db7ac49c8459ec68df320fe626544f675cae07cc39d54f858668ea"
+    },
+    {
+      "path": "matrices/tamper-path-input.json",
+      "bytes": 32802,
+      "sha256": "4afce68bd7b7ade35c4553d1a0236d2265eabdee077d4a2a3347e66bf6026485"
+    },
+    {
+      "path": "matrices/tamper-policy-input.json",
+      "bytes": 32801,
+      "sha256": "ee0f2b3cfd26c58a6deaac9e59145eff314b260ee7d937c64735bbec3d852746"
+    },
+    {
+      "path": "matrices/tamper-prior-relabel-input.json",
+      "bytes": 32799,
+      "sha256": "5d5b58ba3d06dca698537460f52d5dad0e87e0a3ecdab2af17978c55affa3905"
+    },
+    {
+      "path": "matrices/tamper-request-relabel-input.json",
+      "bytes": 32760,
+      "sha256": "1074422f116c195ae2dd7079dd81021888859622906f0213008d870d1abdddea"
+    },
+    {
+      "path": "matrices/tamper-value-input.json",
+      "bytes": 32802,
+      "sha256": "dd6410e5995d291c618f0cc048854956c361f8965ddbe24381b369e2ecc35edc"
+    }
+  ]
+}

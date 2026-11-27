@@ -1,0 +1,62 @@
+{
+  "archive": "0028-shared-repair-legacy-09.zip",
+  "bytes": 462429,
+  "sha256": "d98ad0de667869207a8cf009ee3abec8964def382c563caaab2008864227e276",
+  "files": [
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_multiclass_28_10.json",
+      "bytes": 608694,
+      "sha256": "b6c47d920b9dfb0558953332e860c69652c4d6780ec001a5ef0910be0fe0817d"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_multiclass_28_50.json",
+      "bytes": 34154,
+      "sha256": "1d4adaecb3695d9f89a868aebeef12ced83d49a213196f5d7d11487bd86d8b0e"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_multiclass_2_10.json",
+      "bytes": 57462,
+      "sha256": "5880d2c2151aa06094f0f9e396aa0d09a5b480c1be8763b96841b61f1d006265"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_multiclass_3_10.json",
+      "bytes": 71003,
+      "sha256": "caaffb1ca4c4680456e15b51f952cd8c22d23752eaf22c22721e623b4631fd1e"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_multiclass_45_10.json",
+      "bytes": 28992,
+      "sha256": "6a4b8c6878d7c3c8f7c59cd82d12847e7cf58231bbc0d377ac2ad54d5f1f82f5"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_regression_0_10.json",
+      "bytes": 556876,
+      "sha256": "981a1dbb6c9429d9b9576b28f104454a277dd5184369f140b8bad756bc029181"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_regression_1_10.json",
+      "bytes": 220575,
+      "sha256": "0cbd82ce91455de7264ce8cd9e0aa89ca41f67628126bacfdcc859054c99ab77"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_regression_28_10.json",
+      "bytes": 490709,
+      "sha256": "38d143d333b2e3ba0c947419faa2914815c1fd0b383c57fa87645c6ccf238a6d"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_regression_28_50.json",
+      "bytes": 32307,
+      "sha256": "8908bac48120ba55b97d153b49d05f9d6568f62055070448b6c1349b696f81f6"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_regression_2_10.json",
+      "bytes": 39559,
+      "sha256": "52f2ceb74797d4c0c4894dd648b1011268a7a24d524db2103dde7e554e554057"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_forward_regression_3_10.json",
+      "bytes": 53753,
+      "sha256": "4f3fd594e57eadbee80173fa9a29a15c155b3c3e11279596c17480b8820b0c30"
+    }
+  ]
+}

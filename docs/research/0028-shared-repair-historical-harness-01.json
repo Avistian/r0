@@ -1,0 +1,62 @@
+{
+  "archive": "0028-shared-repair-historical-harness-01.zip",
+  "bytes": 2199,
+  "sha256": "9c2115cf8d306933dfb80a39ac0976c3eff91e68592d6492d7ad7b924ddc7cf2",
+  "files": [
+    {
+      "path": "boundaries-final.log",
+      "bytes": 317,
+      "sha256": "65961c3aa5c5e8eb836099cfee9617a6a86f166c3e30d9bdf99015ebadf1a918"
+    },
+    {
+      "path": "boundaries-retained.log",
+      "bytes": 317,
+      "sha256": "b24e46d326abd835985bc37a38243268b29e1c43e99d8388a2ca0dc00116b5b7"
+    },
+    {
+      "path": "boundaries-verified.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "extreme-reject.log",
+      "bytes": 453,
+      "sha256": "dde59bd07f415c129d63bebadf4eb3d4baed6bc69437b188838504e9f691533d"
+    },
+    {
+      "path": "legacy-base.log",
+      "bytes": 35,
+      "sha256": "6152c901de84d9794ed2738212aed504fbd5fd91364e6b5846c45bcadc56b11a"
+    },
+    {
+      "path": "legacy-candidate.log",
+      "bytes": 35,
+      "sha256": "6152c901de84d9794ed2738212aed504fbd5fd91364e6b5846c45bcadc56b11a"
+    },
+    {
+      "path": "matrices-final.log",
+      "bytes": 436,
+      "sha256": "7df1de505ed0a6f9360b8de27e7dff9860f67ffa91c511cd3e2b7d3dd6be3f81"
+    },
+    {
+      "path": "matrices-retained.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "numeric-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ruff-check.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "ruff-format.log",
+      "bytes": 26,
+      "sha256": "f114d83b30c5c657ee43a847a45bafccaea255d82673feb87c26d252c61e29c1"
+    }
+  ]
+}

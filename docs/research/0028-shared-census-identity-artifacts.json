@@ -1,0 +1,108 @@
+{
+  "name": "outcomes.jsonl",
+  "bytes": 230156,
+  "sha256": "a0b4ae288c2ce41384ac7b3846da8e226252ea8f9f06ab91ddbea0e9553fe075",
+  "parts": [
+    {
+      "path": "0028-shared-census-identity-01.txt",
+      "bytes": 11910,
+      "sha256": "fb270fc205f7a6630cd28364ae573b6a1b07d3b807c250761d6f2fd1fbfa6714"
+    },
+    {
+      "path": "0028-shared-census-identity-02.txt",
+      "bytes": 11910,
+      "sha256": "ce580ded6db367f0c2537d3267afbd2b6f7438bde7b47446f9a73f4374a3e9f9"
+    },
+    {
+      "path": "0028-shared-census-identity-03.txt",
+      "bytes": 11920,
+      "sha256": "f878bb6d6371c761a0e0fd5c31e1912e5b0f8bcd8310ff6c855a245718ddb8d9"
+    },
+    {
+      "path": "0028-shared-census-identity-04.txt",
+      "bytes": 12038,
+      "sha256": "1884a4b4141597c4dc9ecd2d6a538b6b5b3e8cdbdd13ff9707aa59188c637178"
+    },
+    {
+      "path": "0028-shared-census-identity-05.txt",
+      "bytes": 12064,
+      "sha256": "47d55c0a48804fc871195a92103303ac8dee1502f1ad808eacb29d6ae1325a0d"
+    },
+    {
+      "path": "0028-shared-census-identity-06.txt",
+      "bytes": 12039,
+      "sha256": "50632f8f7707a87b5ed16e85823b58bbdfaf6cf27feba6a47b7d099c45cd7737"
+    },
+    {
+      "path": "0028-shared-census-identity-07.txt",
+      "bytes": 12031,
+      "sha256": "cf44d06eb9c61f79004806fdc5f588c04dcbeb8a02df254e1567b0c08686da5b"
+    },
+    {
+      "path": "0028-shared-census-identity-08.txt",
+      "bytes": 12041,
+      "sha256": "4626a215ddad7f9577bbd361fad87678bf6736f3ffca81ed534ec9249dfc29a6"
+    },
+    {
+      "path": "0028-shared-census-identity-09.txt",
+      "bytes": 12190,
+      "sha256": "c05f685c444ecf9bfd30664485c7103f94d0d1f85595582372cb2ed1f210780b"
+    },
+    {
+      "path": "0028-shared-census-identity-10.txt",
+      "bytes": 12062,
+      "sha256": "04fa7ec937585dde3e5d8afd42c9ab915e77f8778ff47803ced4e49d6183c158"
+    },
+    {
+      "path": "0028-shared-census-identity-11.txt",
+      "bytes": 11880,
+      "sha256": "6ff619f243a8ed9a34b3697f22bde627b95d76d88590af5a02ebd2757c000342"
+    },
+    {
+      "path": "0028-shared-census-identity-12.txt",
+      "bytes": 11870,
+      "sha256": "c356541c62c743faef17280ba1d78bfd0ac3e9a3d61b3fda1fdc070ee8cd9631"
+    },
+    {
+      "path": "0028-shared-census-identity-13.txt",
+      "bytes": 11904,
+      "sha256": "1477f52952a75f481e6c19aa33236b77d9cde0f7686b7021aa1424c3197e6f13"
+    },
+    {
+      "path": "0028-shared-census-identity-14.txt",
+      "bytes": 12038,
+      "sha256": "9b71eee02c55324341920a87bc461c0266059a7aa497681f873532f928d988c4"
+    },
+    {
+      "path": "0028-shared-census-identity-15.txt",
+      "bytes": 11958,
+      "sha256": "cd66fbc339f76d555badec24abf2cf8ef385518a100fc2d9beecda917b03bb01"
+    },
+    {
+      "path": "0028-shared-census-identity-16.txt",
+      "bytes": 11920,
+      "sha256": "060b0dd9dc406c7bcda9e2fff45d1b60fe1afeed7f7a41ef418627707bb1c94b"
+    },
+    {
+      "path": "0028-shared-census-identity-17.txt",
+      "bytes": 11910,
+      "sha256": "4cfe0781c527191c6507ebb55fa0da8f7a3da0b390f479c4d1702f4e72cce20d"
+    },
+    {
+      "path": "0028-shared-census-identity-18.txt",
+      "bytes": 11974,
+      "sha256": "0be8d892e45a54944846a4342684f9480b7749a8eaf156b982ad9936bc4bcb7d"
+    },
+    {
+      "path": "0028-shared-census-identity-19.txt",
+      "bytes": 12081,
+      "sha256": "c4a4ab4fc378a6e0fd22b00297ad71902d76dc5704ea8e83cd45f83f5212f85e"
+    },
+    {
+      "path": "0028-shared-census-identity-20.txt",
+      "bytes": 2416,
+      "sha256": "d56875ca0e8b9b59137606eaa301ae31eaf0ec342ac442fe7e64fd795279391e"
+    }
+  ],
+  "reconstruction": "Concatenate listed parts as bytes in order. These are recipe identity checks, not fresh task-generation outcomes."
+}

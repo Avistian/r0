@@ -1,0 +1,129 @@
+{
+  "source_head": "47630e8a44268622a4fa9ab352ef4167a3458b4d",
+  "script_sha256": "c7a798146e76e774c945005f08802bcd5180807a24ed5baaace1b9cfeed4a794",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "PYTHONPATH": "/tmp/r0-28/src",
+    "python": "/home/avist/Projects/r0/.venv/bin/python"
+  },
+  "filter": "none",
+  "reconstruction": "Concatenate failed-record parts in order without separators; verify bytes and SHA256. Successful raw recipes/archives remain local; headers retain recipe hash and reproducible profile/seed/task identity.",
+  "profile": "causal-local-matrices-v1",
+  "attempted": 192,
+  "valid": 192,
+  "headers": [
+    {
+      "path": "0028-shared-headers-local-01.json",
+      "bytes": 10598,
+      "sha256": "237abb20b5d7173e877d05b433206db23abb2abb932b4629167edf8b089fcfb9",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-local-02.json",
+      "bytes": 10795,
+      "sha256": "22afa675ff977b4f1f373c17b8bbc506b94a4b937be958dfa29458b95defcea3",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-local-03.json",
+      "bytes": 10809,
+      "sha256": "0b778ccabcc91ed2d30d3d16b19725333f28bb2d6c47ce26ebedef511c103d23",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-local-04.json",
+      "bytes": 10746,
+      "sha256": "4e9f8d0d28adb12c6ff2bdba2697bc5fc54a4721a653771b62d4f90b5d3d3cc1",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-local-05.json",
+      "bytes": 10879,
+      "sha256": "1c50e7eb0c0351335630e7a6e08443d08abe647103b55237bf89f2714866a9bb",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-local-06.json",
+      "bytes": 10505,
+      "sha256": "bebeacccc44719aa05a087d70a9b8047fb4509f9eb17ee7d26a5c7722e714a1b",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-local-07.json",
+      "bytes": 10444,
+      "sha256": "4ed789da8cc1879b8d98dd415b223b0bb0730979e211e641dc327962a5eb9e07",
+      "records": 24
+    },
+    {
+      "path": "0028-shared-headers-local-08.json",
+      "bytes": 10618,
+      "sha256": "736c3d6979ab0159ae8f35b76b63489ff333907cd1fceb4fd3106b1e02a50243",
+      "records": 24
+    }
+  ],
+  "failed_records": [],
+  "raw_files": [
+    {
+      "name": "forward.json",
+      "bytes": 390,
+      "sha256": "b6db38dfcd0a42ca66bdb9beb76b9ed7dc4c23a260da28ad266229bf5d2382a1",
+      "availability": "published summary"
+    },
+    {
+      "name": "forward.jsonl",
+      "bytes": 3738900,
+      "sha256": "eaa0c88946afceb1301384d04045fd5a9c79e3a91eae61fc7ae0b207ee9f22cf",
+      "availability": "LOCAL_ONLY"
+    },
+    {
+      "name": "forward.zip",
+      "bytes": 7750995,
+      "sha256": "9f19af8564bed397bbc3e17bb1bba1b5b943e5033e3599dfcc5b6f3c8037be1d",
+      "availability": "LOCAL_ONLY"
+    },
+    {
+      "name": "layered.json",
+      "bytes": 390,
+      "sha256": "ba21b9db9a091a10c7d7de9723c8bc324b1fe5567112e6c6a233c781a0d41cba",
+      "availability": "published summary"
+    },
+    {
+      "name": "layered.jsonl",
+      "bytes": 2611274,
+      "sha256": "15a37dd6f02f85abd508ec843fed1840bf9701b719f58f442b4f45660e9685f9",
+      "availability": "LOCAL_ONLY"
+    },
+    {
+      "name": "layered.zip",
+      "bytes": 5494298,
+      "sha256": "d7c4493e3546459c15b3c433a870b1513438eea89fb8f8f8433516a3f0b183af",
+      "availability": "LOCAL_ONLY"
+    },
+    {
+      "name": "redirection.json",
+      "bytes": 390,
+      "sha256": "d8ffed43d2a247018e690e45e4a5500d4da4ddb23ef68701eca6c675f3e8b790",
+      "availability": "published summary"
+    },
+    {
+      "name": "redirection.jsonl",
+      "bytes": 4020663,
+      "sha256": "5b4e87007aeff2e3e9122fccacee92f48d6aed9b833a52e1845ec05b1eaa6db0",
+      "availability": "LOCAL_ONLY"
+    },
+    {
+      "name": "redirection.zip",
+      "bytes": 8334294,
+      "sha256": "2b74556292d12fd9d742fe8f6515045658ec0315def44119360dbae90055fd17",
+      "availability": "LOCAL_ONLY"
+    },
+    {
+      "name": "summary.json",
+      "bytes": 8786,
+      "sha256": "b60cb02bc2b7b3742b16fa3355c0737dc75c1a3df4ac880d3d0c8687a256951b",
+      "availability": "published summary"
+    }
+  ]
+}

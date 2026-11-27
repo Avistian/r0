@@ -1,0 +1,117 @@
+{
+  "archive": "0028-shared-repair-legacy-11.zip",
+  "bytes": 496281,
+  "sha256": "748f62ec2121a033cfc3c2f5c12814d7184c4575d3959118cdf44a0ef970eb8d",
+  "files": [
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_binary_1_10.json",
+      "bytes": 128865,
+      "sha256": "4544a0689794a4f2af792f8791c4231e3ba08559c0290832fe37483eeb77cf37"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_binary_28_10.json",
+      "bytes": 144315,
+      "sha256": "18a49ef24e1e8110371db350c009d046056bf00a9ad58d472b902cd931b16c8a"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_binary_28_50.json",
+      "bytes": 64114,
+      "sha256": "2bed0fe576157995663e9d28ef41a2339ead0e75daa8244cd1d232d9a5b79f87"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_binary_2_10.json",
+      "bytes": 120481,
+      "sha256": "fcbf17fae58da6dfda412531a280c9a65825b62209231bbda4852ca0eaef79b9"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_binary_3_10.json",
+      "bytes": 88839,
+      "sha256": "52dc0258041e3358c4de71254e0403bd7f78de8f784a696548dd6d3a22223955"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_binary_45_10.json",
+      "bytes": 107411,
+      "sha256": "482b22c4c9b9de29567574081472f9c7948347218449b19aeadc22ec352a888d"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_multiclass_0_10.json",
+      "bytes": 111378,
+      "sha256": "cb02108f024501c02f5b22dd6432801ee5abb0f5ad8db364da8356a3fd7b375f"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_multiclass_1_10.json",
+      "bytes": 134986,
+      "sha256": "cc39a67d20dcd0bc2f6afb74e299650d0efc2358c6cc42a94030a33d2ccaea11"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_multiclass_28_10.json",
+      "bytes": 146447,
+      "sha256": "b89007f9a8d2ada47fd24935946ebfe1747967bca4b6b67a78ad639daf2d09a9"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_multiclass_28_50.json",
+      "bytes": 70624,
+      "sha256": "018a8f5e73b0fe8b4d6357869674526d8bdc75119247c06f4150489ac1b01d2b"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_multiclass_2_10.json",
+      "bytes": 126163,
+      "sha256": "af05324362b4b68539971d327ef219ef67500bc8d14bb380aca15a28346116b2"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_multiclass_3_10.json",
+      "bytes": 105955,
+      "sha256": "8db80fe0b7f5b5fa764455b5dd7ce70eb6e607f77f966c5df0863cbf745d56de"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_multiclass_45_10.json",
+      "bytes": 119476,
+      "sha256": "565a491effa55ff41b8d4228cbd2708b6aa7a6e7d4740c1540f65693252c7b7c"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_regression_0_10.json",
+      "bytes": 86749,
+      "sha256": "0b9ed621ff02136b877e4c497195b029edee322bd38628890fab5de9c852e8b6"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_regression_1_10.json",
+      "bytes": 128725,
+      "sha256": "c68ea1a0cd6c11e4495f00a114424dace50f805f43728e85c4c99e7f749a58e7"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_regression_28_10.json",
+      "bytes": 144175,
+      "sha256": "a8afbb35f0b9e53bfd517680576fff315fcb19afb75eea9b71a56d9adfb75593"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_regression_28_50.json",
+      "bytes": 63974,
+      "sha256": "d5584cc1b1c7edd346216c8a01b1938a3a1b500d60f1ee0159545245c1d25ad4"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_regression_2_10.json",
+      "bytes": 120341,
+      "sha256": "8c8ac82deb436dda4ad1a08ad2fb3df89cc954c34d5b2fd073be829434ac6aac"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_regression_3_10.json",
+      "bytes": 88699,
+      "sha256": "319e916054f055df3dd65186bc9da2e7f58431392b33d62457f821c607b719a7"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-importance-v1_redirection_regression_45_10.json",
+      "bytes": 107271,
+      "sha256": "294cd1f415e65293b7def7dc93f0af6f84231176594575be94ca5b46fcffd662"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-matrices-v1_forward_binary_0_10.json",
+      "bytes": 81035,
+      "sha256": "750c8c7b6f78172df4d0dc428a9847080772f9be4d333b9eef61becb788dcead"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-matrices-v1_forward_binary_1_10.json",
+      "bytes": 370633,
+      "sha256": "f10238fe77c584766515733a85149a87077df835313feee8618b3a0ff69fd6a3"
+    }
+  ]
+}

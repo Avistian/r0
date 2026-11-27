@@ -1,0 +1,54 @@
+{
+  "scope": "Development RED/GREEN logs including uncommitted test additions; not exact-revision full-suite evidence. RED cases intentionally fail. Final source checkpoint47630e8 is verified separately.",
+  "environment": {
+    "UV_CACHE_DIR": "/tmp/r0-28-uv-cache",
+    "UV_PROJECT_ENVIRONMENT": "/home/avist/Projects/r0/.venv",
+    "cwd": "/tmp/r0-28",
+    "interpreter": "/home/avist/Projects/r0/.venv/bin/python3"
+  },
+  "command": [
+    "python3",
+    "scripts/run_check.py",
+    "pytest",
+    "tests/priors/test_categorical_preferences.py",
+    "--tb=short"
+  ],
+  "logs": [
+    {
+      "slice": "categorical-global",
+      "phase": "red",
+      "sha256": "932bba294281904f6adfa2543d62b5606d2f075096fde8da3a409ab084698223",
+      "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n_ test_categorical_global_reuse_and_local_draws_keep_replayable_choice_contracts _\ntests/priors/test_categorical_preferences.py:13: in test_categorical_global_reuse_and_local_draws_keep_replayable_choice_contracts\n    request = priors.CategoricalParameter(\"matrix\", (\"gaussian\", \"kernel\", \"factorized\"))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   AttributeError: module 'r0.modules.priors' has no attribute 'CategoricalParameter'. Did you mean: 'NumericalParameter'?\n=========================== short test summary info ============================\nFAILED tests/priors/test_categorical_preferences.py::test_categorical_global_reuse_and_local_draws_keep_replayable_choice_contracts\n1 failed in 1.00s\n"
+    },
+    {
+      "slice": "categorical-global",
+      "phase": "green",
+      "sha256": "818471def591c9f64bfe0125b52112f949d00ec9633edcbbf0414328a7f152ef",
+      "output": ".                                                                        [100%]\n1 passed in 1.01s\n"
+    },
+    {
+      "slice": "categorical-meta",
+      "phase": "red",
+      "sha256": "55daf3534508d66ecd8f8695ccdced4370bbd13492e55744542690134b57b835",
+      "output": ".F                                                                       [100%]\n=================================== FAILURES ===================================\n_ test_meta_categorical_preferences_retain_shared_or_refreshed_polynomial_laws _\ntests/priors/test_categorical_preferences.py:47: in test_meta_categorical_preferences_retain_shared_or_refreshed_polynomial_laws\n    shared = priors.CategoricalSampler(np.random.default_rng(2802), default_mode=\"meta\")\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc/r0/modules/priors/lib/categorical_sampling.py:25: in __init__\n    raise ValueError(\nE   ValueError: categorical sampler requires an injected Generator and supported mode\n=========================== short test summary info ============================\nFAILED tests/priors/test_categorical_preferences.py::test_meta_categorical_preferences_retain_shared_or_refreshed_polynomial_laws\n1 failed, 1 passed in 1.01s\n"
+    },
+    {
+      "slice": "categorical-meta",
+      "phase": "green",
+      "sha256": "313103f234941842aac08b7e638591433cdd0e4a9b3f72bff37bfe1b9a3bf00c",
+      "output": "..                                                                       [100%]\n2 passed in 1.00s\n"
+    },
+    {
+      "slice": "categorical-limits",
+      "phase": "red",
+      "sha256": "0bf1eedb0a5212084973f3115b1172e20987b307e5be53707c65e1dd758f6211",
+      "output": "..F                                                                      [100%]\n=================================== FAILURES ===================================\n_ test_categorical_admission_counts_nested_beta_draws_before_using_randomness __\ntests/priors/test_categorical_preferences.py:102: in test_categorical_admission_counts_nested_beta_draws_before_using_randomness\n    with pytest.raises(ValueError, match=reason):\nE   Failed: DID NOT RAISE ValueError\n=========================== short test summary info ============================\nFAILED tests/priors/test_categorical_preferences.py::test_categorical_admission_counts_nested_beta_draws_before_using_randomness\n1 failed, 2 passed in 1.03s\n"
+    },
+    {
+      "slice": "categorical-limits",
+      "phase": "green",
+      "sha256": "aab38a08cfe5b2f9e5b0f811b2d71f2a45fb046dac9322174fe3334dc95cdb08",
+      "output": "...                                                                      [100%]\n3 passed in 0.88s\n"
+    }
+  ]
+}

@@ -1,0 +1,398 @@
+[
+  {
+    "components": 2,
+    "depth": 2,
+    "edges": 14,
+    "family": "redirection",
+    "flags": [
+      "saturated_activation"
+    ],
+    "nodes": 16,
+    "score_std": [
+      0.08079735408570043
+    ],
+    "seed": 28,
+    "source_task_id": "0c03f3a5118e79332a7332cc52e30da1f40d09c546bf395bb28c93d5bcc24139",
+    "status": "VALID",
+    "task_id": 40,
+    "recipe_sha256": "b3affb3a9895a373f25c2291be65ce30cc774f98967cb759a188c4b7a7d54d50"
+  },
+  {
+    "error": "ValueError: nonfinite integer_power activation output; task was not retried",
+    "family": "redirection",
+    "seed": 28,
+    "status": "FAILED",
+    "task_id": 41,
+    "recipe_sha256": "8817b48d97380efddf2c53956aebfa4028c7c5a3d09ec9d63d34f2961825e401"
+  },
+  {
+    "components": 1,
+    "depth": 1,
+    "edges": 17,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 18,
+    "score_std": [
+      0.06966729749961267
+    ],
+    "seed": 28,
+    "source_task_id": "9202dc82cd94b5f39d1779926093879156209c14b99e0a1fd7956d6e7f7783d0",
+    "status": "VALID",
+    "task_id": 42,
+    "recipe_sha256": "08f8495c95ad37cd3cb59043e437373cc518894e6fab81426bd66433477cf020"
+  },
+  {
+    "components": 1,
+    "depth": 1,
+    "edges": 11,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 12,
+    "score_std": [
+      3.8291054224266277
+    ],
+    "seed": 28,
+    "source_task_id": "e033db7b06d64491b4adb632fc72cd58ad8988fba0d4bff57faa584c9d347638",
+    "status": "VALID",
+    "task_id": 43,
+    "recipe_sha256": "58c7b9a94ce1a640c65901f3735f00546dde68b7586b7189e79648e238ae112b"
+  },
+  {
+    "components": 2,
+    "depth": 2,
+    "edges": 16,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 18,
+    "score_std": [
+      0.6098548199183286,
+      0.9037148712733291,
+      1.2899859647863905
+    ],
+    "seed": 28,
+    "source_task_id": "ce8b9974d6c0f73d2e86ad366b5e0459ffeef0328d9ef1231d75dc63bbb5c20b",
+    "status": "VALID",
+    "task_id": 44,
+    "recipe_sha256": "8433460f4e11f3b7ad759f0dc313653e04e2b85113cc0d8d6395e3781af5b082"
+  },
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 4,
+    "family": "redirection",
+    "flags": [
+      "disconnected_target"
+    ],
+    "nodes": 7,
+    "score_std": [
+      0.2855639146741494
+    ],
+    "seed": 28,
+    "source_task_id": "b7092bbe0d7459b40ddaad49ce0ba19b25d099521d55706e614713c423f1756b",
+    "status": "VALID",
+    "task_id": 45,
+    "recipe_sha256": "4d385fa05e61580596f63396b4efd31090f7d0c503029c8d93e42f776bdd856d"
+  },
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 6,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 9,
+    "score_std": [
+      0.1180417002022977
+    ],
+    "seed": 28,
+    "source_task_id": "419639da9ada6323ed90f9b38831b24d789a2ca3aed81d3790da836f0452ee93",
+    "status": "VALID",
+    "task_id": 46,
+    "recipe_sha256": "f71e8c44d32dbb01c561298c58a1fc0d3bcada5687fa9607617b07f41dd61f20"
+  },
+  {
+    "components": 1,
+    "depth": 1,
+    "edges": 22,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 23,
+    "score_std": [
+      0.10044233906016975,
+      0.2554387608172992,
+      0.10338584038587244
+    ],
+    "seed": 28,
+    "source_task_id": "1bf18b108bd7e8fae70f564ae149faf57895839b774df67d79c8c6032758d02f",
+    "status": "VALID",
+    "task_id": 47,
+    "recipe_sha256": "6ef156fc0aa8b581fbb6861f8b8313e63faa88855c9ed680bd967971299ef732"
+  },
+  {
+    "components": 2,
+    "depth": 1,
+    "edges": 9,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 11,
+    "score_std": [
+      0.43010703198346634
+    ],
+    "seed": 28,
+    "source_task_id": "7f7a2e88a2ba7fa7614a4fbe0f271b05e7cddfcb8191983d8564294e314c776b",
+    "status": "VALID",
+    "task_id": 48,
+    "recipe_sha256": "6dc8a7fae4f79c56f72f0b482d812d6b4f9cd9acdc8629ac7d8bbd4254e439ed"
+  },
+  {
+    "components": 1,
+    "depth": 5,
+    "edges": 20,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 21,
+    "score_std": [
+      0.3534153746883431
+    ],
+    "seed": 28,
+    "source_task_id": "8612a41bdb0d6605db0b768e66330a8dbd2cc3092a0cb8a3869c7a6112c95412",
+    "status": "VALID",
+    "task_id": 49,
+    "recipe_sha256": "686ec973813626356d4078f68725f978a45813f2fecfe2af5f80e57b4553a72c"
+  },
+  {
+    "components": 2,
+    "depth": 2,
+    "edges": 16,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 18,
+    "score_std": [
+      0.8262539232252395,
+      0.9465692273375287,
+      1.1334126135085694
+    ],
+    "seed": 28,
+    "source_task_id": "a8d9ee4f6a6ad72d2f2a5b5d3a5d6791b079370e8b8cbe3b56708b1fc6cb5bdd",
+    "status": "VALID",
+    "task_id": 50,
+    "recipe_sha256": "ade54810718cbca90364fdfa17d666f154e25c7082434697f604142f8271dac5"
+  },
+  {
+    "components": 1,
+    "depth": 5,
+    "edges": 18,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 19,
+    "score_std": [
+      2.6399802462032222
+    ],
+    "seed": 28,
+    "source_task_id": "f3d9b62a5a4729d7a1fa20c6827f12a6b2ddced9c841994b52484c1096066a58",
+    "status": "VALID",
+    "task_id": 51,
+    "recipe_sha256": "e21be064c707352c16d759e989ddabd66cf912637661dd5efdb898f2918104ae"
+  },
+  {
+    "components": 3,
+    "depth": 2,
+    "edges": 6,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 9,
+    "score_std": [
+      0.0893444255915423
+    ],
+    "seed": 28,
+    "source_task_id": "3250a9732d00aec5f9dbbf2274d3100c53f5c8a58c08620f802453e8f52e6ae9",
+    "status": "VALID",
+    "task_id": 52,
+    "recipe_sha256": "da53ab8c57173e57358b42c39540f7aab2590d10f95bbe38df3d966b6d2da070"
+  },
+  {
+    "components": 1,
+    "depth": 1,
+    "edges": 9,
+    "family": "redirection",
+    "flags": [
+      "inactive_relu"
+    ],
+    "nodes": 10,
+    "score_std": [
+      0.06163963713930761,
+      0.2772464018207599,
+      0.2985803719451801
+    ],
+    "seed": 28,
+    "source_task_id": "3bb4780bffb1504b785d3be0ab3878ce4b651ee2dde0324ca76d6113237cff62",
+    "status": "VALID",
+    "task_id": 53,
+    "recipe_sha256": "75c76f55aed1e77bf081eefc6d994b8d545c2ade01a729a2298e553a2bad2112"
+  },
+  {
+    "components": 1,
+    "depth": 1,
+    "edges": 17,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 18,
+    "score_std": [
+      0.5965893586076165
+    ],
+    "seed": 28,
+    "source_task_id": "0b90c2b4af3c84683831af13eeeb023f4559ed5f8485874dcab63191529ed61e",
+    "status": "VALID",
+    "task_id": 54,
+    "recipe_sha256": "dad909924345792b732309a8c253abc9ffd932420b74608fdfbb934e64df66d1"
+  },
+  {
+    "components": 1,
+    "depth": 4,
+    "edges": 13,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 14,
+    "score_std": [
+      1.03356085068835
+    ],
+    "seed": 28,
+    "source_task_id": "9e96d44831c801a078c4e7be519744ae57ecbf44a0f69ebf7c10c80d6887ce62",
+    "status": "VALID",
+    "task_id": 55,
+    "recipe_sha256": "ea464a8e69e170a740ea16da4d7f4d02115f30e8b851c898cbc7fba5fcabce5c"
+  },
+  {
+    "components": 1,
+    "depth": 4,
+    "edges": 15,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 16,
+    "score_std": [
+      0.175185762397514,
+      0.025222375125870874,
+      0.17941291414055377
+    ],
+    "seed": 28,
+    "source_task_id": "9be416e896365d6099b0179c69c536cd170fbd3e97777e127180c19e7460292d",
+    "status": "VALID",
+    "task_id": 56,
+    "recipe_sha256": "b278b03c9fe627f4008cf4e734806e598b95aa0973bfe7a391bbc7a87d21c226"
+  },
+  {
+    "components": 1,
+    "depth": 1,
+    "edges": 15,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 16,
+    "score_std": [
+      1.258440444330416
+    ],
+    "seed": 28,
+    "source_task_id": "c845b2087722ca23a46650ceab58f47da678cceaf414b45fe788cfa29a4fa327",
+    "status": "VALID",
+    "task_id": 57,
+    "recipe_sha256": "944bdda5cde7ef51e6054b5e126c22a3dbdef247144f83821bc3d68c292a2594"
+  },
+  {
+    "components": 3,
+    "depth": 2,
+    "edges": 16,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 19,
+    "score_std": [
+      1.325746214339372
+    ],
+    "seed": 28,
+    "source_task_id": "7d29e9627df665ec5a2b5830123c28bfc2c46d903adf07588148352490cc5c89",
+    "status": "VALID",
+    "task_id": 58,
+    "recipe_sha256": "fbc720dd8ffbf2750eea479b6650d63c866a8d50fd469a362a68f5c1bc8677a0"
+  },
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 8,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 11,
+    "score_std": [
+      0.44110382625541145,
+      0.5371129979848964,
+      1.1341232762148796
+    ],
+    "seed": 28,
+    "source_task_id": "f49c7656ed811493e454f8b8037e2d110886e463312fbad8587f38cc103ccf8e",
+    "status": "VALID",
+    "task_id": 59,
+    "recipe_sha256": "777b7f784057025b7b5f22fff2a11d5e2dd34abec8a6875cdc423a5a90e6f830"
+  },
+  {
+    "components": 1,
+    "depth": 5,
+    "edges": 17,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 18,
+    "score_std": [
+      0.09861093021615082
+    ],
+    "seed": 28,
+    "source_task_id": "83b87feab6a4029a40cb321d529a992b3b11eaba79a0840fa26d8068c365f5bb",
+    "status": "VALID",
+    "task_id": 60,
+    "recipe_sha256": "b91d2728a199a461b0c3c7f1f2b9124d9b86519e8c2ee9e7b9835423fcd9164c"
+  },
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 9,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 12,
+    "score_std": [
+      0.5363687570301409
+    ],
+    "seed": 28,
+    "source_task_id": "756ed83272fc9c952cf7e9c97724aaa864aff3897d168942d6fe579055b64a1d",
+    "status": "VALID",
+    "task_id": 61,
+    "recipe_sha256": "c7eeaac3525aaf6eb551dc280d60007e0d9f586ebf584f6041faeee8a91a26ec"
+  },
+  {
+    "components": 3,
+    "depth": 1,
+    "edges": 15,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 18,
+    "score_std": [
+      0.6563076517253912,
+      0.4540019363757428,
+      0.08631805713323333
+    ],
+    "seed": 28,
+    "source_task_id": "5a072e5518e32a9d80cf1dd29dc4e0901b68049571b1dd3d4f6a0554161a56f8",
+    "status": "VALID",
+    "task_id": 62,
+    "recipe_sha256": "abdf5f34f554f5fb9d23b324241c2e3b3ec391b64efcb5b4d44b1e80dd1321e6"
+  },
+  {
+    "components": 2,
+    "depth": 1,
+    "edges": 19,
+    "family": "redirection",
+    "flags": [],
+    "nodes": 21,
+    "score_std": [
+      0.43319131947138506
+    ],
+    "seed": 28,
+    "source_task_id": "dffb8150c9243399a41d1bcdfc0ed74a29ad09c001616e7cef0fd058ae510450",
+    "status": "VALID",
+    "task_id": 63,
+    "recipe_sha256": "c6bb22426c8b89cef02fed2a62fd41fb78ff190ed333ddeaee40fda2427a4182"
+  }
+]

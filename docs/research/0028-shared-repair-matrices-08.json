@@ -1,0 +1,232 @@
+{
+  "archive": "0028-shared-repair-matrices-08.zip",
+  "bytes": 207384,
+  "sha256": "34802c34ad63c8e85f0617fa1c524a261494a9fa3f2c2a39572763a6735559dd",
+  "files": [
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-kernel-random-covariance-uniform-arithmetic.json",
+      "bytes": 10439,
+      "sha256": "6f0aecdebf4eedb0805496265df001b5f7b9230667edc961bd793c3e5d35e4d3"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-kernel-random-covariance-uniform-generated.json",
+      "bytes": 79151,
+      "sha256": "44a19245c4eedec0e72814fa70221943d7ce4bc1ddd098f4ccff398208e66661"
+    },
+    {
+      "path": "matrices/meta-refresh-uniform-transformed-kernel-random-covariance-uniform-recipe.json",
+      "bytes": 71320,
+      "sha256": "c42957950556a5e91ab06ba26cbd3bfc9143daa4afcebaa9c969c24f0a526d48"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-factorized-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 3384,
+      "sha256": "4c59045b5cfef8c1dea8b30a6ed1d67ef662b75cbed6ec40ed12404dd0919bf2"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-factorized-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 29043,
+      "sha256": "e48a53e15df0c949f9e953f4f04cae7f0658d75c20e9b52d9ee9d20c386b8f03"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-factorized-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 20648,
+      "sha256": "c6e2e45ec45c295b872a6aff05c4d4f9886175b6947a86d30ec7845163d73292"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-gaussian-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 3312,
+      "sha256": "31c078aead821b1b671da4e99d08d4e1b9be85d55693c7ee04c8f5d82f2cf357"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-gaussian-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 20458,
+      "sha256": "190329d0d3fa371b3efab30fe463a71b4246043751b233c66929358a71dfdf15"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-gaussian-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 13661,
+      "sha256": "edb49a158fbd29723649e1d2de6c69e6092c1a5351332bf62c4ed477cbf0343d"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-importance-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 3411,
+      "sha256": "ec861ce9d35690f595cd190bc710327077b3dc67b8b8626ca06d4c3050b0cbd7"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-importance-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 43368,
+      "sha256": "e6796c542aca572be78160c0bf0b12f9434b1f048415751a68a5a36d6750223a"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-importance-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 32696,
+      "sha256": "fb332e31c9614dcb06f16cd3e0b2604094255fba06a06a90af125e0fdc173ab9"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-kernel-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 6972,
+      "sha256": "2a75fe9a5a3d173ca4aad18e32d45ddba8321a631f51176a9708afa0577162ff"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-kernel-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 126566,
+      "sha256": "f6c93db5fadf988d99efaae3642298b2012fe8be1ce82d681ce9597ca3210ed0"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-kernel-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 111283,
+      "sha256": "6b815808cbb0641358716136ee57d04e84bac1a03358d7b2e801e74e747ab2dc"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-kernel-gaussian-random-covariance-gaussian-arithmetic.json",
+      "bytes": 7202,
+      "sha256": "fec2a8837e5fba7131e03178ac233690a4642c395e2021cd77a3ff218671c1a8"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-kernel-gaussian-random-covariance-gaussian-generated.json",
+      "bytes": 50327,
+      "sha256": "4c509c65bd594abf105e4fc969c04a273695705e44ee705ad1e7d32ef2216e9c"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-kernel-gaussian-random-covariance-gaussian-recipe.json",
+      "bytes": 41413,
+      "sha256": "add1f181d5a404e8efb10cb49352db80f543af792c54310422c97dd0b02396fc"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-kernel-gaussian-random-covariance-uniform-arithmetic.json",
+      "bytes": 7203,
+      "sha256": "558dcc4b98b7a9d106f04d28e88de16c9e17294cc9f2bf8b99524e465feb68c2"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-kernel-gaussian-random-covariance-uniform-generated.json",
+      "bytes": 50309,
+      "sha256": "62e51c5bc5028de58bace7fdf22d1988085a42f40cf584f745dbe3dbfc798a32"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-kernel-gaussian-random-covariance-uniform-recipe.json",
+      "bytes": 41408,
+      "sha256": "2759c3145a93f5dac8bd0b7b8491b4efee18f8464c58d1d71dc6b611f4ffee48"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-factorized-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 6782,
+      "sha256": "4e5256530194578d60c2508aa44bd984734ba13a6070690d36817454b87fb002"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-factorized-gaussian-mixture-gaussian-generated.json",
+      "bytes": 38413,
+      "sha256": "3565f21e19276df15c4a682cbd065b4546baf1c7020575569616f72808b57ce7"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-factorized-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 29740,
+      "sha256": "e833723aa5918046715dd6d0591d91c7a91d01d94829c57d0ca80c1b6cbe06ca"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 6650,
+      "sha256": "33bb798941dc7ad489c761de2ba4366fee9b0ed22999b2e0737aa3dfb580d217"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 29411,
+      "sha256": "99aa918eb736b93a54e41c15e5a34d316a2e9bd162be24fcac10f84ce6f23fe4"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 22186,
+      "sha256": "5a69e40b94c71a6d97689060fdc59b53ca0e6d0d194162c7418844fa70ce203d"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-importance-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 6780,
+      "sha256": "ace2f8d9ff5b66381a9ecd6825bf6619d4e241a1a33396e08dc587d730012aa7"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-importance-gaussian-mixture-gaussian-generated.json",
+      "bytes": 53618,
+      "sha256": "857341490aef6ef85f05b108dc46ea6ade5cb9155cfde69936dfbba991e21e3a"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-importance-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 42727,
+      "sha256": "882ebb01c279433d236d1b9c95a599ff7dc0d934bfcb95c843d6fee55c02279c"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-kernel-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 10423,
+      "sha256": "bb16b1f544c65021fe076f27d777a4729f802119ce30827af8ca87db0f21f12a"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-kernel-gaussian-mixture-gaussian-generated.json",
+      "bytes": 64754,
+      "sha256": "3fd3908c16cf224106e14b812e931f35c9196cf153d445747b895fe95321d088"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-kernel-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 55210,
+      "sha256": "8e8b88f1c8761bdcc91e555291728ce91f09e2e2e4429ea7025e2ee078fc96d7"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-kernel-random-covariance-gaussian-arithmetic.json",
+      "bytes": 10417,
+      "sha256": "1f2599caedf4c61f322914ebd0c8cffecd61ce8fac3675996393eb2f70e5afe2"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-kernel-random-covariance-gaussian-generated.json",
+      "bytes": 59871,
+      "sha256": "3ffe256f0dc4d1732d94fe85d5f0c8c31591c2e1087e854c9eec140933b1c2a9"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-kernel-random-covariance-gaussian-recipe.json",
+      "bytes": 51998,
+      "sha256": "22cadf0b4c880dec795300e70121415c1fcaab097f15c7dea9aba0a99c8adbab"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-kernel-random-covariance-uniform-arithmetic.json",
+      "bytes": 10373,
+      "sha256": "3e42dc93e31c2f0663cd317f97aaf1f7b85aa78608a07d979622e29b8d65297c"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-kernel-random-covariance-uniform-generated.json",
+      "bytes": 59841,
+      "sha256": "ae8df3bc506149be0f94d0cda48f1be0aa332433accf652851596e851f7eceec"
+    },
+    {
+      "path": "matrices/meta-shared-polynomial-transformed-kernel-random-covariance-uniform-recipe.json",
+      "bytes": 51985,
+      "sha256": "2cc05647b417aec58265ec1c39e3532a882fa9be2ce45a0d70e1e6d9a7bc7d24"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-factorized-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 3408,
+      "sha256": "90bc929d7b54d71543b3ffcf401dcdb03543bc5a8babd054536239a983fe7c5e"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-factorized-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 22022,
+      "sha256": "931401a875917e992d5d2b7a552f490eabf03ae4cc3c2544f81a3da2904ce890"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-factorized-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 15082,
+      "sha256": "30b246a0ebbb6538443260d91580f4eee395e0a8b2fa597186a09ea51e5a1809"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-gaussian-gaussian-gaussian-mixture-gaussian-arithmetic.json",
+      "bytes": 3312,
+      "sha256": "31c078aead821b1b671da4e99d08d4e1b9be85d55693c7ee04c8f5d82f2cf357"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-gaussian-gaussian-gaussian-mixture-gaussian-generated.json",
+      "bytes": 20452,
+      "sha256": "c7ed166b5f569e20937c58fef045a3beb522beeb064073bf548be65132dd6de5"
+    },
+    {
+      "path": "matrices/meta-shared-uniform-gaussian-gaussian-gaussian-mixture-gaussian-recipe.json",
+      "bytes": 13658,
+      "sha256": "f8c4bd79f171115e72ca938af96175fdf5e69d5f84da4c63d9e56f7d2ad8835b"
+    }
+  ]
+}

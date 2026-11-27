@@ -1,0 +1,232 @@
+{
+  "archive": "0028-shared-repair-legacy-07.zip",
+  "bytes": 611532,
+  "sha256": "2ac7fb6a1ec7bd37201d18e1b8e92a3a367235266d81d772d8b7ed56c9db89b5",
+  "files": [
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_forward_regression_28_10.json",
+      "bytes": 105205,
+      "sha256": "dd32610cf2d81e11d55be429d983506f3f52a923c19cb8c8a82c901129d185c6"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_forward_regression_28_50.json",
+      "bytes": 32980,
+      "sha256": "41196dbd27132bbb459347440a8ef1850e88a4b19da312670ab208f5e0b928bb"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_forward_regression_2_10.json",
+      "bytes": 200260,
+      "sha256": "679b173aaff1e47b338f7ba6c05eb54499ef81214342db95bb0e4ed782a8bbfa"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_forward_regression_3_10.json",
+      "bytes": 93369,
+      "sha256": "f244cc8d1baaf8fa10bd6fd057e5dcc3d72b44ca7024a1438b513933991fc492"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_forward_regression_45_10.json",
+      "bytes": 46535,
+      "sha256": "2470a2dff99ad1ea291fb91b612e9ca93c4691f7052887a57d0828f1e25417c3"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_binary_0_10.json",
+      "bytes": 38781,
+      "sha256": "04738200f43bc216965dd0b8d5040851a42959d202a97cbc80a9b1831eec8690"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_binary_1_10.json",
+      "bytes": 82348,
+      "sha256": "6c1276025d227d2fa84e6c6a0dae9032b1653314450c22f2e5f8ddd8ffe8495f"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_binary_28_10.json",
+      "bytes": 138442,
+      "sha256": "ea156a32103b5a953120bbdb6acbb78dc67dd04ccf80914230f61ee4c5f7456e"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_binary_28_50.json",
+      "bytes": 28120,
+      "sha256": "b44fefcc3ec201662f6c97520928e0d74123081792bbfa9d9b70051466d8ab09"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_binary_2_10.json",
+      "bytes": 52949,
+      "sha256": "3e83e60bd6d64bba761b17d456ab2e1bb8562f145ee83bf20a7280f2f1446857"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_binary_3_10.json",
+      "bytes": 40399,
+      "sha256": "ac4b5f0e49154a478cec908f387978e65c4e930ceafa848d11407128c5c55f9e"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_binary_45_10.json",
+      "bytes": 37827,
+      "sha256": "74706f97a9f5516a640471f354352f4c04c4454ec8804d5c6e6d196bee1f9291"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_multiclass_0_10.json",
+      "bytes": 51051,
+      "sha256": "f410d11b0383555f30c168717d5a165fc97e490445f08a5971b1b6b8a30666b1"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_multiclass_1_10.json",
+      "bytes": 99941,
+      "sha256": "bc84c2266802e071bacfc1c4fc727f3741363beeb8d08cbe49fc47ef407b6580"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_multiclass_28_10.json",
+      "bytes": 185732,
+      "sha256": "12cacd25f1faf0f1775b0c7ffc784d2b6713c80470f0bf1033ad35e6652041a5"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_multiclass_28_50.json",
+      "bytes": 39690,
+      "sha256": "58b0b4f2b2e670047e320dec5718c7416a7fc1de2b83129bc3569c471467f2df"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_multiclass_2_10.json",
+      "bytes": 48348,
+      "sha256": "77845729a4143c8672727a0d0ec8b46196b844592f6849ed21bfc38b23540ace"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_multiclass_3_10.json",
+      "bytes": 41949,
+      "sha256": "8d7b029380ef8ac06a9fce1e4282a2070dcde051906116a59c1a5535c5b2ceaa"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_multiclass_45_10.json",
+      "bytes": 36303,
+      "sha256": "0ca0d166b57fb59767b424c45f1c0790707056eb8c7e41278784430f6782bba0"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_regression_0_10.json",
+      "bytes": 38641,
+      "sha256": "6d37a870fe7a347c378839ff8491a679a6ff72401b0a269c9aa1705ed5137c60"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_regression_1_10.json",
+      "bytes": 82208,
+      "sha256": "e253edd7e6de8da404908116e88bffbf756eefe4cdbc2a881af4f01582edf493"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_regression_28_10.json",
+      "bytes": 138302,
+      "sha256": "91d13718a9c80573397f3c7b8b2f55fe614bbb9d4abc764b8f0131c62ff1138b"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_regression_28_50.json",
+      "bytes": 27980,
+      "sha256": "5dc80a3f9526a476e47fa5af04875f1b2ae27e9b0a1b63faada1b543ed13652f"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_regression_2_10.json",
+      "bytes": 52809,
+      "sha256": "f951fd220f56bff0acea9576034accfa295e6a0b2e94e0c94db480a3dfd50549"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_regression_3_10.json",
+      "bytes": 40259,
+      "sha256": "bc3e11e231779aa3b38eaeffdfdaccf1a5d8559a4c23b5bf50b84309bf9d65f7"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_layered_regression_45_10.json",
+      "bytes": 37687,
+      "sha256": "0a0dcba63f89d732bab9e1d21c38c10806cb845514bd91584f4a71c171d947c1"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_binary_0_10.json",
+      "bytes": 70324,
+      "sha256": "09f701be10c3c191fca5be6249e2ee38687dc5ea49232d77f356f4aab84458b3"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_binary_1_10.json",
+      "bytes": 94626,
+      "sha256": "8c59c782d81a1d3208ccac2d0602708f1d2e94707d673b5d4d880800ee295e0e"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_binary_28_10.json",
+      "bytes": 65614,
+      "sha256": "cf54cb5489887fb484c555bef4eb0703dc4a2aaad2d4d33887faad3797050b7d"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_binary_28_50.json",
+      "bytes": 103307,
+      "sha256": "e9e20353f43d8dd68543f7fedd6238091016ab5fc671f1f47daa9cc4487f9b91"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_binary_2_10.json",
+      "bytes": 62731,
+      "sha256": "6f7040b42b099dc32a4cc840d1c2fb47531b154bad1d5255a3717a6d06eb63b8"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_binary_3_10.json",
+      "bytes": 71408,
+      "sha256": "11bc6a01832ac5ef5c7f818eefeda7787825706da1a06eca919cfd7688f1802e"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_binary_45_10.json",
+      "bytes": 114450,
+      "sha256": "cb6b48b45bfe978c0f0eb829ea6c3198bd42f92b55e5ebd8d9502f6508cd5a84"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_multiclass_0_10.json",
+      "bytes": 77656,
+      "sha256": "1abcbdc4cd9b1f0d19289ca67c3e8fc4bba56ae6e8297b54d7e250017a09ece5"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_multiclass_1_10.json",
+      "bytes": 97376,
+      "sha256": "93badd0f57b77d156c4b547b3ea966eee8a03d3c4218bbe0544731cdc932ff2c"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_multiclass_28_10.json",
+      "bytes": 79108,
+      "sha256": "ac6294c1214554e393c9b30e6956155c3a3d03e9e5a0a578c3b1db0a7d201bcb"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_multiclass_28_50.json",
+      "bytes": 105910,
+      "sha256": "f285d75a63292d40324f801f54b9ad51998bd838dc9885e0d6f718487acb1fbf"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_multiclass_2_10.json",
+      "bytes": 68003,
+      "sha256": "6c398193270addf26d83a234c4e43abf4d68d1f0562376b27d7ce49b74f50f4c"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_multiclass_3_10.json",
+      "bytes": 76892,
+      "sha256": "ac744d93608bfd99bcbe0704b9777fea2f0cdf6862cf382495f257910595f8e6"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_multiclass_45_10.json",
+      "bytes": 127386,
+      "sha256": "74511df5f2c6806467bf0f42b94f494d9929ac1c46bf379a563b1b3f6ebd1516"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_regression_0_10.json",
+      "bytes": 70184,
+      "sha256": "78b85111fc3a12166559c15b0e55ab6e1cf61adcd8604b97dddb9843f41d8ea7"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_regression_1_10.json",
+      "bytes": 94486,
+      "sha256": "8056a1077b8a2f994610fb23756a63b06fbf18b708cede3eb4a410cf19eb5112"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_regression_28_10.json",
+      "bytes": 65474,
+      "sha256": "22b854648325c3c7ce230152c16939fb117ee5ede519ac8f2481502574235494"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_regression_28_50.json",
+      "bytes": 103167,
+      "sha256": "2fb8736bf075b72362c88cfb4d6406e86a636fbea1aa25bdddae5ce67c46353a"
+    },
+    {
+      "path": "legacy/legacy_cases/causal-gaussian-matrices-v1_redirection_regression_2_10.json",
+      "bytes": 62591,
+      "sha256": "3d18dbccc29ad0709bac7bbdd7b0873c592b76383a4e12351e48ff3d0196f893"
+    }
+  ]
+}

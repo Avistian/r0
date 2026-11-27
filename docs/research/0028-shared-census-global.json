@@ -1,0 +1,376 @@
+{
+  "device": "cpu",
+  "families": {
+    "forward": {
+      "activation_modes": {
+        "dirichlet": 28,
+        "homogeneous": 15,
+        "independent": 21
+      },
+      "attempted": 64,
+      "categorical_policies": {
+        "shared": 64
+      },
+      "categorical_preference_modes": {
+        "global": 88
+      },
+      "exogenous_geometry": {
+        "independent": 414
+      },
+      "exogenous_laws": {
+        "gaussian": 414
+      },
+      "factor_inner_dimensions": {
+        "1": 28,
+        "2": 27,
+        "3": 2,
+        "4": 9
+      },
+      "failed": 0,
+      "failure_reasons": {},
+      "flag_counts": {
+        "disconnected_target": 34,
+        "inactive_relu": 8,
+        "saturated_activation": 5
+      },
+      "importance_vectors": {},
+      "kernel_component_counts": {
+        "1": 113,
+        "11": 4,
+        "2": 8,
+        "3": 5,
+        "5": 3,
+        "6": 5
+      },
+      "kernel_point_base_laws": {
+        "gaussian": 84,
+        "uniform": 54
+      },
+      "kernel_point_laws": {
+        "gaussian-mixture": 46,
+        "random-covariance": 92
+      },
+      "matrix_activation_kinds": {
+        "abs": 1,
+        "elu": 5,
+        "gaussian_bump": 7,
+        "gelu": 3,
+        "hardtanh": 3,
+        "identity": 5,
+        "integer_power": 3,
+        "interval_abs_le_1": 2,
+        "leaky_relu": 5,
+        "log_clip_abs": 13,
+        "modulo": 21,
+        "reciprocal_abs_power": 4,
+        "relu": 8,
+        "relu6": 1,
+        "selu": 7,
+        "sigmoid": 4,
+        "sign": 4,
+        "signed_power": 8,
+        "silu": 7,
+        "sin": 5,
+        "softplus": 10,
+        "sqrt_abs": 4,
+        "square": 5,
+        "step": 2,
+        "tanh": 2
+      },
+      "matrix_stages": {
+        "gaussian-weights-v1": 68,
+        "importance-factorized-weights-v1": 66,
+        "importance-weights-v1": 142,
+        "laplace-kernel-weights-v1": 138,
+        "normalized-weights-v1": 553,
+        "transformed-weights-v1": 139
+      },
+      "noise_strengths": {
+        "0.0": 414
+      },
+      "numerical_preference_modes": {
+        "global": 105
+      },
+      "positive_vector_laws": {
+        "polynomial-weight-vector-v1": 1381,
+        "uniform-weight-vector-v1": 92
+      },
+      "preference_bindings": 3729,
+      "ranges": {
+        "components": [
+          1,
+          21
+        ],
+        "depth": [
+          0,
+          19
+        ],
+        "edges": [
+          0,
+          190
+        ],
+        "nodes": [
+          7,
+          23
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64,
+      "weight_constructions": {
+        "normalized-weights-v1": 414
+      }
+    },
+    "layered": {
+      "activation_modes": {
+        "dirichlet": 19,
+        "homogeneous": 20,
+        "independent": 25
+      },
+      "attempted": 64,
+      "categorical_policies": {
+        "shared": 64
+      },
+      "categorical_preference_modes": {
+        "global": 67
+      },
+      "exogenous_geometry": {
+        "independent": 203
+      },
+      "exogenous_laws": {
+        "gaussian": 203
+      },
+      "factor_inner_dimensions": {
+        "1": 30,
+        "2": 18,
+        "4": 5
+      },
+      "failed": 0,
+      "failure_reasons": {},
+      "flag_counts": {
+        "disconnected_target": 40,
+        "inactive_relu": 3,
+        "saturated_activation": 3,
+        "zero_target_dispersion": 1
+      },
+      "importance_vectors": {},
+      "kernel_component_counts": {
+        "1": 31,
+        "8": 8
+      },
+      "kernel_point_base_laws": {
+        "gaussian": 18,
+        "uniform": 21
+      },
+      "kernel_point_laws": {
+        "gaussian-mixture": 8,
+        "random-covariance": 31
+      },
+      "matrix_activation_kinds": {
+        "abs": 2,
+        "elu": 2,
+        "gaussian_bump": 1,
+        "gelu": 4,
+        "hardtanh": 1,
+        "identity": 2,
+        "integer_power": 4,
+        "interval_abs_le_1": 5,
+        "leaky_relu": 3,
+        "log_clip_abs": 2,
+        "modulo": 2,
+        "relu": 5,
+        "relu6": 1,
+        "relu_power": 1,
+        "selu": 1,
+        "sign": 1,
+        "signed_power": 1,
+        "silu": 1,
+        "sin": 2,
+        "softplus": 9,
+        "sqrt_abs": 6,
+        "square": 1,
+        "step": 10,
+        "tanh": 1
+      },
+      "matrix_stages": {
+        "gaussian-weights-v1": 57,
+        "importance-factorized-weights-v1": 53,
+        "importance-weights-v1": 54,
+        "laplace-kernel-weights-v1": 39,
+        "normalized-weights-v1": 271,
+        "transformed-weights-v1": 68
+      },
+      "noise_strengths": {
+        "0.0": 203
+      },
+      "numerical_preference_modes": {
+        "global": 71
+      },
+      "positive_vector_laws": {
+        "polynomial-weight-vector-v1": 395,
+        "uniform-weight-vector-v1": 31
+      },
+      "preference_bindings": 1178,
+      "ranges": {
+        "components": [
+          1,
+          24
+        ],
+        "depth": [
+          0,
+          3
+        ],
+        "edges": [
+          0,
+          42
+        ],
+        "nodes": [
+          7,
+          24
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 21,
+        "regression": 22
+      },
+      "valid": 64,
+      "weight_constructions": {
+        "normalized-weights-v1": 203
+      }
+    },
+    "redirection": {
+      "activation_modes": {
+        "dirichlet": 15,
+        "homogeneous": 27,
+        "independent": 22
+      },
+      "attempted": 64,
+      "categorical_policies": {
+        "shared": 64
+      },
+      "categorical_preference_modes": {
+        "global": 107
+      },
+      "exogenous_geometry": {
+        "independent": 882
+      },
+      "exogenous_laws": {
+        "gaussian": 882
+      },
+      "factor_inner_dimensions": {
+        "1": 75,
+        "2": 53,
+        "4": 13
+      },
+      "failed": 1,
+      "failure_reasons": {
+        "ValueError: nonfinite integer_power activation output; task was not retried": 1
+      },
+      "flag_counts": {
+        "disconnected_target": 4,
+        "inactive_relu": 4,
+        "saturated_activation": 4,
+        "zero_target_dispersion": 2
+      },
+      "importance_vectors": {},
+      "kernel_component_counts": {
+        "1": 197,
+        "10": 19,
+        "14": 9,
+        "4": 17,
+        "6": 37,
+        "7": 18,
+        "9": 19
+      },
+      "kernel_point_base_laws": {
+        "gaussian": 197,
+        "uniform": 119
+      },
+      "kernel_point_laws": {
+        "gaussian-mixture": 152,
+        "random-covariance": 164
+      },
+      "matrix_activation_kinds": {
+        "abs": 24,
+        "elu": 3,
+        "gaussian_bump": 1,
+        "gelu": 1,
+        "hardtanh": 1,
+        "identity": 18,
+        "integer_power": 2,
+        "interval_abs_le_1": 20,
+        "leaky_relu": 3,
+        "log_clip_abs": 3,
+        "modulo": 21,
+        "reciprocal_abs_power": 3,
+        "relu": 1,
+        "relu_power": 27,
+        "selu": 3,
+        "sigmoid": 3,
+        "sign": 5,
+        "silu": 2,
+        "softplus": 2,
+        "sqrt_abs": 3,
+        "square": 1,
+        "step": 2,
+        "tanh": 1
+      },
+      "matrix_stages": {
+        "gaussian-weights-v1": 248,
+        "importance-factorized-weights-v1": 141,
+        "importance-weights-v1": 177,
+        "laplace-kernel-weights-v1": 316,
+        "normalized-weights-v1": 1032,
+        "transformed-weights-v1": 150
+      },
+      "noise_strengths": {
+        "0.0": 882
+      },
+      "numerical_preference_modes": {
+        "global": 122
+      },
+      "positive_vector_laws": {
+        "polynomial-weight-vector-v1": 1825,
+        "uniform-weight-vector-v1": 164
+      },
+      "preference_bindings": 5630,
+      "ranges": {
+        "components": [
+          1,
+          3
+        ],
+        "depth": [
+          1,
+          5
+        ],
+        "edges": [
+          4,
+          22
+        ],
+        "nodes": [
+          7,
+          23
+        ]
+      },
+      "task_types": {
+        "binary": 21,
+        "multiclass": 20,
+        "regression": 22
+      },
+      "valid": 63,
+      "weight_constructions": {
+        "normalized-weights-v1": 882
+      }
+    }
+  },
+  "filter": "none",
+  "head": "47630e8a44268622a4fa9ab352ef4167a3458b4d",
+  "profile": "causal-global-matrices-v1",
+  "seed": 28,
+  "timing": "NOT_MEASURED",
+  "torch": "2.15.0+cpu"
+}

@@ -1,0 +1,17 @@
+{
+  "archive": "0028-shared-repair-extreme-01.zip",
+  "bytes": 1776,
+  "sha256": "9ba50403a02743a365c6768a4959720e02e281d5408647d7d3bfb659acb881ab",
+  "files": [
+    {
+      "path": "extreme/input.json",
+      "bytes": 3437,
+      "sha256": "36acedf9af9cfa5e7620ec10d748dc91fdfb8ff790dce131b8c512319728e8d8"
+    },
+    {
+      "path": "extreme/result.json",
+      "bytes": 2487,
+      "sha256": "5679c43e42dd5f417f25b323b75c503951c51331bc6522e12648a3f842c9b529"
+    }
+  ]
+}
