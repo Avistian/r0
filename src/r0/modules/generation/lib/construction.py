@@ -29,6 +29,12 @@ def construct_graph(
         raise ValueError("construction seed must be an integer in [0, 2**63)")
     fields = _tuples(controls)
     topology = fields.pop("topology")
+    if topology == "network-hyperprior":
+        from r0.modules.generation.lib.network_hyperprior_construction import (
+            construct_hyperprior_network,
+        )
+
+        return construct_hyperprior_network(fields, seed=seed, limits=limits)
     if topology in ("network", "network-authored"):
         return construct_network(
             fields, seed=seed, limits=limits, authored=topology == "network-authored"

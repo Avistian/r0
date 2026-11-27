@@ -12,6 +12,7 @@ from r0.modules.explorer.lib.native import (
     native_vector_example,
     sampled_native_example,
 )
+from r0.modules.explorer.lib.network_hyperprior_examples import network_hyperprior_examples
 from r0.modules.explorer.lib.networks import network_editor, network_examples
 
 
@@ -76,6 +77,7 @@ def construction_examples() -> dict[str, Any]:
         **composed_examples(common, geometry, sampled_native_example()),
         **fitted_examples(),
         **network_examples(),
+        **network_hyperprior_examples(),
         **converted_examples(),
         **{
             f"Numerical pipeline: {variant}": {

@@ -4,6 +4,7 @@ let networkDraft = null, networkBlockDrafts = new Map(), networkSelectedBlock = 
 function isStandaloneNetwork(recipe) { return ["standalone-network-v1","network-input-view-v1","network-input-view-v2"].includes(recipe?.version); }
 function networkArchitecture(recipe) { return recipe?.base?.network || recipe?.network; }
 function networkConstructionNote(example) {
+  $("network-hyperprior-controls-note").hidden = example.topology !== "network-hyperprior";
   $("network-controls-note").hidden = !["network", "network-authored"].includes(example.topology);
 }
 function resetNetworkWorkbench() {
