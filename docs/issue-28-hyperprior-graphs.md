@@ -51,3 +51,9 @@ resolves named plans before full family admission; this slice does not silently
 relax its own before-RNG worst-size contract to reuse that ordering. No complete
 P2 reproduction, scientific equivalence, hosted/GPU result, or full-suite result
 is claimed here.
+
+## Outer-envelope preflight repair
+
+Independent review of `20332375b166de6e5fd41b3b18c19731bcdad5f4` found that an invalid layout restored four sampled source-root snapshots before rejection. That historical REJECT remains retained. Graph decoding now first parses and validates the complete topology receipt without restoring its construction stream, including snapshot headers, raw draw records, derived Gamma/topology values and request/cap identity. Discarded authored template previews pass through the existing node, request and graph constructors to validate outer versions/profiles, ownership, geometry, readouts and runtime compatibility. The original complete template records remain authoritative for subsequent source replay.
+
+The standalone topology decoder shares that metadata parser, then performs its existing exact numerical replay. Snapshot header checks share the restoration validator. Worst-size and complete original metadata admission still precede preview construction; no declared cap is increased. Focused public RED/GREEN, the original outside-test sentinel and complete five-engine source/Conv-template artifact comparisons are retained in ignored `docs/evidence/issue-28-hyperprior-preflight/`. Independent repair acceptance and the remainder of the stopped core/graph review are separate gates; this repair does not claim complete issue28 acceptance.

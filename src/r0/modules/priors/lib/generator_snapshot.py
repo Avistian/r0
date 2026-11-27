@@ -1,6 +1,7 @@
 """Bounded JSON snapshots of the five supported NumPy generators; never unpickle."""
 
 import json
+import re
 from dataclasses import dataclass
 from typing import Any, cast
 
@@ -57,7 +58,7 @@ class GeneratorSnapshot:
     numpy_version: str
     version: str = "numpy-generator-json-v1"
 
-    def restore(self, *, byte_limit: int = _DEFAULT_BYTES) -> np.random.Generator:
+    def validate_metadata(self, *, byte_limit: int = _DEFAULT_BYTES) -> None:
         if (
             self.version != "numpy-generator-json-v1"
             or type(self.engine) is not str
@@ -69,6 +70,20 @@ class GeneratorSnapshot:
             or not self.payload.isascii()
         ):
             raise ValueError("unsupported generator snapshot version, engine, environment or size")
+        if type(self.digest) is not str or re.fullmatch(r"[0-9a-f]{64}", self.digest) is None:
+            raise ValueError("invalid generator snapshot digest header")
+        try:
+            state = json.loads(self.payload)
+        except (ValueError, TypeError, RecursionError) as exc:
+            raise ValueError("invalid generator snapshot JSON metadata") from exc
+        if (
+            type(state) is not dict
+            or cast(dict[str, Any], state).get("bit_generator") != self.engine
+        ):
+            raise ValueError("generator snapshot engine differs from payload header")
+
+    def restore(self, *, byte_limit: int = _DEFAULT_BYTES) -> np.random.Generator:
+        self.validate_metadata(byte_limit=byte_limit)
         try:
             state = json.loads(self.payload, object_hook=_restore_array)
             rng = np.random.Generator(_ENGINES[self.engine](0))
