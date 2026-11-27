@@ -33,7 +33,8 @@ class NetworkObservationRequest:
             or self.features < 1
             or type(self.outputs) is not int
             or self.outputs < 1
-            or self.profile not in ("p1-paper-block-r0-v1", "p1-778f0d0-v1")
+            or self.profile
+            not in ("p1-paper-block-r0-v1", "p1-778f0d0-v1", "r0-propagated-block-v1")
             or self.selection not in ("block", "unrestricted")
             or self.target not in ("internal", "final")
             or self.feature_order not in ("preserved", "permuted")
@@ -42,13 +43,14 @@ class NetworkObservationRequest:
             raise ValueError("invalid network observation policy")
         source, _ = observation_source(self)
         blocks = source.function.blocks
-        if any(
+        extension = self.profile == "r0-propagated-block-v1"
+        if not extension and any(
             b.parents != (i,) or len(b.experts) != 1 or b.gate or b.skips
             for i, b in enumerate(blocks)
         ):
             raise ValueError("source observation profiles require sequential single-expert layers")
         widths = tuple(b.output_width for b in blocks)
-        if len(set(widths)) != 1:
+        if not extension and len(set(widths)) != 1:
             raise ValueError("variable-width observation profiles remain a separate extension")
         if self.profile == "p1-778f0d0-v1" and len(blocks) < 2:
             raise ValueError("pinned observation catalog excludes the first affine output")
