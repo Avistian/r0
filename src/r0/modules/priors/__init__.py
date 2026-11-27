@@ -217,6 +217,7 @@ from r0.modules.priors.lib.joint_sampling_records import JointSamplingRecord as 
 from r0.modules.priors.lib.joint_sampling_records import (
     joint_sampling_from_dict as joint_sampling_from_dict,
 )
+from r0.modules.priors.lib.joint_streams import JointStreamLimits as JointStreamLimits
 from r0.modules.priors.lib.joint_tree_realization import (
     JointTreeFunctionRealization as JointTreeFunctionRealization,
 )

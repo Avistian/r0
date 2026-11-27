@@ -1,7 +1,6 @@
 """Transactional numerical and categorical choices with task-wide preferences."""
 
 import copy
-import pickle
 from collections.abc import Generator
 from contextlib import contextmanager
 
@@ -19,8 +18,10 @@ from r0.modules.priors.lib.joint_sampling_records import (
     JointSamplingRecord,
     check_numerical_contract,
     numerical_policy,
+    validate_name,
     validate_path,
 )
+from r0.modules.priors.lib.joint_streams import JointStreamLimits, stream_states, validate_streams
 from r0.modules.priors.lib.parameter_preferences import (
     NumericalDraw,
     NumericalParameter,
@@ -30,6 +31,7 @@ from r0.modules.priors.lib.preference_limits import PreferenceLimits
 
 _DEFAULT_LIMITS = PreferenceLimits()
 _DEFAULT_REGISTRY_LIMITS = JointRegistryLimits()
+_DEFAULT_STREAM_LIMITS = JointStreamLimits()
 
 
 class JointSamplingContext:
@@ -44,9 +46,13 @@ class JointSamplingContext:
         global_policy: str = "scalar-quantile-v1",
         limits: PreferenceLimits = _DEFAULT_LIMITS,
         registry_limits: JointRegistryLimits = _DEFAULT_REGISTRY_LIMITS,
+        streams: dict[str, np.random.Generator] | None = None,
+        stream_limits: JointStreamLimits = _DEFAULT_STREAM_LIMITS,
     ) -> None:
         if type(registry_limits) is not JointRegistryLimits:
             raise ValueError("joint context requires frozen registry limits")
+        self._streams = validate_streams(rng, streams, stream_limits)
+        self._stream_limits = stream_limits
         self._registry_limits = registry_limits
         self._operations: list[JointOperationSpan] = []
         self._operation_bytes = 0
@@ -91,8 +97,11 @@ class JointSamplingContext:
         opened = JointOperationSpan(path, len(self._events), len(self._events))
         operation_bytes = self._operation_bytes + opened.path_bytes
         self._registry_limits.admit(len(self._operations) + 1, operation_bytes)
+        original_generators = (self._rng, *self._streams.values())
+        initial_states = stream_states(original_generators, self._stream_limits)
         staged = copy.copy(self)
         staged._rng = copy.deepcopy(self._rng)
+        staged._streams = copy.deepcopy(self._streams)
         staged._numerical = self._numerical.fork(staged._rng)
         staged._categorical = self._categorical.fork(staged._rng)
         staged._events = self._events.copy()
@@ -104,8 +113,6 @@ class JointSamplingContext:
         staged._roles = self._roles.copy()
         staged._counts = self._counts.copy()
         staged._contracts = self._contracts.copy()
-        # Only serialize trusted in-memory state; never load a caller pickle.
-        initial_state = pickle.dumps(self._rng.bit_generator.state)
         self._busy = True
         try:
             yield staged
@@ -113,18 +120,33 @@ class JointSamplingContext:
             staged._operations[slot] = JointOperationSpan(
                 path, opened.event_start, len(staged._events)
             )
-            if pickle.dumps(self._rng.bit_generator.state) != initial_state:
+            # Prepare all record copies before changing any caller stream. A child
+            # commits into its parent's staged generators; only the outer success
+            # reaches the caller's generators. This is not a concurrency lock.
+            numerical = staged._numerical.fork(self._rng)
+            categorical = staged._categorical.fork(self._rng)
+            events = staged._events.copy()
+            operations = staged._operations.copy()
+            completed = staged._completed.copy()
+            roles = staged._roles.copy()
+            counts = staged._counts.copy()
+            contracts = staged._contracts.copy()
+            staged_generators = (staged._rng, *staged._streams.values())
+            stream_states(staged_generators, self._stream_limits)
+            states = tuple(generator.bit_generator.state for generator in staged_generators)
+            if stream_states(original_generators, self._stream_limits) != initial_states:
                 raise ValueError("caller RNG changed during the joint transaction")
-            self._rng.bit_generator.state = staged._rng.bit_generator.state
-            self._numerical = staged._numerical.fork(self._rng)
-            self._categorical = staged._categorical.fork(self._rng)
-            self._events = staged._events.copy()
-            self._operations = staged._operations.copy()
+            for original, state in zip(original_generators, states, strict=True):
+                original.bit_generator.state = state
+            self._numerical = numerical
+            self._categorical = categorical
+            self._events = events
+            self._operations = operations
             self._operation_bytes = staged._operation_bytes
-            self._completed = staged._completed.copy()
-            self._roles = staged._roles.copy()
-            self._counts = staged._counts.copy()
-            self._contracts = staged._contracts.copy()
+            self._completed = completed
+            self._roles = roles
+            self._counts = counts
+            self._contracts = contracts
             # Successful operations own their path even when no named draws were needed.
             self._completed.add(path)
         finally:
@@ -218,3 +240,13 @@ class JointSamplingContext:
         return JointOperationRegistry(
             self.freeze(), tuple(self._operations), limits=self._registry_limits
         )
+
+    def stream(self, name: str) -> np.random.Generator:
+        """Return a staged auxiliary stream inside a live, idle operation handle."""
+        self._available()
+        if not self._path:
+            raise ValueError("joint streams are accessible only inside an operation")
+        validate_name(name, "stream name")
+        if name not in self._streams:
+            raise ValueError("joint stream name is not registered")
+        return self._streams[name]
