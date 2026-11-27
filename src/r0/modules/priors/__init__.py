@@ -116,6 +116,7 @@ from .lib.generate import Recipe as Recipe
 from .lib.generate import generate_task as generate_task
 from .lib.generate import recipe_from_dict as recipe_from_dict
 from .lib.generation_graph import explain_generation as explain_generation
+from .lib.gp_column_api import *  # noqa: F403
 from .lib.gp_conditioning import condition_gp as condition_gp
 from .lib.grouped_linear import GroupedLinearRecipe as GroupedLinearRecipe
 from .lib.inputs import InputDistribution as InputDistribution
