@@ -64,3 +64,26 @@ dashboards and remaining source-option controls are still required. The generati
 notebook's install revision must be updated to the integrated published commit
 before hosted verification; the old pinned installation cannot provide these new
 controls. No cloud or paid execution was performed here.
+
+## Sampled geometry
+
+The **Geometry-sampled causal graph** starting point also samples latent widths,
+eligible feature-node subsets and channel assignments before mechanisms. Its
+versioned archive retains that geometry and its named/raw decisions alongside the
+mechanism construction. Controls expose node count, Cauchy offset, subset mode,
+width-prior bounds, root/function priors, calibration and scalar structural noise.
+The editor reports realized latent widths, converter-channel counts and assignments.
+Readouts currently use identity numerical converters; classification targets are
+adapter scores, not native categorical graph variables.
+
+The geometry-specific browser flow uses the same script with a final argument:
+
+```sh
+node scripts/workbench_browser_smoke.mjs 19228 http://127.0.0.1:18876/ EVIDENCE \
+  'Geometry-sampled causal graph'
+```
+
+Its local screenshots and receipt are in
+`docs/evidence/issue-28-workbench/geometry-browser/`. Three focused backend cases
+cover topology and geometry construction, larger caller caps, edit/reopen, and
+worker timeout preservation. Hosted Colab proof remains separate and unexecuted.

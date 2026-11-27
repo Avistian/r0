@@ -36,6 +36,19 @@ def construct_graph(
     rngs = dict(
         named_rng=streams[0], raw_rng=streams[1], calibration_rng=streams[2], fit_rng=streams[3]
     )
+    if topology == "geometry":
+        prior = priors.CauchyGraphPrior(nodes=fields.pop("nodes"), offset=fields.pop("offset"))
+        widths = priors.JointWidthPrior(**fields.pop("width_prior"))
+        geometry = priors.GeometryGraphRequest(
+            task=task,
+            topology=prior,
+            width_prior=widths,
+            root_prior=roots,
+            function_prior=function,
+            limits=limits,
+            **fields,
+        )
+        return priors.sample_geometry_graph(geometry, **rngs)
     if topology == "cauchy":
         prior = priors.CauchyGraphPrior(nodes=len(fields["widths"]), offset=fields.pop("offset"))
         request = priors.TopologyGraphRequest(

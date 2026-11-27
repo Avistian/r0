@@ -8,10 +8,21 @@ import pytest
 from r0.modules.explorer import ExplorerSession
 
 
-def test_sampled_workbench_constructs_edits_and_reopens(tmp_path: Path) -> None:
+@pytest.mark.parametrize(
+    ("example", "version"),
+    [
+        ("Cauchy causal graph", "sampled-topology-graph-v1"),
+        ("Geometry-sampled causal graph", "sampled-geometry-graph-v1"),
+    ],
+)
+def test_sampled_workbench_constructs_edits_and_reopens(
+    tmp_path: Path, example: str, version: str
+) -> None:
     session = ExplorerSession(tmp_path)
     examples = session.request("construction_examples", {})["examples"]
-    controls = examples["Cauchy causal graph"]
+    controls = examples[example]
+    if "width_prior" in controls:
+        controls["width_prior"].update(low=1, high=3)
     controls["task"].update(rows=16, context_rows=8)
     controls["calibration_rows"] = 4
     controls["function_prior"]["functions"] = "lin"
@@ -27,15 +38,15 @@ def test_sampled_workbench_constructs_edits_and_reopens(tmp_path: Path) -> None:
             "max_seconds": 120,
         },
     )
-    assert json.loads(result["recipe_json"])["recipe"]["version"] == "sampled-topology-graph-v1"
+    assert json.loads(result["recipe_json"])["recipe"]["version"] == version
     assert session.request("graph", {"indices": [7, 0, 7], "causal_limits": caps})["graph"][
         "rows"
     ] == [7, 0, 7]
     editor = session.request("mechanism", {"causal_limits": caps})
-    assert editor["construction"] == "sampled-topology-graph-v1"
+    assert editor["construction"] == version
     assert editor["kind"] == "mechanism-edit"
     edited = editor["editable_recipe"]
-    edited["nodes"][0]["noise_scale"] = [0.2, 0.2]
+    edited["nodes"][0]["noise_scale"] = [0.2] * editor["nodes"][0]["width"]
     comparison = session.request(
         "edit", {"recipe": edited, "causal_limits": caps, "max_seconds": 120}
     )

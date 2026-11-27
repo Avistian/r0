@@ -37,6 +37,15 @@ def construction_examples() -> dict[str, Any]:
     return {
         "Explicit causal graph": {**common, "topology": "explicit", "parents": [[], [0], [0, 1]]},
         "Cauchy causal graph": {**common, "topology": "cauchy", "offset": 0.0},
+        "Geometry-sampled causal graph": {
+            **{k: v for k, v in common.items() if k not in ("widths", "observed", "target")},
+            "topology": "geometry",
+            "nodes": 3,
+            "offset": 0.0,
+            "subsample": True,
+            "width_prior": asdict(priors.JointWidthPrior()),
+            "noise_scale": 0.0,
+        },
     }
 
 
@@ -52,6 +61,7 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
         "kind": "mechanism-edit",
         "construction": recipe.version,
         "editable_recipe": asdict(runtime),
+        "geometry": json.loads(task.mechanism_json).get("geometry"),
         "notice": (
             "Editing creates a new authored mechanism linked to the original sampled archive. "
             "It is not a causal intervention or observational conditioning."

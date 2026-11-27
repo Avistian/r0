@@ -2,20 +2,20 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {openBrowser} from "./explorer_browser.mjs";
-const [port, url, directory] = process.argv.slice(2);
+const [port, url, directory, family = "Cauchy causal graph"] = process.argv.slice(2);
 const browser = await openBrowser(Number(port), url, directory);
 try {
-  await browser.waitFor("document.getElementById('construction-family').options.length === 2");
-  await browser.evaluate(`$('construction-panel').open=true; $('construction-family').value='Cauchy causal graph'; $('construction-family').onchange();
-    const c=JSON.parse($('construction-controls').value); c.task.rows=16; c.task.context_rows=8; c.calibration_rows=4; c.offset=1000; $('construction-controls').value=JSON.stringify(c);
+  await browser.waitFor("document.getElementById('construction-family').options.length >= 2");
+  await browser.evaluate(`$('construction-panel').open=true; $('construction-family').value=${JSON.stringify(family)}; $('construction-family').onchange();
+    const c=JSON.parse($('construction-controls').value); c.task.rows=16; c.task.context_rows=8; c.calibration_rows=4; c.offset=1000; if(c.width_prior){c.width_prior.low=1;c.width_prior.high=3;} $('construction-controls').value=JSON.stringify(c);
     $('exploration-limits').value='{"parameters":1000001}'; $('seconds').value=120;`);
   await browser.click("construct");
   const before = await browser.evaluate("({archive:current.archive,episode:current.view.episode_id,recipe:JSON.parse(current.recipe_json).recipe.version})");
-  if (before.recipe !== "sampled-topology-graph-v1") throw new Error("sampled archive provenance missing");
+  if (before.recipe !== (family.startsWith("Geometry") ? "sampled-geometry-graph-v1" : "sampled-topology-graph-v1")) throw new Error("sampled archive provenance missing");
   await browser.click("mechanism-load");
   await browser.waitFor("document.querySelectorAll('#causal-structure svg [role=button]').length === 3");
   await browser.screenshot("construction.png");
-  await browser.evaluate("$('mechanism-noise').value='[0.2,0.2]'");
+  await browser.evaluate("$('mechanism-noise').value=JSON.stringify(Array(mechanismInfo.nodes[0].width).fill(0.2))");
   await browser.click("mechanism-apply");
   await browser.click("mechanism-save");
   const edit = await browser.evaluate("({path:current.edit.path,kind:current.edit.card.kind,after:current.edit.card.after_episode_id,original:current.view.episode_id})");

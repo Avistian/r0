@@ -55,7 +55,7 @@ function selectMechanismNode() {
   $("mechanism-parents").value = pretty(node.parents);
   $("mechanism-noise").value = pretty(node.noise_scale);
   $("mechanism-function").value = pretty(node.function);
-  $("mechanism-node-info").textContent = pretty({...mechanismInfo.nodes[index], note:"Green highlights the selected node and its ancestors. Hidden channels are not selected as observed features or targets. Values and equations are available in the generation-process drill-down below."});
+  $("mechanism-node-info").textContent = pretty({...mechanismInfo.nodes[index], geometry:mechanismInfo.geometry, note:"Green highlights the selected node and its ancestors. Hidden channels are not selected as observed features or targets. Values and equations are available in the generation-process drill-down below."});
   causalStructure();
 }
 $("construction-family").onchange = () => {$("construction-controls").value=pretty(constructionExamples[$("construction-family").value]);};
