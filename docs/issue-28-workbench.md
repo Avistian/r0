@@ -87,3 +87,10 @@ Its local screenshots and receipt are in
 `docs/evidence/issue-28-workbench/geometry-browser/`. Three focused backend cases
 cover topology and geometry construction, larger caller caps, edit/reopen, and
 worker timeout preservation. Hosted Colab proof remains separate and unexecuted.
+
+Sampled pair preparation and comparison verification execute in the guarded
+worker, including archive decoding and reconstruction. Pair STARTED and failure
+receipts are retained before worker preparation; a timeout preserves the active
+dataset. Inspection actions (the mechanism editor, graph inspection, and reopening
+an existing pair) decode and replay synchronously under caller exploration caps;
+the generation timeout does not cover those inspection actions.

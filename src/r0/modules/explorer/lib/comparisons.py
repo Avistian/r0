@@ -10,14 +10,11 @@ from typing import Any
 
 from r0.modules.explorer.lib.construction import caller_limits
 from r0.modules.explorer.lib.exports import replay_bundle
-from r0.modules.explorer.lib.saved import inside, load_saved, retain_record, run_saved
-from r0.modules.generation import RunRequest
+from r0.modules.explorer.lib.saved import inside, load_saved, retain_record, run_saved_document
 from r0.modules.priors import (
     CausalLimits,
     TrainingTask,
     compare_pair,
-    paired_recipe,
-    recipe_from_dict,
 )
 
 
@@ -40,22 +37,23 @@ def create_pair(
     if data.get("device", record["execution"]["device"]) != record["execution"]["device"]:
         raise ValueError("comparison must use the original dataset's generation device")
     limits = caller_limits(data)
-    recipe = paired_recipe(
-        recipe_from_dict(record["recipe"], limits=limits),
-        intervention=data["intervention"],
-        value=data["value"],
-    )
-    request = RunRequest(
-        recipe=recipe,
-        seed=record["seed"],
-        start=record["task_id"],
-        count=1,
-        group_size=1,
-        max_seconds=data.get("max_seconds", 60),
-        max_bytes=data.get("max_bytes", 256 * 1024**2),
-        device=record["execution"]["device"],
-        causal_limits=limits,
-    )
+    request = {
+        "recipe": record["recipe"],
+        "seed": record["seed"],
+        "start": record["task_id"],
+        "count": 1,
+        "group_size": 1,
+        "max_seconds": data.get("max_seconds", 60),
+        "max_bytes": data.get("max_bytes", 256 * 1024**2),
+        "device": record["execution"]["device"],
+        "causal_limits": asdict(limits),
+        "pairing": {
+            "before_archive": str(inside(output_dir, output_dir / archive)),
+            "intervention": data["intervention"],
+            "value": data["value"],
+            "allow_estimated_variance": data.get("allow_estimated_variance", False),
+        },
+    }
     attempts = output_dir / ".pair-attempts"
     attempts.mkdir(parents=True, exist_ok=True)
     attempt = uuid.uuid4().hex
@@ -63,20 +61,14 @@ def create_pair(
         "attempt": attempt,
         "before_archive": archive,
         "before_episode_id": before.episode_id,
-        "request": asdict(request),
+        "request": request,
         "intervention": data["intervention"],
         "allow_estimated_variance": data.get("allow_estimated_variance", False),
     }
     retain_record(attempts / f"{attempt}-started.json", {**pending, "status": "STARTED"})
     try:
-        after, after_archive, after_run = run_saved(output_dir, request)
-        card = compare_pair(
-            before,
-            after,
-            intervention=data["intervention"],
-            allow_estimated_variance=data.get("allow_estimated_variance", False),
-            limits=limits,
-        )
+        after, after_archive, after_run = run_saved_document(output_dir, request)
+        card = after_run["summary"]["pair_card"]
         document = {
             "version": "explorer-pair-v1",
             "card": card,

@@ -24,13 +24,13 @@
 <div class="actions"><button id="generate" type="submit" class="primary">Generate dataset</button><button id="next" type="button">Next task</button></div>
 </form>
 <details id="construction-panel"><summary>Sample a causal graph</summary>
-<p class="muted">Sample frozen mechanisms and retain their construction draws. Construction, archive replay and generation share the run timeout.</p>
+<p class="muted">Sample frozen mechanisms and retain their construction draws. Construction and generation replay run under the selected timeout. Pair creation also guards preparation and comparison.</p>
 <label>Graph recipe<select id="construction-family"></select></label>
 <label>Construction seed<input id="construction-seed" value="28" inputmode="numeric"></label>
 <label>Construction controls<textarea id="construction-controls" rows="18" spellcheck="false"></textarea></label>
 <p class="muted">Explicit/Cauchy controls edit parents, widths and channel pairs. Geometry sampling chooses widths and feature-node assignments. Choose root families and function priors. Geometry sampling currently uses identity numerical readouts and adapter-score targets. These controls are separate from the dataset settings above.</p>
 <label>Exploration caps (JSON)<textarea id="exploration-limits" rows="3" spellcheck="false">{}</textarea></label>
-<p class="muted">Empty uses default causal limits. Explicit larger caps also authorize replay and inspection. Workloads are not promised at every combination of maxima.</p>
+<p class="muted">Empty uses default causal limits. Explicit larger caps also authorize replay and inspection. Graph inspection, the mechanism editor and pair reopening run synchronously under these caps, outside the generation timeout. Workloads are not promised at every combination of maxima.</p>
 <button id="construct" type="button">Sample graph and save dataset</button>
 </details>
 <details><summary>Replay or open saved data</summary>

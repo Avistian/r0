@@ -89,7 +89,8 @@ def test_failed_pair_or_reopen_preserves_current_dataset_and_comparison(tmp_path
     assert len(failures) == 1
     failure = json.loads(failures[0].read_text())
     assert failure["status"] == "FAILED"
-    assert failure["request"]["recipe"]["noise_ratio"] == 0.9
+    assert failure["request"]["recipe"]["noise_ratio"] == 0.2
+    assert failure["request"]["pairing"]["value"] == 0.9
     assert failure["before_episode_id"] == result["view"]["episode_id"]
     path = tmp_path / result["pair"]["path"]
     original = path.read_text()

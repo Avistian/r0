@@ -6,21 +6,30 @@ import resource
 import subprocess
 import sys
 import time
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 from threading import Lock
 
 import numpy as np
 import torch
 
-from r0.modules.generation import run_generation
+from r0.modules.generation import load_group, run_generation
 from r0.modules.generation.lib.requests import generate_requested, request_from_dict
-from r0.modules.priors import TrainingTask
+from r0.modules.priors import TrainingTask, compare_pair, paired_recipe
 
 
 def main() -> int:
     data = json.load(sys.stdin)
-    request = request_from_dict(data["request"])
+    raw_request = dict(data["request"])
+    pairing = raw_request.pop("pairing", None)
+    request = request_from_dict(raw_request)
+    if pairing is not None:
+        request = replace(
+            request,
+            recipe=paired_recipe(
+                request.recipe, intervention=pairing["intervention"], value=pairing["value"]
+            ),
+        )
     sync_path: str | None = data["sync_path"]
     generated = 0
     counter = Lock()
@@ -70,6 +79,27 @@ def main() -> int:
         "torch": torch.__version__,
         "cuda": torch.version.cuda,
     }
+    if pairing is not None and result.status == "COMPLETE":
+        before = next(
+            task
+            for task in load_group(Path(pairing["before_archive"]))
+            if json.loads(task.recipe_json)["task_id"] == request.start
+        )
+        archives = list(Path(data["out"]).glob("groups/**/*.zip"))
+        if len(archives) != 1:
+            raise ValueError("paired generation requires one completed archive")
+        after = next(
+            task
+            for task in load_group(archives[0])
+            if json.loads(task.recipe_json)["task_id"] == request.start
+        )
+        report["pair_card"] = compare_pair(
+            before,
+            after,
+            intervention=pairing["intervention"],
+            allow_estimated_variance=pairing["allow_estimated_variance"],
+            limits=request.causal_limits,
+        )
     print(json.dumps(report, sort_keys=True))
     return 0 if result.status == "COMPLETE" else 1
 
