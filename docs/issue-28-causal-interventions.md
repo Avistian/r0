@@ -84,7 +84,10 @@ applicable. The original equation and intervention are both retained.
 write-once before/after ZIP groups using the original task identity. `max_bytes`
 bounds each group. A final `pair.json` binds both group receipts and the comparison
 card. `load_causal_pair` verifies receipts and complete pair replay; missing manifests,
-changed arrays/cards and overwrites reject. Interrupted partial directories remain
+changed arrays/cards and overwrites reject. Replay binds both tasks' declared task
+type, identities, class/schema/origin metadata, mechanism cards, and execution
+implementation/device. Historical environment details remain descriptive; exact
+array/probability replay determines numerical agreement. Interrupted partial directories remain
 without a completion manifest. Predictor archives retain the established split:
 query labels, noise and diagnostic truth are not exposed as predictor inputs.
 Caller-owned larger causal limits can be supplied to comparison, persistence,

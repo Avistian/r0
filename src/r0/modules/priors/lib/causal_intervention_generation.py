@@ -2,7 +2,7 @@
 
 import json
 from dataclasses import asdict, replace
-from typing import Any
+from typing import Any, cast
 
 import torch
 
@@ -138,6 +138,7 @@ def compare_causal_pair(
         for field in (
             "source_task_id",
             "episode_id",
+            "task_type",
             "classes",
             "feature_schema",
             "target_origin",
@@ -145,6 +146,13 @@ def compare_causal_pair(
         ):
             if getattr(actual, field) != getattr(expected, field):
                 raise ValueError("causal comparison metadata disagrees with replay")
+        actual_execution = json.loads(actual.recipe_json).get("execution")
+        expected_execution = json.loads(expected.recipe_json)["execution"]
+        if type(actual_execution) is not dict or any(
+            cast(dict[str, Any], actual_execution).get(field) != expected_execution[field]
+            for field in ("implementation", "device")
+        ):
+            raise ValueError("causal comparison execution metadata disagrees with replay")
         for field in ("inputs", "targets", "scores", "context_indices", "query_indices"):
             if not torch.equal(getattr(actual, field).cpu(), getattr(expected, field).cpu()):
                 raise ValueError("causal comparison arrays disagree with retained replay")
