@@ -15,7 +15,7 @@ and one categorical sampler. Operations use named, nested transactions:
 ```python
 with context.transaction("graph") as graph:
     with graph.transaction("node-0") as node:
-        sigma = node.numerical("sigma", NumericalParameter("gaussian_noise_sigma", 0., 1.))
+        sigma = node.numerical("sigma", NumericalParameter("gaussian_noise_sigma", 0.0, 1.0))
         node.forced_identity("target-converter", reason="target-warp-disabled")
 record = context.freeze()
 ```
