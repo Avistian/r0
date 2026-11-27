@@ -28,6 +28,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
 )
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
+from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction, NetworkAffine
 
 if TYPE_CHECKING:
@@ -100,7 +101,7 @@ def _activation(
 def function_certificates(
     function: FrozenFunction, inputs: list[ChannelCertificate]
 ) -> list[ChannelCertificate]:
-    if type(function) is FrozenNetworkFunction:
+    if isinstance(function, FrozenNetworkFunction | FrozenNetworkBlockFunction):
 
         def affine_cert(
             branch: NetworkAffine, values: list[ChannelCertificate]
@@ -121,8 +122,17 @@ def function_certificates(
             ]
             return _activation(out, branch.activation) if branch.placement == "after" else out
 
-        states = [inputs]
-        for block in function.blocks:
+        states: list[list[ChannelCertificate]] = [inputs]
+        blocks = (
+            function.blocks if isinstance(function, FrozenNetworkFunction) else (function.block,)
+        )
+        if isinstance(function, FrozenNetworkBlockFunction):
+            states = []
+            offset = 0
+            for width in function.incoming_widths:
+                states.append(inputs[offset : offset + width])
+                offset += width
+        for block in blocks:
             argument = [c for parent in block.parents for c in states[parent]]
             experts = [affine_cert(e, argument) for e in block.experts]
             merged = [_sum(list(column)) for column in zip(*experts, strict=True)]

@@ -74,6 +74,15 @@ def paired_recipe(
     if value == getattr(controls, field):
         raise ValueError("pair intervention must change the selected value")
     changed = replace(controls, **{field: value})
+    from r0.modules.priors.lib.network_innovation_recipe import NetworkInnovationRecipe
+
+    if isinstance(recipe, NetworkInnovationRecipe):
+        if intervention not in ("noise", "separation") or recipe.source is None:
+            raise ValueError(
+                "noisy networks support task noise/separation pairs; "
+                "edit architecture or importance explicitly"
+            )
+        return replace(recipe, task=changed, source=replace(recipe.source, task=changed))
     if isinstance(recipe, (NetworkRecipe, NetworkInputView)):
         return network_input_pair(
             recipe,

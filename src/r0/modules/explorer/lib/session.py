@@ -331,12 +331,14 @@ class ExplorerSession:
             return _identity_numbers(
                 {"before": result["before"], "after": result["after"]}, for_browser=True
             )
-        if action == "network_draft":
-            from r0.modules.explorer.lib.networks import validate_editor_draft
+        if action in ("network_noise_draft", "network_draft", "mechanism"):
+            from r0.modules.explorer.lib.networks import network_editor_action
 
-            return validate_editor_draft(
-                data, self.output_dir, limits=caller_limits(data), source=self.task.recipe_json
+            result = network_editor_action(
+                action, data, self.task, self.output_dir, limits=caller_limits(data)
             )
+            if result is not None:
+                return result
         if action == "mechanism":
             return prepare_mechanism_editor(self.task, data, self.output_dir)
         if action == "edit":
@@ -403,6 +405,7 @@ class ExplorerSession:
         if action == "curve":
             if json.loads(self.task.recipe_json)["recipe"].get("version") in (
                 "standalone-network-v1",
+                "standalone-network-innovations-v1",
                 "network-input-view-v1",
                 "network-input-view-v2",
             ):

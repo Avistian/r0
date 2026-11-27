@@ -143,6 +143,10 @@ def functional_recipe_from_dict(
     admit_function_metadata(data, limits)
     if type(data) is not dict:
         raise ValueError("functional graph records must be objects")
+    if data.get("version") == "standalone-network-innovations-v1":
+        from r0.modules.priors.lib.network_innovation_decoding import network_innovation_from_dict
+
+        return network_innovation_from_dict(data, limits=limits)
     from r0.modules.priors.lib.fitted_fit_decoding import decode_node_fit
     from r0.modules.priors.lib.fitted_graph import FittedFunctionalCausalRecipe
     from r0.modules.priors.lib.fitted_parameter_decoding import sampled_fitted_plan_from_dict

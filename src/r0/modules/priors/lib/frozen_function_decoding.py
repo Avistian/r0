@@ -23,11 +23,13 @@ from r0.modules.priors.lib.frozen_function_primitives import (
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
-from r0.modules.priors.lib.network_decoding import decode_network
+from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
+from r0.modules.priors.lib.network_decoding import decode_block, decode_network
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 
 _DEFAULT_LIMITS = CausalLimits()
 _REGISTRY = {
+    "frozen-network-block-v1": FrozenNetworkBlockFunction,
     "frozen-structural-network-v1": FrozenNetworkFunction,
     "frozen-fitted-tree-function-v1": FrozenFittedTreeFunction,
     "frozen-linear-function-v1": FrozenLinearFunction,
@@ -54,6 +56,7 @@ _KUMO = frozenset(
     )
 )
 _CHEAP = frozenset(_REGISTRY) - {
+    "frozen-network-block-v1",
     "frozen-structural-network-v1",
     "frozen-kumo-product-function-v1",
     "frozen-parent-function-v1",
@@ -114,6 +117,10 @@ def _decode(data: Any, allowed: frozenset[str]) -> FrozenFunction:
         raise ValueError("unsupported or recursively disallowed frozen function version")
     record_type = _REGISTRY[version]
     fields = _record(raw, record_type)
+    if record_type is FrozenNetworkBlockFunction:
+        fields["incoming_widths"] = tuple(_array(fields["incoming_widths"]))
+        fields["block"] = decode_block(fields["block"])
+        return FrozenNetworkBlockFunction(**fields)
     if record_type is FrozenNetworkFunction:
         return decode_network(fields)
     if record_type is FrozenFittedTreeFunction:

@@ -31,6 +31,11 @@ def main() -> int:
 
         print(json.dumps(network_graph(raw_request), allow_nan=False))
         return 0
+    if raw_request.get("validation") in ("network-noise-editor", "network-noise-draft"):
+        from r0.modules.generation.lib.network_innovation_validation import noise_editor
+
+        print(json.dumps(noise_editor(raw_request), allow_nan=False))
+        return 0
     if raw_request.get("validation") == "network-curve":
         from r0.modules.generation.lib.network_curve import network_curve
 

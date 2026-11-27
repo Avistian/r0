@@ -20,6 +20,7 @@ def network_graph(data: dict[str, Any]) -> dict[str, Any]:
         if record["task_id"] != data["task_id"]:
             continue
         if task.episode_id != data["episode_id"] or record["recipe"].get("version") not in (
+            "standalone-network-innovations-v1",
             "standalone-network-v1",
             "network-input-view-v1",
             "network-input-view-v2",

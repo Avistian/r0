@@ -15,5 +15,10 @@
 <pre id="source-root-provenance"></pre>
 <button id="source-root-edit-apply">Validate and apply root to draft</button></fieldset>
 <label>Complete authored network recipe<textarea id="network-recipe" rows="18" spellcheck="false"></textarea></label>
+<div id="network-noise-edit" hidden>
+<label>Explicit internal noise and outgoing importance plan<textarea id="network-noise-plan" rows="18" spellcheck="false"></textarea></label>
+<p class="muted">The architecture above is the source network. This plan adds separate compiled noise/activation nodes. Means/scales and masks are frozen; row draws remain keyed. Saving creates authored statistics and architecture without changing the original sampled archive.</p>
+<details open><summary>Compiled nodes and original-block mapping</summary><pre id="network-noise-compiled"></pre></details>
+</div>
 <button id="network-save">Generate and save linked network edit</button>
 </div>

@@ -20,6 +20,7 @@ from r0.modules.priors.lib.converter_intervention_inspection import (
 )
 from r0.modules.priors.lib.native_causal import NativeCausalNode
 from r0.modules.priors.lib.native_vector_records import NativeVectorNode
+from r0.modules.priors.lib.network_block_function import FrozenNetworkBlockFunction
 from r0.modules.priors.lib.network_inspection import network_steps
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -57,7 +58,9 @@ def intervention_steps(
             else effective
         )
         if (
-            isinstance(effective_equation.function, FrozenNetworkFunction)
+            isinstance(
+                effective_equation.function, FrozenNetworkFunction | FrozenNetworkBlockFunction
+            )
             and "inputs" in execution.traces[i]
         ):
             network_steps(

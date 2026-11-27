@@ -270,3 +270,51 @@ def validate_editor_draft(
             "Invalid network draft: " + (detail[-1] if detail else "validation failed")
         )
     return {"recipe": result.summary["recipe"]}
+
+
+def noise_editor_guarded(
+    data: dict[str, Any],
+    output_dir: Path,
+    *,
+    limits: priors.CausalLimits,
+    recipe: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    from r0.modules.generation import run_guarded_document
+
+    result = run_guarded_document(
+        {
+            "validation": "network-noise-editor" if recipe is not None else "network-noise-draft",
+            "recipe": recipe if recipe is not None else data["recipe"],
+            "innovation_plan": data.get("innovation_plan"),
+            "causal_limits": asdict(limits),
+            "max_seconds": data.get("max_seconds", 60),
+            "max_bytes": data.get("max_bytes", 256 * 1024**2),
+        },
+        output_dir / "noise-editor-validation",
+    )
+    if result.timed_out:
+        raise ValueError("Network noise editor timed out; accepted draft unchanged")
+    if result.returncode or result.summary is None:
+        detail = result.stderr.strip().splitlines()
+        raise ValueError(
+            "Invalid network noise draft: " + (detail[-1] if detail else "validation failed")
+        )
+    return result.summary
+
+
+def network_editor_action(
+    action: str,
+    data: dict[str, Any],
+    task: priors.TrainingTask,
+    output_dir: Path,
+    *,
+    limits: priors.CausalLimits,
+) -> dict[str, Any] | None:
+    if action == "network_noise_draft":
+        return noise_editor_guarded(data, output_dir, limits=limits)
+    if action == "network_draft":
+        return validate_editor_draft(data, output_dir, limits=limits, source=task.recipe_json)
+    raw = json.loads(task.recipe_json)["recipe"]
+    if raw.get("version") == "standalone-network-innovations-v1":
+        return noise_editor_guarded(data, output_dir, limits=limits, recipe=raw)
+    return None

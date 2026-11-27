@@ -43,21 +43,25 @@ def affine(data: Any) -> NetworkAffine:
     return NetworkAffine(**fields)
 
 
+def decode_block(item: Any) -> NetworkBlock:
+    b = record(item, NetworkBlock)
+    b["parents"] = array(b["parents"])
+    b["experts"] = tuple(affine(e) for e in array(b["experts"]))
+    b["gate"] = affine(b["gate"]) if b["gate"] is not None else None
+    skips: list[NetworkProjection] = []
+    for item in array(b["skips"]):
+        s = record(item, NetworkProjection)
+        s["affine"] = affine(s["affine"])
+        skips.append(NetworkProjection(**s))
+    b["skips"] = tuple(skips)
+    return NetworkBlock(**b)
+
+
 def decode_network(data: Any) -> FrozenNetworkFunction:
     fields = record(data, FrozenNetworkFunction)
     blocks: list[NetworkBlock] = []
     for item in array(fields["blocks"]):
-        b = record(item, NetworkBlock)
-        b["parents"] = array(b["parents"])
-        b["experts"] = tuple(affine(e) for e in array(b["experts"]))
-        b["gate"] = affine(b["gate"]) if b["gate"] is not None else None
-        skips: list[NetworkProjection] = []
-        for item in array(b["skips"]):
-            s = record(item, NetworkProjection)
-            s["affine"] = affine(s["affine"])
-            skips.append(NetworkProjection(**s))
-        b["skips"] = tuple(skips)
-        blocks.append(NetworkBlock(**b))
+        blocks.append(decode_block(item))
     fields["blocks"] = tuple(blocks)
     return FrozenNetworkFunction(**fields)
 

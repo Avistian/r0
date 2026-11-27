@@ -16,6 +16,7 @@ def inspect_graph(
 ) -> dict[str, Any]:
     record = json.loads(task.recipe_json)
     if record["recipe"].get("version") not in (
+        "standalone-network-innovations-v1",
         "standalone-network-v1",
         "network-input-view-v1",
         "network-input-view-v2",

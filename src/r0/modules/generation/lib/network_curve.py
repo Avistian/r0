@@ -18,7 +18,9 @@ def network_curve(data: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("network curve request exceeds byte cap")
     limits = priors.CausalLimits(**data["causal_limits"])
     recipe = priors.recipe_from_dict(data["recipe"], limits=limits)
-    if not isinstance(recipe, (priors.NetworkRecipe, priors.NetworkInputView)):
+    if not isinstance(
+        recipe, (priors.NetworkRecipe, priors.NetworkInputView, priors.NetworkInnovationRecipe)
+    ):
         raise ValueError("response requires a standalone network recipe")
     anchor, feature, points, bounds = (
         data["anchor"],
@@ -43,7 +45,9 @@ def network_curve(data: dict[str, Any]) -> dict[str, Any]:
     ):
         raise ValueError("invalid network response grid")
     # Admit the query geometry before allocating the repeated anchor/grid.
-    if isinstance(recipe, priors.NetworkInputView):
+    if isinstance(recipe, priors.NetworkInnovationRecipe):
+        recipe.admit(evaluation_rows=points)
+    elif isinstance(recipe, priors.NetworkInputView):
         recipe.admit(rows=points)
     else:
         priors.admit_frozen_function(recipe.function, points, recipe.limits)
@@ -51,12 +55,32 @@ def network_curve(data: dict[str, Any]) -> dict[str, Any]:
     fraction = torch.linspace(0, 1, points, dtype=torch.float64)
     values = (1 - fraction) * bounds[0] + fraction * bounds[1]
     x[:, feature] = values
-    scores = (
-        priors.view_signal(recipe, x)
-        if isinstance(recipe, priors.NetworkInputView)
-        else priors.evaluate_frozen_function(recipe.function, x, limits=recipe.limits)
-    )
+    reference: dict[str, Any] = {}
+    if isinstance(recipe, priors.NetworkInnovationRecipe):
+        mode = data.get("reference", "zero")
+        if mode not in ("zero", "original-row"):
+            raise ValueError("network reference must be zero or original-row")
+        innovations = None
+        if mode == "original-row":
+            row = priors.network_innovation_row(
+                recipe, seed=data["seed"], task_id=data["task_id"], row=data["anchor_row"]
+            )
+            innovations = {key: value.repeat(points, 1) for key, value in row.items()}
+            reference["fixed_innovations"] = {
+                str(key): value.numpy().tolist() for key, value in row.items()
+            }
+        scores = priors.evaluate_network_innovation_reference(recipe, x, innovations=innovations)
+        reference.update(
+            reference=mode, original_task_id=str(data["task_id"]), original_row=data["anchor_row"]
+        )
+    else:
+        scores = (
+            priors.view_signal(recipe, x)
+            if isinstance(recipe, priors.NetworkInputView)
+            else priors.evaluate_frozen_function(recipe.function, x, limits=recipe.limits)
+        )
     result = {
+        **reference,
         "values": np.asarray(values.numpy(), dtype=np.float64).tolist(),
         "scores": np.asarray(scores.numpy(), dtype=np.float64).tolist(),
     }
