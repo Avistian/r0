@@ -17,15 +17,15 @@ scientific acceptance, or whole-issue completion.
 | `557bec8` | Cauchy topology sampler passed scoped independent specification and standards reviews. Full check: 1,749 passed, one skipped. |
 | `7bbb608` | Complete topology/mechanism envelope passed scoped specification review. Full check: 1,755 passed, one skipped. Standards found a test importing a private decoder. |
 | `ea25257` | Test now calls the public decoder; narrow standards repair accepted. |
-| `a22eb63` | Latent-width and observation components passed 36 independent checks; standards found logs outside the required ignored evidence directory. Full check was still running when this checkpoint note was prepared. |
+| `a22eb63` | Latent-width and observation components passed 36 independent checks; standards found logs outside the required ignored evidence directory. Full check: 1,770 passed, one skipped. |
 | `60f13ba` | Converter input-channel allocation added; 17 focused tests and static checks passed. Evidence-location repair independently accepted. Channel-layout code has not yet received independent review or a full-suite result. |
 
 Original rejection probes and failure logs are retained alongside repairs. Local
 copies live under ignored `docs/evidence/issue-28-parallel/`, with a byte-verified
 `manifest.json`. This directory contains both independent probes and separately
 identified author/full-suite reports. It is local retention, not portable public
-artifact delivery. The running `a22eb63` check log is intentionally excluded until
-it terminates.
+artifact delivery. The terminal `a22eb63` full-check log is included; later worker candidates are
+not covered by that result.
 
 ## Parallel implementation ownership
 
@@ -65,3 +65,21 @@ execution and inspectable portable evidence remain separate acceptance gates.
 No paid or full-scale run is authorized by this design. Undisclosed source
 algorithms remain explicitly unresolved; adaptations must not masquerade as exact
 reproductions. No source option is closed by this status document.
+
+## Bounded geometry census
+
+At source checkpoint `a95422c` (source identical to `60f13ba`), 288 deterministic
+CPU cases passed: 16 seeds for each combination of local/meta/global preference
+mode, all-node/subset observation mode, and 2/8/32 nodes. Each case assigns 12
+numerical input features and one target input channel, allocates converter spans,
+and samples latent widths. An independent assignment count checks channel totals;
+all cases and full records are retained, with no filtering or retries.
+
+The retained procedure is
+`docs/evidence/issue-28-parallel/geometry_census.py`; results, per-case hashes and
+full records are in its `geometry-census/` directory. Run with the existing
+`python3 scripts/run_check.py python` launcher and the declared environment used
+above. Python 3.12.3 and NumPy 2.5.5 were observed. The complete component census
+took 1.67 seconds on this run; this is not a full-generator throughput benchmark.
+Peak memory was not measured. No categorical conversion, generated-table quality,
+intervention, GPU, browser or Colab result follows from this census.
