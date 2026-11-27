@@ -3,13 +3,13 @@
 from dataclasses import fields
 from typing import Any
 
-from r0.modules.priors.lib.cauchy_graph import CauchyGraphPrior
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.functional_causal_decoding import functional_array, functional_record
 from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
 from r0.modules.priors.lib.geometry_graph_request import GeometryGraphRequest
 from r0.modules.priors.lib.geometry_graph_sampling import sample_geometry_graph
+from r0.modules.priors.lib.geometry_topology import decode_geometry_topology
 from r0.modules.priors.lib.joint_root_plans import JointRootPrior
 from r0.modules.priors.lib.joint_width_plans import JointWidthPrior
 from r0.modules.priors.lib.linear import LinearRecipe
@@ -30,7 +30,7 @@ def decode_geometry_graph_request(data: Any, limits: CausalLimits) -> GeometryGr
         raise ValueError("geometry graph declared limits exceed caller limits")
     raw["limits"] = declared
     raw["raw_limits"] = RawDrawLimits(**functional_record(raw["raw_limits"], RawDrawLimits))
-    raw["topology"] = CauchyGraphPrior(**functional_record(raw["topology"], CauchyGraphPrior))
+    raw["topology"] = decode_geometry_topology(raw["topology"])
     raw["width_prior"] = JointWidthPrior(**functional_record(raw["width_prior"], JointWidthPrior))
     task = functional_record(raw["task"], LinearRecipe)
     if "class_offsets" in task:

@@ -2,9 +2,9 @@
 
 import numpy as np
 
-from r0.modules.priors.lib.cauchy_graph import sample_cauchy_graph
 from r0.modules.priors.lib.generator_snapshot import snapshot_generator
 from r0.modules.priors.lib.geometry_graph_request import GeometryGraphRequest
+from r0.modules.priors.lib.geometry_topology import sample_geometry_topology
 from r0.modules.priors.lib.joint_graph_materialization import materialize_joint_graph
 from r0.modules.priors.lib.joint_graph_plans import sample_joint_graph_plan
 from r0.modules.priors.lib.joint_observation_plans import sample_joint_observations
@@ -39,7 +39,12 @@ def sample_geometry_graph(
             categorical_policy=request.categorical_policy,
             global_policy=request.global_policy,
         )
-        topology = sample_cauchy_graph(request.topology, rng=staged["raw"], limits=request.limits)
+        topology = sample_geometry_topology(
+            request.topology,
+            rng=staged["raw"],
+            limits=request.limits,
+            raw_limits=request.raw_limits,
+        )
         observation_plan = sample_joint_observations(
             context,
             "observations",

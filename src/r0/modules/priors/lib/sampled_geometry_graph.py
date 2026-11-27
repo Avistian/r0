@@ -7,17 +7,19 @@ from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_graph_admission import admit_functional_graph
 from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
 from r0.modules.priors.lib.geometry_graph_request import GeometryGraphRequest
+from r0.modules.priors.lib.geometry_topology import GeometryTopology
 from r0.modules.priors.lib.joint_observation_realization import JointObservationRealization
 from r0.modules.priors.lib.joint_width_plans import JointWidthPlan
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.materialized_joint_graph import MaterializedJointGraph
 from r0.modules.priors.lib.observation_channel_layout import ObservationChannelLayout
+from r0.modules.priors.lib.structural_graph import StructuralGraph
 
 
 @dataclass(frozen=True, slots=True)
 class SampledGeometryGraph:
     request: GeometryGraphRequest
-    topology: CauchyGraph
+    topology: GeometryTopology
     observations: JointObservationRealization
     layout: ObservationChannelLayout
     widths: JointWidthPlan
@@ -41,7 +43,7 @@ class SampledGeometryGraph:
         if (
             self.version != "sampled-geometry-graph-v1"
             or type(self.request) is not GeometryGraphRequest
-            or type(self.topology) is not CauchyGraph
+            or type(self.topology) not in (CauchyGraph, StructuralGraph)
             or type(self.observations) is not JointObservationRealization
             or type(self.layout) is not ObservationChannelLayout
             or type(self.widths) is not JointWidthPlan

@@ -5,6 +5,10 @@ from dataclasses import dataclass, replace
 from r0.modules.priors.lib.activation_sampling import finite_number
 from r0.modules.priors.lib.cauchy_graph import CauchyGraphPrior
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.geometry_topology import (
+    GeometryTopologyPrior,
+    geometry_topology_raw_reservation,
+)
 from r0.modules.priors.lib.joint_function_admission import function_record_cost
 from r0.modules.priors.lib.joint_function_prior import JointFunctionPrior
 from r0.modules.priors.lib.joint_graph_request import JointGraphNoise, JointGraphRequest
@@ -15,11 +19,12 @@ from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline, NumericalConverter
 from r0.modules.priors.lib.observation_channel_layout import ObservationChannelLayout
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
+from r0.modules.priors.lib.structural_graph_prior import AttachmentGraphPrior, MotifGraphPrior
 
 
 @dataclass(frozen=True, slots=True)
 class GeometryGraphRequest:
-    topology: CauchyGraphPrior
+    topology: GeometryTopologyPrior
     task: LinearRecipe
     subsample: bool = True
     width_prior: JointWidthPrior = JointWidthPrior()
@@ -37,7 +42,7 @@ class GeometryGraphRequest:
     def __post_init__(self) -> None:
         if (
             self.version != "geometry-graph-request-v1"
-            or type(self.topology) is not CauchyGraphPrior
+            or type(self.topology) not in (CauchyGraphPrior, AttachmentGraphPrior, MotifGraphPrior)
             or type(self.task) is not LinearRecipe
             or type(self.subsample) is not bool
             or type(self.width_prior) is not JointWidthPrior
@@ -71,11 +76,14 @@ class GeometryGraphRequest:
 
     def mechanism_raw_limits(self) -> RawDrawLimits:
         n = self.topology.nodes
-        draws = 4 + (4 if self.subsample else 2)
-        numbers = n * n + 2 * n + 1 + sum(g.count for g in self.groups)
+        topology_draws, topology_numbers, parameter_bytes = geometry_topology_raw_reservation(
+            self.topology
+        )
+        draws = topology_draws + (4 if self.subsample else 2)
+        numbers = topology_numbers + sum(g.count for g in self.groups)
         if self.subsample:
             numbers += 2 * n
-        storage = 96 * numbers + 4096 * draws + 4 * self.raw_limits.state_bytes
+        storage = 96 * numbers + 4096 * draws + parameter_bytes + 4 * self.raw_limits.state_bytes
         remaining = (
             self.raw_limits.draws - draws,
             self.raw_limits.numbers - numbers,
