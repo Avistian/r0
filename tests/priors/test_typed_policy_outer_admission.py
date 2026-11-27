@@ -52,7 +52,7 @@ def receipt() -> p.SampledTypedInterventionPolicy:
     )
 
 
-@pytest.mark.parametrize("cap_mib", [32, 48])
+@pytest.mark.parametrize("cap_mib", [32, 48, 49])
 @pytest.mark.parametrize("binding", ["caller", "declared"])
 def test_known_outer_reservations_precede_nested_snapshot_restore(
     cap_mib: int, binding: str, monkeypatch: pytest.MonkeyPatch
@@ -81,3 +81,82 @@ def test_valid_receipt_retains_original_declared_caps_and_all_custody() -> None:
     assert isinstance(decoded, p.SampledTypedInterventionPolicy)
     assert decoded.request.limits.working_bytes == 256 * 1024**2
     assert asdict(decoded.request.base)["request"]["limits"]["working_bytes"] == 32 * 1024**2
+
+
+def test_actual_admission_transition_rejects_before_any_base_replay(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sampled = receipt()
+    raw = asdict(sampled)
+    low, high = 32 * 1024**2, 64 * 1024**2
+    calls: list[int] = []
+    original = type(sampled.initial[0]).restore
+
+    def observe(self: Any, *args: Any, **kwargs: Any):
+        calls.append(1)
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(type(sampled.initial[0]), "restore", observe)
+    while high - low > 1:
+        cap = (low + high) // 2
+        calls.clear()
+        try:
+            decoded = p.recipe_from_dict(raw, limits=p.CausalLimits(working_bytes=cap))
+        except ValueError:
+            assert not calls, f"late admission at {cap} bytes"
+            low = cap
+        else:
+            assert asdict(decoded) == raw
+            high = cap
+    calls.clear()
+    with pytest.raises(ValueError, match="limit|admission|reservation"):
+        p.recipe_from_dict(raw, limits=p.CausalLimits(working_bytes=low))
+    assert not calls
+    assert asdict(p.recipe_from_dict(raw, limits=p.CausalLimits(working_bytes=high))) == raw
+
+
+def test_sampling_fitted_base_checks_aggregate_before_fit_custody_replay(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    skeleton = p.FunctionalCausalRecipe(
+        p.LinearRecipe(rows=16, context_rows=8, features=1, signal_features=1, active_features=1),
+        (
+            p.FunctionalCausalNode(
+                (), p.FrozenLinearFunction(((1.0,),)), p.JointRootBase("gaussian", 1)
+            ),
+            p.FunctionalCausalNode((0,), p.FrozenLinearFunction(((1.0,),))),
+            p.FunctionalCausalNode((1,), p.FrozenLinearFunction(((3.0,),))),
+        ),
+        ((0, 0),),
+        ((2, 0),),
+    )
+    fitted = p.sample_fitted_graph(
+        skeleton,
+        ((1, p.FittedTreePlan(rows=32)),),
+        prefix_rng=np.random.default_rng(41),
+        input_rng=np.random.default_rng(43),
+        target_rng=np.random.default_rng(47),
+        backend_rng=np.random.default_rng(53),
+    )
+    request = p.TypedInterventionPolicyRequest(
+        fitted,
+        (2,),
+        (p.InterventionPolicyLocation(1, channels=(0,)),),
+        eligibility=(1,),
+        count=1,
+        reference_rows=16,
+        limits=p.CausalLimits(working_bytes=49 * 1024**2),
+        raw_limits=p.RawDrawLimits(state_bytes=8 * 1024**2),
+    )
+    streams = [np.random.default_rng(n) for n in (59, 61, 67)]
+    before = [str(r.bit_generator.state) for r in streams]
+
+    def forbidden(*args: Any, **kwargs: Any):
+        raise AssertionError("fit custody replay preceded policy aggregate admission")
+
+    monkeypatch.setattr(type(fitted.fits[0].prefix_initial), "restore", forbidden)
+    with pytest.raises(ValueError, match="limit|admission|reservation"):
+        p.sample_typed_intervention_policy(
+            request, selection_rng=streams[0], value_rng=streams[1], calibration_rng=streams[2]
+        )
+    assert [str(r.bit_generator.state) for r in streams] == before

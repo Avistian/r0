@@ -44,17 +44,19 @@ claim of exhaustive combinations. Population/support-refitted lifecycles refuse
 explicitly and remain required follow-ons; their fitting population must not be
 silently substituted with a frozen equation view.
 
-Admission intersects nested runtime and outer caps and reserves whole-reference,
-comparison, raw and snapshot resources before sampling. The strict decoder first
-uses a deliberately conservative row-by-retained-parameter bound without restoring
-snapshots. Known outer snapshot and retained raw-spec costs are charged against
-the caller-intersected policy budget before any nested base decoder can restore
-construction streams. The base keeps its original declared caps; outer policy
-reservations do not rewrite or silently narrow retained base records. Every eligible address is admitted before selecting a subset. These
-bounds may refuse cases that a tighter planner could admit; there is no silent
-count reduction, budget widening or retry. Existing native-vector decoder rules
-that require declared caps to fit caller caps remain in force. Typed receipts have
-a new version; scalar v1 policy archives remain unchanged.
+Admission uses one metadata-only planner for both live sampling and strict decode.
+It intersects nested runtime and outer caps and charges three graph views (complete
+reference, original comparison and effective comparison), pair buffers, full original
+request storage, complete-reference raw draws and initial/final snapshots. The graph
+planner reads retained authored function geometry without replaying sampled kernels
+or forests; full construction replay costs and sampled/prototype root custody remain
+charged. Original sampled-envelope calibration rows and fixed ancestor-fit rows are
+included, with native model replay costs for fixed XGBoost fits. Authored previews
+never replace the request's retained original envelopes or alter their declared caps.
+Every eligible address is admitted before selection. These conservative estimates
+may reject tighter budgets than a specialized planner; they do not reduce counts,
+widen caps or retry. Native-vector declared-cap requirements remain in force.
+Typed receipts have a new version; scalar v1 policy archives remain unchanged.
 
 Task generation, exact recipe decode, before/after comparison and pair persistence,
 semantic metadata verification and repeated-row inspection are library seams.

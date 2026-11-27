@@ -8,7 +8,6 @@ from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
 from r0.modules.priors.lib.intervention_policy_decoding import complete_record
 from r0.modules.priors.lib.intervention_policy_laws import InterventionParameterLaw
-from r0.modules.priors.lib.joint_function_admission import function_record_cost
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
 from r0.modules.priors.lib.raw_draw_spec import RawDrawSpec
@@ -29,44 +28,10 @@ def restore_typed_base(raw: dict[str, Any]):
     return recipe_from_dict(raw, limits=stored_base_limits(raw))
 
 
-def raw_reference_preflight(
-    base: dict[str, Any], rows: int, limits: CausalLimits, *, reserved_bytes: int = 0
-) -> None:
-    """Conservative row-by-retained-parameter bound needs no decoded roots or RNGs."""
-    if type(rows) is not int or not 1 <= rows <= 20000:
-        raise ValueError("typed reference rows must be a bounded exact integer")
-    graph = base
-    while "nodes" not in graph:
-        if "runtime" in graph:
-            graph = graph["runtime"]
-        elif "recipe" in graph:
-            graph = graph["recipe"]
-        elif "graph" in graph:
-            graph = graph["graph"]
-        else:
-            raise ValueError("typed policy archive has no retained causal runtime")
-    own = CausalLimits(**complete_record(graph["limits"], CausalLimits))
-    effective = CausalLimits(
-        **{f.name: min(getattr(own, f.name), getattr(limits, f.name)) for f in fields(CausalLimits)}
-    )
-    admit_function_metadata(graph, effective)
-
-    def frozen(value: Any) -> Any:
-        if type(value) is dict:
-            return tuple((key, frozen(item)) for key, item in cast(dict[str, Any], value).items())
-        if type(value) in (list, tuple):
-            return tuple(frozen(item) for item in cast(list[Any] | tuple[Any, ...], value))
-        return value
-
-    numbers, storage = function_record_cost(frozen(graph), effective)
-    working = storage + 128 * rows * max(1, numbers)
-    if working > effective.working_bytes or reserved_bytes + working > limits.working_bytes:
-        raise ValueError("typed reference conservative pre-replay working limit exceeded")
-
-
 def typed_policy_from_dict(data: Any, *, limits: CausalLimits) -> SampledTypedInterventionPolicy:
     from r0.modules.priors.lib.generate import recipe_from_dict
     from r0.modules.priors.lib.typed_policy_admission import admit_typed_policy
+    from r0.modules.priors.lib.typed_policy_planning import admit_typed_record
     from r0.modules.priors.lib.typed_policy_sampling import sample_typed_intervention_policy
 
     admit_function_metadata(data, limits)
@@ -122,9 +87,7 @@ def typed_policy_from_dict(data: Any, *, limits: CausalLimits) -> SampledTypedIn
         reserved = 6 * raw_limits.state_bytes + retained
         if reserved > bounded_raw.working_bytes:
             raise ValueError("typed policy raw/snapshot reservation exceeds caller limits")
-        raw_reference_preflight(
-            request["base"], request["reference_rows"], effective, reserved_bytes=reserved
-        )
+        admit_typed_record(request, effective)
         recipe_from_dict(request["base"], limits=effective)
         request["base"] = restore_typed_base(request["base"])
         request["limits"], request["raw_limits"] = declared, raw_limits

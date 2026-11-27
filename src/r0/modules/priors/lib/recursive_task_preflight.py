@@ -69,6 +69,11 @@ def _authored(value: Any) -> Any:
     return value
 
 
+def recursive_authored_preview(value: Any) -> Any:
+    """Return retained geometry without replaying sampled function custody."""
+    return _authored(value)
+
+
 def _domain_width(domain: Any, continuous_width: int) -> int:
     raw = _object(domain)
     if raw.get("kind") == "continuous":
@@ -88,8 +93,9 @@ def admit_recursive_tasks(
     numbers: int,
     replay_work: int,
     limits: CausalLimits,
-) -> None:
+) -> tuple[dict[str, int], ...]:
     """Conservative shared state, emission, traversal and replay reservation; no RNG access."""
+    reports: list[dict[str, int]] = []
     try:
         for graph in graphs:
             declared = _object(graph.get("limits"))
@@ -244,5 +250,9 @@ def admit_recursive_tasks(
                     "recursive whole-task geometry/emission/replay workspace "
                     "or parameter limit exceeded"
                 )
+            reports.append(
+                {"parameters": numbers + parameter_extra, "estimated_working_bytes": work}
+            )
+        return tuple(reports)
     except (KeyError, TypeError, AttributeError, OverflowError, IndexError) as error:
         raise ValueError("malformed recursive whole-task admission geometry") from error

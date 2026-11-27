@@ -15,7 +15,7 @@ def admit_recursive_payloads(
     limits: CausalLimits,
     graphs: list[dict[str, Any]],
     convolutions: list[dict[str, Any]],
-) -> None:
+) -> dict[str, int]:
     from r0.modules.priors.lib.recursive_forest_decoding import recursive_forest_plan_from_dict
     from r0.modules.priors.lib.recursive_forest_plan import recursive_effective_limits
 
@@ -75,3 +75,5 @@ def admit_recursive_payloads(
         )
     if work > limits.working_bytes or numbers > limits.parameters:
         raise ValueError("aggregate recursive archive replay workspace or parameter limit exceeded")
+
+    return {"parameters": numbers, "estimated_working_bytes": work}
