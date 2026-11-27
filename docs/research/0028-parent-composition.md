@@ -44,8 +44,10 @@ continue to obey the existing shared-name catalog contract.
 
 ## Equation and calibration boundaries
 
-`FrozenParentFunction` contains one nonrecursive eight-family function per
-parent. Their input widths define disjoint consecutive slices in parent order;
+`FrozenParentFunction` contains one nonrecursive frozen function per parent.
+Authored members and the optional joint member also accept immutable fitted-tree
+functions; their exported split tables run without refitting. The sampled parent
+selector still draws from its original eight families. Their input widths define disjoint consecutive slices in parent order;
 graph admission checks every slice against the corresponding parent's width.
 An optional joint function is the first reduction member. All members share the
 output width. Products use conservative dependent-moment bounds; no claim of
@@ -74,8 +76,8 @@ noise policies, numerical pipelines, native-family topology, UI controls, and
 Colab/local creation transport for parent composition require follow-on
 integration. Existing authored pipeline/noise settings work in this constructor;
 this is not a claim that their full sampled option families are wired here.
-Future fitted structural tree families require explicit admission as parent
-members. Broad #28 and paper-coverage acceptance remain open.
+Fitted structural tree members are admitted for authored compositions; sampling
+their fit plans inside the shared parent selector remains follow-on work. Broad #28 and paper-coverage acceptance remain open.
 
 ## Scoped validation
 
