@@ -13,11 +13,13 @@ def admit_recursive_payloads(
     storage: int,
     numbers: int,
     limits: CausalLimits,
+    graphs: list[dict[str, Any]],
 ) -> None:
     from r0.modules.priors.lib.recursive_forest_decoding import recursive_forest_plan_from_dict
     from r0.modules.priors.lib.recursive_forest_plan import recursive_effective_limits
 
     work = 4 * storage
+    metadata_numbers = numbers
     for envelope in envelopes:
         source = envelope.get("source")
         if type(source) is not dict:
@@ -49,5 +51,18 @@ def admit_recursive_payloads(
             numbers += report["parameters"]
         except (KeyError, TypeError, AttributeError, OverflowError) as error:
             raise ValueError("malformed recursive sampled construction budget") from error
+    if graphs:
+        from r0.modules.priors.lib.recursive_task_preflight import (
+            RECURSIVE_TASK_VERSIONS,
+            admit_recursive_tasks,
+        )
+
+        admit_recursive_tasks(
+            [g for g in graphs if g.get("version") in RECURSIVE_TASK_VERSIONS],
+            storage=storage,
+            numbers=numbers + metadata_numbers,
+            replay_work=work - 4 * storage,
+            limits=limits,
+        )
     if work > limits.working_bytes or numbers > limits.parameters:
         raise ValueError("aggregate recursive archive replay workspace or parameter limit exceeded")

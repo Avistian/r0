@@ -8,6 +8,7 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 def admit_function_metadata(data: Any, limits: CausalLimits) -> None:
     numbers, containers, strings, nodes = 0, 0, 0, 0
     recursive_envelopes: list[dict[str, Any]] = []
+    task_graphs: list[dict[str, Any]] = []
     node_limit = 16 * limits.parameters + 64 * limits.nodes
 
     def visit(value: Any, depth: int) -> None:
@@ -32,6 +33,8 @@ def admit_function_metadata(data: Any, limits: CausalLimits) -> None:
             raise ValueError("function raw parameter or estimated storage limit exceeded")
         if type(value) is dict:
             mapping = cast(dict[Any, Any], value)
+            if "nodes" in mapping and "task" in mapping:
+                task_graphs.append(mapping)
             if mapping.get("version") == "frozen-recursive-forest-function-v1":
                 recursive_envelopes.append(mapping)
             if 2 * len(mapping) > node_limit - nodes:
@@ -57,4 +60,5 @@ def admit_function_metadata(data: Any, limits: CausalLimits) -> None:
             storage=64 * numbers + 32 * containers + strings,
             numbers=numbers,
             limits=limits,
+            graphs=task_graphs,
         )
