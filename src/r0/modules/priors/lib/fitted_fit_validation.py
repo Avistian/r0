@@ -8,6 +8,9 @@ from r0.modules.priors.lib.generator_snapshot import snapshot_generator
 
 if TYPE_CHECKING:
     from r0.modules.priors.lib.fitted_tree_fitting import FittedTreeRealization
+    from r0.modules.priors.lib.fitted_tree_plan import FittedTreePlan
+    from r0.modules.priors.lib.fitted_tree_records import FrozenFittedTreeFunction
+    from r0.modules.priors.lib.weight_geometry import Matrix
 
 
 def validate_fitted_custody(fit: "FittedTreeRealization") -> None:
@@ -57,8 +60,21 @@ def validate_fitted_custody(fit: "FittedTreeRealization") -> None:
             raise ValueError("retained fitted inputs, targets or seeds differ from their raw draws")
     if tuple(snapshot_generator(rng) for rng in streams.values()) != fit.final_rng:
         raise ValueError("fitted final RNG custody differs")
+    validate_backend_fit(
+        fit.plan, fit.function, fit.backend_seeds, fit.backend_parameters, fit.targets
+    )
+
+
+def validate_backend_fit(
+    plan: "FittedTreePlan",
+    function: "FrozenFittedTreeFunction",
+    backend_seeds: tuple[int, ...],
+    backend_parameters: tuple[str, ...],
+    targets: "Matrix",
+) -> None:
+    """Bind exported tables to declared backend options without importing sklearn."""
     for channel, (output, seed, payload) in enumerate(
-        zip(fit.function.outputs, fit.backend_seeds, fit.backend_parameters, strict=True)
+        zip(function.outputs, backend_seeds, backend_parameters, strict=True)
     ):
         try:
             parameters = json.loads(payload)
@@ -68,14 +84,14 @@ def validate_fitted_custody(fit: "FittedTreeRealization") -> None:
             key not in parameters
             or cast(dict[str, Any], parameters)[key] != value
             or type(cast(dict[str, Any], parameters)[key]) is not type(value)
-            for key, value in fitted_backend_contract(fit.plan, seed).items()
+            for key, value in fitted_backend_contract(plan, seed).items()
         ):
             raise ValueError("fitted backend parameters differ from plan and seeds")
-        classifier = fit.plan.task == "classification"
-        observed = tuple(sorted({int(row[channel]) for row in fit.targets})) if classifier else ()
+        classifier = plan.task == "classification"
+        observed = tuple(sorted({int(row[channel]) for row in targets})) if classifier else ()
         if output.classes != observed:
             raise ValueError("fitted class map differs from fit task")
-        boosted = fit.plan.family == "gbdt"
+        boosted = plan.family == "gbdt"
         expected_combiner = (
             (
                 "boost_softmax"
@@ -85,21 +101,21 @@ def validate_fitted_custody(fit: "FittedTreeRealization") -> None:
                 else "boost_identity"
             )
             if boosted
-            else fit.plan.classification_rule
+            else plan.classification_rule
             if classifier
             else "mean"
         )
-        trees = (1 if fit.plan.family == "dt" else fit.plan.estimators) * (
+        trees = (1 if plan.family == "dt" else plan.estimators) * (
             len(output.classes) if boosted and len(output.classes) > 2 else 1
         )
         if output.combiner != expected_combiner or len(output.trees) != trees:
             raise ValueError("fitted ensemble layout differs from fit plan")
-        if boosted and output.learning_rate != fit.plan.learning_rate:
+        if boosted and output.learning_rate != plan.learning_rate:
             raise ValueError("fitted learning rate differs from fit plan")
         for tree in output.trees:
             depths = [0] * len(tree.features)
             for index, feature in enumerate(tree.features):
                 if feature >= 0:
                     depths[tree.left[index]] = depths[tree.right[index]] = depths[index] + 1
-            if max(depths) > fit.plan.depth:
+            if max(depths) > plan.depth:
                 raise ValueError("fitted tree depth exceeds declared fit plan")

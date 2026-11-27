@@ -56,7 +56,17 @@ def evaluate_functional_nodes(
     owner: tuple[str, ...] = (),
     execution: InterventionExecution | None = None,
     pipeline_factory: Callable[[int, FunctionalCausalNode], PipelineEvaluation] | None = None,
+    population_partitions: tuple[tuple[int, ...], ...] = (),
 ) -> list[torch.Tensor]:
+    from r0.modules.priors.lib.population_exogenous import population_exogenous
+
+    if population_partitions and (
+        len(population_partitions) != 2
+        or any(not p for p in population_partitions)
+        or sorted(i for p in population_partitions for i in p) != list(range(rows))
+        or capture is not None
+    ):
+        raise ValueError("support/query partitions must cover every row exactly once")
     values: list[torch.Tensor] = []
     for index, node in enumerate(nodes):
         bypass = execution.bypass(index, node, rows, device) if execution else None
@@ -68,14 +78,21 @@ def evaluate_functional_nodes(
             continue
         parents = [f"causal-{p}" for p in node.parents]
         if node.root is not None:
-            sample = draw_root_base(
-                node.root,
-                rows,
-                rng("root-base", index),
-                capture=capture,
-                owner=(*owner, f"node:{index}", "root"),
-            )
-            inputs = torch.tensor(sample.values, dtype=torch.float64, device=device)
+            if population_partitions:
+                inputs = torch.tensor(
+                    population_exogenous(node, index, rows, rng, population_partitions, root=True),
+                    dtype=torch.float64,
+                    device=device,
+                )
+            else:
+                sample = draw_root_base(
+                    node.root,
+                    rows,
+                    rng("root-base", index),
+                    capture=capture,
+                    owner=(*owner, f"node:{index}", "root"),
+                )
+                inputs = torch.tensor(sample.values, dtype=torch.float64, device=device)
             if execution:
                 execution.record(index, root=inputs)
             parents = [f"root-{index}"]
@@ -95,19 +112,26 @@ def evaluate_functional_nodes(
         if diagnostics is not None:
             diagnostics.extend({"node": index, **entry} for entry in function_diagnostics or ())
         _constant_diagnostic(output, index, "function", diagnostics)
-        raw = torch.tensor(
-            sample_exogenous(
-                node.exogenous,
-                rows,
-                node.function.output_width,
-                rng,
-                index,
-                capture=capture,
-                owner=(*owner, f"node:{index}", "innovation"),
-            ),
-            dtype=torch.float64,
-            device=device,
-        )
+        if population_partitions:
+            raw = torch.tensor(
+                population_exogenous(node, index, rows, rng, population_partitions, root=False),
+                dtype=torch.float64,
+                device=device,
+            )
+        else:
+            raw = torch.tensor(
+                sample_exogenous(
+                    node.exogenous,
+                    rows,
+                    node.function.output_width,
+                    rng,
+                    index,
+                    capture=capture,
+                    owner=(*owner, f"node:{index}", "innovation"),
+                ),
+                dtype=torch.float64,
+                device=device,
+            )
         scale = signal_noise_scale(
             output, node.noise_scale or (0.0,) * node.function.output_width, node.noise_response
         )

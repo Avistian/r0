@@ -94,3 +94,8 @@ noise/layer ordering, XGBoost shared-vector leaves, and broader direct/standalon
 tree breadth remain required work. Independent calibration does not satisfy any
 of those lifecycle requirements. Hosted Colab/GPU/scientific comparisons and
 maximum-resource performance are NOT_RUN for this slice.
+
+The subsequent [explicit population lifecycle slice](issue-28-fitted-population-lifecycles.md)
+adds actual support, batch-reference and mixed synthetic populations with explicit
+selected plans. The sampled-parameter API here retains its independent-calibration
+contract; it is not relabelled as a paper lifecycle.

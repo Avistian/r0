@@ -80,5 +80,6 @@ def fitted_examples() -> dict[str, Any]:
             ],
         }
     from r0.modules.explorer.lib.fitted_parameter_examples import fitted_parameter_examples
+    from r0.modules.explorer.lib.fitted_population_examples import fitted_population_examples
 
-    return {**result, **fitted_parameter_examples(result)}
+    return {**result, **fitted_parameter_examples(result), **fitted_population_examples(result)}

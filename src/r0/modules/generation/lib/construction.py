@@ -144,7 +144,7 @@ class GraphConstruction:
     def task_record(self) -> dict[str, Any]:
         """Return preconstruction row geometry; sampled native target type is not yet known."""
         controls = json.loads(self.controls_json)
-        if controls.get("topology") in ("fitted", "sampled-fitted"):
+        if controls.get("topology") in ("fitted", "sampled-fitted", "population-fitted"):
             return controls["skeleton"]["task"]
         if controls.get("topology") not in ("sampled-native", "sampled-native-vector"):
             return controls["task"]
@@ -163,5 +163,20 @@ class GraphConstruction:
             )
         )
 
-    def build(self, limits: priors.CausalLimits) -> priors.Recipe:
-        return construct_graph(json.loads(self.controls_json), seed=self.seed, limits=limits)
+    def build(
+        self, limits: priors.CausalLimits, *, episode_seed: int = 0, task_id: int = 0
+    ) -> priors.Recipe:
+        fields = json.loads(self.controls_json)
+        if fields.get("topology") == "population-fitted":
+            from r0.modules.generation.lib.population_fitted_construction import (
+                construct_population_fitted,
+            )
+
+            return construct_population_fitted(
+                fields,
+                construction_seed=self.seed,
+                seed=episode_seed,
+                task_id=task_id,
+                limits=limits,
+            )
+        return construct_graph(fields, seed=self.seed, limits=limits)

@@ -138,9 +138,9 @@ memory measurements. Broader bounds, GPU, browser and Colab evidence remain
 | Faithful XGBoost path | Once dependency authority exists, fit the pinned CPU `hist`/`multi_output_tree` model, export shared vector leaves, base score and additive objective/link; compare JSON exporter against backend on boundaries, missing routes and vectors. No such backend comparison has run. |
 | Clean-room histogram boosting alternative | Would be a separately named mathematical adaptation needing histogram/gradient/Hessian/split-gain and vector-leaf oracle evidence. Not implemented or claimed equivalent. |
 | TabICL capped exponential depth/count law and graph overrides | [Recorded parameter profiles](issue-28-fitted-parameter-laws.md) implement the pinned two laws with explicit backend/lifecycle adaptation labels. Graph overrides and full source sampler remain required. |
-| TabICL batch refit on actual parent rows | Reference mode remains required; default here intentionally fits independent rows once. No full TabICL reproduction claim. |
-| O'Prior support-only fitting | Distinct lifecycle, still required; independent rows are not support rows. |
-| Mitra mixed categorical/Gaussian synthetic fit population | Still required; this slice's standalone input law is Gaussian. Published missing parameters remain UNKNOWN. |
+| TabICL batch refit on actual parent rows | [Explicit batch-reference fitting](issue-28-fitted-population-lifecycles.md) now retains actual batch fits separately. Full TabICL reproduction remains required. |
+| O'Prior support-only fitting | [Explicit support-only fitting](issue-28-fitted-population-lifecycles.md) uses actual context parents and separate population streams. Full source settings remain undisclosed. |
+| Mitra mixed categorical/Gaussian synthetic fit population | [Explicit mixed populations](issue-28-fitted-population-lifecycles.md) implement disclosed laws with recorded r0 settings. Standalone source generation remains separate; undisclosed parameters remain UNKNOWN. |
 | Mitra direct tree stopping/interval and fresh-per-row variants | Required separate direct families; fitted sklearn trees do not satisfy them. |
 | Source joint selector and parent-composition integration | New frozen family registry is ready; the older eight-family named joint selector is unchanged. |
 | Native categorical-node target/pipeline transport | Structural classifier outputs are available; complete typed sampled/native and exploration delivery remains required. |

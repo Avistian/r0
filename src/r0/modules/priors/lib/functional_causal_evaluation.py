@@ -45,9 +45,16 @@ def functional_values(
     diagnostics: list[dict[str, Any]] | None = None,
     rows: int | None = None,
     execution: InterventionExecution | None = None,
+    population_recipe: FunctionalCausalRecipe | None = None,
 ) -> list[torch.Tensor]:
     rows = recipe.task.rows if rows is None else rows
     recipe.admit(evaluation_rows=rows)
+    partitions: tuple[tuple[int, ...], ...] = ()
+    if getattr(population_recipe or recipe, "population", None) == "support-only":
+        if rows != recipe.task.rows:
+            raise ValueError("support lifecycle requires its declared episode row count")
+        order = tuple(map(int, rng("split", recipe.task.split).permutation(rows)))
+        partitions = (order[: recipe.task.context_rows], order[recipe.task.context_rows :])
     return evaluate_functional_nodes(
         recipe.nodes,
         rows,
@@ -58,6 +65,7 @@ def functional_values(
         readouts=readouts,
         diagnostics=diagnostics,
         execution=execution,
+        population_partitions=partitions,
     )
 
 
@@ -177,7 +185,13 @@ def generate_functional_causal(
     values: list[torch.Tensor] = []
     diagnostics: list[dict[str, Any]] = []
     functional_values(
-        recipe, rng, device, readouts=values, diagnostics=diagnostics, execution=execution
+        recipe,
+        rng,
+        device,
+        readouts=values,
+        diagnostics=diagnostics,
+        execution=execution,
+        population_recipe=calibration_recipe,
     )
     inputs = torch.stack([values[i][:, j] for i, j in recipe.observed], dim=1)
     scores = torch.stack([values[i][:, j] for i, j in recipe.target], dim=1)
@@ -246,6 +260,17 @@ def generate_functional_causal(
         "sampling_provenance": "authored",
     }
     card.update(fitted_card(recipe.version))
+    from r0.modules.priors.lib.fitted_population_graph import PopulationFittedGraph
+
+    if isinstance(recipe, PopulationFittedGraph):
+        card.update(
+            {
+                "construction": "explicit-population-fit-v1",
+                "fitting_population": recipe.population,
+                "fitting_lifecycle": "explicit-fit-event-then-frozen-replay",
+                "source_fidelity": "lifecycle-adaptation-not-full-source-reproduction",
+            }
+        )
     if calibration is not None:
         card["normalization"] = "fixed independent calibration"
         card["calibration"] = asdict(calibration)

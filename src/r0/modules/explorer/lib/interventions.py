@@ -27,6 +27,8 @@ def intervention_controls(task: TrainingTask) -> dict[str, Any]:
         "functional-causal-v2",
         "fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
+        "population-fitted-functional-causal-v1",
+        "support-population-functional-causal-v1",
         "native-causal-v1",
         "native-vector-causal-v1",
     ):

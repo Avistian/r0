@@ -135,9 +135,16 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
                 for i, node in enumerate(runtime.nodes)
             ],
         }
-    fitted = isinstance(runtime, priors.FittedFunctionalCausalRecipe)
+    fitted = isinstance(
+        runtime, (priors.FittedFunctionalCausalRecipe, priors.PopulationFittedGraph)
+    )
     if fitted:
-        runtime = priors.FunctionalCausalRecipe(
+        kind = (
+            priors.SupportPopulationFunctionalRecipe
+            if getattr(runtime, "population", None) == "support-only"
+            else priors.FunctionalCausalRecipe
+        )
+        runtime = kind(
             runtime.task, runtime.nodes, runtime.observed, runtime.target, runtime.limits
         )
     if not isinstance(runtime, priors.FunctionalCausalRecipe):
@@ -169,3 +176,12 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
             for i, node in enumerate(runtime.nodes)
         ],
     }
+
+
+def frozen_archive_version(version: object) -> bool:
+    """Identify archive families whose task identity can advance without resampling."""
+    return str(version).startswith("sampled-") or version in (
+        "fitted-functional-causal-v1",
+        "standalone-network-v1",
+        "population-fitted-functional-causal-v1",
+    )

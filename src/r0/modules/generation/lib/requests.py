@@ -77,7 +77,9 @@ class RunRequest:
 
 def selected_recipe(request: RunRequest, task_id: int) -> Recipe:
     if request.construction is not None:
-        return request.construction.build(request.causal_limits or CausalLimits())
+        return request.construction.build(
+            request.causal_limits or CausalLimits(), episode_seed=request.seed, task_id=task_id
+        )
     if request.sampling is None:
         return request.recipe
     assert isinstance(request.recipe, LinearRecipe)

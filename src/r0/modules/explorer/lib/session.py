@@ -10,6 +10,7 @@ from r0.modules.explorer.lib.comparisons import SavedPair, create_pair, open_pai
 from r0.modules.explorer.lib.construction import (
     caller_limits,
     construction_examples,
+    frozen_archive_version,
     mechanism_editor,
 )
 from r0.modules.explorer.lib.curves import inspect_curve, inspect_gp_curve
@@ -225,10 +226,7 @@ class ExplorerSession:
                     "record_json" not in data
                     or type(identity) is not dict
                     or set(cast(dict[str, Any], identity)) != {"seed", "task_id"}
-                    or not (
-                        str(version).startswith("sampled-")
-                        or version in ("fitted-functional-causal-v1", "standalone-network-v1")
-                    )
+                    or not frozen_archive_version(version)
                 ):
                     raise ValueError(
                         "frozen identity changes require an original frozen archive "
@@ -240,11 +238,7 @@ class ExplorerSession:
             if (
                 "sampling" not in record
                 and "sampling" not in data
-                and (
-                    str(record["recipe"].get("version", "")).startswith("sampled-")
-                    or record["recipe"].get("version")
-                    in ("fitted-functional-causal-v1", "standalone-network-v1")
-                )
+                and frozen_archive_version(record["recipe"].get("version", ""))
             ):
                 request = {
                     "recipe": record["recipe"],

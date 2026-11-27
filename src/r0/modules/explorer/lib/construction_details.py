@@ -8,6 +8,30 @@ def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
         from r0.modules.explorer.lib.networks import network_details
 
         return network_details(recipe)
+    if recipe.get("version") == "population-fitted-functional-causal-v1":
+        return {
+            "kind": "explicit-population-fitted-trees",
+            "population": recipe["population"],
+            "lifecycle": recipe["lifecycle"],
+            "fit_seed": str(recipe["fit_seed"]),
+            "fit_task_id": str(recipe["fit_task_id"]),
+            "notice": "Explicit fit event then frozen replay. Support rows exclude query values; "
+            "batch reference includes queries and changes function identity on refit. "
+            "Mixed populations are independent. Source settings not disclosed by papers "
+            "are explicit r0 choices; no full source reproduction or XGBoost claim.",
+            "fits": [
+                {
+                    "node": f["node"],
+                    "actual_plan": f["realization"]["plan"],
+                    "mixed": f["realization"]["mixed"],
+                    "source_contract": f["realization"]["source_contract"],
+                    "cardinalities": f["realization"]["cardinalities"],
+                    "backend_semantics": f["realization"]["backend_semantics"],
+                    "raw_draw_count": len(f["realization"]["raw_draws"]),
+                }
+                for f in recipe["fits"]
+            ],
+        }
     if recipe.get("version") in (
         "fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",

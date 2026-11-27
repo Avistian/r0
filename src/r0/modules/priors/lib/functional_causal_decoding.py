@@ -133,11 +133,20 @@ def functional_recipe_from_dict(
     from r0.modules.priors.lib.fitted_fit_decoding import decode_node_fit
     from r0.modules.priors.lib.fitted_graph import FittedFunctionalCausalRecipe
     from r0.modules.priors.lib.fitted_parameter_decoding import sampled_fitted_plan_from_dict
+    from r0.modules.priors.lib.fitted_population_decoding import population_node_fit_from_dict
+    from r0.modules.priors.lib.fitted_population_graph import (
+        PopulationFittedGraph,
+        SupportPopulationFunctionalRecipe,
+    )
     from r0.modules.priors.lib.sampled_fitted_graph import SampledFittedFunctionalCausalRecipe
 
     try:
         kind = (
-            SampledFittedFunctionalCausalRecipe
+            SupportPopulationFunctionalRecipe
+            if data.get("version") == "support-population-functional-causal-v1"
+            else PopulationFittedGraph
+            if data.get("version") == "population-fitted-functional-causal-v1"
+            else SampledFittedFunctionalCausalRecipe
             if data.get("version") == "sampled-fitted-functional-causal-v1"
             else FittedFunctionalCausalRecipe
             if data.get("version") == "fitted-functional-causal-v1"
@@ -177,6 +186,11 @@ def functional_recipe_from_dict(
                 (pair[0], sampled_fitted_plan_from_dict(pair[1], limits=effective))
                 for pair in functional_array(fields.get("parameter_samples", ()))
                 if _parameter_pair(pair)
+            )
+        if kind is PopulationFittedGraph:
+            fields["fits"] = tuple(
+                population_node_fit_from_dict(f, limits=effective)
+                for f in functional_array(fields.get("fits", ()))
             )
         return kind(**fields)
     except (TypeError, KeyError) as error:
