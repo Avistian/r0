@@ -12,8 +12,8 @@ const format = value => {
 };
 
 async function request(action, data = {}) {
-  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export", "mechanism", "edit", "edit_export", "intervention_controls", "intervene", "intervention_graph", "intervention_export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
-  if (["graph", "pair", "open_pair", "mechanism", "edit"].includes(action)) data = {...data, ...explorationLimits()};
+  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export", "mechanism", "network_draft", "edit", "edit_export", "intervention_controls", "intervene", "intervention_graph", "intervention_export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
+  if (["graph", "pair", "open_pair", "mechanism", "network_draft", "edit"].includes(action)) data = {...data, ...explorationLimits()};
   if (window.r0request) return window.r0request(action, data);
   const response = await fetch("/api", {
     method: "POST", headers: {"Content-Type": "application/json", "X-r0-explorer": window.r0token},

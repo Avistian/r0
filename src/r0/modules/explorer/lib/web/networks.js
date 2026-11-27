@@ -1,11 +1,12 @@
 "use strict";
-let networkDraft = null;
+let networkDraft = null, networkBlockDrafts = new Map(), networkSelectedBlock = null;
 function isStandaloneNetwork(recipe) { return recipe?.version === "standalone-network-v1"; }
 function networkConstructionNote(example) {
   $("network-controls-note").hidden = !["network", "network-authored"].includes(example.topology);
 }
 function resetNetworkWorkbench() {
   networkDraft = null;
+  networkBlockDrafts.clear(); networkSelectedBlock = null;
   $("network-workbench-content").hidden = true;
   const network = isStandaloneNetwork(current?.view?.recipe?.recipe);
   $("workbench-kind").textContent = network ? "STANDALONE NETWORK WORKBENCH" : "CAUSAL MECHANISM WORKBENCH";
@@ -15,6 +16,7 @@ function resetNetworkWorkbench() {
 }
 function showNetworkEditor(info) {
   networkDraft = info.editable_recipe;
+  networkBlockDrafts.clear(); networkSelectedBlock = null;
   $("workbench-content").hidden = true;
   $("network-workbench-content").hidden = false;
   $("workbench-note").textContent = info.notice;
@@ -43,24 +45,45 @@ function networkStructure() {
     group.append(element("rect",{x:20+state*190,y:140,width:155,height:90,rx:10,fill:state===selected?"#d9eee7":ancestors.has(state)?"#eef7f3":"#f1f4f6",stroke:"#78928a"}));
     const lines=block?[`Block ${state} · ${units} units`,`${block.experts.length} expert(s) · ${block.gate?"softmax gate":"one branch"}`,`${block.skips.length} projected skip(s)`]:["Input state 0",`${units} observed features`,"Fixed function per dataset"];
     lines.forEach((text,j)=>group.append(element("text",{x:30+state*190,y:161+j*23,"font-size":11,fill:"#23443b"},text)));
-    if(state){group.onclick=()=>{$("network-block").value=String(state-1);selectNetworkBlock();};group.onkeydown=e=>{if(["Enter"," "].includes(e.key)){e.preventDefault();group.onclick();}};}
+    if(state){group.onclick=()=>{$("network-block").value=String(state-1);selectNetworkBlockSafely();};group.onkeydown=e=>{if(["Enter"," "].includes(e.key)){e.preventDefault();group.onclick();}};}
     svg.append(group);
   });
   $("network-structure").replaceChildren(svg);
   chartExports("network-structure",svg,"network-architecture","Standalone network architecture");
 }
 function selectNetworkBlock() {
+  if (networkSelectedBlock !== null) networkBlockDrafts.set(networkSelectedBlock,$("network-block-json").value);
   const index=Number($("network-block").value), block=networkDraft.network.blocks[index];
-  $("network-block-json").value=pretty(block);
+  networkSelectedBlock=index;
+  $("network-block-json").value=networkBlockDrafts.get(index) ?? pretty(block);
   const masks=block.experts.map((e,i)=>({expert:i,weight_shape:[e.matrix.length,e.matrix[0].length],zero_weights:e.matrix.flat().filter(v=>v===0).length,masked_edges:e.mask.length?e.mask.flat().filter(v=>!v).length:0,total_edges:e.matrix.length*e.matrix[0].length,placement:e.placement,activation:e.activation.kind}));
   $("network-block-info").textContent=pretty({state:index+1,ordered_input_states:block.parents,projected_skip_states:block.skips.map(s=>s.source),gating:block.gate?"input-dependent softmax":"none",masks,note:"Masks and weights are frozen. Zero or disconnected paths are valid; inspect channel ancestry and values in the generation trace below. Orange dashed paths are projected skips, green paths are ordered inputs."});
   networkStructure();
+  networkDraftStatus();
 }
-$("network-block").onchange=selectNetworkBlock;
-$("network-apply").onclick=()=>act("Updating network architecture draft…",async()=>{
-  networkDraft.network.blocks[Number($("network-block").value)]=JSON.parse($("network-block-json").value);
+function networkDraftStatus() {
+  const accepted=networkDraft?.network.blocks[Number($("network-block").value)];
+  $("network-draft-status").textContent=$("network-block-json").value===pretty(accepted) ? "Block text matches the accepted draft." : "Unapplied block text retained; it has not been accepted. The diagram and details show the last validated architecture. Apply to validate this text.";
+}
+$("network-block-json").oninput=networkDraftStatus;
+function selectNetworkBlockSafely() { return act("Selecting network block…",async()=>selectNetworkBlock()); }
+$("network-block").onchange=selectNetworkBlockSafely;
+$("network-apply").onclick=()=>act("Validating network architecture draft…",async()=>{
+  const index=Number($("network-block").value), text=$("network-block-json").value;
+  networkBlockDrafts.set(index,text);
+  networkDraftStatus();
+  if ($("network-recipe").value!==pretty(networkDraft)) throw new Error("Complete recipe has unapplied edits. Save that recipe or restore it before applying a block; both drafts are retained.");
+  const candidate=JSON.parse(JSON.stringify(networkDraft));
+  candidate.network.blocks[index]=JSON.parse(text);
+  const validated=await request("network_draft",{recipe:candidate,...limits()});
+  if ($("network-block-json").value!==text || Number($("network-block").value)!==index || $("network-recipe").value!==pretty(networkDraft)) throw new Error("Draft changed during validation; edits retained. Apply again.");
+  networkDraft=validated.recipe;
+  networkBlockDrafts.delete(index); networkSelectedBlock=null;
   $("network-recipe").value=pretty(networkDraft);
-  $("workbench-note").textContent="Architecture draft changed. Generate the linked edit to validate widths, masks, gates and parent order.";
+  $("network-block").replaceChildren(...networkDraft.network.blocks.map((block,i)=>new Option(`Block ${i+1} · ${block.experts[0].bias.length} units · ${block.experts.length} expert(s)`,i)));
+  $("network-block").value=String(index);
+  selectNetworkBlock();
+  $("workbench-note").textContent="Validated architecture draft applied. Generate the linked edit to save it. Unapplied block text is retained while selecting other blocks.";
 });
 $("network-save").onclick=()=>act("Validating, generating and saving standalone network edit…",async()=>{
   show(await request("edit",{recipe:JSON.parse($("network-recipe").value),...limits()}));

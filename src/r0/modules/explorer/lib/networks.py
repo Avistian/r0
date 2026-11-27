@@ -1,6 +1,7 @@
 """Broad standalone architecture presets and an authored frozen network editor."""
 
 from dataclasses import asdict, replace
+from pathlib import Path
 from typing import Any
 
 from r0.modules import priors
@@ -123,3 +124,28 @@ def network_details(recipe: dict[str, Any]) -> dict[str, Any]:
             "and gated architecture combinations are r0 extensions; no trained labels."
         ),
     }
+
+
+def validate_editor_draft(
+    data: dict[str, Any], output_dir: Path, *, limits: priors.CausalLimits
+) -> dict[str, Any]:
+    from r0.modules.generation import run_guarded_document
+
+    result = run_guarded_document(
+        {
+            "validation": "network-draft",
+            "recipe": data["recipe"],
+            "causal_limits": asdict(limits),
+            "max_seconds": data.get("max_seconds", 60),
+            "max_bytes": data.get("max_bytes", 256 * 1024**2),
+        },
+        output_dir / "draft-validation",
+    )
+    if result.timed_out:
+        raise ValueError("Network draft validation timed out; accepted draft unchanged")
+    if result.returncode or result.summary is None:
+        detail = result.stderr.strip().splitlines()
+        raise ValueError(
+            "Invalid network draft: " + (detail[-1] if detail else "validation failed")
+        )
+    return {"recipe": result.summary["recipe"]}

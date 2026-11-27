@@ -26,6 +26,11 @@ def main() -> int:
 
         print(json.dumps(causal_job(raw_request, Path(data["out"])), sort_keys=True))
         return 0
+    if raw_request.get("validation") == "network-draft":
+        from r0.modules.generation.lib.network_validation import validate_network_draft
+
+        print(json.dumps(validate_network_draft(raw_request), allow_nan=False))
+        return 0
     pairing = raw_request.pop("pairing", None)
     request = request_from_dict(raw_request)
     if pairing is not None:

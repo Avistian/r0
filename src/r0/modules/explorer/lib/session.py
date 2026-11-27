@@ -338,6 +338,10 @@ class ExplorerSession:
             return _identity_numbers(
                 {"before": result["before"], "after": result["after"]}, for_browser=True
             )
+        if action == "network_draft":
+            from r0.modules.explorer.lib.networks import validate_editor_draft
+
+            return validate_editor_draft(data, self.output_dir, limits=caller_limits(data))
         if action == "mechanism":
             return mechanism_editor(self.task, limits=caller_limits(data))
         if action == "edit":

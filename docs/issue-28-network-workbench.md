@@ -32,6 +32,10 @@ It shows ordered input paths, projected skip paths, block widths, experts and ga
 selection highlights ancestors. The selected block exposes mask/zero counts,
 activation placement and editable equations. The complete authored NetworkRecipe
 JSON permits broader combinations and root/task edits under the public validator.
+Applying a block first validates the candidate inside the timeout-protected worker.
+Rejected block text remains available when switching blocks; the accepted diagram
+and complete recipe stay unchanged. Unapplied complete-recipe edits are not
+overwritten by block Apply. Validation is read-only and does not save a dataset.
 Edits produce linked before/after archives and comparison exports, retaining the
 original sampled provenance in the original archive. They do not claim to be causal
 interventions. The separate generation trace retains original row indices and
