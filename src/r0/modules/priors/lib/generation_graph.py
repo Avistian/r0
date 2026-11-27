@@ -49,13 +49,21 @@ def explain_generation(
     """
     if limits is not None and type(limits) is not CausalLimits:
         raise ValueError("inspection requires caller-owned causal limits")
+    record = json.loads(task.recipe_json)
+    raw = record.get("recipe", {})
+    if raw.get("version") == "network-observation-recipe-v1" or (
+        raw.get("version") == "causal-intervention-v1"
+        and raw.get("base", {}).get("version") == "network-observation-recipe-v1"
+    ):
+        from r0.modules.priors.lib.observation_task_validation import validate_observation_task
+
+        validate_observation_task(task, record, limits=limits or CausalLimits())
     if not 1 <= len(indices) <= 16:
         raise ValueError("select 1..16 original rows")
     if any(type(i) is not int or not 0 <= i < len(task.inputs) for i in indices):
         raise ValueError("invalid original row index")
     if type(column_start) is not int or not 0 <= column_start <= 4095:
         raise ValueError("column_start must be 0..4095")
-    record = json.loads(task.recipe_json)
     card = json.loads(task.mechanism_json)
     inputs = task.inputs.detach().cpu()[list(indices)].clone()
     nodes: list[dict[str, Any]] = []

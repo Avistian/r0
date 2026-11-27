@@ -2,9 +2,9 @@
 
 This component advances P1.graph.02–.09 in issue #28. It constructs a bounded
 channel catalog and an immutable selection receipt, with strict archive replay.
-It does not yet provide a sampled observation recipe in the generation dispatcher,
-a workbench workflow, or hosted Colab verification. Those integrations remain
-required. Variable-width networks and nonsequential architectures remain explicit
+The versioned observation recipe now retains this receipt through the generation
+dispatcher, task archives, traces and interventions. A guarded workbench workflow
+and hosted Colab verification remain required. Variable-width networks and nonsequential architectures remain explicit
 future extensions; this first source profile requires equal-width sequential,
 single-expert blocks without gates or skips. No failed request enlarges layers,
 resamples a network, substitutes a policy, or retries a selection.
@@ -121,3 +121,12 @@ guarded workbench editing/inspection/export, and shared local/Colab workflows.
 The existing sequential profiles compose with sampled weights/hyperpriors,
 internal innovations/importance, coordinate roots and prototype roots; they do
 not silently substitute another architecture when a source is unsupported.
+
+
+Saved envelope and envelope-based intervention traces validate complete task
+identity, task type/classes/schema/origin, tensor shape/dtype/layout and values,
+probability presence, splits, full mechanism metadata, recipe identity and
+execution schema before slicing original rows. Implementation identity is bound
+to the recipe. Historical library/platform strings, positive thread counts and
+recognized CPU/CUDA provenance may differ from the current CPU replay environment;
+exact saved tensor replay is still mandatory.
