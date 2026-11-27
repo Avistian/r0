@@ -22,7 +22,13 @@ window.r0request = async (action, data) => {
         .read_text()
         .replace("/* STYLES */", (assets / "style.css").read_text())
         .replace("/* APPLICATION */", (assets / "app.js").read_text())
-        .replace("/* CURVES */", (assets / "curves.js").read_text())
+        .replace(
+            "/* CURVES */",
+            (assets / "curves.js").read_text()
+            + "\n"
+            + (assets / "gp_column_curves.js").read_text(),
+        )
+        .replace("<!-- GP TARGET CONTROLS -->", (assets / "gp_column_curves.html").read_text())
         .replace("/* GRAPHS */", (assets / "graphs.js").read_text())
         .replace("/* PAIRS */", (assets / "pairs.js").read_text())
         .replace(

@@ -114,7 +114,11 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
             {
                 "name": f"x{i}",
                 "index": i,
-                "role": "active" if i in active else "irrelevant",
+                "role": "joint GP column"
+                if mechanism["family"] == "gp_columns"
+                else "active"
+                if i in active
+                else "irrelevant",
                 "summary": _summary(x[:, i]),
             }
             for i in range(x.shape[1])

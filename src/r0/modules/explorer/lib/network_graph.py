@@ -21,6 +21,7 @@ def inspect_graph(
         "sampled-intervention-policy-v1",
         "sampled-typed-intervention-policy-v1",
         "prototype-batch-network-realized-v1",
+        "gp-column-recipe-v1",
         "network-observation-recipe-v1",
         "standalone-network-innovations-v1",
         "standalone-network-v1",

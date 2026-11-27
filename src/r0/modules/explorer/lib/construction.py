@@ -8,6 +8,7 @@ from r0.modules import priors
 from r0.modules.explorer.lib.composed_examples import composed_examples, fitted_examples
 from r0.modules.explorer.lib.converted import converted_editor, converted_examples
 from r0.modules.explorer.lib.convolution_examples import convolution_examples
+from r0.modules.explorer.lib.gp_column_examples import gp_column_examples
 from r0.modules.explorer.lib.innovation_examples import innovation_examples
 from r0.modules.explorer.lib.native import (
     native_example,
@@ -89,6 +90,7 @@ def construction_examples() -> dict[str, Any]:
         **observation_examples(),
         **source_root_examples(),
         **prototype_root_examples(),
+        **gp_column_examples(),
         **network_hyperprior_examples(),
         **network_innovation_examples(),
         **converted_examples(),
@@ -248,12 +250,25 @@ def population_identity(record: dict[str, Any], data: dict[str, Any]) -> dict[st
         or type(identity) is not dict
         or set(cast(dict[str, Any], identity)) != {"seed", "task_id"}
         or type(raw) is not dict
-        or cast(dict[str, Any], raw).get("version") != "prototype-batch-network-realized-v1"
+        or cast(dict[str, Any], raw).get("version")
+        not in ("prototype-batch-network-realized-v1", "gp-column-recipe-v1")
     ):
         raise ValueError(
             "population identity requires an original batch archive and seed/task keys"
         )
     changed = {**record, **cast(dict[str, Any], identity)}
+    if cast(dict[str, Any], raw).get("version") == "gp-column-recipe-v1":
+        if "population_task" in data:
+            raise ValueError("GP task changes require explicit construction controls")
+        source = cast(dict[str, Any], raw).get("source")
+        if (
+            type(source) is not dict
+            or cast(dict[str, Any], source).get("version") != "gp-column-population-v1"
+        ):
+            raise ValueError("GP population identity requires the original realized population")
+        changed["recipe"] = {**cast(dict[str, Any], raw), "source": source["request"]}
+        return changed
+
     if "population_task" in data:
         task = data["population_task"]
         request = cast(dict[str, Any], raw)["request"]
@@ -271,6 +286,7 @@ def population_identity(record: dict[str, Any], data: dict[str, Any]) -> dict[st
 def guarded_archive_version(version: object) -> bool:
     """Batch reconstruction and frozen replay both belong in the bounded worker."""
     return frozen_archive_version(version) or version in (
+        "gp-column-recipe-v1",
         "prototype-batch-network-request-v1",
         "prototype-batch-network-realized-v1",
     )

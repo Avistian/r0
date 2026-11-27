@@ -29,6 +29,17 @@ def construct_graph(
         raise ValueError("construction seed must be an integer in [0, 2**63)")
     fields = _tuples(controls)
     topology = fields.pop("topology")
+    if topology == "gp-columns":
+        if set(fields) != {"request", "task"}:
+            raise ValueError("GP construction requires complete request and task controls")
+        return priors.recipe_from_dict(
+            {
+                "version": "gp-column-recipe-v1",
+                "source": fields["request"],
+                "task": fields["task"],
+            },
+            limits=limits,
+        )
     if topology == "network-observations":
         from r0.modules.generation.lib.observation_construction import construct_observations
 

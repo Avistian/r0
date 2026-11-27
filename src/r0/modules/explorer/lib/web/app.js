@@ -93,7 +93,7 @@ function updateRecipe(changed) {
 function limits() { return {...explorationLimits(), device: $("device").value, max_seconds: number("seconds"), max_bytes: number("bytes") * 1024 ** 2}; }
 async function generate() {
   const stored=current?.view?.recipe?.recipe;
-  const batch=stored?.version==="prototype-batch-network-realized-v1" && $("recipe").value===pretty(stored);
+  const batch=["prototype-batch-network-realized-v1","gp-column-recipe-v1"].includes(stored?.version) && $("recipe").value===pretty(stored);
   const frozen=stored && !isPrototypeBatch(stored) && (stored.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(stored.version) || isStandaloneNetwork(stored) || isObservation(stored) || isConvolutionRecipe(stored)) && $("recipe").value===pretty(stored);
   const identity={seed:$("seed").value,task_id:$("task-id").value};
   const candidate=parseRecipe();
@@ -209,7 +209,7 @@ function charts() {
 function show(result) {
   current = result; const view = result.view;
   $("empty").hidden = true; $("results").hidden = false;
-  $("next").textContent=isPrototypeBatch(view.recipe.recipe) ? "Next population" : "Next task";
+  $("next").textContent=view.recipe.recipe.version==="gp-column-recipe-v1" ? "Next GP population + target" : isPrototypeBatch(view.recipe.recipe) ? "Next population" : "Next task";
   $("family-title").textContent = isPrototypeBatch(view.recipe.recipe) ? "standalone network · batch prototype population" : view.recipe.recipe.version === "standalone-network-innovations-v1" ? "standalone network · internal innovations" : isObservation(view.recipe.recipe) ? "network observations · selected channels" : view.family;
   $("task-title").textContent = view.task_type === "regression" ? "Regression dataset" : `${view.classes.length}-class dataset`;
   $("metrics").replaceChildren();
@@ -235,7 +235,7 @@ function show(result) {
   $("construction-details").hidden=!view.construction_details;
   $("construction-detail-notice").textContent=view.construction_details?.notice || "";
   $("construction-detail-record").textContent=pretty(view.construction_details || {});
-  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair(); resetWorkbench(); nativeViewControls(view); resetIntervention();
+  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair(); resetWorkbench(); nativeViewControls(view); resetIntervention(); gpColumnAvailability();
 }
 async function inspectRow(index) {
   await act("Loading row…", async () => {

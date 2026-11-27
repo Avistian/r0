@@ -4,6 +4,19 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
+    if recipe.get("version") == "gp-column-recipe-v1":
+        population = recipe["source"]
+        return {
+            "kind": "finite-gp-columns",
+            "population_id": population.get("population_id"),
+            "request": population.get("request", population),
+            "notice": "Joint finite GP feature rows with a frozen target mechanism. "
+            "Replay preserves all locations, covariance factors, innovations and calibration. "
+            "Construct a new population explicitly to change identity. Kernel settings, "
+            "target weights and independent calibration are named r0 choices. "
+            "No jitter or retries. Episode seed and task identity determine the population; "
+            "the generic construction seed is unused by this deterministic request adapter.",
+        }
     if recipe.get("version") in (
         "sampled-intervention-policy-v1",
         "sampled-typed-intervention-policy-v1",

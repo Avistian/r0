@@ -14,5 +14,8 @@ from .gp_column_output import generate_gp_columns as generate_gp_columns
 from .gp_column_population import GPColumnPopulation as GPColumnPopulation
 from .gp_column_population import GPColumnRequest as GPColumnRequest
 from .gp_column_population import realize_gp_columns as realize_gp_columns
+from .gp_column_reference import GPColumnReference as GPColumnReference
+from .gp_column_reference import evaluate_gp_column_reference as evaluate_gp_column_reference
+from .gp_column_reference import gp_column_reference_from_dict as gp_column_reference_from_dict
 from .gp_column_target import GPColumnTarget as GPColumnTarget
 from .gp_column_target import evaluate_gp_column_target as evaluate_gp_column_target

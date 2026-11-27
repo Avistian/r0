@@ -83,7 +83,7 @@ def inspect_gp_curve(
     }
 
 
-def _slice_metadata(
+def slice_metadata(
     task: TrainingTask,
     feature: int,
     anchor_row: int,
@@ -114,7 +114,11 @@ def _slice_metadata(
     return {
         "episode_id": task.episode_id,
         "feature": feature,
-        "feature_role": "active" if feature in mechanism["active"] else "irrelevant",
+        "feature_role": "joint GP column"
+        if mechanism.get("family") == "gp_columns"
+        else "active"
+        if feature in mechanism["active"]
+        else "irrelevant",
         "anchor_row": anchor_row,
         "anchor_inputs": np.asarray(anchor.cpu().numpy(), dtype=np.float64).tolist(),
         "bounds": [low, high],
@@ -132,7 +136,7 @@ def _slice_inputs(
     *,
     maximum: int,
 ) -> tuple[torch.Tensor, dict[str, Any]]:
-    metadata = _slice_metadata(task, feature, anchor_row, points, bounds, maximum=maximum)
+    metadata = slice_metadata(task, feature, anchor_row, points, bounds, maximum=maximum)
     low, high = metadata["bounds"]
     inputs = task.inputs[anchor_row].detach().repeat(points, 1)
     fraction = torch.linspace(0, 1, points, dtype=inputs.dtype, device=inputs.device)
@@ -149,7 +153,7 @@ def inspect_network_curve_guarded(
 
     from r0.modules.generation import run_guarded_document
 
-    metadata = _slice_metadata(
+    metadata = slice_metadata(
         task,
         data["feature"],
         data.get("anchor_row", 0),
@@ -221,6 +225,10 @@ def inspect_response_curve(
     """Route saved construction references through guarded worker evaluation."""
     from r0.modules.explorer.lib.construction import caller_limits
 
+    if json.loads(task.recipe_json)["recipe"].get("version") == "gp-column-recipe-v1":
+        from r0.modules.explorer.lib.gp_column_curves import inspect_gp_column_curve
+
+        return inspect_gp_column_curve(task, data, output_dir, limits=caller_limits(data))
     if json.loads(task.recipe_json)["recipe"].get("version") in (
         "functional-causal-v1",
         "functional-causal-v2",
