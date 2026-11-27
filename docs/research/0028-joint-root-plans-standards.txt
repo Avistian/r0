@@ -1,0 +1,19 @@
+Standards review — root plans only
+
+BASE: 8f3366a80bf7abb80f0d76e45e92031ea774234e
+SOURCE: bc96787f5a423179b0b5b413f1d096ce81ef1a0f
+Reviewed: git diff 8f3366a80bf7abb80f0d76e45e92031ea774234e...bc96787f5a423179b0b5b413f1d096ce81ef1a0f
+Commit: bc96787 feat(priors): retain all root bases and required function plans (#28)
+
+Preflight: /tmp/r0-28; HEAD matched SOURCE; the only untracked entry was the intentional .venv, which was preserved.
+
+Hard documented-standard violations: 0.
+Actionable baseline smell findings (judgement calls): 0.
+
+Reviewed all five changed files against AGENTS.md, CODING_STANDARDS.md, src/r0/modules/README.md, docs/requirements.md, and docs/agents/protocol-review.md. The home repository's TypeScript course reference was excluded. Tooling-enforced formatting, typing and import rules were not reported as review findings.
+
+The new root sampler uses the explicitly supplied JointSamplingContext; inspection of that context confirms its RNG is explicitly injected. Root sampling composes existing named child samplers and retains their transaction semantics. Public exports and tests use the priors entry point. The decoder reuses typed function-prior reconstruction and delegates nested plan reconstruction to their existing owners. New plan fields, invariants and helper names are consistent with the surrounding implementation.
+
+All twelve supplied Fowler smells were considered. The bounded root prior/plan types and the separate JSON decoder have coherent responsibilities; no actionable smell was identified. This is a qualitative review conclusion, not a tooling result.
+
+Evidence limits: source inspection only. Tests, full checks, dependencies and cloud operations were NOT_RUN by this reviewer. No realization, fitting, graph acceptance, scientific acceptance or overall issue-completion claim is made. The parent owns executable verification.
