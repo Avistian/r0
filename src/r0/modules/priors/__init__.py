@@ -378,6 +378,7 @@ from .lib.native_vector_records import NativeVectorRecipe as NativeVectorRecipe
 from .lib.native_vector_request import NativeVectorGraphRequest as NativeVectorGraphRequest
 from .lib.native_vector_sampling import sample_native_vector_graph as sample_native_vector_graph
 from .lib.network_input_view import NetworkInputView as NetworkInputView
+from .lib.network_input_view import view_signal as view_signal
 from .lib.network_variance_match import NetworkVarianceMatch as NetworkVarianceMatch
 from .lib.network_variance_match import fit_network_variance_match as fit_network_variance_match
 from .lib.node_pipeline import CausalNodePipeline as CausalNodePipeline

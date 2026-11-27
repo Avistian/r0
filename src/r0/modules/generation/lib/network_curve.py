@@ -18,7 +18,7 @@ def network_curve(data: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("network curve request exceeds byte cap")
     limits = priors.CausalLimits(**data["causal_limits"])
     recipe = priors.recipe_from_dict(data["recipe"], limits=limits)
-    if not isinstance(recipe, priors.NetworkRecipe):
+    if not isinstance(recipe, (priors.NetworkRecipe, priors.NetworkInputView)):
         raise ValueError("response requires a standalone network recipe")
     anchor, feature, points, bounds = (
         data["anchor"],
@@ -31,7 +31,7 @@ def network_curve(data: dict[str, Any]) -> dict[str, Any]:
     anchor = cast(list[Any], anchor)
     bounds = cast(list[Any], bounds)
     if (
-        len(anchor) != recipe.function.input_width
+        len(anchor) != recipe.task.features
         or any(type(v) not in (int, float) or not math.isfinite(v) for v in anchor)
         or type(feature) is not int
         or not 0 <= feature < len(anchor)
@@ -43,12 +43,19 @@ def network_curve(data: dict[str, Any]) -> dict[str, Any]:
     ):
         raise ValueError("invalid network response grid")
     # Admit the query geometry before allocating the repeated anchor/grid.
-    priors.admit_frozen_function(recipe.function, points, recipe.limits)
+    if isinstance(recipe, priors.NetworkInputView):
+        recipe.admit(rows=points)
+    else:
+        priors.admit_frozen_function(recipe.function, points, recipe.limits)
     x = torch.tensor(anchor, dtype=torch.float64).repeat(points, 1)
     fraction = torch.linspace(0, 1, points, dtype=torch.float64)
     values = (1 - fraction) * bounds[0] + fraction * bounds[1]
     x[:, feature] = values
-    scores = priors.evaluate_frozen_function(recipe.function, x, limits=recipe.limits)
+    scores = (
+        priors.view_signal(recipe, x)
+        if isinstance(recipe, priors.NetworkInputView)
+        else priors.evaluate_frozen_function(recipe.function, x, limits=recipe.limits)
+    )
     result = {
         "values": np.asarray(values.numpy(), dtype=np.float64).tolist(),
         "scores": np.asarray(scores.numpy(), dtype=np.float64).tolist(),
