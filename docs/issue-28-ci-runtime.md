@@ -32,3 +32,30 @@ time-budget failure cannot be reproduced by one isolated test without changing
 the symptom. The successful full-run measurements and hosted timeout annotation,
 not the small timing probe alone, justify the workflow change. No synthetic test
 asserting the YAML timeout value would establish that the suite actually finishes.
+
+## Completed hosted run and numerical batch invariance
+
+Run `46154802173` completed pytest within the new allowance: 5,930 passed,
+8 failed, 1 skipped in 3,777.63 seconds. All eight failures were the bitwise
+batch-extension assertion in `test_literal_observation_reference`, for the
+multiclass `p1-778f0d0-v1` cases. The independent NumPy formula check before
+that assertion passed. The original hosted failure log is retained at
+`docs/evidence/issue-30-task-construction/hosted-46154802173-failed.log`.
+
+The same 40 reference tests passed locally on aarch64; that does not reproduce
+or resolve the hosted failures. The failing printed tensors alone do not measure
+the discrepancy. A local AVX2 dispatch probe was ignored by this ARM build and
+is not evidence about the hosted backend.
+
+The test now applies its existing absolute `1e-12` formula error budget to both
+batch shapes and their common rows. It independently checks every expanded
+output against the NumPy formula, adds substantially changed companion rows,
+and checks row permutation. This tests fixed pointwise semantics rather than
+bitwise agreement between potentially different floating-point kernels. Latent
+or noise redraws and batch-dependent calibration must still satisfy the same
+independent formula in every case; no relative tolerance or shape-only comparison
+is used. The generator implementation is unchanged.
+
+Batch-size-dependent rounding is the leading explanation, not a demonstrated
+backend diagnosis. A successful new hosted run is still required before this
+repair can be called accepted. The broader generator delivery remains incomplete.

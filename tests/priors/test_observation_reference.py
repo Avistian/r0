@@ -126,10 +126,23 @@ def test_literal_observation_reference(
         actual.numpy(), literal(r, x.numpy(), placement, reference), rtol=0, atol=1e-12
     )
     assert json.dumps(r.observations.raw[0].values) == before
-    expanded = p.evaluate_observation_reference(
-        r, torch.cat((x, x[:1])), seed=17, task_id=29, row=3, reference=reference
+    # A frozen pointwise mechanism must retain each row's result when its
+    # companions change. Floating-point kernels may choose different reduction
+    # paths for different batch shapes, so use the same absolute error budget
+    # as the independent formula, not bitwise identity across kernel shapes.
+    for companions in (x[:1], torch.tensor([[4.0, -3.0], [-2.0, 5.0]], dtype=x.dtype)):
+        enlarged = torch.cat((x, companions))
+        expanded = p.evaluate_observation_reference(
+            r, enlarged, seed=17, task_id=29, row=3, reference=reference
+        )
+        np.testing.assert_allclose(
+            expanded.numpy(), literal(r, enlarged.numpy(), placement, reference), rtol=0, atol=1e-12
+        )
+        torch.testing.assert_close(actual, expanded[:3], rtol=0, atol=1e-12)
+    permuted = p.evaluate_observation_reference(
+        r, x.flip(0), seed=17, task_id=29, row=3, reference=reference
     )
-    assert torch.equal(actual, expanded[:3])
+    torch.testing.assert_close(actual, permuted.flip(0), rtol=0, atol=1e-12)
 
 
 def test_anchor_identity_alias_and_target_adapter_exclusion() -> None:
