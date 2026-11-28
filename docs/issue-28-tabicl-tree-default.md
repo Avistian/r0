@@ -16,7 +16,7 @@ fits an independent Gaussian table and Gaussian vector targets once, using
 explicit bounded backend settings and single-threaded fitting. It does **not**
 fit each layer's actual incoming batch. Actual-parent population fitting remains
 available through its separate [lifecycle API](issue-28-xgboost-population.md);
-automatic composition with sampled priors remains tracked in #126. The helper
+automatic population-policy compositions remain tracked in #126. The helper
 also does not reproduce the complete root/hyperparameter mixture or unspecified
 historical backend defaults. It uses the existing XGBoost defaults in its fit
 plan, not an assertion about the upstream installed version.
