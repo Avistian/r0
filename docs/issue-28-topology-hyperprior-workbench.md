@@ -45,7 +45,9 @@ caller caps, filter options, retry numerical failures or clip source draws.
 The new public authored request decoder builds a discarded metadata preview,
 checks full support and original receipt costs, validates exact outer fields and
 nested snapshot/raw-record shapes, and checks sampled convolution cardinalities
-and selected geometry before restoring templates. The existing strict joint
+and selected geometry before restoring templates. Deterministic convolution input
+length/channels, flattened layout, activation placement and activation scope must
+match the retained request before any template stream is restored. The existing strict joint
 request decoder is exported and reused. Both worker paths finish request
 admission before constructing their RNG streams.
 

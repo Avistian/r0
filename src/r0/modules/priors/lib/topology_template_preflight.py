@@ -65,6 +65,12 @@ def preflight_topology_templates(value: Any, *, limits: CausalLimits, state_byte
             final,
             fields["version"],
         )
+        if (
+            function.layout != request.layout
+            or function.input_length != request.input_length
+            or function.input_channels != request.input_channels
+        ):
+            raise ValueError("topology template convolution layout/input configuration differs")
         if len(function.layers) != len(request.layers):
             raise ValueError("topology template convolution layer count differs")
         for choice, prior, layer in zip(
@@ -80,5 +86,9 @@ def preflight_topology_templates(value: Any, *, limits: CausalLimits, state_byte
             if (
                 layer.geometry != prior.geometries[geometry]
                 or layer.activation != prior.activations[activation]
+                or layer.placement != prior.placement
+                or layer.activation_scope != prior.activation_scope
             ):
-                raise ValueError("topology template convolution chosen geometry differs")
+                raise ValueError(
+                    "topology template convolution chosen geometry/configuration differs"
+                )
