@@ -64,6 +64,7 @@ function showIntervention() {
   const pair=current?.intervention;
   $("intervention-results").hidden=!pair;
   if(!pair) return;
+  if(pair.card.kind==="gp-target-edit")clearCurve();
   $("intervention-path").value=pair.path;
   $("intervention-result-note").textContent=`${pair.card.mode==="matched"?"Matched units: unchanged exogenous draws are checked.":"Fresh population: equal row positions are not the same units."} Baseline remains active. Both panels use the same original row positions and shared axes.`;
   if(pair.card.kind==="gp-target-edit") $("intervention-result-note").textContent=`${pair.card.mode==="matched"?"Original retained feature innovations.":"Fresh shared innovations at fixed original locations and kernels; before is the original target on this fresh environment."} Both sides share adapter streams and independent calibration inputs. The active baseline is unchanged. This is a target-equation comparison, not conditional GP inference.`;
@@ -79,6 +80,7 @@ function showIntervention() {
 }
 function drawInterventionTrace() {
   const choice=$("intervention-stage").value, [side,index]=choice.split(":"), graph=interventionTrace[side], stage=graph.nodes[Number(index)];
+  if(graph.kind==="gp_target_environment")showGPPopulationMatrices(graph,current.intervention[side].recipe.recipe,`comparison ${side}`);
   const context=matrixContext(stage,stage.values.length,graph.rows);
   table("intervention-trace-table",[context.rowHeading,...context.columnLabels.map(c=>`channel ${c}`)],stage.values.map((values,i)=>[context.rowLabels[i],...values]));
   $("intervention-trace-json").textContent=pretty({side,rows:graph.rows,...stage});

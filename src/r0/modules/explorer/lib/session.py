@@ -311,6 +311,13 @@ class ExplorerSession:
         if action == "intervention_controls":
             return intervention_controls(self.task)
         if action in ("intervene", "sample_intervention_policy", "gp_target_edit"):
+            before, archive = self.task, self.archive
+            if action == "gp_target_edit":
+                from r0.modules.explorer.lib.gp_column_curves import target_edit_parent
+
+                before, archive = target_edit_parent(
+                    self.task, self.archive, self.intervention, data
+                )
             result = guarded_intervention(
                 self.output_dir,
                 {
@@ -318,8 +325,8 @@ class ExplorerSession:
                     "gp_target_edit": "gp_target_edit",
                 }.get(action, "create"),
                 _identity_numbers(data, for_browser=False),
-                before=self.task,
-                archive=self.archive,
+                before=before,
+                archive=archive,
             )
             self.intervention = saved_intervention(self.output_dir, result)
             return self._view()
@@ -411,7 +418,10 @@ class ExplorerSession:
             )
             return {"curve": _identity_numbers(curve, for_browser=True)}
         if action == "curve":
-            return {"curve": inspect_response_curve(self.task, data, self.output_dir)}
+            from r0.modules.explorer.lib.gp_column_curves import reference_task
+
+            selected = reference_task(self.task, self.intervention, data)
+            return {"curve": inspect_response_curve(selected, data, self.output_dir)}
         if action == "export":
             bundle = replay_bundle(self.task, max_bytes=data.get("max_bytes", 256 * 1024**2))
             return {

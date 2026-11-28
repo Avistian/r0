@@ -80,8 +80,7 @@ Replay and evaluation stay in the bounded worker. Failed queries and timeouts
 preserve the original active task and saved archive. Original population identity,
 frozen target and calibration constants remain visible in the reference artifact.
 Generic task-pair, mechanism-editor and DAG-policy controls are marked unavailable
-for this finite-population family. Dedicated comparison-environment curves/further linked edits, hybrid graphs,
-full covariance interactive views and hosted Colab
+for this finite-population family. Hybrid graphs and hosted Colab
 verification remain REQUIRED follow-ons, not excluded scope.
 
 
@@ -124,7 +123,40 @@ metadata admission is not a substitute for provenance validation.
 
 Comparison envelopes are fixed-identity environments. Their Next control is disabled
 and named accordingly; original population Next retains its new-population meaning.
-Dedicated reference curves and further linked edits for an already reopened comparison
-remain REQUIRED follow-ons, explicitly separate from the available original-population
-reference and original-to-replacement editor. Hybrid roots, full covariance interactive
-views, broad population catalogs and resource/diversity qualification remain required.
+The continuation below adds dedicated reference curves and further linked edits for
+already reopened comparison environments, alongside the original-population reference
+and original-to-replacement editor. Hybrid roots, broad population catalogs and resource/diversity qualification remain required.
+The separate accepted covariance viewer is integrated for active and paired target environments.
+
+## References and further edits inside a comparison environment
+
+`evaluate_gp_environment_reference` and its strict raw-record counterpart evaluate
+the selected original/replacement or linked target using that environment's actual
+retained matched/fresh row values and its own fixed centers/scales. The result
+retains the complete environment as canonical JSON plus a fingerprint, original
+population identity and distinct fresh seed. Shared reference calculations preserve
+the original `GPColumnReference` bytes and probability/noise semantics. The query
+budget uses the selected target's actual hidden width, not the original sampled
+request's hidden width. Complete lineage and query controls are admitted before
+covariance replay or query-grid allocation.
+
+`GPColumnTargetLink` retains the exact selected parent recipe, authored replacement,
+and independently fitted raw/normalized target receipt. `generate_gp_link_pair`
+uses the parent's feature draw and adapter streams; there is no fresh-seed option
+because further edits do not resample the environment. The before side is the
+parent target, and the after side fits only its new target on the original
+independent marginal calibration inputs. All parent receipts remain unchanged.
+Strict decoding admits every link's geometry, fields and summed work before
+restoring the root, then replays the full chain. An explicit r0 resource guard
+allows at most eight links; branching from any retained earlier parent remains
+available. This depth bound is not a paper sampling law.
+
+The shared workbench offers active/before/after selectors for both reference and
+edit parents. Paired views display actual saved sides. Linked save preserves the
+actual parent task archive, including descriptive historical execution metadata.
+Malformed controls, stale pair selection and timeouts preserve the baseline and
+accepted comparison. Reopened environments support reference, further linked
+edit, original-row trace, replay and ZIP export. Next remains explicitly disabled
+for fixed-identity environments; source-population construction is a distinct action.
+Hosted Colab, scale/diversity and scientific source fidelity beyond the stated
+r0 reconstruction remain unclaimed.

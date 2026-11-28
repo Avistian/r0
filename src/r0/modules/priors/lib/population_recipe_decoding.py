@@ -7,6 +7,16 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 
 def population_recipe_from_dict(fields: dict[str, Any], *, limits: CausalLimits):
     version = fields.get("version", "linear-v1")
+    if version == "network-observation-recipe-v1":
+        from r0.modules.priors.lib.network_observation_recipe_decoding import (
+            network_observation_recipe_from_dict,
+        )
+
+        return network_observation_recipe_from_dict(fields, limits=limits)
+    if version == "gp-column-target-link-v1":
+        from r0.modules.priors.lib.gp_target_links import gp_column_target_link_from_dict
+
+        return gp_column_target_link_from_dict(fields, limits=limits)
     if version == "gp-column-target-recipe-v1":
         from r0.modules.priors.lib.gp_target_environment import gp_column_target_recipe_from_dict
 
@@ -33,6 +43,16 @@ def population_recipe_from_dict(fields: dict[str, Any], *, limits: CausalLimits)
     ) != "recursive-population-graph-intervention-v1":
         raise ValueError("population DAG intervention requires its explicit version")
     version = fields.get("version", "linear-v1")
+    if version == "network-observation-recipe-v1":
+        from r0.modules.priors.lib.network_observation_recipe_decoding import (
+            network_observation_recipe_from_dict,
+        )
+
+        return network_observation_recipe_from_dict(fields, limits=limits)
+    if version == "gp-column-target-link-v1":
+        from r0.modules.priors.lib.gp_target_links import gp_column_target_link_from_dict
+
+        return gp_column_target_link_from_dict(fields, limits=limits)
     if version == "recursive-population-graph-intervention-v1":
         from r0.modules.priors.lib.population_graph_intervention_decoding import (
             population_graph_intervention_from_dict,

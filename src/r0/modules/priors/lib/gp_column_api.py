@@ -19,10 +19,22 @@ from .gp_column_reference import evaluate_gp_column_reference as evaluate_gp_col
 from .gp_column_reference import gp_column_reference_from_dict as gp_column_reference_from_dict
 from .gp_column_target import GPColumnTarget as GPColumnTarget
 from .gp_column_target import evaluate_gp_column_target as evaluate_gp_column_target
+from .gp_environment_reference import GPColumnEnvironmentReference as GPColumnEnvironmentReference
+from .gp_environment_reference import (
+    evaluate_gp_environment_reference as evaluate_gp_environment_reference,
+)
+from .gp_environment_reference import (
+    gp_environment_reference_from_dict as gp_environment_reference_from_dict,
+)
+from .gp_link_pairs import compare_gp_link_pair as compare_gp_link_pair
+from .gp_link_pairs import generate_gp_link_pair as generate_gp_link_pair
+from .gp_link_pairs import validate_gp_link_controls as validate_gp_link_controls
 from .gp_target_environment import GPColumnTargetRecipe as GPColumnTargetRecipe
 from .gp_target_environment import (
     gp_column_target_recipe_from_dict as gp_column_target_recipe_from_dict,
 )
+from .gp_target_links import GPColumnTargetLink as GPColumnTargetLink
+from .gp_target_links import gp_column_target_link_from_dict as gp_column_target_link_from_dict
 from .gp_target_pairs import compare_gp_column_pair as compare_gp_column_pair
 from .gp_target_pairs import generate_gp_column_pair as generate_gp_column_pair
 from .gp_target_pairs import gp_column_target_from_dict as gp_column_target_from_dict

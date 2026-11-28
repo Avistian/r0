@@ -292,6 +292,7 @@ def guarded_archive_version(version: object) -> bool:
         "gp-column-target-recipe-v1",
         "recursive-population-graph-v1",
         "recursive-population-graph-intervention-v1",
+        "gp-column-target-link-v1",
         "prototype-batch-network-request-v1",
         "prototype-batch-network-realized-v1",
     )

@@ -48,13 +48,12 @@ class GPColumnReference:
     version: str = "gp-column-target-reference-v1"
 
 
-def _admit(
+def validate_gp_reference_controls(
     request: GPColumnRequest,
     feature: int,
     anchor_row: int,
     points: int,
     bounds: tuple[float, float] | None,
-    limits: CausalLimits,
 ) -> None:
     if (
         type(feature) is not int
@@ -72,6 +71,17 @@ def _admit(
         )
     ):
         raise ValueError("invalid GP target reference feature, row, points or bounds")
+
+
+def _admit(
+    request: GPColumnRequest,
+    feature: int,
+    anchor_row: int,
+    points: int,
+    bounds: tuple[float, float] | None,
+    limits: CausalLimits,
+) -> None:
+    validate_gp_reference_controls(request, feature, anchor_row, points, bounds)
     # Retained source plus strict replay and query grid/raw/normalized/probability
     # buffers coexist. This is a conservative reservation, not measured RSS.
     channels = request.columns + request.hidden + 8 * request.outputs + 2
@@ -107,9 +117,51 @@ def gp_column_reference_from_dict(
     recipe = gp_column_recipe_from_dict(data, limits=limits)
     assert isinstance(recipe.source, GPColumnPopulation)
     population = recipe.source
-    anchor = population.draw.values[anchor_row]
+    return evaluate_frozen_gp_reference(
+        GPReferenceState(
+            population.population_id,
+            population.seed,
+            population.task_id,
+            adapter,
+            population.target,
+            population.draw.values,
+            population.centers,
+            population.scales,
+        ),
+        feature=feature,
+        anchor_row=anchor_row,
+        points=points,
+        bounds=bounds,
+        limits=limits,
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class GPReferenceState:
+    population_id: str
+    seed: int
+    task_id: int
+    adapter: LinearRecipe
+    target: GPColumnTarget
+    values: Matrix
+    centers: tuple[float, ...]
+    scales: tuple[float, ...]
+
+
+def evaluate_frozen_gp_reference(
+    state: GPReferenceState,
+    *,
+    feature: int,
+    anchor_row: int,
+    points: int,
+    bounds: tuple[float, float] | None,
+    limits: CausalLimits,
+) -> GPColumnReference:
+    """Evaluate an admitted, fully replay-validated frozen target state."""
+    adapter = state.adapter
+    anchor = state.values[anchor_row]
     if bounds is None:
-        column = tuple(row[feature] for row in population.draw.values)
+        column = tuple(row[feature] for row in state.values)
         low, high = min(column), max(column)
     else:
         low, high = bounds
@@ -117,9 +169,9 @@ def gp_column_reference_from_dict(
     fraction = np.linspace(0, 1, points)
     values = (1 - fraction) * low + fraction * high
     x[:, feature] = values
-    raw_scores = evaluate_gp_column_target(population.target, gp_matrix(x), limits=limits)
+    raw_scores = evaluate_gp_column_target(state.target, gp_matrix(x), limits=limits)
     with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
-        normalized = (np.asarray(raw_scores) - population.centers) / population.scales
+        normalized = (np.asarray(raw_scores) - state.centers) / state.scales
     if not np.isfinite(normalized).all():
         raise ValueError("nonfinite GP target reference; no clipping or refit")
     probabilities = None
@@ -135,18 +187,18 @@ def gp_column_reference_from_dict(
             ).numpy()
         )
     return GPColumnReference(
-        population.population_id,
-        population.seed,
-        population.task_id,
+        state.population_id,
+        state.seed,
+        state.task_id,
         feature,
         anchor_row,
         anchor,
         (float(low), float(high)),
         "observed_min_max" if bounds is None else "explicit",
         tuple(float(v) for v in values),
-        population.target,
-        population.centers,
-        population.scales,
+        state.target,
+        state.centers,
+        state.scales,
         raw_scores,
         gp_matrix(normalized),
         probabilities,

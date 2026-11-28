@@ -68,7 +68,7 @@ function drawGP() {
   $("curve-note").textContent = `${numerical}. ${curve.points} points; ${samples.length} additional draws${samples.length ? ` with seed ${curve.sampling.seed}` : ""}. The band is pointwise uncertainty of the latent function, not observation noise. Lines connect evaluated points. Dots match the fixed active coordinates; irrelevant inputs may differ. ${diagnostics.approximate ? "The reported error is the largest normalized change to the saved support projection. Original values still take precedence at exact saved coordinates." : ""}`;
 }
 function curveArguments() {
-  return {...(isGPColumns()?gpColumnCurveArguments():{}), feature: number("feature"), anchor_row: number("curve-row"), points: number("curve-points"), ...((isNoisyNetwork() || isFunctionalReference() || isObservation(current?.view?.recipe?.recipe)) ? {reference:$("network-reference").value} : {}), ...(isGP() ? {draws: number("gp-draws"), seed: number("gp-draws") ? $("gp-seed").value : null, allow_rank_truncation: $("gp-approximate").checked} : {})};
+  return {...(isGPTargetReference()?gpColumnCurveArguments():{}), feature: number("feature"), anchor_row: number("curve-row"), points: number("curve-points"), ...((isNoisyNetwork() || isFunctionalReference() || isObservation(current?.view?.recipe?.recipe)) ? {reference:$("network-reference").value} : {}), ...(isGP() ? {draws: number("gp-draws"), seed: number("gp-draws") ? $("gp-seed").value : null, allow_rank_truncation: $("gp-approximate").checked} : {})};
 }
 for (const id of ["network-reference", "curve-row", "curve-points", "gp-draws", "gp-seed", "gp-approximate"]) $(id).onchange = clearCurve;
 $("curve").onclick = () => act("Evaluating saved function…", async () => {
