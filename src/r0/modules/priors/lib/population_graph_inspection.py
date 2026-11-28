@@ -73,6 +73,19 @@ def population_graph_steps(
             current = [key]
             if context.replaces(i):
                 current = context.steps(i, parents=current, indices=indices, add=add)
+            else:
+                from r0.modules.priors.lib.population_function_inspection import (
+                    population_function_steps,
+                )
+
+                current = population_function_steps(
+                    equation.function,
+                    context.inputs[i],
+                    prefix=f"{prefix}-detail",
+                    parents=current,
+                    indices=indices,
+                    add=add,
+                )
             key = f"{prefix}-function"
             add(
                 key,

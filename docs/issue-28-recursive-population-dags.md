@@ -51,3 +51,33 @@ Its base alone and the repaired pair decode at256MiB. Public regression checks
 also verify1/64/128/224MiB callers reject before any snapshot restoration. The
 49-case focused pair/preflight run passes. Broader numerical continuation and
 independent repair acceptance are recorded separately; earlier rejections remain.
+
+### Nested frozen-function inspection
+
+Population DAG inspection now includes the detailed frozen mechanisms between each
+original input and its function endpoint. Conv layers retain their affine/activation
+stages and sampled construction records. Structural networks and standalone blocks
+retain expert, gate, skip and state stages. Parent compositions expose exact ordered
+input slices, optional joint members and reductions; products expose both members
+and their elementwise product. MLP members and neural reducers expose every affine
+and retained calibrated activation, without refitting on inspected rows.
+
+Detailed computational stages carry the original requested row indices, including
+repeats. Shared sampled-Conv construction stages retain their separate global scope
+and single-record axis. Explicit parent-slice IDs avoid collisions with nested
+network input IDs. Numeric readouts, categorical captures and native emissions still
+coexist with these stages; replacement population forests retain their row-owned
+mechanisms instead of displaying the replaced frozen function.
+
+The implementation's public RED/GREEN cases cover the missing Conv, nested member
+and neural stages, four graph families, standalone network blocks, repeated rows,
+large task identities and closed unique parent IDs. An outside-test oracle checks
+literal Conv/network/product arithmetic followed by independent scalar forest
+traversal and a linear descendant across all four families. Full generated task
+and recipe artifacts match the frozen `ccc0195` base in those four cases; inspection
+adds stages intentionally. Evidence is under ignored
+`docs/evidence/issue-28-population-nested-traces/`.
+
+This is a bounded inspection addition. Primitive functions remain named member or
+whole-function endpoints; it does not add internal traces for every primitive,
+change population laws, add workbench controls, or claim issue-wide acceptance.
