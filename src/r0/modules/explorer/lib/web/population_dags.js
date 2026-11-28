@@ -1,0 +1,63 @@
+"use strict";
+function isPopulationDAG(recipe){return recipe?.version==="recursive-population-graph-v1";}
+function populationConstructionDraft(){
+  const draft=JSON.parse($("construction-controls").value);
+  if(draft.topology!=="recursive-population-dag")throw new Error("Choose or load a Population DAG construction first.");
+  return draft;
+}
+function fillPopulationDraft(draft){
+  $("population-dag-node").replaceChildren(...draft.request.replacements.map((binding,i)=>new Option(`Node ${binding.node} · original-row forest`,i)));
+  $("population-dag-runtime").value=pretty(draft.request.base);
+  $("population-dag-engine").value=draft.engine;
+  selectPopulationNode();
+}
+function selectPopulationNode(){
+  const draft=populationConstructionDraft(), binding=draft.request.replacements[Number($("population-dag-node").value)];
+  $("population-dag-forest").value=pretty(binding.forest);
+}
+$("population-dag-node").onchange=()=>act("Selecting original-row mechanism…",async()=>selectPopulationNode());
+$("construction-family").addEventListener("change",()=>{
+  const draft=JSON.parse($("construction-controls").value);
+  if(draft.topology==="recursive-population-dag")fillPopulationDraft(draft);
+});
+async function loadPopulationDraft(){
+  const info=await request("population_dag_controls",{});
+  if(!info.population_dag)throw new Error("Generate or open a population DAG first.");
+  $("construction-controls").value=pretty(info.controls);fillPopulationDraft(info.controls);
+  $("population-dag-notice").textContent=info.notice;
+}
+$("population-dag-load").onclick=()=>act("Loading retained population controls…",loadPopulationDraft);
+$("population-dag-apply").onclick=()=>act("Updating population construction draft…",async()=>{
+  const draft=populationConstructionDraft();
+  draft.request.base=JSON.parse($("population-dag-runtime").value);
+  draft.request.replacements[Number($("population-dag-node").value)].forest=JSON.parse($("population-dag-forest").value);
+  draft.engine=$("population-dag-engine").value;
+  $("construction-controls").value=pretty(draft);
+  $("population-dag-notice").textContent="Draft retained. Construct validates complete geometry and budgets before drawing a new population; the active dataset remains unchanged until success.";
+});
+$("population-dag-replay").onclick=()=>act("Replaying exact original-row population…",async()=>show(await request("population_dag_replay",limits())));
+$("next").addEventListener("click",event=>{
+  const stored=current?.view?.recipe?.recipe;if(!isPopulationDAG(stored))return;
+  event.stopImmediatePropagation();event.preventDefault();
+  act("Constructing next original-row population…",async()=>{
+    if($("recipe").value!==pretty(stored))throw new Error("Unapplied archive edits retained. Use population construction controls to create a new population.");
+    const info=await request("population_dag_controls",{}), next=String(BigInt($("task-id").value)+1n);
+    const result=await request("construct",{controls:info.controls,construction_seed:$("construction-seed").value,seed:$("seed").value,task_id:next,...limits()});
+    show(result);
+  });
+},true);
+$("mechanism-load").addEventListener("click",event=>{
+  if(!isPopulationDAG(current?.view?.recipe?.recipe))return;
+  event.stopImmediatePropagation();event.preventDefault();
+  act("Loading row-owned mechanism construction draft…",loadPopulationDraft);
+},true);
+
+function populationDAGView(view){
+  $("mechanism-load").textContent="Inspect and prepare edit";
+  if(!isPopulationDAG(view.recipe.recipe))return;
+  $("next").textContent="Next population";
+  $("mechanism-load").textContent="Load population construction controls";
+  $("curve").disabled=true;$("curve").dataset.unavailable="true";
+  $("curve-description").textContent="Population DAGs retain row-owned mechanisms. Reference curves remain a required follow-on.";
+  $("curve-note").textContent="Population DAG reference curves remain a required follow-on. Inspect original-row forest paths and retained matched/fresh comparisons; no shared frozen response is substituted.";
+}

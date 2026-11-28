@@ -27,52 +27,58 @@ from r0.modules.priors.lib.recursive_task_preflight import admit_recursive_tasks
 from r0.modules.priors.lib.representatives import encode
 
 
+def admit_population_graph_comparison(data: Any, *, limits: CausalLimits):
+    """Shared metadata-only reservation for replay and new comparison construction."""
+    admit_function_metadata(data, limits)
+    raw = complete_population_record(data, RecursivePopulationGraphIntervention)
+    baseline = complete_population_record(raw["base"], RecursivePopulationGraph)
+    change = complete_population_record(raw["change"], CausalInterventionRecipe)
+    request = baseline["request"]
+    if encode(change["base"]) != encode(request["base"]):
+        raise ValueError("population counterfactual must retain the exact original DAG")
+    numbers, storage = population_raw_cost(data, limits)
+    # Two independent live graph/receipt/capture reservations plus outer metadata.
+    if numbers >= limits.parameters or 8 * storage >= limits.working_bytes:
+        raise ValueError("population comparison metadata exceeds caller limits")
+    nested = replace(
+        limits,
+        parameters=(limits.parameters - numbers) // 2,
+        working_bytes=(limits.working_bytes - 8 * storage) // 2,
+    )
+    _, base_raw, _, _, effective, plans = admit_population_graph_request(request, nested)
+    after = population_change_preview(base_raw, change["interventions"])
+    disabled = {
+        c["node"]
+        for c in change["interventions"]
+        if c.get("version") == "soft-causal-intervention-v1" and c.get("function") is not None
+    }
+    geometry = {
+        p.node: (
+            p.forest.input_width,
+            p.forest.classes or p.forest.output_width,
+            p.forest.classes,
+        )
+        for p in plans
+        if p.node not in disabled
+    }
+    admit_recursive_tasks(
+        [after],
+        storage=storage,
+        numbers=numbers,
+        replay_work=0,
+        limits=effective,
+        retain_node_stages=True,
+        population_geometry=geometry,
+    )
+    preflight_population_change(raw, baseline, change, limits=effective)
+    return raw, baseline, change, effective
+
+
 def population_graph_intervention_from_dict(
     data: Any, *, limits: CausalLimits
 ) -> RecursivePopulationGraphIntervention:
     try:
-        admit_function_metadata(data, limits)
-        raw = complete_population_record(data, RecursivePopulationGraphIntervention)
-        baseline = complete_population_record(raw["base"], RecursivePopulationGraph)
-        change = complete_population_record(raw["change"], CausalInterventionRecipe)
-        request = baseline["request"]
-        if encode(change["base"]) != encode(request["base"]):
-            raise ValueError("population counterfactual must retain the exact original DAG")
-        numbers, storage = population_raw_cost(data, limits)
-        # Two independent live graph/receipt/capture reservations plus outer metadata.
-        if numbers >= limits.parameters or 8 * storage >= limits.working_bytes:
-            raise ValueError("population comparison metadata exceeds caller limits")
-        nested = replace(
-            limits,
-            parameters=(limits.parameters - numbers) // 2,
-            working_bytes=(limits.working_bytes - 8 * storage) // 2,
-        )
-        _, base_raw, _, _, effective, plans = admit_population_graph_request(request, nested)
-        after = population_change_preview(base_raw, change["interventions"])
-        disabled = {
-            c["node"]
-            for c in change["interventions"]
-            if c.get("version") == "soft-causal-intervention-v1" and c.get("function") is not None
-        }
-        geometry = {
-            p.node: (
-                p.forest.input_width,
-                p.forest.classes or p.forest.output_width,
-                p.forest.classes,
-            )
-            for p in plans
-            if p.node not in disabled
-        }
-        admit_recursive_tasks(
-            [after],
-            storage=storage,
-            numbers=numbers,
-            replay_work=0,
-            limits=effective,
-            retain_node_stages=True,
-            population_geometry=geometry,
-        )
-        preflight_population_change(raw, baseline, change, limits=effective)
+        raw, baseline, change, effective = admit_population_graph_comparison(data, limits=limits)
         # Geometry and outer semantics pass before either receipt decoder.
         # The whole archive is already charged above, with a separate nested
         # workspace reserved for each population. Passing that reduced workspace

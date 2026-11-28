@@ -1,5 +1,8 @@
 """Explicit internal-DAG row-owned populations, outside the frozen-function registry."""
 
+from .population_graph_change_construction import (
+    construct_population_graph_change as construct_population_graph_change,
+)
 from .recursive_population_graph_decoding import (
     recursive_population_graph_from_dict as recursive_population_graph_from_dict,
 )

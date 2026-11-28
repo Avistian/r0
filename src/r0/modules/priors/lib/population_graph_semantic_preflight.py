@@ -33,6 +33,10 @@ def authored_semantic_preview(value: Any) -> Any:
     if type(value) is not dict:
         return value
     raw = cast(dict[str, Any], value)
+    if raw.get("version") == "sampled-feature-conv1d-r0-v1":
+        from r0.modules.priors.lib.recursive_task_preflight import recursive_authored_preview
+
+        return recursive_authored_preview(raw)
     if raw.get("version") == "frozen-recursive-forest-function-v1":
         source = raw["source"]
         if type(source) is not dict:

@@ -131,6 +131,12 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         native = record["recipe"]
         view["native_construction"] = native["version"]
         native_record = record
+        if native["version"] == "recursive-population-graph-v1":
+            native = native["request"]["base"]
+            native_record = {**record, "recipe": native}
+        elif native["version"] == "recursive-population-graph-intervention-v1":
+            native = native["change"]
+            native_record = {**record, "recipe": native}
         if native["version"] == "sampled-typed-intervention-policy-v1":
             native = native["runtime"]
             native_record = {**record, "recipe": native}
@@ -150,7 +156,7 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
                 else target_node["domain"]
             )
             original_domain = domain
-            changes = record["recipe"].get("interventions", ())
+            changes = native_record["recipe"].get("interventions", ())
             target_node_index, target_variable = native["target"]
             relevant = [
                 c

@@ -1,0 +1,11 @@
+<fieldset id="population-dag-controls"><legend>Internal population DAG workbench</legend>
+<p>Choose a “Population DAG” construction above. Each selected node owns a different recursive forest for every original dataset row; other equations retain their frozen function. Construction and replay run within the time, storage and working-memory limits.</p>
+<button id="population-dag-load">Load active population controls</button>
+<button id="population-dag-replay">Replay retained original population</button>
+<label>Selected population node<select id="population-dag-node"></select></label>
+<label>Per-node forest plan<textarea id="population-dag-forest" rows="12"></textarea></label>
+<label>Complete original runtime (domains, converters, pipelines, noise and readouts)<textarea id="population-dag-runtime" rows="12"></textarea></label>
+<label>Construction RNG engine<select id="population-dag-engine"><option>PCG64</option><option>PCG64DXSM</option><option>Philox</option><option>SFC64</option><option>MT19937</option></select></label>
+<button id="population-dag-apply">Apply population controls to construction draft</button>
+<p id="population-dag-notice" class="muted">Forest plans expose estimator count, depth, terminal probability, feature intervals, split probabilities, source profile, output/label laws and explicit fresh-forest-per-row lifecycle. Change replacements in the complete construction JSON to select multiple nodes. populations must equal the runtime row count. Runtime pipelines keep their declared calibration constants: inspecting or replaying never fits query rows. Independent target calibration remains required and unavailable. Next constructs a new original-row population; Replay retains exact original rows. Paired interventions below use matched retained forests or an explicitly keyed fresh population.</p>
+</fieldset>

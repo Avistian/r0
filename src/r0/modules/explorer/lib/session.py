@@ -148,6 +148,11 @@ class ExplorerSession:
         self.intervention = None
 
     def request(self, action: str, data: dict[str, Any]) -> dict[str, Any]:
+        from r0.modules.explorer.lib.population_dag_workbench import population_dag_action
+
+        population = population_dag_action(self, action, data)
+        if population is not None:
+            return population
         if action == "construction_examples":
             return {"examples": construction_examples()}
         if action == "construct":

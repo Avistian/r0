@@ -235,7 +235,7 @@ function show(result) {
   $("construction-details").hidden=!view.construction_details;
   $("construction-detail-notice").textContent=view.construction_details?.notice || "";
   $("construction-detail-record").textContent=pretty(view.construction_details || {});
-  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair(); resetWorkbench(); nativeViewControls(view); resetIntervention();
+  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair(); resetWorkbench(); nativeViewControls(view); resetIntervention(); populationDAGView(view);
 }
 async function inspectRow(index) {
   await act("Loading row…", async () => {
