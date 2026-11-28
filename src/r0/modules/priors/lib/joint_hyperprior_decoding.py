@@ -132,7 +132,16 @@ def joint_hyperprior_graph_from_dict(
             for item in snapshots:
                 snapshot = GeneratorSnapshot(**complete_topology_record(item, GeneratorSnapshot))
                 snapshot.validate_metadata(byte_limit=request.raw_limits.state_bytes)
+        from r0.modules.priors.lib.joint_hyperprior_preflight import (
+            preflight_joint_hyperprior_graph,
+        )
+
+        preflight_joint_hyperprior_graph(graph_raw, expected)
         # Only now can either of the five source streams be restored.
+        from r0.modules.priors.lib.joint_snapshot_preflight import validate_joint_snapshot
+
+        for snapshot in (topology.initial, topology.final):
+            validate_joint_snapshot(snapshot, byte_limit=request.raw_limits.state_bytes)
         topology.replay(limits=request.limits)
         graph = sampled_graph_from_dict(graph_raw, limits=request.limits)
         result = JointHyperpriorGraph(request, topology, graph)
