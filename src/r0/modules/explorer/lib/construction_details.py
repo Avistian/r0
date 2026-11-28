@@ -4,6 +4,21 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
+    if recipe.get("version") == "gp-column-target-link-v1":
+        parent = recipe
+        depth = 0
+        while parent.get("version") == "gp-column-target-link-v1" and depth < 8:
+            depth += 1
+            parent = parent["parent"]
+        return {
+            "kind": "gp-linked-target-environment",
+            "lineage_depth": depth,
+            "root_environment": construction_details(parent),
+            "target": recipe["target"],
+            "notice": "Exact selected parent retained; same inputs and adapter streams. "
+            "Only new target calibration uses original independent marginal inputs. "
+            "Use reference and parent selectors to inspect or branch either saved side.",
+        }
     if recipe.get("version") == "gp-column-target-recipe-v1":
         comparison = recipe["comparison"]
         return {
@@ -18,7 +33,7 @@ def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
             "Both targets share matched/fresh innovations and adapter streams. "
             "This environment does not claim a new original GP population identity. "
             "Reopen the original population to construct a new comparison; "
-            "dedicated environment reference/edit workflows remain required follow-ons.",
+            "reference and linked-edit controls preserve the selected environment.",
         }
     if recipe.get("version") == "gp-column-recipe-v1":
         population = recipe["source"]

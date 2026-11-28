@@ -1,9 +1,13 @@
 "use strict";
 function isGPColumns(){return current?.view?.recipe?.recipe?.version==="gp-column-recipe-v1";}
+function isGPTargetReference(){return isGPColumns() || isGPTargetEnvironment();}
 function gpColumnCurveControls(){
   gpColumnAvailability();
-  $("gp-target-controls").hidden=!isGPColumns();
-  if(!isGPColumns())return;
+  $("gp-target-controls").hidden=!isGPTargetReference();
+  if(!isGPTargetReference())return;
+  const paired=current?.intervention?.card?.kind==="gp-target-edit";
+  for(const option of $("gp-reference-side").options)option.disabled=option.value!=="active" && !paired;
+  if(!paired)$("gp-reference-side").value="active";
   const previous=$("gp-target-metric").value, regression=current.view.task_type==="regression";
   const options=regression?[["mean","Expected observed target (noise mean zero)"],["scores","Independently normalized target"],["raw","Raw frozen target"]]:[["probabilities","Class probability (task separation + offsets)"],["scores","Independently normalized target score"],["raw","Raw frozen target score"]];
   $("gp-target-metric").replaceChildren(...options.map(([value,label])=>new Option(label,value)));
@@ -15,9 +19,10 @@ function gpColumnCurveControls(){
 }
 function gpColumnCurveArguments(){
   const low=$("gp-target-lower").value.trim(), high=$("gp-target-upper").value.trim();
-  if(!low && !high)return {};
+  const selection={gp_reference_side:$("gp-reference-side").value,expected_intervention_id:current?.intervention?.after_id};
+  if(!low && !high)return selection;
   if(!low || !high)throw new Error("Supply both explicit bounds or leave both empty for the observed range.");
-  return {bounds:[Number(low),Number(high)]};
+  return {...selection,bounds:[Number(low),Number(high)]};
 }
 function drawGPColumnCurve(){
   const metric=$("gp-target-metric").value;
@@ -44,3 +49,5 @@ function gpColumnAvailability(){
     $("intervention-notice").textContent="General DAG interventions and sampled policies require a causal graph. Finite-GP hybrid graph integration remains required; the target reference evaluates only the retained target equation.";
   }
 }
+
+$("gp-reference-side").onchange=clearCurve;

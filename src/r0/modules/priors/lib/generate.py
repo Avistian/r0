@@ -31,6 +31,7 @@ from r0.modules.priors.lib.gp_target_environment import (
     GPColumnTargetRecipe,
     generate_gp_target_environment,
 )
+from r0.modules.priors.lib.gp_target_links import GPColumnTargetLink, generate_gp_link
 from r0.modules.priors.lib.inputs import InputDistribution
 from r0.modules.priors.lib.intervention_policy_records import SampledInterventionPolicy
 from r0.modules.priors.lib.linear import LinearRecipe
@@ -61,6 +62,7 @@ from r0.modules.priors.lib.network_recipe import (
 )
 from r0.modules.priors.lib.node_pipeline import pipeline_from_dict
 from r0.modules.priors.lib.parameter_preferences import parameter_preferences_from_dict
+from r0.modules.priors.lib.population_recipe_decoding import population_recipe_from_dict
 from r0.modules.priors.lib.preference_binding import PreferenceBinding
 from r0.modules.priors.lib.prototype_batch_network import (
     PrototypeBatchNetworkRecipe,
@@ -68,7 +70,6 @@ from r0.modules.priors.lib.prototype_batch_network import (
 )
 from r0.modules.priors.lib.recursive_population_dispatch import (
     generate_population_recipe,
-    population_recipe_from_dict,
 )
 from r0.modules.priors.lib.recursive_population_intervention import RecursivePopulationIntervention
 from r0.modules.priors.lib.recursive_population_records import RecursivePopulationRecipe
@@ -93,7 +94,8 @@ from r0.modules.priors.lib.training_task import TrainingTask
 from r0.modules.priors.lib.typed_policy_records import SampledTypedInterventionPolicy
 
 type Recipe = (
-    GPColumnTargetRecipe
+    GPColumnTargetLink
+    | GPColumnTargetRecipe
     | GPColumnRecipe
     | PrototypeBatchNetworkRecipe
     | RealizedPrototypeBatchNetworkRecipe
@@ -144,14 +146,6 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
     ):
         raise ValueError("prototype batch archive requires an explicit version")
     version = fields.get("version", "linear-v1")
-    if version == "gp-column-target-recipe-v1":
-        from r0.modules.priors.lib.gp_target_environment import gp_column_target_recipe_from_dict
-
-        return gp_column_target_recipe_from_dict(fields, limits=limits)
-    if version == "gp-column-recipe-v1":
-        from r0.modules.priors.lib.gp_column_decoding import gp_column_recipe_from_dict
-
-        return gp_column_recipe_from_dict(fields, limits=limits)
     if version == "network-observation-recipe-v1":
         from r0.modules.priors.lib.network_observation_recipe_decoding import (
             network_observation_recipe_from_dict,
@@ -323,6 +317,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, GPColumnTargetLink):
+        return generate_gp_link(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, GPColumnTargetRecipe):
         return generate_gp_target_environment(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, GPColumnRecipe):

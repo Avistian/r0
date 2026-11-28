@@ -94,7 +94,7 @@ def explain_generation(
             }
         )
 
-    if raw.get("version") == "gp-column-target-recipe-v1":
+    if raw.get("version") in ("gp-column-target-recipe-v1", "gp-column-target-link-v1"):
         from r0.modules.priors.lib.gp_target_inspection import gp_target_steps
 
         if component is not None:

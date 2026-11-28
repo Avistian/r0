@@ -18,6 +18,7 @@ from r0.modules.explorer.lib.construction import (
 from r0.modules.explorer.lib.curves import inspect_gp_curve, inspect_response_curve
 from r0.modules.explorer.lib.edits import SavedEdit, create_edit, open_edit
 from r0.modules.explorer.lib.exports import replay_bundle
+from r0.modules.explorer.lib.identities import identity_numbers as _identity_numbers
 from r0.modules.explorer.lib.inspection import inspect_rows, inspect_task
 from r0.modules.explorer.lib.interventions import (
     guarded_intervention,
@@ -42,31 +43,6 @@ from r0.modules.priors import (
     recipe_from_dict,
     sample_recipe,
 )
-
-
-def _identity_numbers(value: Any, *, for_browser: bool) -> Any:
-    """Keep 63-bit identities exact across JavaScript's 53-bit integer boundary."""
-    if isinstance(value, list):
-        return [_identity_numbers(item, for_browser=for_browser) for item in cast(list[Any], value)]
-    if not isinstance(value, dict):
-        return value
-    result: dict[str, Any] = {}
-    for key, item in cast(dict[str, Any], value).items():
-        if key in (
-            "seed",
-            "task_id",
-            "split",
-            "population",
-            "reference_seed",
-            "reference_task_id",
-            "fresh_seed",
-        ):
-            if for_browser and type(item) is int and item > 2**53 - 1:
-                item = str(item)
-            elif not for_browser and isinstance(item, str) and item.isascii() and item.isdecimal():
-                item = int(item)
-        result[key] = _identity_numbers(item, for_browser=for_browser)
-    return result
 
 
 def recipe_examples() -> dict[str, Any]:
@@ -330,6 +306,13 @@ class ExplorerSession:
         if action == "intervention_controls":
             return intervention_controls(self.task)
         if action in ("intervene", "sample_intervention_policy", "gp_target_edit"):
+            before, archive = self.task, self.archive
+            if action == "gp_target_edit":
+                from r0.modules.explorer.lib.gp_column_curves import target_edit_parent
+
+                before, archive = target_edit_parent(
+                    self.task, self.archive, self.intervention, data
+                )
             result = guarded_intervention(
                 self.output_dir,
                 {
@@ -337,8 +320,8 @@ class ExplorerSession:
                     "gp_target_edit": "gp_target_edit",
                 }.get(action, "create"),
                 _identity_numbers(data, for_browser=False),
-                before=self.task,
-                archive=self.archive,
+                before=before,
+                archive=archive,
             )
             self.intervention = saved_intervention(self.output_dir, result)
             return self._view()
@@ -430,7 +413,10 @@ class ExplorerSession:
             )
             return {"curve": _identity_numbers(curve, for_browser=True)}
         if action == "curve":
-            return {"curve": inspect_response_curve(self.task, data, self.output_dir)}
+            from r0.modules.explorer.lib.gp_column_curves import reference_task
+
+            selected = reference_task(self.task, self.intervention, data)
+            return {"curve": inspect_response_curve(selected, data, self.output_dir)}
         if action == "export":
             bundle = replay_bundle(self.task, max_bytes=data.get("max_bytes", 256 * 1024**2))
             return {

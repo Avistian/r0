@@ -21,6 +21,7 @@ def inspect_graph(
         "prototype-batch-network-realized-v1",
         "gp-column-recipe-v1",
         "gp-column-target-recipe-v1",
+        "gp-column-target-link-v1",
         "network-observation-recipe-v1",
         "standalone-network-innovations-v1",
         "standalone-network-v1",

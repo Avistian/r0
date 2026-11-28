@@ -58,3 +58,26 @@ def inspect_gp_column_curve(
             "joint feature distribution; explicit bounds may extrapolate."
         ),
     }
+
+
+def reference_task(task: TrainingTask, pair: Any, data: dict[str, Any]) -> TrainingTask:
+    """Choose a retained comparison side before sending its complete recipe to the guard."""
+    side = data.get("gp_reference_side", "active")
+    if side == "active":
+        return task
+    if side not in ("before", "after") or pair is None:
+        raise ValueError("select an existing GP target comparison side")
+    if (
+        pair.document["card"].get("kind") != "gp-target-edit"
+        or data.get("expected_intervention_id") != pair.after.episode_id
+    ):
+        raise ValueError("GP target comparison changed; reopen the selected pair")
+    return pair.before if side == "before" else pair.after
+
+
+def target_edit_parent(task: TrainingTask, archive: str | None, pair: Any, data: dict[str, Any]):
+    side = data.get("gp_edit_parent", "active")
+    if side == "active":
+        return task, archive
+    selected = reference_task(task, pair, {**data, "gp_reference_side": side})
+    return selected, pair.document[f"{side}_archive"]

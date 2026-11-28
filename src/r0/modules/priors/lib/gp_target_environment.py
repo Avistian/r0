@@ -26,7 +26,12 @@ _DEFAULT_LIMITS = CausalLimits()
 
 
 def admit_gp_target_environment(
-    request: GPColumnRequest, target: GPColumnTarget, task: LinearRecipe, limits: CausalLimits
+    request: GPColumnRequest,
+    target: GPColumnTarget,
+    task: LinearRecipe,
+    limits: CausalLimits,
+    *,
+    extra_numbers: int = 0,
 ) -> None:
     """Reserve comparison replay plus both task sides and validation tensor copies."""
     GPColumnRecipe(request, task)
@@ -41,7 +46,9 @@ def admit_gp_target_environment(
         storage += 128 * count
         # Two retained tasks and two replay-validation tasks. Includes inputs,
         # scores, targets, probabilities, split indices and adapter temporaries.
-        cells = 4 * request.rows * (request.columns + 4 * request.outputs + task.classes + 4)
+        cells = extra_numbers + 4 * request.rows * (
+            request.columns + 4 * request.outputs + task.classes + 4
+        )
         if (
             4 * (count + report["parameters"]) + cells > cap.parameters
             or 4 * (storage + report["estimated_working_bytes"]) + 128 * cells > cap.working_bytes
@@ -153,8 +160,14 @@ def gp_target_record_metadata(record: Any, *, limits: CausalLimits) -> None:
     record = cast(dict[str, Any], record)
     if set(record) != {"recipe", "seed", "task_id", "execution"}:
         raise ValueError("GP environment transport schema differs")
-    raw, _ = gp_target_environment_metadata(record["recipe"], limits=limits)
-    original = raw["comparison"]["original"]
+    raw = record["recipe"]
+    if type(raw) is dict and cast(dict[str, Any], raw).get("version") == "gp-column-target-link-v1":
+        from r0.modules.priors.lib.gp_target_links import gp_target_link_metadata
+
+        base, _, _ = gp_target_link_metadata(raw, limits=limits)
+    else:
+        base, _ = gp_target_environment_metadata(raw, limits=limits)
+    original = base["comparison"]["original"]
     if any(type(record[k]) is not int or record[k] != original[k] for k in ("seed", "task_id")):
         raise ValueError("GP environment transport identity differs")
     execution = cast(dict[str, Any], record["execution"])

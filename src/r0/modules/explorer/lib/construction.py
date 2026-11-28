@@ -288,6 +288,7 @@ def guarded_archive_version(version: object) -> bool:
     return frozen_archive_version(version) or version in (
         "gp-column-recipe-v1",
         "gp-column-target-recipe-v1",
+        "gp-column-target-link-v1",
         "prototype-batch-network-request-v1",
         "prototype-batch-network-realized-v1",
     )

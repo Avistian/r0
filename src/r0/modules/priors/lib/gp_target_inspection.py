@@ -10,7 +10,6 @@ import torch
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.gp_column_target import evaluate_gp_column_target
 from r0.modules.priors.lib.gp_target_environment import (
-    generate_gp_target_environment,
     gp_column_target_recipe_from_dict,
     gp_target_adapter_stream,
     gp_target_record_metadata,
@@ -30,22 +29,37 @@ def gp_target_steps(
     cap = limits or CausalLimits()
     record = json.loads(task.recipe_json)
     gp_target_record_metadata(record, limits=cap)
-    recipe = gp_column_target_recipe_from_dict(record["recipe"], limits=cap)
-    expected = generate_gp_target_environment(
-        recipe, seed=record["seed"], task_id=record["task_id"]
+    from r0.modules.priors.lib.generate import generate_task
+    from r0.modules.priors.lib.gp_target_links import (
+        GPColumnTargetLink,
+        effective_gp_target,
+        gp_column_target_link_from_dict,
+        gp_target_base,
     )
+
+    linked = record["recipe"].get("version") == "gp-column-target-link-v1"
+    recipe = (
+        gp_column_target_link_from_dict(record["recipe"], limits=cap)
+        if linked
+        else gp_column_target_recipe_from_dict(record["recipe"], limits=cap)
+    )
+    expected = generate_task(recipe, seed=record["seed"], task_id=record["task_id"])
     validate_gp_task(task, expected, recipe.version)
-    c = recipe.comparison
+    base = gp_target_base(recipe)
+    c = base.comparison
     p = c.original
     rows = list(indices)
-    replacement = recipe.side == "replacement"
-    target = c.replacement if replacement else p.target
+    replacement = linked or base.side == "replacement"
+    target, centers, scales = effective_gp_target(recipe)
     raw = (
-        c.replacement_raw
-        if replacement
-        else evaluate_gp_column_target(target, c.draw.values, limits=cap)
+        recipe.raw_scores
+        if isinstance(recipe, GPColumnTargetLink)
+        else (
+            c.replacement_raw
+            if replacement
+            else evaluate_gp_column_target(target, c.draw.values, limits=cap)
+        )
     )
-    centers, scales = (c.centers, c.scales) if replacement else (p.centers, p.scales)
     add(
         "locations",
         "Fixed original locations",
@@ -93,13 +107,13 @@ def gp_target_steps(
         },
     )
     target_steps(
-        asdict(recipe.task), signal, rows, lambda role: gp_target_adapter_stream(recipe, role), add
+        asdict(recipe.task), signal, rows, lambda role: gp_target_adapter_stream(base, role), add
     )
     return {
         "kind": "gp_target_environment",
         "rows": rows,
         "population_id": p.population_id,
-        "side": recipe.side,
+        "side": "linked-replacement" if linked else base.side,
         "mode": c.mode,
         "shared_matrices": [
             {

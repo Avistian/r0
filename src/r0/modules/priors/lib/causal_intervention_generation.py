@@ -196,6 +196,10 @@ def compare_causal_pair(
     from r0.modules.priors.lib.generate import generate_task, recipe_from_dict
 
     b, a = json.loads(before.recipe_json), json.loads(after.recipe_json)
+    if a["recipe"].get("version") == "gp-column-target-link-v1":
+        from r0.modules.priors.lib.gp_link_pairs import compare_gp_link_pair
+
+        return compare_gp_link_pair(before, after, limits=limits or CausalLimits())
     if a["recipe"].get("version") == "gp-column-target-recipe-v1":
         from r0.modules.priors.lib.gp_target_pairs import compare_gp_column_pair
 

@@ -225,7 +225,11 @@ def inspect_response_curve(
     """Route saved construction references through guarded worker evaluation."""
     from r0.modules.explorer.lib.construction import caller_limits
 
-    if json.loads(task.recipe_json)["recipe"].get("version") == "gp-column-recipe-v1":
+    if json.loads(task.recipe_json)["recipe"].get("version") in (
+        "gp-column-recipe-v1",
+        "gp-column-target-recipe-v1",
+        "gp-column-target-link-v1",
+    ):
         from r0.modules.explorer.lib.gp_column_curves import inspect_gp_column_curve
 
         return inspect_gp_column_curve(task, data, output_dir, limits=caller_limits(data))

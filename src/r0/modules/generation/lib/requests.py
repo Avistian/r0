@@ -118,9 +118,14 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
     )
 
     selected = selected_recipe(request, task_id)
-    from r0.modules.priors import GPColumnPopulation, GPColumnRecipe, GPColumnTargetRecipe
+    from r0.modules.priors import (
+        GPColumnPopulation,
+        GPColumnRecipe,
+        GPColumnTargetLink,
+        GPColumnTargetRecipe,
+    )
 
-    if isinstance(selected, GPColumnTargetRecipe):
+    if isinstance(selected, (GPColumnTargetRecipe, GPColumnTargetLink)):
         if any(
             type(record.get(k)) is not int or record[k] != v
             for k, v in (("seed", request.seed), ("task_id", task_id))

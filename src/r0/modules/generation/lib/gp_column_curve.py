@@ -14,7 +14,13 @@ def gp_column_curve(data: dict[str, Any]) -> dict[str, Any]:
     if len(json.dumps(data, allow_nan=False).encode()) > maximum:
         raise ValueError("GP target reference request exceeds byte cap")
     raw = data["recipe"]
-    source = raw["source"]
+    environment = raw.get("version") in ("gp-column-target-recipe-v1", "gp-column-target-link-v1")
+    base = raw
+    for _ in range(8):
+        if base.get("version") != "gp-column-target-link-v1":
+            break
+        base = base["parent"]
+    source = base["comparison"]["original"] if environment else base["source"]
     if any(
         type(data.get(key)) is not int or data[key] != source.get(key)
         for key in ("seed", "task_id")
@@ -24,7 +30,7 @@ def gp_column_curve(data: dict[str, Any]) -> dict[str, Any]:
     if bounds is not None and type(bounds) not in (list, tuple):
         raise ValueError("GP target reference bounds require an array")
     result = asdict(
-        p.gp_column_reference_from_dict(
+        (p.gp_environment_reference_from_dict if environment else p.gp_column_reference_from_dict)(
             raw,
             feature=data["feature"],
             anchor_row=data["anchor_row"],
@@ -35,6 +41,8 @@ def gp_column_curve(data: dict[str, Any]) -> dict[str, Any]:
     )
     # JavaScript receives identities as exact decimal strings, including JSON export.
     result["seed"], result["task_id"] = str(result["seed"]), str(result["task_id"])
+    if environment and result["fresh_seed"] is not None:
+        result["fresh_seed"] = str(result["fresh_seed"])
     if len(json.dumps(result, allow_nan=False).encode()) > maximum:
         raise ValueError("GP target reference response exceeds byte cap")
     return result
