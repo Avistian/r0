@@ -140,7 +140,7 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         native = record["recipe"]
         view["native_construction"] = native["version"]
         native_record = record
-        if native["version"] == "gp-root-calibration-v1":
+        if native["version"] in ("gp-root-calibration-v1", "gp-root-calibration-query-v1"):
             native = native["original"]
         if native["version"] == "gp-root-dag-v1":
             native = native["base"]

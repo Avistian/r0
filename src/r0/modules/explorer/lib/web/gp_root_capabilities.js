@@ -17,6 +17,9 @@ function pendingGPRootButton(id,message,notice=false){
 }
 function gpRootCapabilities(view){
   const recipe=view.recipe.recipe;if(!gpRootEnvelope(recipe))return;
+  if(["gp-root-calibration-v1","gp-root-calibration-query-v1"].includes(recipe.version))
+    for(const id of ["rows","context","features","active","task-type","classes","difficulty"])
+      pendingGPRootButton(id,"The retained fixed fit requires unchanged graph and task geometry. Use an original GP-root construction to define a different task.");
   const intervention="Unavailable for GP-root datasets: interventions require retained-population integration. This remains required work; the current dataset and its GP source are preserved.";
   for(const id of ["intervention-load","intervention-add","intervention-create"])
     pendingGPRootButton(id,intervention,id==="intervention-load");
@@ -26,6 +29,5 @@ function gpRootCapabilities(view){
     pendingGPRootButton(id,policy,id==="policy-draft");
   pendingGPRootButton("curve","Unavailable for GP-root datasets: original-row causal reference curves remain required pending retained-population integration.",true);
   pendingGPRootButton("pair-create","Unavailable for GP-root datasets: generic task-only comparisons do not retain the GP population. Population-aware comparisons remain required pending integration.",true);
-  if(recipe.version==="gp-root-calibration-v1")
-    pendingGPRootButton("next","Unavailable for calibrated GP-root datasets: fixed-calibration population continuation remains required. Replay preserves the current population and fit.",true);
+
 }

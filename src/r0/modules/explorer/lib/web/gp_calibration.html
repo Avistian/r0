@@ -7,3 +7,12 @@
 <button id="gp-fit-create">Fit and save independent GP calibration</button>
 <p id="gp-fit-notice" class="muted">Generate or open an uncalibrated GP-root dataset first. Direct categorical target calibration requires a category-preserving policy and remains unavailable.</p>
 </fieldset>
+
+<fieldset id="gp-query-controls"><legend>New GP query with the fixed fit</legend>
+<p>Retain the complete current population and independent fit. Draw new GP columns under the same authored graph. Query rows never refit the target statistics.</p>
+<label>New query seed<input id="gp-query-seed" inputmode="numeric"></label>
+<label>New query task identifier<input id="gp-query-task" inputmode="numeric"></label>
+<label>Query locations (JSON matrix for fixed locations, or null to keep the location law)<textarea id="gp-query-locations" rows="3">null</textarea></label>
+<button id="gp-query-create">Construct and save fixed-fit query</button>
+<p id="gp-query-notice" class="muted">Fit or open a calibrated GP-root dataset first.</p>
+</fieldset>

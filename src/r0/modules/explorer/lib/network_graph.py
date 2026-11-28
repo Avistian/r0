@@ -17,7 +17,9 @@ def inspect_graph(
     record = json.loads(task.recipe_json)
     population = data.get("population", "query")
     if population not in ("query", "fit") or (
-        population == "fit" and record["recipe"].get("version") != "gp-root-calibration-v1"
+        population == "fit"
+        and record["recipe"].get("version")
+        not in ("gp-root-calibration-v1", "gp-root-calibration-query-v1")
     ):
         raise ValueError("fit population traces require a retained GP calibration")
     from r0.modules.explorer.lib.convolutions import contains_convolution
@@ -30,6 +32,7 @@ def inspect_graph(
         "prototype-batch-network-realized-v1",
         "gp-root-dag-v1",
         "gp-root-calibration-v1",
+        "gp-root-calibration-query-v1",
         "gp-column-recipe-v1",
         "gp-column-target-recipe-v1",
         "gp-column-target-link-v1",

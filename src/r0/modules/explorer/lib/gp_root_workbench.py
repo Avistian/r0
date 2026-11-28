@@ -21,9 +21,32 @@ def gp_root_action(
         return None
     record = json.loads(session.task.recipe_json)
     recipe = record["recipe"]
-    if recipe.get("version") not in ("gp-root-dag-v1", "gp-root-calibration-v1"):
+    if recipe.get("version") not in (
+        "gp-root-dag-v1",
+        "gp-root-calibration-v1",
+        "gp-root-calibration-query-v1",
+    ):
         return None
-    original = recipe["original"] if recipe["version"] == "gp-root-calibration-v1" else recipe
+    original = (
+        recipe["original"]
+        if recipe["version"] in ("gp-root-calibration-v1", "gp-root-calibration-query-v1")
+        else recipe
+    )
+    if action == "gp_root_query":
+        if recipe["version"] == "gp-root-dag-v1":
+            raise ValueError("Fit an independent GP calibration before fixed-fit continuation")
+        return session.request(
+            "construct",
+            {
+                **data,
+                "controls": {
+                    "topology": "query-calibrated-gp-root",
+                    "source": recipe,
+                    "locations": data.get("locations"),
+                },
+                "construction_seed": 0,
+            },
+        )
     if action == "gp_root_calibrate":
         if recipe["version"] != "gp-root-dag-v1":
             raise ValueError(
@@ -75,7 +98,8 @@ def gp_root_action(
                 "base": original["base"],
                 "bindings": original["bindings"],
             },
-            calibrated=recipe["version"] == "gp-root-calibration-v1",
+            calibrated=recipe["version"]
+            in ("gp-root-calibration-v1", "gp-root-calibration-query-v1"),
             population_id=original["source"]["population_id"],
             notice=(
                 "Retained GP columns feed the declared root inputs; the DAG defines targets. "

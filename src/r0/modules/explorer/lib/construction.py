@@ -292,6 +292,7 @@ def guarded_archive_version(version: object) -> bool:
     return frozen_archive_version(version) or version in (
         "gp-root-dag-v1",
         "gp-root-calibration-v1",
+        "gp-root-calibration-query-v1",
         "gp-column-recipe-v1",
         "gp-column-target-recipe-v1",
         "recursive-population-graph-v1",
