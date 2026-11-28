@@ -52,7 +52,23 @@ def _load_task(archive: zipfile.ZipFile, task_id: int) -> TrainingTask:
     targets = torch.empty(rows, dtype=predictor["context_y"].dtype)
     inputs[context], inputs[query] = predictor["context_x"], predictor["query_x"]
     targets[context], targets[query] = predictor["context_y"], truth["query_y"]
+    masks = {"context_missing", "query_missing"} & predictor.keys()
+    missing_mask = None
+    if masks:
+        if masks != {"context_missing", "query_missing"}:
+            raise ValueError("saved missing masks require both context and query arrays")
+        if any(predictor[k].dtype != torch.bool for k in masks):
+            raise ValueError("saved missing masks must be boolean")
+        if (
+            predictor["context_missing"].shape != predictor["context_x"].shape
+            or predictor["query_missing"].shape != predictor["query_x"].shape
+        ):
+            raise ValueError("saved missing masks must match input shapes")
+        missing_mask = torch.empty_like(inputs, dtype=torch.bool)
+        missing_mask[context] = predictor["context_missing"]
+        missing_mask[query] = predictor["query_missing"]
     return TrainingTask(
+        missing_mask=missing_mask,
         source_task_id=card["source_task_id"],
         episode_id=card["episode_id"],
         task_type=metadata["task_type"],

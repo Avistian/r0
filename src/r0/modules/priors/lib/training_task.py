@@ -25,6 +25,7 @@ class TrainingTask:
     classes: tuple[str, ...]
     feature_schema: tuple[TrainingFeature, ...] = ()
     target_origin: str = "adapter-v1"
+    missing_mask: torch.Tensor | None = None
 
     def __post_init__(self) -> None:
         if self.target_origin not in ("adapter-v1", "native-variable-v1"):
@@ -40,18 +41,26 @@ class TrainingTask:
 
         if self.target_origin == "native-variable-v1" and not self.feature_schema:
             raise ValueError("native task requires a declared feature schema")
+        if self.missing_mask is not None and (
+            self.missing_mask.dtype != torch.bool
+            or self.missing_mask.shape != self.inputs.shape
+            or self.missing_mask.device != self.inputs.device
+            or not torch.equal(torch.isnan(self.inputs), self.missing_mask)
+            or not bool(torch.all(torch.isfinite(self.inputs[~self.missing_mask])))
+        ):
+            raise ValueError("missing mask must exactly identify NaN input cells")
         for index, feature in enumerate(self.feature_schema):
             if feature.kind != "continuous":
                 values = self.inputs[:, index]
-                if not bool(
-                    torch.all(
-                        torch.isfinite(values)
-                        & (values == values.floor())
-                        & (values >= 0)
-                        & (values < len(feature.vocabulary))
+                if self.missing_mask is not None:
+                    values = values[~self.missing_mask[:, index]]
+                valid = torch.isfinite(values) & (values == values.floor()) & (values >= 0)
+                if feature.kind != "count":
+                    valid &= values < len(feature.vocabulary)
+                if not bool(torch.all(valid)):
+                    raise ValueError(
+                        "native feature codes disagree with declared vocabulary or count schema"
                     )
-                ):
-                    raise ValueError("native feature codes disagree with declared vocabulary")
         if (
             self.target_origin == "native-variable-v1"
             and self.classes
@@ -66,8 +75,19 @@ class TrainingTask:
         """Materialize the existing immutable contract only when requested."""
         inputs = np.asarray(self.inputs.detach().cpu().numpy(), dtype=np.float64)
         schema = self.feature_schema or (TrainingFeature(),) * self.inputs.shape[1]
+        missing = (
+            np.asarray(self.missing_mask.detach().cpu().numpy(), dtype=np.bool_)
+            if self.missing_mask is not None
+            else np.zeros(inputs.shape, dtype=np.bool_)
+        )
         rows = tuple(
-            Row(f"row-{i}", tuple(f.decode(float(v)) for f, v in zip(schema, row, strict=True)))
+            Row(
+                f"row-{i}",
+                tuple(
+                    None if missing[i, j] else f.decode(float(v))
+                    for j, (f, v) in enumerate(zip(schema, row, strict=True))
+                ),
+            )
             for i, row in enumerate(inputs)
         )
         values = np.asarray(self.targets.detach().cpu().numpy(), dtype=np.float64)
@@ -82,7 +102,14 @@ class TrainingTask:
             self.source_task_id,
             self.episode_id,
             self.task_type,
-            tuple(Feature(f"x{i}", feature.kind) for i, feature in enumerate(schema)),
+            tuple(
+                Feature(
+                    f"x{i}",
+                    feature.kind,
+                    order=feature.vocabulary if feature.kind == "ordinal" else (),
+                )
+                for i, feature in enumerate(schema)
+            ),
             tuple(rows[i] for i in context),
             tuple(targets[i] for i in context),
             tuple(rows[i] for i in queries),

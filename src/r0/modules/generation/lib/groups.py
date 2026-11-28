@@ -66,6 +66,14 @@ def _entries(task: TrainingTask) -> Iterable[tuple[str, bytes]]:
             context_x=task.inputs[context],
             context_y=task.targets[context],
             query_x=task.inputs[queries],
+            **(
+                {
+                    "context_missing": task.missing_mask[context],
+                    "query_missing": task.missing_mask[queries],
+                }
+                if task.missing_mask is not None
+                else {}
+            ),
         ),
     )
     yield (
