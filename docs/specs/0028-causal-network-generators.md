@@ -4,6 +4,28 @@ Status: accepted design on 2026-11-26; implementation authorized by the active u
 Authority: this document is the single authoritative accepted scope for issue #28.
 Ticket: https://github.com/Avistian/r0/issues/28
 
+## Scope amendment: generators first (2026-11-28)
+
+The user explicitly moved **all UI/explorer work from #28, #29 and #30** to
+[#126](https://github.com/Avistian/r0/issues/126), scheduled after those three issues.
+This amendment supersedes the UI portions of decisions 2, 8, 10, 14, 16 and 18,
+plus UI/explorer clauses in the evidence and ownership sections below. The accepted
+interview text remains preserved as historical scope, not a current UI completion gate.
+
+#28 must deliver usable configurable generators and dataset creation, save/reload,
+replay/export, schemas, provenance, numerical inspection, backend interventions,
+reference/calibration/fitting semantics, independent checks and resource evidence
+through public APIs/CLI. All source options, broad variety and beyond-paper
+extensions remain required. Generator completion does not depend on an explorer,
+rendered diagrams/dashboards, interactive editing, browser evidence or interactive
+Colab demonstrations. Those frontend and visual deliverables now belong to #126.
+Headless generation/artifact verification and backend environment requirements
+remain separate. Preserve existing UI code and evidence for reuse; prioritize
+remaining generator functionality and a direct path to producing dataset files.
+
+The original commit-pinned specification link remains a historical reference;
+this amendment and the current issue's scope notice record the later user decision.
+
 ## Accepted decisions
 
 1. Deliver very broad coverage of configurable causal-graph and standalone
