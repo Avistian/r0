@@ -40,13 +40,21 @@ def construct_graph(
             },
             limits=limits,
         )
-    if topology in ("joint-topology-hyperprior", "authored-topology-hyperprior"):
+    if topology in (
+        "joint-topology-hyperprior",
+        "authored-topology-hyperprior",
+        "typed-topology-hyperprior",
+    ):
         from r0.modules.generation.lib.topology_hyperprior_construction import (
             construct_topology_hyperprior,
         )
 
         return construct_topology_hyperprior(
-            fields, seed=seed, limits=limits, authored=topology == "authored-topology-hyperprior"
+            fields,
+            seed=seed,
+            limits=limits,
+            authored=topology == "authored-topology-hyperprior",
+            typed=topology == "typed-topology-hyperprior",
         )
     if topology == "network-observations":
         from r0.modules.generation.lib.observation_construction import construct_observations
@@ -230,6 +238,7 @@ class GraphConstruction:
         if controls.get("topology") == "recursive-population-dag":
             return controls["request"]["base"]["task"]
         if controls.get("topology") in (
+            "typed-topology-hyperprior",
             "joint-topology-hyperprior",
             "authored-topology-hyperprior",
         ):

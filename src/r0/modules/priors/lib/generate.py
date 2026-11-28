@@ -94,6 +94,8 @@ from r0.modules.priors.lib.source_matrix import SourceMatrixCausalRecipe
 from r0.modules.priors.lib.topology_graph_decoding import topology_graph_from_dict
 from r0.modules.priors.lib.training_task import TrainingTask
 from r0.modules.priors.lib.typed_policy_records import SampledTypedInterventionPolicy
+from r0.modules.priors.lib.typed_topology_graph import TypedTopologyGraph
+from r0.modules.priors.lib.typed_topology_output import generate_typed_topology
 
 type Recipe = (
     PopulationRecipe
@@ -105,6 +107,7 @@ type Recipe = (
     | NetworkRecipe
     | NetworkObservationRecipe
     | HyperpriorGraph
+    | TypedTopologyGraph
     | JointHyperpriorGraph
     | NetworkInputView
     | CausalInterventionRecipe
@@ -306,6 +309,8 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
         return generate_gp_target_environment(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, GPColumnRecipe):
         return generate_gp_columns(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, TypedTopologyGraph):
+        return generate_typed_topology(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, JointHyperpriorGraph):
         return generate_joint_hyperprior_graph(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, HyperpriorGraph):

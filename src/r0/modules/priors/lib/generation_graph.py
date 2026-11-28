@@ -67,6 +67,14 @@ def explain_generation(
         raise ValueError("invalid original row index")
     if type(column_start) is not int or not 0 <= column_start <= 4095:
         raise ValueError("column_start must be 0..4095")
+    if raw.get("version") == "sampled-typed-topology-r0-v1":
+        from r0.modules.priors.lib.typed_topology_output import typed_topology_trace
+
+        if component is not None:
+            raise ValueError("typed topology has no composite children")
+        return typed_topology_trace(
+            task, indices, limits=limits or CausalLimits(), column_start=column_start
+        )
     card = json.loads(task.mechanism_json)
     nodes: list[dict[str, Any]] = []
 

@@ -157,6 +157,9 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         native = record["recipe"]
         view["native_construction"] = native["version"]
         native_record = record
+        if native["version"] == "sampled-typed-topology-r0-v1":
+            native = native["graph"]
+            native_record = {**record, "recipe": native}
         if native["version"] == "population-xgboost-graph-v1":
             native = native["base"]
             native_record = {**record, "recipe": native}

@@ -1,4 +1,4 @@
-<details id="topology-workbench"><summary>Topology hyperpriors · authored templates and joint source functions</summary>
+<details id="topology-workbench"><summary>Topology hyperpriors · authored, joint and typed geometry</summary>
 <p>Choose a “Topology hyperprior” construction above, then load its controls here. Log-size rounding and Gamma-to-probability mappings are explicit r0 reconstructions. Whole-support admission rejects an oversized request before drawing; no family is silently removed and numerical failures are not retried.</p>
 <div class="controls">
 <button id="topology-load">Load construction draft</button>
@@ -18,20 +18,29 @@
 <label>Named mode<select id="topology-mode"><option>meta</option><option>local</option><option>global</option></select></label>
 <label>Categorical reuse<select id="topology-reuse"><option>shared</option><option>refresh</option></select></label>
 <label>Global numerical policy<select id="topology-global"><option>scalar-quantile-v1</option><option>strict-contract-v1</option></select></label>
-<label>Channels per node<input id="topology-width" type="number" min="1"></label>
+<label id="topology-fixed-width">Channels per node<input id="topology-width" type="number" min="1"></label>
 <label>Independent fitting rows<input id="topology-calibration" type="number" min="1"></label>
 </div>
 <label>Edge function catalog (comma-separated source tokens; duplicates retained)<input id="topology-functions" list="topology-function-options"></label>
 <datalist id="topology-function-options"><option value="lin"><option value="quad"><option value="gp"><option value="tree"><option value="disc"><option value="em"><option value="mlp"><option value="prod"><option value="kumo-prod"><option value="default"><option value="default,kumo-prod"><option value="tabpfnv2"><option value="r0-linear-projection-v1"><option value="r0-neural-reducer-v1"></datalist>
 <label>Complete edge function prior (matrix catalogs, vector/scalarization, frequencies and discretization)<textarea id="topology-function-prior" rows="10"></textarea></label>
 <label>Complete root prior (uniform, ball, gaussian, covariance; independent function catalog)<textarea id="topology-root-prior" rows="10"></textarea></label>
-<label>Internal noise descriptor<textarea id="topology-noise" rows="4"></textarea></label>
+<label id="topology-noise-control">Internal noise descriptor<textarea id="topology-noise" rows="4"></textarea></label>
 <p>All five matrix branches remain available: gaussian, importance, factorized, kernel, transformed. Root and edge shared-name contracts must agree; incompatible catalogs fail explicitly. Frozen construction retains topology, named, raw, calibration and fitting stream snapshots, named preferences, raw draws and calibration receipts.</p>
+</div>
+<div id="topology-typed-controls" hidden>
+<p id="topology-typed-family"></p>
+<label>Width law (low inclusive, high exclusive)<textarea id="topology-width-prior" rows="3"></textarea></label>
+<label>Native role distributions and placement (null for other families)<textarea id="topology-native-roles" rows="10"></textarea></label>
+<label>Converted vocabularies and converter prior (null for other families)<textarea id="topology-converted-roles" rows="10"></textarea></label>
+<label>Numerical pipeline prior (null when absent)<textarea id="topology-pipeline" rows="10"></textarea></label>
+<label><input id="topology-subsample" type="checkbox">Subsample numerical readouts</label>
+<p>Native placement uses distinct feature and target nodes. Native scalar widths count continuous channels; native vector widths count variables. Full catalogs remain editable above. Unsupported combinations reject explicitly.</p>
 </div>
 <p>Authored mode keeps the complete root and edge templates in the construction JSON. Shared template semantics are explicit. Edit full task, template, pipeline, raw budget and causal-limit records there; these structured controls leave the other fields unchanged.</p>
 <div class="controls"><button id="topology-apply">Apply controls to construction draft</button><button id="topology-adopt-caps">Use draft causal caps</button><button id="topology-records">Inspect retained construction</button></div>
 <p id="topology-status">The construction seed deterministically creates five independent stream seeds for joint mode; authored mode uses one topology stream. Next keeps the realized construction and changes only task identity. Construct again to draw a new mechanism.</p>
 <pre id="topology-summary"></pre>
 <label>Exact retained task recipe JSON (including stream records)<textarea id="topology-archive" rows="8" readonly></textarea></label>
-<p>Save/open, original-row generation traces, repeated-row inspection, replay and ZIP export use the existing controls. Native/converted/parent geometry and sampled intervention combinations remain required follow-on work.</p>
+<p>Save/open, original-row generation traces, repeated-row inspection, replay and ZIP export use the existing controls. Typed geometry retains its role laws and five streams. Per-parent geometry and sampled intervention combinations remain required follow-on work.</p>
 </details>
