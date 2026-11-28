@@ -3,6 +3,7 @@
 from r0.modules.priors.lib.population_recipe_decoding import (
     population_recipe_from_dict as population_recipe_from_dict,
 )
+from r0.modules.priors.lib.population_target_calibration import CalibratedPopulationGraph
 from r0.modules.priors.lib.recursive_population_graph_intervention import (
     RecursivePopulationGraphIntervention,
 )
@@ -13,7 +14,8 @@ from r0.modules.priors.lib.training_task import TrainingTask
 
 
 def generate_population_recipe(
-    recipe: RecursivePopulationRecipe
+    recipe: CalibratedPopulationGraph
+    | RecursivePopulationRecipe
     | RecursivePopulationIntervention
     | RecursivePopulationGraph
     | RecursivePopulationGraphIntervention,
@@ -22,6 +24,12 @@ def generate_population_recipe(
     task_id: int,
     device: str,
 ) -> TrainingTask:
+    if isinstance(recipe, CalibratedPopulationGraph):
+        from r0.modules.priors.lib.population_calibrated_output import (
+            generate_calibrated_population,
+        )
+
+        return generate_calibrated_population(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, RecursivePopulationGraphIntervention):
         from r0.modules.priors.lib.recursive_population_graph_intervention import (
             generate_population_graph_intervention,

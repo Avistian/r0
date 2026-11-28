@@ -7,6 +7,18 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 
 def population_recipe_from_dict(fields: dict[str, Any], *, limits: CausalLimits):
     version = fields.get("version", "linear-v1")
+    if version == "calibrated-population-graph-v1":
+        from r0.modules.priors.lib.population_calibration_decoding import (
+            calibrated_population_from_dict,
+        )
+
+        return calibrated_population_from_dict(fields, limits=limits)
+    if version == "network-observation-recipe-v1":
+        from r0.modules.priors.lib.network_observation_recipe_decoding import (
+            network_observation_recipe_from_dict,
+        )
+
+        return network_observation_recipe_from_dict(fields, limits=limits)
     if version == "gp-column-target-recipe-v1":
         from r0.modules.priors.lib.gp_target_environment import gp_column_target_recipe_from_dict
 

@@ -62,6 +62,7 @@ from r0.modules.priors.lib.network_recipe import (
 )
 from r0.modules.priors.lib.node_pipeline import pipeline_from_dict
 from r0.modules.priors.lib.parameter_preferences import parameter_preferences_from_dict
+from r0.modules.priors.lib.population_target_calibration import CalibratedPopulationGraph
 from r0.modules.priors.lib.preference_binding import PreferenceBinding
 from r0.modules.priors.lib.prototype_batch_network import (
     PrototypeBatchNetworkRecipe,
@@ -98,7 +99,8 @@ from r0.modules.priors.lib.training_task import TrainingTask
 from r0.modules.priors.lib.typed_policy_records import SampledTypedInterventionPolicy
 
 type Recipe = (
-    GPColumnRecipe
+    CalibratedPopulationGraph
+    | GPColumnRecipe
     | RecursivePopulationGraph
     | RecursivePopulationGraphIntervention
     | GPColumnTargetRecipe
@@ -144,12 +146,6 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
     ):
         raise ValueError("prototype batch archive requires an explicit version")
     version = fields.get("version", "linear-v1")
-    if version == "network-observation-recipe-v1":
-        from r0.modules.priors.lib.network_observation_recipe_decoding import (
-            network_observation_recipe_from_dict,
-        )
-
-        return network_observation_recipe_from_dict(fields, limits=limits)
     if version == "sampled-hyperprior-graph-v1":
         from r0.modules.priors.lib.hyperprior_graph_decoding import hyperprior_graph_from_dict
 
@@ -330,6 +326,7 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
     if isinstance(
         recipe,
         (
+            CalibratedPopulationGraph,
             RecursivePopulationRecipe,
             RecursivePopulationIntervention,
             RecursivePopulationGraph,

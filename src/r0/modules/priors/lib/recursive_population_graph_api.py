@@ -1,5 +1,11 @@
 """Explicit internal-DAG row-owned populations, outside the frozen-function registry."""
 
+from .population_target_calibration import (
+    CalibratedPopulationGraph as CalibratedPopulationGraph,
+)
+from .population_target_calibration import (
+    calibrate_population_graph as calibrate_population_graph,
+)
 from .recursive_population_graph_decoding import (
     recursive_population_graph_from_dict as recursive_population_graph_from_dict,
 )

@@ -25,6 +25,7 @@ _EXECUTION_FIELDS = {
 
 def is_population_task_record(record: Any, card: Any) -> bool:
     if type(card) is dict and cast(dict[str, Any], card).get("family") in (
+        "calibrated_population_graph",
         "recursive_population",
         "recursive_population_graph",
     ):
@@ -33,6 +34,7 @@ def is_population_task_record(record: Any, card: Any) -> bool:
         return False
     recipe = cast(dict[str, Any], record).get("recipe")
     return type(recipe) is dict and cast(dict[str, Any], recipe).get("version") in (
+        "calibrated-population-graph-v1",
         "recursive-population-v1",
         "recursive-population-intervention-v1",
         "recursive-population-graph-v1",
