@@ -30,3 +30,23 @@ Gaussian draw oracles, constant and extreme channels, caller RNG preservation,
 limits, malformed records, width checks and pipeline archive replay. The current
 49-test focused run also includes existing standardization and structural-network
 regressions. It is not a full-suite or whole-paper acceptance result.
+
+## Random-frequency sine
+
+`sample_tabicl_sine(sample, calibration_id=..., rng=...)` returns two frozen
+pipeline stages: TabICL standardization followed by sine with log-uniform
+frequency on [0.1, 100] and uniform phase on [0, 2*pi). Positive ordered
+`min_frequency` and `max_frequency` extend the default bounds. The frequency
+and phase are stored as ordinary sine input scale/shift parameters, so existing
+recipe decoding, generation, archive replay and tracing apply without a new
+serialization format. Sampling uses a caller-owned NumPy stream; it does not
+claim the same bits as the source Torch RNG. Invalid calibration, bounds or
+parameter limits leave that stream unchanged.
+
+This follows `RandomFreqSineActivation` in the
+[pinned source](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/_activations.py).
+Its independent calibration lifecycle is the adaptation described above.
+It is an explicit option, not one of the source's 18 simple selector entries;
+that list contains ordinary sine. Complete source selector integration remains
+separate. Seven focused checks cover five-engine draw/numerical oracles,
+construction rejection, JSON replay and generated dataset ZIP/tracing.

@@ -16,7 +16,7 @@ Other inventory groups are not closed by this table.
 | I1.function.07 | Components: actual XGBoost vector fitting, retained depth/count sampling, independent fitted graph archives; actual-parent population fitting is a separate lifecycle. These do not establish the full source architecture/default prior. |
 | I1.function.08 | Gap: connect tenfold Fourier mass to the complete source selector. Generic configurable weights alone do not prove the source recipe. |
 | I1.code.01 | Component: pinned-code exponent law as a separate finite sine activation. Standardization/profile composition remains a gap. |
-| I1.code.02 | Component: sine with configurable scale/phase and log-uniform parameter laws. Gap: source random-frequency factory with its standardization lifecycle. |
+| I1.code.02 | Component: random-frequency sine factory, source default log-uniform frequency/uniform phase, independent frozen TabICL standardization, configurable frequency bounds, five-engine oracle and generated ZIP replay. |
 | I1.code.03 | Component: `heaviside_positive`, including equality at zero; existing primitive tests. |
 | I1.code.04 | Component: frozen shared Gaussian shift/lognormal scale factory. Complete source selector remains open. |
 | I1.code.05 | Component: frozen per-channel Gaussian shift/lognormal scale factory. Complete source selector remains open. |
