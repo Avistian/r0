@@ -47,3 +47,13 @@ currently uses explicit CPU replay. Independent fit populations use the current
 finite GP cap of 32..1024 rows. These are current implementation bounds, not
 exclusions from the accepted broad issue scope. The original ordinary DAG APIs
 and their default root laws remain supported.
+
+Calibration construction admits the complete future original/fit/calibration
+envelope before replaying either population. GP receipt costs are symbolic and
+exact under the existing metadata accounting law; no dummy covariance arrays are
+allocated. The only value-dependent metadata length, the constant-channel list,
+is bounded by the target width. Both GP and graph runtimes are checked against
+caller and retained nested caps. Declared graph caps must fit their retained
+envelope caps, which must fit the calibration caller caps; records are never
+silently rewritten to make a lower cap appear compatible. These are conservative
+admission accounts, not measured allocator or RSS figures.

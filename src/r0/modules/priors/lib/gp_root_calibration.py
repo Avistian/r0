@@ -119,8 +119,10 @@ def calibrate_gp_root_dag(
 ) -> GPRootCalibration:
     if type(original) is not GPRootDAGRecipe:
         raise ValueError("GP calibration requires a retained GP root graph")
+    if limits is not None and type(limits) is not CausalLimits:
+        raise ValueError("GP calibration caller limits must be explicit CausalLimits")
     _identity(original, calibration_seed, calibration_task_id)
-    cap = limits or original.limits
+    cap = original.limits if limits is None else limits
     base = _fit_base(original, calibration_rows)
     request = replace(
         original.source.request,
@@ -129,18 +131,11 @@ def calibrate_gp_root_dag(
         if calibration_locations is None
         else calibration_locations,
     )
-    # Both complete runtime allocations and retained original metadata precede draws.
-    original.admit()
-    request.admit(cap)
-    graph = replace(base, limits=cap).admit()
-    count, storage = function_record_cost((original, request, base), cap)
-    gp = request.admit(cap)
-    if (
-        count + graph["parameters"] + gp["parameters"] > cap.parameters
-        or 8 * storage + 8 * (graph["estimated_working_bytes"] + gp["estimated_working_bytes"])
-        > cap.working_bytes
-    ):
-        raise ValueError("GP calibration construction aggregate exceeds limits")
+    from r0.modules.priors.lib.gp_root_calibration_admission import (
+        admit_gp_calibration_construction,
+    )
+
+    admit_gp_calibration_construction(original, request, base, cap)
     generate_gp_root_dag(original, seed=original.source.seed, task_id=original.source.task_id)
     source = realize_gp_columns(request, seed=calibration_seed, task_id=calibration_task_id)
     fit = GPRootDAGRecipe(source, base, original.bindings, cap)
