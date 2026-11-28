@@ -465,6 +465,7 @@ from .lib.training_task import TrainingTask as TrainingTask
 from .lib.transformed_weights import GaussianWeights as GaussianWeights
 from .lib.transformed_weights import NormalizedWeights as NormalizedWeights
 from .lib.transformed_weights import TransformedWeights as TransformedWeights
+from .lib.typed_topology_api import *  # noqa: F403
 from .lib.weight_matrices import FactorizedWeights as FactorizedWeights
 from .lib.weight_matrices import (
     ImportanceFactorizedWeights as ImportanceFactorizedWeights,

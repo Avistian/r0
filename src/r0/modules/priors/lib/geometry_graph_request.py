@@ -5,6 +5,7 @@ from dataclasses import dataclass, replace
 from r0.modules.priors.lib.activation_sampling import finite_number
 from r0.modules.priors.lib.cauchy_graph import CauchyGraphPrior
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.fixed_parent_topology import FixedParentTopology
 from r0.modules.priors.lib.geometry_topology import (
     GeometryTopologyPrior,
     geometry_topology_raw_reservation,
@@ -51,7 +52,8 @@ class GeometryGraphRequest:
         if (
             expected_version is None
             or self.version != expected_version
-            or type(self.topology) not in (CauchyGraphPrior, AttachmentGraphPrior, MotifGraphPrior)
+            or type(self.topology)
+            not in (CauchyGraphPrior, AttachmentGraphPrior, MotifGraphPrior, FixedParentTopology)
             or type(self.task) is not LinearRecipe
             or type(self.subsample) is not bool
             or type(self.width_prior) is not JointWidthPrior

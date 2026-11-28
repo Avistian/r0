@@ -6,19 +6,30 @@ import numpy as np
 
 from r0.modules.priors.lib.cauchy_graph import CauchyGraph, CauchyGraphPrior, sample_cauchy_graph
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.fixed_parent_topology import (
+    FixedParentTopology,
+    RetainedParentTopology,
+    retain_parent_topology,
+)
 from r0.modules.priors.lib.functional_causal_decoding import functional_array, functional_record
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
 from r0.modules.priors.lib.structural_graph import StructuralGraph, sample_structural_graph
 from r0.modules.priors.lib.structural_graph_prior import AttachmentGraphPrior, MotifGraphPrior
 
-type GeometryTopologyPrior = CauchyGraphPrior | AttachmentGraphPrior | MotifGraphPrior
-type GeometryTopology = CauchyGraph | StructuralGraph
+type GeometryTopologyPrior = (
+    CauchyGraphPrior | AttachmentGraphPrior | MotifGraphPrior | FixedParentTopology
+)
+type GeometryTopology = CauchyGraph | StructuralGraph | RetainedParentTopology
 
 
 def decode_geometry_topology(data: Any) -> GeometryTopologyPrior:
     if type(data) is not dict:
         raise ValueError("geometry topology prior must be an object")
     version = cast(dict[str, Any], data).get("version")
+    if version == "fixed-parent-topology-r0-v1":
+        raw = functional_record(data, FixedParentTopology)
+        raw["parents"] = tuple(functional_array(row) for row in functional_array(raw["parents"]))
+        return FixedParentTopology(**raw)
     if version == "cauchy-graph-prior-v1":
         return CauchyGraphPrior(**functional_record(data, CauchyGraphPrior))
     if version == "degree-attachment-dag-v1":
@@ -39,6 +50,8 @@ def sample_geometry_topology(
     limits: CausalLimits,
     raw_limits: RawDrawLimits,
 ) -> GeometryTopology:
+    if isinstance(prior, FixedParentTopology):
+        return retain_parent_topology(prior, limits=limits)
     if isinstance(prior, CauchyGraphPrior):
         # Preserve the original Cauchy sampling schedule, internal limits and
         # serialized record exactly. Its full four-call cost is reserved below.
@@ -66,6 +79,8 @@ def geometry_topology_raw_reservation(prior: GeometryTopologyPrior) -> tuple[int
     record metadata rather than an emitted raw value. Motif rewrites reserve all
     three possible calls even when a particular attempted rewrite is a no-op.
     """
+    if isinstance(prior, FixedParentTopology):
+        return 0, 0, 256 * (prior.nodes + sum(map(len, prior.parents)) + 1)
     if isinstance(prior, CauchyGraphPrior):
         n = prior.nodes
         return 4, n * n + 2 * n + 1, 0

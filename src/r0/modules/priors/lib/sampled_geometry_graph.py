@@ -3,6 +3,7 @@
 from dataclasses import dataclass, replace
 
 from r0.modules.priors.lib.cauchy_graph import CauchyGraph
+from r0.modules.priors.lib.fixed_parent_topology import RetainedParentTopology
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_graph_admission import admit_functional_graph
 from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot
@@ -52,7 +53,7 @@ class SampledGeometryGraph:
             or self.version != "sampled-geometry-graph-v1"
             or type(self.request)
             not in (GeometryGraphRequest, GeometryPipelineRequest, GeometryParentRequest)
-            or type(self.topology) not in (CauchyGraph, StructuralGraph)
+            or type(self.topology) not in (CauchyGraph, StructuralGraph, RetainedParentTopology)
             or type(self.observations) is not JointObservationRealization
             or type(self.layout) is not ObservationChannelLayout
             or type(self.widths) is not JointWidthPlan
