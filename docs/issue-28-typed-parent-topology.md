@@ -45,3 +45,13 @@ Remaining generator qualification includes independent review and full coverage/
 audits. UI/workbench and interactive Colab delivery belong to #126 and no longer block #28. Independent
 NumPy fixtures now check sampled neural reducers, including calibrated activation
 stages; this does not establish coverage of every activation/reducer combination. Full-suite acceptance is separate from focused and archive checks.
+
+Explicit interventions and sampled typed policies can retain a `TypedTopologyGraph`
+as their complete base. Hard numeric/native-variable/capture locations and soft
+parameter laws use the existing runtime semantics; matched and fresh-row comparison
+modes preserve the topology and fitted mechanism receipts. Policy bounds can use an
+independent reference or the declared original seed/task population. Save and reload
+before/after pairs with explicit caller limits when construction requires more than
+the default budget. Policy admission includes topology construction replay before
+restoring source RNGs. This does not add population-fitted or finite-GP sampled
+policies, or nested policy environments; those remain separate required work.

@@ -37,6 +37,7 @@ from r0.modules.priors.lib.stage_intervention import StageIntervention
 if TYPE_CHECKING:
     from r0.modules.priors.lib.network_observation_recipe import NetworkObservationRecipe
     from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
+    from r0.modules.priors.lib.typed_topology_graph import TypedTopologyGraph
 
 type CausalBase = (
     FunctionalCausalRecipe
@@ -51,6 +52,7 @@ type CausalBase = (
     | SampledTopologyGraph
     | NativeVectorRecipe
     | SampledNativeVectorGraph
+    | TypedTopologyGraph
 )
 
 
@@ -120,8 +122,9 @@ def causal_runtime(
 ) -> FunctionalCausalRecipe | NativeCausalRecipe | NativeVectorRecipe | ConvertedCausalRecipe:
     from r0.modules.priors.lib.network_observation_recipe import NetworkObservationRecipe
     from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
+    from r0.modules.priors.lib.typed_topology_graph import TypedTopologyGraph
 
-    if isinstance(base, NetworkObservationRecipe):
+    if isinstance(base, (NetworkObservationRecipe, TypedTopologyGraph)):
         return base.runtime
     if isinstance(
         base,
@@ -295,10 +298,13 @@ class CausalInterventionRecipe:
             for n in original.nodes
         )
         from r0.modules.priors.lib.network_observation_recipe import NetworkObservationRecipe
+        from r0.modules.priors.lib.typed_topology_graph import TypedTopologyGraph
 
         original_budget = (
             self.base.admit()
             if isinstance(self.base, NetworkObservationRecipe)
+            else self.base.request.admit()
+            if isinstance(self.base, TypedTopologyGraph)
             else original.admit()
         )
         working = (

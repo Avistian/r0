@@ -125,8 +125,21 @@ def _plan(request: dict[str, Any], limits: CausalLimits) -> None:
     # Retained sampled graph constructors also replay their original calibration
     # population. Do not substitute the smaller emitted task population.
     envelope = base
+    construction_work = 0
+    construction_parameters = 0
     while "nodes" not in envelope:
         source_request = envelope.get("request", {})
+        if source_request.get("version") in (
+            "typed-topology-request-r0-v1",
+            "typed-parent-topology-request-r0-v1",
+        ):
+            from r0.modules.priors.lib.typed_topology_decoding import (
+                typed_topology_request_from_dict,
+            )
+
+            support = typed_topology_request_from_dict(source_request, limits=limits).admit()
+            construction_work += support["estimated_working_bytes"]
+            construction_parameters += support["parameters"]
         envelope_rows = max(envelope_rows, source_request.get("calibration_rows", 0))
         raw_cap = source_request.get("raw_limits")
         if raw_cap is not None:
@@ -180,13 +193,20 @@ def _plan(request: dict[str, Any], limits: CausalLimits) -> None:
         )
     working = (
         storage
+        + construction_work
         + 3 * report["estimated_working_bytes"]
         + 32 * graph["task"]["rows"] * channels
         + 128 * numbers
         + 2048 * draws
         + 6 * raw_limits.state_bytes
     )
-    if numbers > raw_limits.numbers or draws > raw_limits.draws or working > ceiling:
+    if (
+        numbers > raw_limits.numbers
+        or draws > raw_limits.draws
+        or working > ceiling
+        or construction_parameters > 0
+        and construction_parameters + numbers + graph_numbers > limits.parameters
+    ):
         raise ValueError("typed policy aggregate reference/comparison/raw admission exceeds limits")
     RawDrawLedger(limits=replace(raw_limits, working_bytes=ceiling)).admit_specs(
         (RawDrawSpec(("typed-policy",), "aggregate-reserve", "normal", (numbers,)),)
