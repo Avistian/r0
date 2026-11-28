@@ -46,6 +46,11 @@ cases rejected under the tested cap remain explicitly unqualified. See the
 
 ## Observations and network structure
 
+The [P1 network option audit](issue-28-p1-network-option-audit.md) now maps
+P1.net.01–10 individually to existing implementation paths, specific numerical
+checks and remaining source-profile qualifications. It supersedes old claims
+that input importance or runtime noise-scale sampling are unimplemented.
+
 | Inventory ID | Delivered component | Remaining qualification |
 | --- | --- | --- |
 | P1.graph.02 | Sampled observed network channels | P1 profiles are limited to their declared eligible layered catalog. |

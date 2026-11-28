@@ -51,4 +51,12 @@ Author evidence retains a fixed 32-attempt, zero-retry structural census, source
 
 The guarded `network-hyperprior` constructor now exposes 28 shared explorer/notebook presets: two scalar-law profiles × seven r0 architecture families × shared/per-hidden-block widths. Inspection displays realized dimensions/scales and full hyperprior custody; frozen Next and replay preserve them. The editor creates a linked authored frozen network while retaining the original sampled archive. Source-cap and timeout failures retain receipts and the active dataset. Public local/mock-notebook and actual Chromium checks cover construction, inspection, replay, exact identities, editing, reopening and export. No hosted/GPU execution or full-suite claim is made here.
 
-P1.net.04–06 (input importance and shared/per-node internal noise) and P1.net.09 (noise-scale law with an actual runtime consumer) remain required. This change deliberately does not sample an unused noise/root-count parameter. Source-specific first-layer exemption and paper-versus-code noise/activation ordering need their own stochastic-network records and traces. Weighted mixed-choice hierarchies from pinned code also remain distinct from this template's explicit uniform catalog selection. No broader paper option is silently declared complete.
+The later [network-innovation layer](issue-28-network-innovations.md) implements
+P1.net.04–06 input importance and shared/per-node noise, plus P1.net.09 noise-scale
+sampling with runtime consumption. It also implements first-layer exemption and
+separate paper-versus-code placement records. The
+[option-level audit](issue-28-p1-network-option-audit.md) links the ten P1 network
+records to concrete behavior and focused evidence. Weighted mixed-choice
+hierarchies and complete source-profile composition remain separate from this
+template's explicit uniform catalog selection. No broader paper option is
+silently declared complete.
