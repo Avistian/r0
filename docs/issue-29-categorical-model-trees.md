@@ -25,13 +25,49 @@ against this independent arithmetic and reopen the recipe and dataset archive.
 The sampler's feature and membership draws have separate numeric oracle checks
 at inclusion probabilities 0, 0.3 and 1.
 
-The compiler accepts authored recursive topology and models. The split sampler
-returns frozen predicates, not a complete task-construction receipt. Automated
-sampling of the whole categorical topology/model portfolio and its per-task CLI
-construction transport remain open. The existing typed observation delivery work
+The compiler accepts authored recursive topology and models. The standalone split
+sampler returns frozen predicates. Complete sampling and per-task construction
+receipts are now available through the tree extension profiles described below.
+The existing typed observation delivery work
 in #30 is also separate: raw categorical population values here do not claim that
 all downstream learner schema/encoding workflows are complete.
 
 ```sh
 r0 generate --config configs/generation/categorical-model-tree-cpu.json --out /tmp/categorical-model-trees
 ```
+
+
+## Complete sampled categorical profiles
+
+`TreeExtensionRequest.families` now accepts `categorical` and
+`categorical-pruned`, alongside the four continuous-split families. These require
+an uncalibrated, ordinary `SourceRootBase` containing at least one categorical
+coordinate. Gaussian/other coordinates remain available to model leaves, but are
+excluded from split-feature selection. Category cardinalities and frequencies
+come from the declared root law. Calibrated, prototype and sampled-source root
+variants are not admitted for these two profiles.
+
+Choose the family and depth first, then the balanced/pruned shape using the
+existing topology laws. For each internal node, choose uniformly among eligible
+categorical columns and include each code independently with probability
+`split_density`. Preserve empty/full subsets. Membership thresholds are exactly
+0.5 in [0, 1]; no Gaussian split coefficients, random thresholds or temperatures
+are drawn for categorical families. Those continuous-split controls are inactive
+for these families. Leaf type/coefficient/bias laws remain unchanged. Leaf models
+still use all original columns, including raw category codes. The equality setting
+cannot affect 0/1 membership compared with 0.5. A depth-zero task is a single model
+leaf and consumes no split draws.
+
+The complete request, compiled predicates/models, and initial/final generator
+states are retained by `SampledTreeExtension`. Existing `tree-extension` run
+construction produces fresh per-task trees and embeds the receipt in the archive.
+
+```sh
+r0 generate --config configs/generation/sampled-categorical-tree-cpu.json --out /tmp/sampled-categorical-trees
+```
+
+Both profiles are checked at depths zero, one and three. A separate draw oracle
+checks eligible-feature mapping and membership decisions. Guarded generation,
+archive receipt reopening and zero-generation resume are checked together. This
+adds a named r0 categorical portfolio; mixed categorical/oblique splits within
+one tree, further topology priors and automatic ensembles remain open.

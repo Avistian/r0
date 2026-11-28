@@ -6,6 +6,11 @@ from dataclasses import dataclass
 import numpy as np
 
 from r0.modules.priors.lib.activation_sampling import finite_number
+from r0.modules.priors.lib.categorical_model_tree import (
+    CategorySubsetSplit,
+    categorical_model_tree_recipe,
+    sample_category_subset_splits,
+)
 from r0.modules.priors.lib.causal_activations import CausalActivation
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
@@ -49,7 +54,18 @@ class TreeExtensionRequest:
             or type(self.task) is not LinearRecipe
             or type(self.families) is not tuple
             or not self.families
-            or any(v not in ("hard", "soft", "hard-pruned", "soft-pruned") for v in self.families)
+            or any(
+                v
+                not in (
+                    "hard",
+                    "soft",
+                    "hard-pruned",
+                    "soft-pruned",
+                    "categorical",
+                    "categorical-pruned",
+                )
+                for v in self.families
+            )
             or type(self.leaf_families) is not tuple
             or not self.leaf_families
             or any(v not in ("constant", "linear", "tanh", "sin") for v in self.leaf_families)
@@ -79,6 +95,15 @@ class TreeExtensionRequest:
         ):
             raise ValueError("tree extension root must match task feature width")
 
+        if any(f.startswith("categorical") for f in self.families) and (
+            type(self.root) is not SourceRootBase
+            or self.root.calibration is not None
+            or not any(c.family == "categorical" for c in self.root.law.coordinates)
+        ):
+            raise ValueError(
+                "categorical trees require an uncalibrated source root with categorical columns"
+            )
+
     def admit(self, limits: CausalLimits) -> None:
         if type(limits) is not CausalLimits:
             raise ValueError("tree extension requires frozen limits")
@@ -87,6 +112,10 @@ class TreeExtensionRequest:
         o = self.task.classes if self.task.task_type == "multiclass" else 1
         leaves = 2**self.max_depth
         parameters = f * f + leaves * (4 * (f + 2 * o) * (o + 2) + 1024)
+        if any(f.startswith("categorical") for f in self.families):
+            assert isinstance(self.root, SourceRootBase)
+            cardinality = max(len(c.probabilities) for c in self.root.law.coordinates)
+            parameters += leaves * (cardinality + leaves + f)
         if (
             type(limits) is not CausalLimits
             or 4 + 3 * leaves > limits.nodes
@@ -157,16 +186,40 @@ def sample_tree_extension(
         leaves = len(levels) - branches
         width = request.task.features
         outputs = request.task.classes if request.task.task_type == "multiclass" else 1
-        weights = active.normal(0, request.coefficient_scale, (branches, width))
-        weights *= active.random((branches, width)) < request.split_density
-        thresholds = active.uniform(-request.threshold_bound, request.threshold_bound, branches)
-        temperatures = np.exp(
-            active.uniform(
-                math.log(request.temperature_bounds[0]),
-                math.log(request.temperature_bounds[1]),
-                branches,
+        categorical = family.startswith("categorical")
+        splits: tuple[CategorySubsetSplit, ...] = ()
+        if categorical:
+            assert isinstance(request.root, SourceRootBase)
+            eligible = tuple(
+                i for i, c in enumerate(request.root.law.coordinates) if c.family == "categorical"
             )
-        )
+            vocabularies = tuple(
+                tuple(range(len(request.root.law.coordinates[i].probabilities))) for i in eligible
+            )
+            if branches:
+                sampled = sample_category_subset_splits(
+                    vocabularies,
+                    count=branches,
+                    inclusion_probability=request.split_density,
+                    rng=active,
+                )
+                splits = tuple(
+                    CategorySubsetSplit(eligible[s.feature], s.categories) for s in sampled
+                )
+            weights = np.zeros((branches, width))
+            thresholds = np.full(branches, 0.5)
+            temperatures = np.ones(branches)
+        else:
+            weights = active.normal(0, request.coefficient_scale, (branches, width))
+            weights *= active.random((branches, width)) < request.split_density
+            thresholds = active.uniform(-request.threshold_bound, request.threshold_bound, branches)
+            temperatures = np.exp(
+                active.uniform(
+                    math.log(request.temperature_bounds[0]),
+                    math.log(request.temperature_bounds[1]),
+                    branches,
+                )
+            )
         models: list[NetworkAffine] = []
         for _ in range(leaves):
             kind = request.leaf_families[int(active.integers(len(request.leaf_families)))]
@@ -198,6 +251,9 @@ def sample_tree_extension(
             )
         else:
             nodes: list[RecursiveTreeNode] = []
+            lower, upper = (
+                (0.0, 1.0) if categorical else (-request.threshold_bound, request.threshold_bound)
+            )
             for i in range(2 * leaves - 1):
                 level = levels[i]
                 if i < branches:
@@ -205,7 +261,7 @@ def sample_tree_extension(
                         RecursiveTreeNode(
                             i,
                             float(thresholds[i]),
-                            (-request.threshold_bound, request.threshold_bound),
+                            (lower, upper),
                             level,
                             children[i][0],
                             children[i][1],
@@ -213,22 +269,33 @@ def sample_tree_extension(
                     )
                 else:
                     interval = (
-                        (-request.threshold_bound, float(thresholds[0]))
+                        (lower, float(thresholds[0]))
                         if branches and sides[i] == 1
-                        else (float(thresholds[0]), request.threshold_bound)
+                        else (float(thresholds[0]), upper)
                         if branches
-                        else (-request.threshold_bound, request.threshold_bound)
+                        else (lower, upper)
                     )
                     nodes.append(RecursiveTreeNode(0, interval[0], interval, level, value=(0.0,)))
-            recipe = model_leaf_tree_recipe(
-                request.task,
-                projection or ((0.0,) * width,),
-                RecursiveTree(tuple(nodes)),
-                tuple(models),
-                equality=request.equality,
-                root=request.root,
-                limits=limits,
-            )
+            if categorical and branches:
+                assert request.root is not None
+                recipe = categorical_model_tree_recipe(
+                    request.task,
+                    splits,
+                    RecursiveTree(tuple(nodes)),
+                    tuple(models),
+                    root=request.root,
+                    limits=limits,
+                )
+            else:
+                recipe = model_leaf_tree_recipe(
+                    request.task,
+                    projection or ((0.0,) * width,),
+                    RecursiveTree(tuple(nodes)),
+                    tuple(models),
+                    equality=request.equality,
+                    root=request.root,
+                    limits=limits,
+                )
         return SampledTreeExtension(
             request, recipe, family, depth, initial, snapshot_generator(active), limits
         )

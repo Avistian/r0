@@ -59,7 +59,7 @@ The ignored evidence packet retains initial type/regex and JSON-validator failur
 as well as their corrected results.
 
 This closes the initial balanced hard/soft model-tree sampling component, not the
-whole extension portfolio. Sampled categorical subsets, further topology laws, model-tree ensembles and broader
+whole extension portfolio. Further topology laws, automatic ensemble sampling and broader
 joint diversity/resource coverage remain open under #29. Full current-head
 verification and the remaining #28/#30 work are separate gates.
 
@@ -103,3 +103,6 @@ independent two-coin numeric example and verify balanced layout/RNG preservation
 at all supported depths. Both new families have receipt replay and dataset archive
 checks at depths zero and three. These checks do not close categorical sampling,
 model-tree ensembles or the whole #29 diversity inventory.
+
+Complete categorical profiles and their distinct split laws are documented in
+[Categorical model trees](issue-29-categorical-model-trees.md).
