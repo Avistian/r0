@@ -79,6 +79,7 @@ function showIntervention() {
 }
 function drawInterventionTrace() {
   const choice=$("intervention-stage").value, [side,index]=choice.split(":"), graph=interventionTrace[side], stage=graph.nodes[Number(index)];
+  if(graph.kind==="gp_target_environment")showGPPopulationMatrices(graph,current.intervention[side].recipe.recipe,`comparison ${side}`);
   const context=matrixContext(stage,stage.values.length,graph.rows);
   table("intervention-trace-table",[context.rowHeading,...context.columnLabels.map(c=>`channel ${c}`)],stage.values.map((values,i)=>[context.rowLabels[i],...values]));
   $("intervention-trace-json").textContent=pretty({side,rows:graph.rows,...stage});

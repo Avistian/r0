@@ -37,6 +37,8 @@ def admit_gp_target_environment(
     GPColumnRecipe(request, task)
     for cap in (request.limits, limits):
         report = request.admit(cap)
+        if target.input_width + len(target.weights) + target.outputs > cap.total_channels:
+            raise ValueError("GP target environment channel limit exceeded")
         count, storage = function_record_cost(target, cap)
         count += (
             8

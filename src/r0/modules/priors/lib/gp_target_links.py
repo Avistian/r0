@@ -90,6 +90,9 @@ def gp_link_extra(
             r.outputs,
         ):
             raise ValueError("GP linked target geometry differs from fixed environment")
+        channels = target.input_width + len(target.weights) + target.outputs
+        if channels > min(r.limits.total_channels, limits.total_channels):
+            raise ValueError("GP linked target channel limit exceeded")
         count, storage = function_record_cost(target, limits)
         # Target parameters, fit/input/hidden/output work, retained derived arrays,
         # and serialization/replay copies. No additional GP population is drawn.

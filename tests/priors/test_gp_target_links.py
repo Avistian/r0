@@ -156,3 +156,34 @@ def test_link_frozen_receipt_tamper_and_query_preadmission(monkeypatch: pytest.M
         with pytest.raises(ValueError, match="GP|limit|archive"):
             p.gp_environment_reference_from_dict(raw, **arguments)
     assert not calls
+
+
+@pytest.mark.parametrize("linked", [False, True])
+def test_wide_target_rejected_before_covariance_replay(
+    monkeypatch: pytest.MonkeyPatch, linked: bool
+):
+    base, _ = environment("regression", "matched")
+    wide = p.GPColumnTarget(
+        "neural",
+        ((0.1,),) * 64,
+        (0.0,),
+        hidden=((0.1,) * 64,) * 2,
+        hidden_bias=(0.0,) * 64,
+    )
+
+    def forbidden(*args: Any, **kwargs: Any):
+        pytest.fail("known target channel limit must reject before covariance replay")
+
+    monkeypatch.setattr(np.linalg, "cholesky", forbidden)
+    limits = p.CausalLimits(total_channels=32)
+    if linked:
+        with pytest.raises(ValueError, match="channel"):
+            p.generate_gp_link_pair(base, wide, limits=limits)
+    else:
+        with pytest.raises(ValueError, match="channel"):
+            p.generate_gp_column_pair(
+                p.GPColumnRecipe(base.comparison.original, base.task),
+                wide,
+                mode="matched",
+                limits=limits,
+            )

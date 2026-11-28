@@ -80,7 +80,7 @@ Replay and evaluation stay in the bounded worker. Failed queries and timeouts
 preserve the original active task and saved archive. Original population identity,
 frozen target and calibration constants remain visible in the reference artifact.
 Generic task-pair, mechanism-editor and DAG-policy controls are marked unavailable
-for this finite-population family. Hybrid graphs, full covariance interactive views and hosted Colab
+for this finite-population family. Hybrid graphs and hosted Colab
 verification remain REQUIRED follow-ons, not excluded scope.
 
 
@@ -125,8 +125,8 @@ Comparison envelopes are fixed-identity environments. Their Next control is disa
 and named accordingly; original population Next retains its new-population meaning.
 The continuation below adds dedicated reference curves and further linked edits for
 already reopened comparison environments, alongside the original-population reference
-and original-to-replacement editor. Hybrid roots, full covariance interactive
-views, broad population catalogs and resource/diversity qualification remain required.
+and original-to-replacement editor. Hybrid roots, broad population catalogs and resource/diversity qualification remain required.
+The separate accepted covariance viewer is integrated for active and paired target environments.
 
 ## References and further edits inside a comparison environment
 

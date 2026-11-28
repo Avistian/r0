@@ -18,5 +18,9 @@ Constructing another task clears the panel. It appears after successful guarded
 graph inspection. The UI uses retained arrays without recomputing covariance.
 
 GP hybrid roots, broader catalogs, measured resource envelopes and hosted Colab
-verification remain required. This slice supports original finite GP populations;
-edited-environment integration requires its own verification.
+verification remain required. The comparison continuation also supports original/replacement environments and
+bounded linked parents. Active graph inspection and paired trace selection choose
+the actual environment draw; fresh innovations are never replaced by the original
+population's old innovations. JSON and captions identify active/before/after origin,
+mode, exact fresh seed, selected side and lineage depth while retaining the original
+population ID. Dedicated continuation browser/arithmetic evidence covers this integration.
