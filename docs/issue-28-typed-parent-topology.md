@@ -33,6 +33,7 @@ roll back all five caller streams. Reopening validates request, topology, child 
 stream ownership, then compares a complete reconstruction. Original-row traces
 identify explicit topology as retained rather than sampled.
 
-Remaining qualification includes independent review, a neural-reducer numerical
-oracle, broader random-topology composition, complete workbench controls and hosted
-Colab delivery. Full-suite acceptance is separate from focused and archive checks.
+Remaining qualification includes independent review, broader random-topology
+composition, complete workbench compositions and hosted Colab delivery. Independent
+NumPy fixtures now check sampled neural reducers, including calibrated activation
+stages; this does not establish coverage of every activation/reducer combination. Full-suite acceptance is separate from focused and archive checks.
