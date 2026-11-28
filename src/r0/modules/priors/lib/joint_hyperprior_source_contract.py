@@ -18,6 +18,7 @@ def validate_joint_source_contract(raw: dict[str, Any], request: JointGraphReque
     expected = (
         (JointRegistryLimits(), registry["limits"]),
         (("graph",), raw["plan"]["operation"]),
+        (request.limits, raw["plan"]["limits"]),
         (PreferenceLimits(), decisions["limits"]),
         (PreferenceLimits(), numerical["limits"]),
         (PreferenceLimits(), categorical["limits"]),

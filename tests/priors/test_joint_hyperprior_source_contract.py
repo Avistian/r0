@@ -152,3 +152,17 @@ def test_source_contract_preserves_declared_policies(
         fit_rng=streams[4],
     )
     assert p.recipe_from_dict(asdict(recipe), limits=request.limits) == recipe
+
+
+def test_plan_caps_match_source_request_before_restore(original: p.JointHyperpriorGraph):
+    raw = asdict(original)
+    raw["graph"]["plan"]["limits"]["nodes"] -= 1
+    with (
+        patch.object(
+            type(original.topology.initial),
+            "restore",
+            side_effect=AssertionError("restore before source contract"),
+        ),
+        pytest.raises(ValueError, match="source|contract"),
+    ):
+        p.recipe_from_dict(raw, limits=original.limits)

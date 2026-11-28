@@ -110,3 +110,6 @@ envelope, catalog and task-semantics checks pass; separate literal arithmetic/ZI
 and stream-rollback evidence is retained under ignored
 `docs/evidence/issue-28-joint-source-contract/`. Independent repair acceptance and
 full issue completion remain separate gates; no full suite was run here.
+
+The plan also retains exactly the request limits supplied to its source planner.
+A public restore sentinel exposed and guards the analogous changed-plan-cap case.
