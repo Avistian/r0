@@ -34,8 +34,7 @@ full ensemble-output portfolio coverage remain open under #29.
 import numpy as np
 from r0.modules import priors as p
 
-task = p.LinearRecipe(rows=64, context_rows=48, features=2,
-                      signal_features=2, active_features=2)
+task = p.LinearRecipe(rows=64, context_rows=48, features=2, signal_features=2, active_features=2)
 members = tuple(
     p.sample_tree_extension(
         p.TreeExtensionRequest(task, families=(family,), min_depth=1, max_depth=1),
