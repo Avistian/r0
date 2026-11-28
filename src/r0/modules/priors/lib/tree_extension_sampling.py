@@ -23,6 +23,7 @@ from r0.modules.priors.lib.sampled_source_root_base import SampledSourceRootBase
 from r0.modules.priors.lib.soft_tree import SoftTreeBranch, compile_soft_tree
 from r0.modules.priors.lib.source_root_base import SourceRootBase
 from r0.modules.priors.lib.structural_network import NetworkAffine
+from r0.modules.priors.lib.tree_extension_topology import extension_topology
 
 _DEFAULT = CausalLimits()
 
@@ -48,7 +49,7 @@ class TreeExtensionRequest:
             or type(self.task) is not LinearRecipe
             or type(self.families) is not tuple
             or not self.families
-            or any(v not in ("hard", "soft") for v in self.families)
+            or any(v not in ("hard", "soft", "hard-pruned", "soft-pruned") for v in self.families)
             or type(self.leaf_families) is not tuple
             or not self.leaf_families
             or any(v not in ("constant", "linear", "tanh", "sin") for v in self.leaf_families)
@@ -149,8 +150,11 @@ def sample_tree_extension(
         initial = snapshot_generator(active)
         family = request.families[int(active.integers(len(request.families)))]
         depth = int(active.integers(request.min_depth, request.max_depth + 1))
-        leaves = 2**depth
-        branches = leaves - 1
+        children, levels, sides = extension_topology(
+            depth, pruned=family.endswith("-pruned"), rng=active
+        )
+        branches = len(children)
+        leaves = len(levels) - branches
         width = request.task.features
         outputs = request.task.classes if request.task.task_type == "multiclass" else 1
         weights = active.normal(0, request.coefficient_scale, (branches, width))
@@ -178,13 +182,13 @@ def sample_tree_extension(
                 )
             )
         projection = tuple(tuple(float(v) for v in row) for row in weights)
-        if family == "soft":
+        if family in ("soft", "soft-pruned"):
             soft = tuple(
                 SoftTreeBranch(
                     projection[i],
                     float(thresholds[i]),
-                    2 * i + 1,
-                    2 * i + 2,
+                    children[i][0],
+                    children[i][1],
                     float(temperatures[i]),
                 )
                 for i in range(branches)
@@ -195,7 +199,7 @@ def sample_tree_extension(
         else:
             nodes: list[RecursiveTreeNode] = []
             for i in range(2 * leaves - 1):
-                level = (i + 1).bit_length() - 1
+                level = levels[i]
                 if i < branches:
                     nodes.append(
                         RecursiveTreeNode(
@@ -203,17 +207,14 @@ def sample_tree_extension(
                             float(thresholds[i]),
                             (-request.threshold_bound, request.threshold_bound),
                             level,
-                            2 * i + 1,
-                            2 * i + 2,
+                            children[i][0],
+                            children[i][1],
                         )
                     )
                 else:
-                    ancestor = i
-                    while ancestor > 2:
-                        ancestor = (ancestor - 1) // 2
                     interval = (
                         (-request.threshold_bound, float(thresholds[0]))
-                        if branches and ancestor == 1
+                        if branches and sides[i] == 1
                         else (float(thresholds[0]), request.threshold_bound)
                         if branches
                         else (-request.threshold_bound, request.threshold_bound)

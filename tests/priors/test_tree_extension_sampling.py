@@ -59,7 +59,7 @@ def test_construction_draw_laws_and_replay(
     torch.testing.assert_close(original.targets, replay.targets, rtol=0, atol=0)
 
 
-@pytest.mark.parametrize("family", ["hard", "soft"])
+@pytest.mark.parametrize("family", ["hard", "soft", "hard-pruned", "soft-pruned"])
 @pytest.mark.parametrize("depth", [0, 3])
 def test_stump_and_deeper_portfolio_archive(family: str, depth: int, tmp_path: Path) -> None:
     sample = p.sample_tree_extension(
@@ -107,3 +107,30 @@ def test_receipt_rejects_boolean_depth() -> None:
     data["depth"] = True
     with pytest.raises(ValueError, match="metadata"):
         p.sampled_tree_extension_from_dict(data)
+
+
+def test_pruned_shape_has_independent_coin_oracle_and_exact_depth() -> None:
+    from r0.modules.priors.lib.tree_extension_topology import extension_topology
+
+    rng = np.random.default_rng(0)
+    children, levels, sides = extension_topology(3, pruned=True, rng=rng)
+    # Seed 0's first coins are .63696 and .26979: prune root-right,
+    # keep left-right. The all-left depth-three path is compulsory.
+    assert children == ((1, 4), (2, 3), (5, 6), (7, 8))
+    assert levels == (0, 1, 2, 2, 1, 3, 3, 3, 3)
+    assert sides == (0, 1, 1, 1, 2, 1, 1, 1, 1)
+    oracle = np.random.default_rng(0)
+    oracle.random(2)
+    assert rng.bit_generator.state == oracle.bit_generator.state
+
+
+@pytest.mark.parametrize("depth", range(5))
+def test_balanced_shape_preserves_original_heap_and_rng(depth: int) -> None:
+    from r0.modules.priors.lib.tree_extension_topology import extension_topology
+
+    rng = np.random.default_rng(29)
+    before = copy.deepcopy(rng.bit_generator.state)
+    children, levels, _ = extension_topology(depth, pruned=False, rng=rng)
+    assert children == tuple((2 * i + 1, 2 * i + 2) for i in range(2**depth - 1))
+    assert levels == tuple((i + 1).bit_length() - 1 for i in range(2 ** (depth + 1) - 1))
+    assert rng.bit_generator.state == before
