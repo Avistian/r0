@@ -156,6 +156,17 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
 
     if request.construction is not None:
         controls = json.loads(request.construction.controls_json)
+        if controls.get("topology") == "xgboost-population":
+            from r0.modules.priors import xgboost_population_construction_matches
+
+            return xgboost_population_construction_matches(
+                controls,
+                record,
+                construction_seed=request.construction.seed,
+                seed=request.seed,
+                task_id=task_id,
+                limits=request.causal_limits or CausalLimits(),
+            )
         if controls.get("topology") == "gp-root-dag":
             from r0.modules.priors import gp_root_construction_matches
 

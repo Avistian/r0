@@ -1,0 +1,15 @@
+<details id="xgb-population-panel"><summary>XGBoost from actual parent populations</summary>
+<p class="muted">Fit native models to synthetic parent values. Support uses context rows; batch reference uses the entire episode; independent ancestors use a separate fitting population. Replay preserves fitted models.</p>
+<button id="xgb-population-load">Load retained fit controls</button>
+<label>Fitting population<select id="xgb-population-mode"><option value="support-only">Context rows only</option><option value="batch-refit-reference">Whole episode reference</option><option value="independent-ancestors">Separate ancestor population</option></select></label>
+<label>RNG engine<select id="xgb-population-engine"><option>PCG64</option><option>PCG64DXSM</option><option>Philox</option><option>SFC64</option><option>MT19937</option></select></label>
+<label>Fit seed<input id="xgb-population-seed" type="text" value="71"></label>
+<label>Fit task identifier<input id="xgb-population-task" type="text" value="73"></label>
+<label>Authored graph JSON<textarea id="xgb-population-base" rows="5"></textarea></label>
+<label>Node fitting plans JSON<textarea id="xgb-population-plans" rows="5"></textarea></label>
+<p class="muted">Plans expose objective, fake-target law, tree count, depth and native backend controls. Plan rows must match the selected population. A new construction fits new models; changing a draft does not alter a saved dataset.</p>
+<button id="xgb-population-apply">Apply fit draft</button>
+<button id="xgb-population-replay">Replay retained models</button>
+<p id="xgb-population-notice" class="muted"></p>
+<details><summary>Retained fit row identities</summary><pre id="xgb-population-rows"></pre></details>
+</details>

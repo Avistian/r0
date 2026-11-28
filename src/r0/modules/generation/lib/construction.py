@@ -215,7 +215,7 @@ class GraphConstruction:
             "prototype-root-network",
         ):
             controls = controls["source"]
-        if controls.get("topology") == "gp-root-dag":
+        if controls.get("topology") in ("gp-root-dag", "xgboost-population"):
             return controls["base"]["task"]
         if controls.get("topology") in ("calibrate-population", "calibrated-population-query"):
             source = controls["source"]
@@ -280,6 +280,14 @@ class GraphConstruction:
                 seed=episode_seed,
                 task_id=task_id,
                 construction_seed=self.seed,
+                limits=limits,
+            )
+        if fields.get("topology") == "xgboost-population":
+            return priors.construct_xgboost_population(
+                fields,
+                construction_seed=self.seed,
+                seed=episode_seed,
+                task_id=task_id,
                 limits=limits,
             )
         if fields.get("topology") == "recursive-population-dag":

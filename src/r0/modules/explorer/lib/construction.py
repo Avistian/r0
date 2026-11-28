@@ -25,6 +25,7 @@ from r0.modules.explorer.lib.prototype_root_examples import prototype_root_examp
 from r0.modules.explorer.lib.source_root_examples import source_root_examples
 from r0.modules.explorer.lib.topology_hyperprior_examples import topology_hyperprior_examples
 from r0.modules.explorer.lib.xgboost_examples import xgboost_examples
+from r0.modules.explorer.lib.xgboost_population_examples import xgboost_population_examples
 
 
 def caller_limits(data: dict[str, Any]) -> priors.CausalLimits:
@@ -88,6 +89,7 @@ def construction_examples() -> dict[str, Any]:
         **composed_examples(common, geometry, sampled_native_example()),
         **fitted_examples(),
         **xgboost_examples(),
+        **xgboost_population_examples(),
         **convolution_examples(),
         **population_dag_examples(),
         **network_examples(),
@@ -292,6 +294,7 @@ def population_identity(record: dict[str, Any], data: dict[str, Any]) -> dict[st
 def guarded_archive_version(version: object) -> bool:
     """Batch reconstruction and frozen replay both belong in the bounded worker."""
     return frozen_archive_version(version) or version in (
+        "population-xgboost-graph-v1",
         "gp-root-dag-v1",
         "gp-root-calibration-v1",
         "gp-column-recipe-v1",

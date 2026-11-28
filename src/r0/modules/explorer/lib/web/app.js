@@ -207,6 +207,7 @@ function charts() {
   table("table", ["Row", "Split", ...view.features.map(f => `${f.name} (${f.role})`), "Target", "Signal", "Probability / noise"], view.rows.slice(0, 64).map(row => [row.index, row.role, ...row.inputs, row.target, row.scores[Math.min(channel, row.scores.length - 1)], row.probabilities ? row.probabilities[channel] : row.noise]));
 }
 function show(result) {
+  clearXGBPopulationCapabilities();
   current = result; const view = result.view;
   $("empty").hidden = true; $("results").hidden = false;
   $("next").textContent=view.recipe.recipe.version==="gp-column-recipe-v1" ? "Next GP population + target" : isPrototypeBatch(view.recipe.recipe) ? "Next population" : "Next task";
@@ -235,7 +236,7 @@ function show(result) {
   $("construction-details").hidden=!view.construction_details;
   $("construction-detail-notice").textContent=view.construction_details?.notice || "";
   $("construction-detail-record").textContent=pretty(view.construction_details || {});
-  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair(); resetWorkbench(); nativeViewControls(view); resetIntervention(); specialPopulationViews(view);
+  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair(); resetWorkbench(); nativeViewControls(view); resetIntervention(); specialPopulationViews(view); xgbPopulationView(view);
 }
 async function inspectRow(index) {
   await act("Loading row…", async () => {

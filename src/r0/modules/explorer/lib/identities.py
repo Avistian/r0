@@ -13,6 +13,8 @@ def identity_numbers(value: Any, *, for_browser: bool) -> Any:
     for key, item in cast(dict[str, Any], value).items():
         if key in (
             "seed",
+            "fit_seed",
+            "fit_task_id",
             "task_id",
             "split",
             "population",

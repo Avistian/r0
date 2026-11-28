@@ -76,6 +76,12 @@ from r0.modules.priors.lib.xgboost_fit_graph import with_xgboost_fits as with_xg
 from r0.modules.priors.lib.xgboost_fit_plan import XGBoostFitPlan as XGBoostFitPlan
 from r0.modules.priors.lib.xgboost_fitting import XGBoostFit as XGBoostFit
 from r0.modules.priors.lib.xgboost_fitting import fit_xgboost as fit_xgboost
+from r0.modules.priors.lib.xgboost_population_construction import (
+    construct_xgboost_population as construct_xgboost_population,
+)
+from r0.modules.priors.lib.xgboost_population_construction import (
+    xgboost_population_construction_matches as xgboost_population_construction_matches,
+)
 from r0.modules.priors.lib.xgboost_population_decoding import (
     population_xgboost_fit_from_dict as population_xgboost_fit_from_dict,
 )
@@ -162,3 +168,5 @@ __all__ += [
 ]
 
 __all__ += ["validate_xgboost_population_task"]
+
+__all__ += ["construct_xgboost_population", "xgboost_population_construction_matches"]
