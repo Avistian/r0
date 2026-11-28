@@ -1,5 +1,6 @@
 """Public frozen-function exports."""
 
+from r0.modules.priors.lib.category_subset import category_subset_activation
 from r0.modules.priors.lib.fitted_graph import (
     FittedFunctionalCausalRecipe as FittedFunctionalCausalRecipe,
 )
@@ -119,6 +120,7 @@ from r0.modules.priors.lib.xgboost_vector_export import (
 )
 
 __all__ = [
+    "category_subset_activation",
     "oblique_tree_recipe",
     "SoftTreeBranch",
     "compile_soft_tree",

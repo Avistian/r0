@@ -27,8 +27,9 @@ and the existing binary score adapter; matching multiclass vector outputs are
 scores for the existing multiclass adapter. Native classifier forests are rejected
 rather than silently treating their majority labels as score-based targets. This
 is an authored r0 extension, not a sampled oblique-tree prior or a complete native
-categorical-output workflow. Hard model leaves and categorical-subset splits are
-separate remaining portfolio work.
+categorical-output workflow. Hard model leaves remain separate portfolio work.
+[Category-subset predicates](issue-29-category-subsets.md) now provide an authored
+component and a standalone generated example.
 
 For the direction `x0 - 2*x1` and threshold 0.25 with constant leaves -2 and 3,
 probes (0.24,0), (0.25,0), (0.26,0) give [-2,-2,3] with left equality and [-2,3,3]

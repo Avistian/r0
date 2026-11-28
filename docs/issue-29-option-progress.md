@@ -11,7 +11,7 @@ known gaps; it is not family-level acceptance. Generator delivery now includes
 | T29-03 Fitted trees | DT/ET/RF/GB and XGBoost fit/export primitives exist, including parameter samplers and independent/population lifecycles. Still audit standalone profiles and source-specific fit distributions. |
 | T29-04 Outputs | Scalar/vector and native-classifier primitives exist. Probability-leaf sampling, frozen score adapters, noise and absent-class coverage need requirement-by-requirement audit. |
 | T29-05 Ensembles | Recursive mean/vote and fitted probability/boosting evaluators exist. Correlated forests, weighted reductions and standalone disagreement/correlation evidence remain to audit. |
-| T29-06 Extensions | Authored soft trees now compile sparse oblique splits and constant/linear/activated vector leaves into existing frozen networks. See the soft-tree contract. Exact hard oblique routing with either equality rule now uses projection plus frozen recursive traversal. Categorical subsets, hard model leaves, sampled portfolios and combinations remain open. |
+| T29-06 Extensions | Authored soft trees now compile sparse oblique splits and constant/linear/activated vector leaves into existing frozen networks. See the soft-tree contract. Exact hard oblique routing with either equality rule now uses projection plus frozen recursive traversal. Exact authored categorical-subset predicates and a generated tree example now exist. Hard model leaves, sampled portfolios and combinations remain open. |
 | T29-07 Populations/hyperpriors | Existing root and scalar-distribution primitives are candidates for reuse. No full standalone tree integration audit yet. |
 | T29-08 Extremes/failures | Existing narrow tests cover some edge cases. A saved standalone inventory with independent expected paths/values and diversity/resource reporting remains open. |
 
@@ -20,3 +20,5 @@ The authoritative full requirements are [#29](https://github.com/Avistian/r0/iss
 Do not infer that an unlisted paper option is complete or deferred.
 
 [Hard oblique task contract and exact equality rules](issue-29-hard-oblique-trees.md).
+
+[Exact category-subset predicates and generated tree example](issue-29-category-subsets.md).

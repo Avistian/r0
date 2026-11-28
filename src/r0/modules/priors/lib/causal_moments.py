@@ -16,6 +16,7 @@ from r0.modules.priors.lib.causal_nodes import (
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline
 
 BOUNDED_ACTIVATIONS = {
+    "category-subset-v1",
     "tabicl-paper-fourier-v1",
     "tabicl-code-fourier-v1",
     "kumaraswamy",

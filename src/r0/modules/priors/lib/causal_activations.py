@@ -7,6 +7,13 @@ from dataclasses import dataclass
 import torch
 from torch.nn import functional as F
 
+from r0.modules.priors.lib.category_subset import (
+    KIND as CATEGORY_SUBSET_KIND,
+)
+from r0.modules.priors.lib.category_subset import (
+    evaluate_category_subset,
+    validate_category_subset,
+)
 from r0.modules.priors.lib.tabicl_fourier import (
     FOURIER_KINDS,
     evaluate_fourier_activation,
@@ -126,7 +133,8 @@ class CausalActivation:
         if type(
             self.kind
         ) is not str or self.kind not in _FIXED.keys() | _PARAMETERS.keys() | FOURIER_KINDS | {
-            RANDOM_SCALE_KIND
+            RANDOM_SCALE_KIND,
+            CATEGORY_SUBSET_KIND,
         }:
             raise ValueError("unsupported causal activation")
         if type(self.parameters) is not tuple or any(
@@ -139,6 +147,11 @@ class CausalActivation:
         ):
             raise ValueError("activation parameters must be named finite numeric pairs")
         names = [name for name, _ in self.parameters]
+        if self.kind == CATEGORY_SUBSET_KIND:
+            if len(set(names)) != len(names):
+                raise ValueError("duplicate category subset parameter")
+            validate_category_subset(dict(self.parameters))
+            return
         if self.kind == RANDOM_SCALE_KIND:
             if len(set(names)) != len(names):
                 raise ValueError("duplicate random scale parameter")
@@ -181,7 +194,9 @@ def primitive_activation(value: torch.Tensor, activation: CausalActivation) -> t
             raise ValueError("nonfinite rescaled activation input; task was not retried")
     if activation.kind == "log" and torch.any(value <= 0):
         raise ValueError("log activation requires strictly positive inputs; use log_abs explicitly")
-    if activation.kind == RANDOM_SCALE_KIND:
+    if activation.kind == CATEGORY_SUBSET_KIND:
+        result = evaluate_category_subset(value, parameters)
+    elif activation.kind == RANDOM_SCALE_KIND:
         result = evaluate_random_scale(value, parameters)
     elif activation.kind in FOURIER_KINDS:
         result = evaluate_fourier_activation(value, parameters)
