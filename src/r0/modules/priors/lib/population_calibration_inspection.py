@@ -13,6 +13,9 @@ from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
 from r0.modules.priors.lib.population_calibrated_output import generate_calibrated_population
 from r0.modules.priors.lib.population_calibration_decoding import calibrated_population_from_dict
+from r0.modules.priors.lib.population_calibration_inspection_identity import (
+    preflight_calibrated_inspection,
+)
 from r0.modules.priors.lib.population_graph_inspection import population_graph_steps
 from r0.modules.priors.lib.population_task_semantics import (
     population_task_record,
@@ -33,6 +36,7 @@ def calibrated_population_steps(
     limits: CausalLimits | None,
 ) -> dict[str, Any]:
     record = population_task_record(task)
+    preflight_calibrated_inspection(task, record)
     cap = limits or CausalLimits()
     execution: InterventionExecution | None = None
     if record["recipe"].get("version") == "calibrated-population-intervention-v1":

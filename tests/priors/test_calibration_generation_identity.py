@@ -221,3 +221,68 @@ def test_malformed_task_preview_rejects_without_replay(
                 max_bytes=256 * 1024**2,
             )
         )
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("seed", 92),
+        ("task_id", 2**55 + 20),
+        ("seed", True),
+        ("task_id", 1.0),
+        ("seed", -1),
+        ("seed", 2**63),
+        ("task_id", False),
+        ("task_id", 2**63),
+        ("source_task_id", "forged"),
+        ("episode_id", "forged"),
+        ("implementation", "other"),
+        ("device", "cuda"),
+        ("cpu_threads", True),
+        ("execution", {}),
+        ("count", 1),
+        ("sampling", None),
+        ("construction", None),
+    ],
+)
+def test_inspection_outer_metadata_precedes_restore(
+    calibrated: p.CalibratedPopulationGraph, monkeypatch: pytest.MonkeyPatch, field: str, value: Any
+):
+    import json
+
+    saved = p.generate_task(calibrated, seed=91, task_id=2**55 + 19)
+    record = json.loads(saved.recipe_json)
+    if field in ("source_task_id", "episode_id"):
+        saved = replace(saved, **{field: value})
+    else:
+        if field in ("implementation", "device", "cpu_threads"):
+            record["execution"][field] = value
+        else:
+            record[field] = value
+        saved = replace(saved, recipe_json=json.dumps(record))
+
+    def forbidden(*args: Any, **kwargs: Any):
+        pytest.fail("outer inspection metadata reached source replay")
+
+    monkeypatch.setattr(type(calibrated.original.bindings[0].sample.initial), "restore", forbidden)
+    with pytest.raises(
+        ValueError, match="identity|integer|semantic|implementation|CPU|schema|exactly"
+    ):
+        p.explain_generation(saved, [0])
+
+
+def test_inspection_preserves_saved_task_and_historical_environment(
+    calibrated: p.CalibratedPopulationGraph,
+):
+    import json
+
+    saved = p.generate_task(calibrated, seed=91, task_id=2**55 + 19)
+    record = json.loads(saved.recipe_json)
+    record["execution"]["python"] = "retained historical Python"
+    candidate = replace(saved, recipe_json=json.dumps(record))
+    before = (candidate.recipe_json, candidate.mechanism_json, candidate.targets.clone())
+    graph = p.explain_generation(candidate, [15, 0, 15])
+    assert graph["rows"] == [15, 0, 15]
+    assert candidate.recipe_json == before[0]
+    assert candidate.mechanism_json == before[1]
+    assert candidate.targets.equal(before[2])
