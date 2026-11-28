@@ -14,34 +14,15 @@ def population_curve(data: dict[str, Any]) -> dict[str, Any]:
     if len(json.dumps(data, allow_nan=False).encode()) > maximum:
         raise ValueError("population reference request exceeds byte cap")
     limits = p.CausalLimits(**data["causal_limits"])
-    record = cast(dict[str, Any], data["record"])
-    if type(record) is not dict or set(record) != {"recipe", "seed", "task_id", "execution"}:
-        raise ValueError("population reference requires complete saved source identity")
+    record = p.validate_population_record_metadata(data["record"])
     source = record["recipe"]
     base = source.get("base", source)
-    if any(type(record[k]) is not int or record[k] != base[k] for k in ("seed", "task_id")):
-        raise ValueError("population reference transport identity differs")
-    execution = cast(dict[str, Any], record["execution"])
-    execution_keys = {
-        "implementation",
-        "device",
-        "python",
-        "numpy",
-        "torch",
-        "cpu_threads",
-        "cuda",
-        "gpu",
-    }
-    if (
-        type(execution) is not dict
-        or set(execution) != execution_keys
-        or any(type(execution[k]) is not str for k in ("python", "numpy", "torch"))
-        or type(execution["cpu_threads"]) is not int
-        or execution["cpu_threads"] < 1
-        or any(execution[k] is not None and type(execution[k]) is not str for k in ("cuda", "gpu"))
-        or execution.get("implementation") != source.get("version")
-        or execution.get("device") != "cpu"
+    if type(base) is not dict or any(
+        record[k] != cast(dict[str, Any], base).get(k) for k in ("seed", "task_id")
     ):
+        raise ValueError("population reference transport identity differs")
+    execution = record["execution"]
+    if execution["implementation"] != source.get("version") or execution["device"] != "cpu":
         raise ValueError("population reference requires its saved CPU implementation identity")
     values = cast(list[Any], data["values"])
     if type(values) is not list:

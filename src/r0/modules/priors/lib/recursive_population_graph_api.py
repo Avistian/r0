@@ -13,6 +13,9 @@ from .population_reference import (
 from .population_reference import (
     population_reference_from_source as population_reference_from_source,
 )
+from .population_task_semantics import (
+    validate_population_record_metadata as validate_population_record_metadata,
+)
 from .recursive_population_graph_decoding import (
     recursive_population_graph_from_dict as recursive_population_graph_from_dict,
 )
