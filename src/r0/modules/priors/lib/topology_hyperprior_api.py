@@ -27,3 +27,4 @@ from .topology_hyperprior_decoding import (
 from .topology_hyperprior_decoding import (
     topology_hyperprior_from_dict as topology_hyperprior_from_dict,
 )
+from .topology_target_reference import topology_reference_targets as topology_reference_targets

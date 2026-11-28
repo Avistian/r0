@@ -22,7 +22,10 @@ window.r0request = async (action, data) => {
         .read_text()
         .replace("/* STYLES */", (assets / "style.css").read_text())
         .replace("/* APPLICATION */", (assets / "app.js").read_text())
-        .replace("/* CURVES */", (assets / "curves.js").read_text())
+        .replace(
+            "/* CURVES */",
+            (assets / "topology_curve_output.js").read_text() + (assets / "curves.js").read_text(),
+        )
         .replace("/* GRAPHS */", (assets / "graphs.js").read_text())
         .replace("/* PAIRS */", (assets / "pairs.js").read_text())
         .replace("<!-- INTERVENTIONS -->", (assets / "interventions.html").read_text())

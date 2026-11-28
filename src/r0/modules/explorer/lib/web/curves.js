@@ -5,6 +5,7 @@ function isFunctionalReference() {return ["functional-causal-v1","functional-cau
 function isGP() { return current?.view.recipe.recipe.version === "exact-gp-v1"; }
 function clearCurve() {
   curve = null;
+  clearTopologyCurveOutput();
   $("response-plot").replaceChildren(); $("curve-values").textContent = ""; $("curve-json").hidden = true;
   const observed=isObservation(current?.view?.recipe?.recipe);
   $("curve").hidden=false; $("curve").disabled=false; $("curve").dataset.unavailable="false";
@@ -22,6 +23,7 @@ function clearCurve() {
     ? "Uses the full observed feature range. Additional draws use the seed above; changing the query points changes their joint draw."
     : "The curve uses the full observed feature range. Select a row and evaluate to see the response.";
   if(observed) {$("curve-title").textContent="Observation causal reference"; $("curve-description").textContent="Vary one selected observed channel, clamping every observed channel at both state and readout. Hidden roots stay at the selected original row; choose zero or original structural innovations. Target aliases propagate their parent clamps. These are raw target readouts, not conditional means, class probabilities or target-adapted scores."; $("curve-note").textContent="The full source and selection receipt remains attached to this original-row causal reference."; $("curve").textContent="Evaluate causal reference";}
+  describeTopologyCurveOutput();
   if(isConvolutionRecipe(current?.view?.recipe?.recipe) && !functional){$("curve").disabled=true;$("curve").dataset.unavailable="true";$("curve-description").textContent="Typed convolution curves remain pending explicit category/capture reference semantics. Inspect original-row kernel stages or use causal interventions; no continuous response is substituted for native emissions.";}
 
 }
@@ -29,11 +31,12 @@ function drawCurve() {
   if (!curve) return;
   if (curve.kind === "gp_conditional_curve") drawGP();
   else {
-    const channel = Math.min(number("channel"), curve.scores[0].length - 1);
-    const values = curve.scores.map(row => row[channel]);
-    const {svg, x, y} = plotFrame("response-plot", ["network_innovation_reference","functional_causal_reference","observation_causal_reference"].includes(curve.kind) ? `${curve.reference} innovation reference` : "Saved function response", `x${curve.feature}`, `${curve.kind === "observation_causal_reference" ? "Raw target readout" : "Raw latent signal"} ${channel}`, ...curve.bounds, Math.min(...values), Math.max(...values));
+    const selected = topologyCurveOutput(curve);
+    const channel = Math.min(number("channel"), selected.matrix[0].length - 1);
+    const values = selected.matrix.map(row => row[channel]);
+    const {svg, x, y} = plotFrame("response-plot", ["network_innovation_reference","functional_causal_reference","observation_causal_reference"].includes(curve.kind) ? `${curve.reference} innovation reference` : "Saved function response", `x${curve.feature}`, `${selected.label || (curve.kind === "observation_causal_reference" ? "Raw target readout" : "Raw latent signal")} ${channel}`, ...curve.bounds, Math.min(...values), Math.max(...values));
     svg.append(element("polyline", {points: curve.values.map((value, i) => `${x(value)},${y(values[i])}`).join(" "), fill: "none", stroke: "#17826b", "stroke-width": 2}));
-    $("curve-note").textContent = `${curve.points} evaluated points across the observed range of x${curve.feature} (${curve.feature_role}). All other inputs are fixed to row ${curve.anchor_row}. Lines connect these points; behavior between them is not resolved. ${curve.score_semantics || ""}`;
+    $("curve-note").textContent = `${curve.points} evaluated points across the observed range of x${curve.feature} (${curve.feature_role}). All other inputs are fixed to row ${curve.anchor_row}. Lines connect these points; behavior between them is not resolved. ${curve.target_reference_version && $("topology-output").value !== "scores" ? curve.target_semantics : curve.score_semantics || ""}`;
   }
   $("curve-values").textContent = pretty(curve); $("curve-json").hidden = false;
 }
