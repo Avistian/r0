@@ -27,7 +27,7 @@ and the existing binary score adapter; matching multiclass vector outputs are
 scores for the existing multiclass adapter. Native classifier forests are rejected
 rather than silently treating their majority labels as score-based targets. This
 is an authored r0 extension, not a sampled oblique-tree prior or a complete native
-categorical-output workflow. Hard model leaves remain separate portfolio work.
+categorical-output workflow. [Hard model leaves](issue-29-model-leaves.md) now have an authored task compiler.
 [Category-subset predicates](issue-29-category-subsets.md) now provide an authored
 component and a standalone generated example.
 

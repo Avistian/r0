@@ -58,6 +58,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenTreeFunction as FrozenTreeFunction,
 )
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
+from r0.modules.priors.lib.model_leaf_tree import model_leaf_tree_recipe
 from r0.modules.priors.lib.network_recipe import NetworkRecipe as NetworkRecipe
 from r0.modules.priors.lib.network_sampling import sample_network as sample_network
 from r0.modules.priors.lib.network_sampling_records import (
@@ -120,6 +121,7 @@ from r0.modules.priors.lib.xgboost_vector_export import (
 )
 
 __all__ = [
+    "model_leaf_tree_recipe",
     "category_subset_activation",
     "oblique_tree_recipe",
     "SoftTreeBranch",
