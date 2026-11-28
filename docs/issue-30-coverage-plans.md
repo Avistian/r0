@@ -29,8 +29,8 @@ joint cells over 2–4 dimensions. Joint cells only include authored combination
 nonzero marginals do not imply coverage of their Cartesian product. Tags are
 caller-declared labels, not measurements of generated tasks. All strata must use
 the same dimension names. Source/adaptation/extension labels can be included as
-one dimension. This interface does not yet provide hierarchical allocation,
-adaptive selection, curricula or measured output diversity.
+one dimension. Hierarchical allocation is described below. Adaptive selection, curricula and
+measured output diversity remain separate work.
 
 By default every request must use per-task recipe sampling or a sampled
 `tree-extension`/`tree-ensemble` construction. Other construction paths may reuse
@@ -101,3 +101,41 @@ duplicate archive, unstarted shard and constructed interrupted-write records.
 The interrupted fixture admits two IDs, records one failure and leaves an archive
 without a receipt: the report must show zero committed, one unresolved failure,
 two pending IDs and one admitted ID without an outcome.
+
+## Hierarchical quotas (M30-01)
+
+A `CoverageHierarchy(dimensions, weights=...)` on a `CoveragePlan` with
+`version="coverage-plan-v2"` allocates conditional budgets by the ordered tag
+dimensions. For example, `("family", "subfamily", "regime")` allocates families
+first, then subfamilies inside each family, then regimes. Up to four dimensions
+are supported. Branch weights are explicit `(path, integer_weight)` pairs;
+unlisted existing branches default to weight one. Paths contain tag values in
+dimension order, so `(("tree", "soft"), 3)` weights the soft subfamily only under
+tree. Unknown paths, missing dimensions and duplicate path entries are errors.
+
+At every level, reserve the sum of all descendant stratum minimums first. Divide
+the remaining budget among child branches by exact largest remainders, breaking
+ties lexically by child value. At the final tag level, allocate among the matching
+strata using their existing stratum weights and minimums. A zero-weight branch
+retains its minimum but receives no residual allocation. A branch receiving a
+positive residual budget with all child weights zero is an error: no fallback
+silently changes the policy. Minimums may make realized total shares differ from
+weight ratios; the weights govern residual mass, not an unconditional probability.
+
+Worked example: family A has low/high variants, B has only low. With twelve tasks,
+zero minimums and equal weights, flat leaf allocation yields 4/4/4. Hierarchical
+family→regime allocation gives A six and B six, then divides A into 3/3: final
+counts A-high=3, A-low=3, B-low=6. Weighting A:B as 3:1 gives 5/4/3 after lexical
+rounding. With equal family weights but A-low:A-high as 2:1, the result is 2/4/6.
+Thus adding configured variants does not implicitly increase a family's residual
+share. Minimums still represent an intentional exception to that independence.
+
+The complete hierarchy is retained in canonical v2 JSON and participates in plan
+identity. Reordering branch-weight records or strata does not change identity;
+changing dimension order does change policy and identity. Existing v1 flat JSON
+and hashes remain unchanged, and v1 readers reject v2 rather than discarding the
+hierarchy. The notebook currently pins the earlier flat-plan source; use the
+current implementation checkout for this additional API until its pin is updated.
+Shard execution, archive inspection and resume use the same public paths for both
+versions. This is a deterministic quota policy, not random categorical sampling,
+a curriculum, an adaptive policy or proof of downstream benefit.

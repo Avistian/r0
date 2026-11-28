@@ -8,6 +8,12 @@ from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from typing import Any, cast
 
+from r0.modules.generation.lib.coverage_hierarchy import (
+    CoverageHierarchy,
+    hierarchical_counts,
+    hierarchy_from_dict,
+    quota_counts,
+)
 from r0.modules.generation.lib.groups import write_record
 from r0.modules.generation.lib.job import JobResult, run_guarded
 from r0.modules.generation.lib.requests import RunRequest, request_from_dict
@@ -75,10 +81,13 @@ class CoveragePlan:
     start: int = 0
     require_fresh: bool = True
     version: str = "coverage-plan-v1"
+    hierarchy: CoverageHierarchy | None = None
 
     def __post_init__(self) -> None:
         if (
-            self.version != "coverage-plan-v1"
+            self.version not in ("coverage-plan-v1", "coverage-plan-v2")
+            or (self.hierarchy is None) != (self.version == "coverage-plan-v1")
+            or (self.hierarchy is not None and type(self.hierarchy) is not CoverageHierarchy)
             or type(self.strata) is not tuple
             or not 1 <= len(self.strata) <= 4096
             or any(type(s) is not CoverageStratum for s in self.strata)
@@ -104,11 +113,16 @@ class CoveragePlan:
             raise ValueError(
                 "independent-source plan requires per-task sampling or sampled tree construction"
             )
+        coverage_allocations(self)
         if len(self.to_json().encode()) > _MAX_DOCUMENT:
             raise ValueError("coverage plan document exceeds 8 MiB")
 
     def to_json(self) -> str:
         data = asdict(self)
+        if self.hierarchy is None:
+            data.pop("hierarchy")
+        else:
+            data["hierarchy"]["weights"] = sorted(data["hierarchy"]["weights"])
         data["strata"] = sorted(data["strata"], key=lambda s: s["key"])
         for stratum in data["strata"]:
             stratum["tags"] = sorted(stratum["tags"])
@@ -137,15 +151,24 @@ def coverage_allocations(plan: CoveragePlan) -> tuple[CoverageAllocation, ...]:
     if type(plan) is not CoveragePlan:
         raise ValueError("coverage allocation requires a frozen plan")
     ordered = sorted(plan.strata, key=lambda s: s.key)
-    residual = plan.total - sum(s.minimum for s in ordered)
-    weights = sum(s.weight for s in ordered)
-    divisions = [divmod(residual * s.weight, weights) if weights else (0, 0) for s in ordered]
-    counts = [s.minimum + div[0] for s, div in zip(ordered, divisions, strict=True)]
-    leftover = plan.total - sum(counts)
-    for index in sorted(range(len(ordered)), key=lambda i: (-divisions[i][1], ordered[i].key))[
-        :leftover
-    ]:
-        counts[index] += 1
+    arguments = (
+        [s.key for s in ordered],
+        [s.minimum for s in ordered],
+        [s.weight for s in ordered],
+        plan.total,
+    )
+    counts = (
+        quota_counts(*arguments)
+        if plan.hierarchy is None
+        else hierarchical_counts(
+            plan.hierarchy,
+            arguments[0],
+            [dict(s.tags) for s in ordered],
+            arguments[1],
+            arguments[2],
+            arguments[3],
+        )
+    )
     allocations: list[CoverageAllocation] = []
     offset, shard = plan.start, 0
     for stratum, count in zip(ordered, counts, strict=True):
@@ -241,7 +264,8 @@ def coverage_plan_from_json(document: str) -> CoveragePlan:
     if type(decoded) is not dict:
         raise ValueError("coverage document must be an object")
     data = cast(dict[str, Any], decoded)
-    if type(data) is not dict or set(data) != {
+    extra: set[str] = {"hierarchy"} if data.get("version") == "coverage-plan-v2" else set()
+    if set(data) != extra | {
         "strata",
         "total",
         "shard_size",
@@ -250,6 +274,8 @@ def coverage_plan_from_json(document: str) -> CoveragePlan:
         "version",
     }:
         raise ValueError("coverage document fields differ")
+    if extra:
+        data["hierarchy"] = hierarchy_from_dict(data["hierarchy"])
     raw = data.pop("strata")
     if type(raw) is not list or not 1 <= len(cast(list[Any], raw)) <= 4096:
         raise ValueError("coverage document requires bounded strata")

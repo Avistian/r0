@@ -32,6 +32,7 @@ from r0.modules.generation.lib.coverage import (
 from r0.modules.generation.lib.coverage import (
     run_coverage_shard as run_coverage_shard,
 )
+from r0.modules.generation.lib.coverage_hierarchy import CoverageHierarchy as CoverageHierarchy
 from r0.modules.generation.lib.coverage_report import inspect_coverage as inspect_coverage
 from r0.modules.generation.lib.coverage_report import (
     inspect_coverage_shard as inspect_coverage_shard,
