@@ -116,3 +116,38 @@ contains a sum/difference projection, one deliberately redundant output and an
 independent Gaussian nuisance column. Focused checks include hand-calculated
 values with reordered columns, identity defaults, exact redundancy, target
 preservation, archive restore, parameter admission and overflow rollback.
+
+## Quadratic interactions
+
+`MeasurementStage("quadratic-mix", columns, parameters)` extends the linear-mix
+stage with sparse terms `q_i_j_k * old_x_j * old_x_k` added to local output `i`.
+The input pair must satisfy `j <= k`: equal indices give squares, unequal indices
+give products. Each coefficient is applied once, with no implicit factor of two.
+Linear `w_i_j` and `bias_i` parameters keep their existing identity/zero defaults.
+Every term reads the same pre-stage values. Quadratic additions are evaluated in
+the recorded parameter order; reordering floating-point additions is not silently
+canonicalized. Later stages read the completed output of the previous stage.
+
+On selected columns `(2,0)`, parameters `q_0_0_1=2`, `q_1_0_0=-1`, `bias_1=3`
+produce new column 2 = `old2 + 2*old2*old0` and new column 0 =
+`old0 - old2**2 + 3`. For rows `[1,10,4]` and `[2,20,5]`, the results are
+`[-12,10,12]` and `[-20,20,25]`. Unselected columns are unchanged.
+
+The representation is sparse: no dense cubic coefficient tensor is allocated.
+There are at most 65536 authored parameters per quadratic stage; the declared
+linear matrix/bias slots plus quadratic-term count consume the parameter budget.
+Working-array admission and nonfinite-result/RNG-rollback rules remain in force.
+Integer index spelling is canonical and duplicate parameter names fail. The
+symmetric alias `q_i_k_j` with `k > j` is rejected rather than double-counted.
+The stage itself uses no randomness. This adds explicit interactions within a
+fixed-width table, not sampled interaction hyperpriors or automatic feature
+expansion. Arbitrary nonlinear observation families remain separate requirements.
+
+[`quadratic-mix-polynomial-cpu.json`](../configs/generation/quadratic-mix-polynomial-cpu.json)
+is a paired extension of the linear example with the same source sampling and
+noise draws. It adds a product to one output and a squared term to another;
+source values and targets remain matched. Focused checks cover hand-calculated
+values, stage order, simultaneous evaluation, archive restore, invalid aliases,
+resource admission and numerical failure without RNG advancement. Saved paired
+CLI and numeric evidence are retained under ignored
+`docs/evidence/issue-30-quadratic-mix/`.

@@ -16,6 +16,7 @@ _DEFAULT = CausalLimits()
 _DEFAULTS: dict[str, dict[str, float]] = {
     "affine": {"scale": 1.0, "shift": 0.0},
     "linear-mix": {},
+    "quadratic-mix": {},
     "signed-power": {"power": 1.0},
     "signed-log1p": {},
     "tanh": {},
@@ -31,16 +32,21 @@ _DEFAULTS: dict[str, dict[str, float]] = {
 }
 
 
-def _mix_parameter(name: str, width: int) -> bool:
-    if len(name) > 12:
+def _mix_parameter(name: str, width: int, *, quadratic: bool = False) -> bool:
+    if len(name) > 16:
         return False
     parts = name.split("_")
-    if not ((parts[0] == "w" and len(parts) == 3) or (parts[0] == "bias" and len(parts) == 2)):
+    if not (
+        (parts[0] == "w" and len(parts) == 3)
+        or (parts[0] == "bias" and len(parts) == 2)
+        or (quadratic and parts[0] == "q" and len(parts) == 4)
+    ):
         return False
-    return all(
+    valid = all(
         value.isascii() and value.isdigit() and str(int(value)) == value and int(value) < width
         for value in parts[1:]
     )
+    return valid and (parts[0] != "q" or int(parts[2]) <= int(parts[3]))
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,6 +64,7 @@ class MeasurementStage:
             or any(type(c) is not int or not 0 <= c < 256 for c in self.columns)
             or len(set(self.columns)) != len(self.columns)
             or type(self.parameters) is not tuple
+            or (self.kind == "quadratic-mix" and len(self.parameters) > 65536)
             or any(
                 type(pair) is not tuple
                 or len(pair) != 2
@@ -69,8 +76,11 @@ class MeasurementStage:
             raise ValueError("invalid bounded measurement stage")
         supplied = dict(self.parameters)
         unknown = (
-            any(not _mix_parameter(name, len(self.columns)) for name in supplied)
-            if self.kind == "linear-mix"
+            any(
+                not _mix_parameter(name, len(self.columns), quadratic=self.kind == "quadratic-mix")
+                for name in supplied
+            )
+            if self.kind in ("linear-mix", "quadratic-mix")
             else bool(supplied.keys() - _DEFAULTS[self.kind].keys())
         )
         if len(supplied) != len(self.parameters) or unknown:
@@ -114,7 +124,7 @@ def _apply(
     match stage.kind:
         case "affine":
             return p["scale"] * x + p["shift"]
-        case "linear-mix":
+        case "linear-mix" | "quadratic-mix":
             width = len(stage.columns)
             matrix = np.eye(width, dtype=np.float64)
             bias = np.zeros(width, dtype=np.float64)
@@ -122,9 +132,14 @@ def _apply(
                 parts = name.split("_")
                 if parts[0] == "w":
                     matrix[int(parts[1]), int(parts[2])] = value
-                else:
+                elif parts[0] == "bias":
                     bias[int(parts[1])] = value
-            return x @ matrix.T + bias
+            output = x @ matrix.T + bias
+            for name, value in stage.parameters:
+                if name.startswith("q_"):
+                    _, i, j, k = name.split("_")
+                    output[:, int(i)] += value * x[:, int(j)] * x[:, int(k)]
+            return output
         case "signed-power":
             return np.sign(x) * np.abs(x) ** p["power"]
         case "signed-log1p":
@@ -181,7 +196,13 @@ def draw_measurements(
         raise ValueError("measurement pipeline requires bounded stages and float64 matrix")
     if any(max(stage.columns) >= inputs.shape[1] for stage in stages):
         raise ValueError("measurement column lies outside input schema")
-    matrix_sizes = [len(s.columns) ** 2 + len(s.columns) for s in stages if s.kind == "linear-mix"]
+    matrix_sizes = [
+        len(s.columns) ** 2
+        + len(s.columns)
+        + sum(name.startswith("q_") for name, _ in s.parameters)
+        for s in stages
+        if s.kind in ("linear-mix", "quadratic-mix")
+    ]
     if sum(matrix_sizes) > limits.parameters:
         raise ValueError("measurement matrix parameters exceed limits")
     if 65536 + inputs.size * 128 + max(matrix_sizes, default=0) * 16 > limits.working_bytes:
