@@ -18,6 +18,11 @@ from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot, snapshot
 from r0.modules.priors.lib.joint_function_admission import function_record_cost
 from r0.modules.priors.lib.joint_root_base import JointRootBase
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.mixed_model_tree import (
+    NumericProjectionSplit,
+    mixed_model_tree_recipe,
+    sample_mixed_split_records,
+)
 from r0.modules.priors.lib.model_leaf_tree import model_leaf_tree_recipe
 from r0.modules.priors.lib.network_recipe import NetworkRecipe
 from r0.modules.priors.lib.oblique_tree import TreeRoot
@@ -63,6 +68,8 @@ class TreeExtensionRequest:
                     "soft-pruned",
                     "categorical",
                     "categorical-pruned",
+                    "mixed",
+                    "mixed-pruned",
                 )
                 for v in self.families
             )
@@ -95,7 +102,7 @@ class TreeExtensionRequest:
         ):
             raise ValueError("tree extension root must match task feature width")
 
-        if any(f.startswith("categorical") for f in self.families) and (
+        if any(f.startswith(("categorical", "mixed")) for f in self.families) and (
             type(self.root) is not SourceRootBase
             or self.root.calibration is not None
             or not any(c.family == "categorical" for c in self.root.law.coordinates)
@@ -103,6 +110,11 @@ class TreeExtensionRequest:
             raise ValueError(
                 "categorical trees require an uncalibrated source root with categorical columns"
             )
+
+        if any(f.startswith("mixed") for f in self.families):
+            assert isinstance(self.root, SourceRootBase)
+            if not any(c.family != "categorical" for c in self.root.law.coordinates):
+                raise ValueError("mixed trees require numeric and categorical root columns")
 
     def admit(self, limits: CausalLimits) -> None:
         if type(limits) is not CausalLimits:
@@ -112,7 +124,7 @@ class TreeExtensionRequest:
         o = self.task.classes if self.task.task_type == "multiclass" else 1
         leaves = 2**self.max_depth
         parameters = f * f + leaves * (4 * (f + 2 * o) * (o + 2) + 1024)
-        if any(f.startswith("categorical") for f in self.families):
+        if any(f.startswith(("categorical", "mixed")) for f in self.families):
             assert isinstance(self.root, SourceRootBase)
             cardinality = max(len(c.probabilities) for c in self.root.law.coordinates)
             parameters += leaves * (cardinality + leaves + f)
@@ -187,8 +199,23 @@ def sample_tree_extension(
         width = request.task.features
         outputs = request.task.classes if request.task.task_type == "multiclass" else 1
         categorical = family.startswith("categorical")
+        mixed = family.startswith("mixed")
+        mixed_splits: tuple[NumericProjectionSplit | CategorySubsetSplit, ...] = ()
         splits: tuple[CategorySubsetSplit, ...] = ()
-        if categorical:
+        if mixed:
+            assert isinstance(request.root, SourceRootBase)
+            mixed_splits, mixed_thresholds = sample_mixed_split_records(
+                request.root,
+                branches,
+                request.split_density,
+                request.coefficient_scale,
+                request.threshold_bound,
+                active,
+            )
+            weights = np.zeros((branches, width))
+            thresholds = np.asarray(mixed_thresholds)
+            temperatures = np.ones(branches)
+        elif categorical:
             assert isinstance(request.root, SourceRootBase)
             eligible = tuple(
                 i for i, c in enumerate(request.root.law.coordinates) if c.family == "categorical"
@@ -252,7 +279,9 @@ def sample_tree_extension(
         else:
             nodes: list[RecursiveTreeNode] = []
             lower, upper = (
-                (0.0, 1.0) if categorical else (-request.threshold_bound, request.threshold_bound)
+                (0.0, 1.0)
+                if categorical or mixed_splits and isinstance(mixed_splits[0], CategorySubsetSplit)
+                else (-request.threshold_bound, request.threshold_bound)
             )
             for i in range(2 * leaves - 1):
                 level = levels[i]
@@ -261,7 +290,13 @@ def sample_tree_extension(
                         RecursiveTreeNode(
                             i,
                             float(thresholds[i]),
-                            (lower, upper),
+                            (
+                                (0.0, 1.0)
+                                if isinstance(mixed_splits[i], CategorySubsetSplit)
+                                else (-request.threshold_bound, request.threshold_bound)
+                            )
+                            if mixed
+                            else (lower, upper),
                             level,
                             children[i][0],
                             children[i][1],
@@ -276,7 +311,18 @@ def sample_tree_extension(
                         else (lower, upper)
                     )
                     nodes.append(RecursiveTreeNode(0, interval[0], interval, level, value=(0.0,)))
-            if categorical and branches:
+            if mixed and branches:
+                assert request.root is not None
+                recipe = mixed_model_tree_recipe(
+                    request.task,
+                    mixed_splits,
+                    RecursiveTree(tuple(nodes)),
+                    tuple(models),
+                    root=request.root,
+                    equality=request.equality,
+                    limits=limits,
+                )
+            elif categorical and branches:
                 assert request.root is not None
                 recipe = categorical_model_tree_recipe(
                     request.task,

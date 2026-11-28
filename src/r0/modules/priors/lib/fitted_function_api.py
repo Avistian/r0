@@ -76,6 +76,7 @@ from r0.modules.priors.lib.missing_observation import (
     validate_missing_observation,
 )
 from r0.modules.priors.lib.missingness import MissingnessDraw, MissingnessPlan, draw_missingness
+from r0.modules.priors.lib.mixed_model_tree import NumericProjectionSplit, mixed_model_tree_recipe
 from r0.modules.priors.lib.model_leaf_tree import model_leaf_tree_recipe
 from r0.modules.priors.lib.network_recipe import NetworkRecipe as NetworkRecipe
 from r0.modules.priors.lib.network_sampling import sample_network as sample_network
@@ -238,3 +239,6 @@ __all__ += ["measurement_stages_from_dict"]
 __all__ += ["ColumnEncoding", "EncodedObservation", "encode_observation_columns"]
 
 __all__ += ["column_encodings_from_dict"]
+
+
+__all__ += ["NumericProjectionSplit", "mixed_model_tree_recipe"]

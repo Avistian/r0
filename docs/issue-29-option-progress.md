@@ -17,6 +17,12 @@ known gaps; it is not family-level acceptance. Generator delivery now includes
 
 [Soft-tree contract and current limits](issue-29-soft-trees.md).
 The authoritative full requirements are [#29](https://github.com/Avistian/r0/issues/29).
+
+The later [mixed-tree implementation](issue-29-mixed-trees.md) adds numeric and
+category-subset predicates within one tree, including balanced/pruned per-task
+sampling, both equality rules and archived CLI generation. It supersedes the
+mixed-split implementation gap in T29-06 above; correlated and ensemble priors
+and broader combinations remain open.
 Do not infer that an unlisted paper option is complete or deferred.
 
 [Hard oblique task contract and exact equality rules](issue-29-hard-oblique-trees.md).

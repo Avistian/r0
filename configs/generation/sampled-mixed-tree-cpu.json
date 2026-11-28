@@ -1,0 +1,10 @@
+{
+  "construction": {
+    "controls_json": "{\"topology\": \"tree-extension\", \"request\": {\"task\": {\"rows\": 64, \"features\": 2, \"signal_features\": 2, \"active_features\": 2, \"context_rows\": 48, \"split\": 0, \"noise_ratio\": 0.0, \"task_type\": \"regression\", \"classes\": 0, \"separation\": 1.0, \"class_offsets\": [], \"version\": \"linear-v1\"}, \"families\": [\"mixed\", \"mixed-pruned\"], \"leaf_families\": [\"constant\", \"linear\", \"tanh\", \"sin\"], \"min_depth\": 1, \"max_depth\": 3, \"split_density\": 0.5, \"coefficient_scale\": 1.0, \"threshold_bound\": 3.0, \"temperature_bounds\": [0.05, 2.0], \"equality\": \"right\", \"root\": {\"law\": {\"coordinates\": [{\"family\": \"gaussian\", \"location\": 0.0, \"scale\": 1.0, \"probabilities\": [], \"exponent\": 2.0, \"clip\": null, \"version\": \"source-root-coordinate-v1\"}, {\"family\": \"categorical\", \"location\": 0.0, \"scale\": 1.0, \"probabilities\": [0.1, 0.2, 0.3, 0.4], \"exponent\": 2.0, \"clip\": null, \"version\": \"source-root-coordinate-v1\"}], \"version\": \"source-root-law-v1\"}, \"calibration\": null, \"version\": \"source-root-base-v1\"}, \"version\": \"r0-tree-extension-request-v1\"}}",
+    "seed": 42
+  },
+  "seed": 29,
+  "count": 3,
+  "max_seconds": 60,
+  "max_bytes": 8000000
+}
