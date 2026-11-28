@@ -40,8 +40,7 @@ acceptance or scientific replication.
 
 Remaining required work includes independent review; response
 curves; matched/fresh graph interventions and fixed-fit query lifecycles; broader
-sampled/fitted mechanism wrappers and categorical calibration policies; fit-graph
-inspection; mixed nested layouts and policies; measured resource/diversity
+sampled/fitted mechanism wrappers and categorical calibration policies; mixed nested layouts and policies; measured resource/diversity
 qualification; and local/Colab/CPU-GPU integration evidence. Calibrated output
 currently uses explicit CPU replay. Independent fit populations use the current
 finite GP cap of 32..1024 rows. These are current implementation bounds, not
@@ -74,7 +73,7 @@ Traces run through the guarded worker, retain requested row order and duplicates
 and show full source covariance, factors, locations, innovations and values.
 Matrix downloads include root-input bindings; graph traces show the downstream
 mechanisms. Failed construction preserves the active dataset. Calibrated
-fixed-fit Next, fit controls, graph edits and response/intervention controls still
+fixed-fit Next, graph edits and response/intervention controls still
 require their own implementations; unavailable actions report this explicitly.
 
 Author Chromium evidence covers six family/mechanism/target combinations, matrix
@@ -83,3 +82,74 @@ checks on the saved browser artifacts reconstruct RBF matrices, GP draws, root
 and descendant equations and classification probabilities. Evidence is ignored
 under docs/evidence/issue-28-gp-root-workbench. These are bounded author checks;
 independent review and a full check of the combined change remain required.
+
+## Guarded independent GP fitting
+
+The explorer can fit fixed target centers/scales on a separately keyed GP
+population, preserving the active query graph, its source identity and both full
+populations in the saved calibration envelope. Fit rows, seed, task identifier
+and optional fixed-location matrix are explicit controls. Typed continuous
+targets and functional regression/binary/multiclass adapters retain their
+semantics. Direct categorical scaling remains unavailable until a
+category-preserving policy is implemented. Fitting never uses the query rows.
+
+Raw construction admits the complete future original/fit/calibration metadata and
+runtimes before decoding the retained source. Known producer mismatches bind to
+the requested original, independent fit identity and geometry before any GP work;
+full canonical construction and tensor validation still follow. Transport
+requires one exact retained query identity and CPU execution. Large fit IDs use
+exact decimal-string browser transport. Failure keeps the active dataset; replay
+retains the fixed fit. Fit controls disable on already calibrated datasets so a
+second fitting action requires opening the original explicitly.
+
+Author checks cover four continuous graph families, separate fit arithmetic,
+invalid controls, coherent aggregate rejection before covariance reconstruction,
+producer metadata and guarded replay. Six Chromium workflows cover four-family
+regression plus functional binary/multiclass, invalid-fit rollback, exact IDs,
+repeated-row traces, ZIP downloads and replay. Literal checks reconstruct fit
+means/scales and query scores/probabilities from the downloaded populations.
+Evidence remains ignored under docs/evidence/issue-28-gp-calibration-workbench.
+Independent review and a full check of this child are still required. Fixed-fit
+Next, matched/fresh interventions and broader
+calibration policies remain required work.
+
+GP-root workbench controls explicitly mark causal interventions, sampled policies,
+causal-reference curves and generic task-only comparisons unavailable while their
+retained-population integration remains required. Calibrated GP-root Next is also
+unavailable until fixed-fit continuation is implemented; replay remains available.
+These capability guards prevent unsupported workflows, including after busy-state
+reset, and clear when returning to an ordinary supported dataset. Disabling them
+is an interface correction, not completion or exclusion of those requirements.
+
+## Independent fitting-population inspection
+
+The generation graph has a population selector for calibrated GP-root datasets.
+Query remains the default. Selecting the independent fitting population traces
+its own retained row indices, including rows beyond the query population size,
+with repeated indices and order preserved. Its covariance, factors, locations,
+innovations and values use the complete fitting population and identity in the
+matrix views and downloads. Returning to query restores the original population
+matrices; neither operation changes the active dataset or calibration.
+
+Public explain_gp_calibration_fit validates the entire active query envelope and
+tensors, then replays the saved fitting graph under its retained identity. Invalid
+fit row selections reject before covariance reconstruction. The guarded graph
+worker carries the population choice and output limits. Large fit identities use
+exact browser transport. Calibration statistics in both graph views have explicit
+center/scale row labels and global axes, even when the user selects exactly two
+rows; their statistics always refer to all independent fitting rows.
+
+Author checks cover all four continuous graph families, literal fitting inputs
+and aggregate statistics, repeated/out-of-query-range rows, malformed selections,
+forged active tensors, and guarded session preservation. Independent acceptance
+and the combined full check remain pending. This inspection increment does not
+implement fixed-fit query continuation or the remaining intervention/reference
+workflows.
+
+Typed continuous target views disclose when retained independent target calibration
+is applied. Their score axes and table headings identify fixed-calibrated scores;
+the notice names the independent population and all-row fitting scope, rather than
+claiming an unnormalized native target. Ordinary uncalibrated native targets keep
+the direct-target description. The same metadata lookup recognizes retained
+row-owned calibration/query/intervention envelopes when those workflows are
+integrated; this does not implement new calibration or continuation behavior.

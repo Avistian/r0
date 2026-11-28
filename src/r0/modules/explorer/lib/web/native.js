@@ -17,12 +17,14 @@ function nativeCharts(view,feature,channel) {
   else histogram("feature-hist",summary,f.name);
   if(view.classes.length) categoryHistogram("target-hist",view.classes,view.classification.observed_counts,"Native target");
   else histogram("target-hist",view.target,"Native target value");
+  const calibration=view.target_calibration, calibrated=Boolean(calibration)&&!view.classes.length;
+  const scoreLabel=calibrated ? "Fixed-calibrated target score" : view.converted ? "Converter score before category capture" : "Native equation score";
   const xLabel=summary.categories ? `${f.name} · declared category index` : f.name;
-  scatter("signal-plot",view.rows.map(r=>({...r,x:r.inputs[feature],y:r.scores[Math.min(channel,r.scores.length-1)]})),xLabel,view.converted ? "Converter score before category capture" : "Native equation score");
-  $("diagnostic-title").textContent=view.classes.length ? `Native emission: ${view.classes[channel]}` : "Direct native target";
-  $("diagnostic-note").textContent=view.classes.length ? (view.target_emission==="softmax" ? "Native softmax emission probabilities; no target adapter." : `Deterministic ${view.target_emission} emission; probabilities are one-hot indicators, not stochastic sampling.`) : "The selected variable channel is the target; no observation-noise adapter or empirical normalization.";
+  scatter("signal-plot",view.rows.map(r=>({...r,x:r.inputs[feature],y:r.scores[Math.min(channel,r.scores.length-1)]})),xLabel,scoreLabel);
+  $("diagnostic-title").textContent=view.classes.length ? `Native emission: ${view.classes[channel]}` : calibrated ? "Fixed-calibrated native target" : "Direct native target";
+  $("diagnostic-note").textContent=view.classes.length ? (view.target_emission==="softmax" ? "Native softmax emission probabilities; no target adapter." : `Deterministic ${view.target_emission} emission; probabilities are one-hot indicators, not stochastic sampling.`) : calibrated ? `The selected variable target is centered and scaled using all ${calibration.statistics.rows} rows of the retained ${calibration.population_kind}. The fixed fit is applied unchanged to query rows; query rows do not determine these statistics. No observation-noise target adapter is applied.` : "The selected variable channel is the target; no observation-noise adapter or empirical normalization.";
   scatter("diagnostic-plot",view.rows.map(r=>({...r,x:r.inputs[feature],y:r.probabilities ? r.probabilities[channel] : r.target})),xLabel,view.classes.length ? "Native emission probability" : "Native target value");
-  table("table",["Row","Split",...view.features.map(f=>`${f.name} (${f.kind})`),"Native target","Equation score"],view.rows.slice(0,64).map(r=>[r.index,r.role,...r.display_inputs,r.target_label,r.scores[Math.min(channel,r.scores.length-1)]]));
+  table("table",["Row","Split",...view.features.map(f=>`${f.name} (${f.kind})`),"Native target",scoreLabel],view.rows.slice(0,64).map(r=>[r.index,r.role,...r.display_inputs,r.target_label,r.scores[Math.min(channel,r.scores.length-1)]]));
 }
 function nativeViewControls(view) {
   const native=view.target_origin==="native-variable-v1";
@@ -31,7 +33,7 @@ function nativeViewControls(view) {
   if(view.converted) $("native-notice").textContent="Typed converter captures · categories are extracted before structural noise and node importance. Descendants use the declared numeric representation, not an implicit one-hot category. Original-input modes preserve latent state. Frozen fitting and raw construction remain in the archive.";
   $("pair-panel").hidden=native;
   $("curve").closest("article").hidden=native&&!isPopulationReference(view.recipe.recipe);
-  $("signal-title").textContent=native ? "Feature and native equation score" : "Feature and latent signal";
+  $("signal-title").textContent=native ? (view.target_calibration ? "Feature and fixed-calibrated target score" : "Feature and native equation score") : "Feature and latent signal";
   $("difficulty-label").hidden=native;
   for(const id of ["features","active","task-type","classes"]) $(id).disabled=native;
 }

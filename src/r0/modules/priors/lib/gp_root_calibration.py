@@ -1,7 +1,10 @@
 """Fixed target calibration from a separately keyed finite GP-root DAG."""
 
+from __future__ import annotations
+
 import json
 from dataclasses import asdict, dataclass, replace
+from typing import TYPE_CHECKING
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.exact_frozen_record import exact_frozen_equal
@@ -18,6 +21,9 @@ from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.targets import adapt_targets
 from r0.modules.priors.lib.training_task import TrainingTask
 from r0.modules.priors.lib.weight_geometry import Matrix
+
+if TYPE_CHECKING:
+    from r0.modules.priors.lib.gp_root_query import GPRootCalibrationQuery
 
 
 def _fit_base(original: GPRootDAGRecipe, rows: int):
@@ -148,7 +154,11 @@ def calibrate_gp_root_dag(
 
 
 def generate_calibrated_gp_root(
-    recipe: GPRootCalibration, *, seed: int, task_id: int, device: str = "cpu"
+    recipe: GPRootCalibration | GPRootCalibrationQuery,
+    *,
+    seed: int,
+    task_id: int,
+    device: str = "cpu",
 ) -> TrainingTask:
     if (
         any(type(v) is not int for v in (seed, task_id))

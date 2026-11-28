@@ -16,7 +16,14 @@ def gp_inspection(
     component: int | None,
     limits: CausalLimits | None,
 ) -> dict[str, Any] | None:
-    if raw.get("version") == "gp-root-calibration-v1":
+    if raw.get("version") == "gp-root-intervention-v1":
+        from r0.modules.priors.lib.gp_root_intervention_inspection import gp_intervention_steps
+
+        if component is not None:
+            raise ValueError("GP root intervention has no composite component")
+        return gp_intervention_steps(task, indices, add, limits=limits)
+
+    if raw.get("version") in ("gp-root-calibration-v1", "gp-root-calibration-query-v1"):
         from r0.modules.priors.lib.gp_root_calibration_inspection import calibrated_gp_root_steps
 
         if component is not None:

@@ -59,6 +59,14 @@ def causal_job(request: dict[str, Any], out: Path) -> dict[str, Any]:
                     population=request["population"],
                     limits=limits,
                 )
+            elif record["recipe"]["version"] in (
+                "gp-root-dag-v1",
+                "gp-root-calibration-v1",
+                "gp-root-calibration-query-v1",
+            ):
+                from r0.modules.generation.lib.gp_intervention import construct_gp_intervention
+
+                recipe = construct_gp_intervention(record, request, limits=limits)
             elif record["recipe"]["version"] == "recursive-population-graph-v1":
                 recipe = construct_population_graph_change(
                     record["recipe"],

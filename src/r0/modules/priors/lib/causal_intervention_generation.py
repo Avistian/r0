@@ -41,6 +41,7 @@ from r0.modules.priors.lib.native_vector_output import generate_native_vector
 from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
 from r0.modules.priors.lib.network_observation_recipe import NetworkObservationRecipe
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.root_populations import RootPopulations
 from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
 from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
 from r0.modules.priors.lib.sampled_native_vector_graph import SampledNativeVectorGraph
@@ -55,6 +56,7 @@ def generate_intervened(
     task_id: int,
     device: str = "cpu",
     execution: InterventionExecution | None = None,
+    root_populations: RootPopulations | None = None,
 ) -> TrainingTask:
     if device != "cpu":
         raise ValueError("causal intervention execution currently supports explicit CPU only")
@@ -75,15 +77,30 @@ def generate_intervened(
     if isinstance(runtime, ConvertedCausalRecipe):
         assert isinstance(execution, ConverterInterventionExecution)
         task = generate_converted(
-            runtime, seed=seed, task_id=task_id, device=device, execution=execution
+            runtime,
+            seed=seed,
+            task_id=task_id,
+            device=device,
+            execution=execution,
+            root_populations=root_populations,
         )
     elif isinstance(runtime, NativeVectorRecipe):
         task = generate_native_vector(
-            runtime, seed=seed, task_id=task_id, device=device, execution=execution
+            runtime,
+            seed=seed,
+            task_id=task_id,
+            device=device,
+            execution=execution,
+            root_populations=root_populations,
         )
     elif isinstance(runtime, NativeCausalRecipe):
         task = generate_native_causal(
-            runtime, seed=seed, task_id=task_id, device=device, execution=execution
+            runtime,
+            seed=seed,
+            task_id=task_id,
+            device=device,
+            execution=execution,
+            root_populations=root_populations,
         )
     else:
         assert isinstance(original, FunctionalCausalRecipe)
@@ -94,6 +111,7 @@ def generate_intervened(
             device=device,
             execution=execution,
             calibration_recipe=original,
+            root_populations=root_populations,
         )
     config = asdict(recipe)
     source = record_fingerprint((config, seed, task_id))
@@ -215,6 +233,10 @@ def compare_causal_pair(
         from r0.modules.priors.lib.population_graph_comparison import compare_population_graph_pair
 
         return compare_population_graph_pair(before, after, limits=limits)
+    if a["recipe"].get("version") == "gp-root-intervention-v1":
+        from r0.modules.priors.lib.gp_root_intervention_pairs import compare_gp_root_pair
+
+        return compare_gp_root_pair(before, after, limits=limits)
     if a["recipe"].get("version") == "gp-column-target-link-v1":
         from r0.modules.priors.lib.gp_link_pairs import compare_gp_link_pair
 

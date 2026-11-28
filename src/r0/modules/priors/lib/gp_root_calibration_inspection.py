@@ -13,6 +13,7 @@ from r0.modules.priors.lib.gp_column_inspection import gp_population_matrices
 from r0.modules.priors.lib.gp_root_calibration import GPRootCalibration
 from r0.modules.priors.lib.gp_root_dags import generate_gp_root_dag
 from r0.modules.priors.lib.gp_root_inspection import gp_root_steps
+from r0.modules.priors.lib.gp_root_query import GPRootCalibrationQuery
 from r0.modules.priors.lib.gp_root_task_validation import validate_gp_root_task
 from r0.modules.priors.lib.target_inspection import target_steps
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -26,7 +27,7 @@ def calibrated_gp_root_steps(
     limits: CausalLimits | None,
 ) -> dict[str, Any]:
     recipe, expected = validate_gp_root_task(task, limits=limits)
-    assert isinstance(recipe, GPRootCalibration)
+    assert isinstance(recipe, (GPRootCalibration, GPRootCalibrationQuery))
     source = recipe.original.source
     original = generate_gp_root_dag(recipe.original, seed=source.seed, task_id=source.task_id)
     ids: set[str] = set()
@@ -68,6 +69,13 @@ def calibrated_gp_root_steps(
         torch.tensor([recipe.calibration.center, recipe.calibration.scale], dtype=torch.float64),
         {
             **asdict(recipe.calibration),
+            "row_labels": ["center", "scale"],
+            "row_heading": "Statistic",
+            "column_heading": "Target score channel",
+            "axes": (
+                f"Center and scale over all {recipe.calibration.rows} independent fitting rows."
+            ),
+            "scope": "global fitting statistics, not an emitted dataset row",
             "population_id": recipe.fit.source.population_id,
             "seed": recipe.fit.source.seed,
             "task_id": recipe.fit.source.task_id,

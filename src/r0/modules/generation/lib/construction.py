@@ -215,6 +215,10 @@ class GraphConstruction:
             "prototype-root-network",
         ):
             controls = controls["source"]
+        if controls.get("topology") == "query-calibrated-gp-root":
+            return controls["source"]["original"]["base"]["task"]
+        if controls.get("topology") == "calibrate-gp-root":
+            return controls["source"]["base"]["task"]
         if controls.get("topology") == "gp-root-dag":
             return controls["base"]["task"]
         if controls.get("topology") in ("calibrate-population", "calibrated-population-query"):
@@ -266,6 +270,20 @@ class GraphConstruction:
         self, limits: priors.CausalLimits, *, episode_seed: int = 0, task_id: int = 0
     ) -> priors.Recipe:
         fields = json.loads(self.controls_json)
+        if fields.get("topology") == "query-calibrated-gp-root":
+            return priors.construct_gp_root_calibration_query(
+                {k: v for k, v in fields.items() if k != "topology"},
+                seed=episode_seed,
+                task_id=task_id,
+                limits=limits,
+            )
+        if fields.get("topology") == "calibrate-gp-root":
+            return priors.construct_gp_root_calibration(
+                {k: v for k, v in fields.items() if k != "topology"},
+                seed=episode_seed,
+                task_id=task_id,
+                limits=limits,
+            )
         if fields.get("topology") == "gp-root-dag":
             controls = {k: v for k, v in fields.items() if k != "topology"}
             return priors.construct_gp_root_dag(

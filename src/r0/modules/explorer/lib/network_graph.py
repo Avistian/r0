@@ -15,6 +15,15 @@ def inspect_graph(
     task: priors.TrainingTask, archive: str | None, output_dir: Path, data: dict[str, Any]
 ) -> dict[str, Any]:
     record = json.loads(task.recipe_json)
+    population = data.get("population", "query")
+    source = record["recipe"]
+    if source.get("version") == "gp-root-intervention-v1":
+        source = source["base"]
+    if population not in ("query", "fit") or (
+        population == "fit"
+        and source.get("version") not in ("gp-root-calibration-v1", "gp-root-calibration-query-v1")
+    ):
+        raise ValueError("fit population traces require a retained GP calibration")
     from r0.modules.explorer.lib.convolutions import contains_convolution
 
     if not contains_convolution(record["recipe"]) and record["recipe"].get("version") not in (
@@ -28,8 +37,10 @@ def inspect_graph(
         "sampled-joint-hyperprior-graph-v1",
         "sampled-hyperprior-graph-v1",
         "prototype-batch-network-realized-v1",
+        "gp-root-intervention-v1",
         "gp-root-dag-v1",
         "gp-root-calibration-v1",
+        "gp-root-calibration-query-v1",
         "gp-column-recipe-v1",
         "gp-column-target-recipe-v1",
         "gp-column-target-link-v1",
@@ -55,6 +66,7 @@ def inspect_graph(
             "task_id": record["task_id"],
             "episode_id": task.episode_id,
             "indices": data["indices"],
+            "population": population,
             "component": data.get("component"),
             "column_start": data.get("column_start", 0),
             "causal_limits": asdict(caller_limits(data)),

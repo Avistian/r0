@@ -9,6 +9,9 @@ from r0.modules.generation.lib.loading import load_group
 
 
 def network_graph(data: dict[str, Any]) -> dict[str, Any]:
+    population = data.get("population", "query")
+    if population not in ("query", "fit"):
+        raise ValueError("network trace population must be query or fit")
     maximum = data.get("max_bytes", 256 * 1024**2)
     if type(maximum) is not int or not 1 <= maximum <= 256 * 1024**2:
         raise ValueError("network trace byte cap must be an integer in 1..268435456")
@@ -35,8 +38,10 @@ def network_graph(data: dict[str, Any]) -> dict[str, Any]:
             "sampled-joint-hyperprior-graph-v1",
             "sampled-hyperprior-graph-v1",
             "prototype-batch-network-realized-v1",
+            "gp-root-intervention-v1",
             "gp-root-dag-v1",
             "gp-root-calibration-v1",
+            "gp-root-calibration-query-v1",
             "gp-column-recipe-v1",
             "gp-column-target-recipe-v1",
             "gp-column-target-link-v1",
@@ -47,7 +52,10 @@ def network_graph(data: dict[str, Any]) -> dict[str, Any]:
             "network-input-view-v2",
         ):
             raise ValueError("network trace archive identity differs")
-        graph = priors.explain_generation(
+        explain = (
+            priors.explain_gp_calibration_fit if population == "fit" else priors.explain_generation
+        )
+        graph = explain(
             task,
             data["indices"],
             component=data.get("component"),

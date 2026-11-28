@@ -12,6 +12,7 @@ from r0.modules.priors import (
     CalibratedPopulationQuery,
     CausalLimits,
     GPRootCalibration,
+    GPRootCalibrationQuery,
     GPRootDAGRecipe,
     LinearRecipe,
     Recipe,
@@ -65,9 +66,12 @@ class RunRequest:
             math.isfinite(self.max_seconds) and self.max_seconds > 0
         ):
             raise ValueError("max_seconds must be finite and positive")
-        if isinstance(self.recipe, GPRootCalibration) and self.device != "cpu":
+        if (
+            isinstance(self.recipe, (GPRootCalibration, GPRootCalibrationQuery))
+            and self.device != "cpu"
+        ):
             raise ValueError("GP calibrated runs require CPU replay")
-        if isinstance(self.recipe, (GPRootDAGRecipe, GPRootCalibration)):
+        if isinstance(self.recipe, (GPRootDAGRecipe, GPRootCalibration, GPRootCalibrationQuery)):
             _gp_root_run_identity(
                 asdict(self.recipe),
                 seed=self.seed,
@@ -94,6 +98,24 @@ class RunRequest:
         if self.construction is not None:
             if type(self.construction) is not GraphConstruction or self.sampling is not None:
                 raise ValueError("graph construction cannot also use recipe sampling")
+            controls = json.loads(self.construction.controls_json)
+            if controls.get("topology") == "query-calibrated-gp-root" and (
+                self.device != "cpu" or self.count != 1
+            ):
+                raise ValueError("GP query construction requires one population and CPU")
+            if controls.get("topology") == "calibrate-gp-root":
+                source = controls.get("source", {}).get("source", {})
+                if (
+                    self.device != "cpu"
+                    or self.count != 1
+                    or type(source.get("seed")) is not int
+                    or source["seed"] != self.seed
+                    or type(source.get("task_id")) is not int
+                    or source["task_id"] != self.start
+                ):
+                    raise ValueError(
+                        "GP fitting requires one exact retained source identity and CPU"
+                    )
             if json.loads(json.dumps(self.construction.task_record())) != json.loads(
                 json.dumps(asdict(self.recipe))
             ):
@@ -151,6 +173,28 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
 
     if request.construction is not None:
         controls = json.loads(request.construction.controls_json)
+        if controls.get("topology") == "query-calibrated-gp-root":
+            from r0.modules.priors import gp_query_construction_matches
+
+            if not gp_query_construction_matches(
+                controls,
+                record,
+                seed=request.seed,
+                task_id=task_id,
+                limits=request.causal_limits or CausalLimits(),
+            ):
+                return False
+        if controls.get("topology") == "calibrate-gp-root":
+            from r0.modules.priors import gp_calibration_construction_matches
+
+            if not gp_calibration_construction_matches(
+                controls,
+                record,
+                seed=request.seed,
+                task_id=task_id,
+                limits=request.causal_limits or CausalLimits(),
+            ):
+                return False
         if controls.get("topology") == "gp-root-dag":
             from r0.modules.priors import gp_root_construction_matches
 
@@ -170,7 +214,7 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
         GPColumnTargetRecipe,
     )
 
-    if isinstance(selected, (GPRootDAGRecipe, GPRootCalibration)):
+    if isinstance(selected, (GPRootDAGRecipe, GPRootCalibration, GPRootCalibrationQuery)):
         return (
             set(record) == {"recipe", "seed", "task_id", "execution"}
             and type(record.get("seed")) is int
@@ -295,7 +339,7 @@ def _gp_root_run_identity(
     sampling: Any,
     construction: Any,
 ) -> None:
-    if raw.get("version") == "gp-root-calibration-v1":
+    if raw.get("version") in ("gp-root-calibration-v1", "gp-root-calibration-query-v1"):
         original = raw.get("original")
         if type(original) is not dict:
             raise ValueError("GP calibration requires retained original source identity")
@@ -322,7 +366,11 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
     candidate = fields.get("recipe")
     if type(candidate) is dict:
         candidate = cast(dict[str, Any], candidate)
-        if candidate.get("version") in ("gp-root-dag-v1", "gp-root-calibration-v1"):
+        if candidate.get("version") in (
+            "gp-root-dag-v1",
+            "gp-root-calibration-v1",
+            "gp-root-calibration-query-v1",
+        ):
             _gp_root_run_identity(
                 candidate,
                 seed=fields.get("seed"),
@@ -358,9 +406,10 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
     if type(raw_recipe) is dict and raw_recipe.get("version") in (
         "gp-root-dag-v1",
         "gp-root-calibration-v1",
+        "gp-root-calibration-query-v1",
     ):
         if (
-            raw_recipe["version"] == "gp-root-calibration-v1"
+            raw_recipe["version"] in ("gp-root-calibration-v1", "gp-root-calibration-query-v1")
             and fields.get("device", "cpu") != "cpu"
         ):
             raise ValueError("GP calibrated runs require CPU replay")

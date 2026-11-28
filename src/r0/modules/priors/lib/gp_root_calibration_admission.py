@@ -1,6 +1,7 @@
 """Full future calibration envelope and both runtimes before any population replay."""
 
 from dataclasses import fields, replace
+from typing import Any
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
@@ -22,6 +23,32 @@ def admit_gp_calibration_construction(
     base: GPRootRuntime,
     limits: CausalLimits,
 ) -> None:
+    original.admit()
+    admit_gp_calibration_metadata(
+        original,
+        original_limits=original.limits,
+        original_base=original.base,
+        original_request=original.source.request,
+        bindings=original.bindings,
+        request=request,
+        base=base,
+        limits=limits,
+        fit_metadata=base,
+    )
+
+
+def admit_gp_calibration_metadata(
+    original: Any,
+    *,
+    original_limits: CausalLimits,
+    original_base: GPRootRuntime,
+    original_request: GPColumnRequest,
+    bindings: Any,
+    request: GPColumnRequest,
+    base: GPRootRuntime,
+    limits: CausalLimits,
+    fit_metadata: Any,
+) -> None:
     """Dominate the final full-envelope and original/fit-pair admission expressions.
 
     Future GP receipt shapes are exact. The only data-dependent record length is
@@ -34,8 +61,8 @@ def admit_gp_calibration_construction(
     # Strict GP envelope replay preserves declared caps; ordinary graph decoding
     # otherwise tightens them and changes the retained base record.
     for declared, ceiling in (
-        (original.base.limits, original.limits),
-        (original.limits, limits),
+        (original_base.limits, original_limits),
+        (original_limits, limits),
         (base.limits, limits),
     ):
         if any(
@@ -43,9 +70,8 @@ def admit_gp_calibration_construction(
             for field in fields(CausalLimits)
         ):
             raise ValueError("GP calibration declared graph/envelope limits exceed replay caps")
-    original.admit()
     number = MetadataCost(1, 64, 1, 0)
-    width = len(original.base.target) if isinstance(original.base, FunctionalCausalRecipe) else 1
+    width = len(original_base.target) if isinstance(original_base, FunctionalCausalRecipe) else 1
     vector = sequence_cost(number, width)
     calibration = record_cost(
         FunctionalTargetCalibration,
@@ -64,7 +90,7 @@ def admit_gp_calibration_construction(
         GPRootCalibration,
         dict(
             original=retained_cost(original, limits),
-            fit=future_gp_root_cost(request, base, original.bindings, limits),
+            fit=future_gp_root_cost(request, fit_metadata, bindings, limits),
             calibration=calibration,
             limits=retained_cost(limits, limits),
             version=retained_cost("gp-root-calibration-v1", limits),
@@ -72,15 +98,15 @@ def admit_gp_calibration_construction(
     )
     for cap in (
         limits,
-        original.limits,
-        original.source.request.limits,
-        original.base.limits,
+        original_limits,
+        original_request.limits,
+        original_base.limits,
         request.limits,
         base.limits,
     ):
         envelope.admit(cap)
-        reports = [r.admit(cap) for r in (original.source.request, request)]
-        reports += [replace(graph, limits=cap).admit() for graph in (original.base, base)]
+        reports = [r.admit(cap) for r in (original_request, request)]
+        reports += [replace(graph, limits=cap).admit() for graph in (original_base, base)]
         if (
             envelope.numbers + sum(r["parameters"] for r in reports) > cap.parameters
             or 8 * envelope.storage + 4 * sum(r["estimated_working_bytes"] for r in reports)

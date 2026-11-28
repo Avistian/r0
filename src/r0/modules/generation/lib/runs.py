@@ -30,6 +30,7 @@ from r0.modules.priors import (
     CalibratedPopulationQuery,
     CausalLimits,
     GPRootCalibration,
+    GPRootCalibrationQuery,
     GPRootDAGRecipe,
     TrainingTask,
     explain_generation,
@@ -209,10 +210,14 @@ def _run(
                         if record["recipe"].get("version") in (
                             "gp-root-dag-v1",
                             "gp-root-calibration-v1",
+                            "gp-root-calibration-query-v1",
                         ):
                             cap = request.causal_limits or (
                                 request.recipe.limits
-                                if isinstance(request.recipe, (GPRootDAGRecipe, GPRootCalibration))
+                                if isinstance(
+                                    request.recipe,
+                                    (GPRootDAGRecipe, GPRootCalibration, GPRootCalibrationQuery),
+                                )
                                 else CausalLimits()
                             )
                             validate_gp_root_task(task, limits=cap)

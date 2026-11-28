@@ -1,5 +1,21 @@
 """Public finite GP feature-column construction interface."""
 
+from r0.modules.priors.lib.gp_calibration_construction import (
+    construct_gp_root_calibration as construct_gp_root_calibration,
+)
+from r0.modules.priors.lib.gp_calibration_construction import (
+    gp_calibration_construction_matches as gp_calibration_construction_matches,
+)
+from r0.modules.priors.lib.gp_fit_inspection import (
+    explain_gp_calibration_fit as explain_gp_calibration_fit,
+)
+from r0.modules.priors.lib.gp_query_construction import (
+    construct_gp_root_calibration_query as construct_gp_root_calibration_query,
+)
+from r0.modules.priors.lib.gp_query_construction import (
+    gp_query_construction_matches as gp_query_construction_matches,
+)
+
 from .gp_column_comparison import GPColumnComparison as GPColumnComparison
 from .gp_column_comparison import compare_gp_columns as compare_gp_columns
 from .gp_column_comparison import gp_column_comparison_from_dict as gp_column_comparison_from_dict
@@ -42,6 +58,24 @@ from .gp_root_construction_matching import (
 )
 from .gp_root_dags import GPRootBinding as GPRootBinding
 from .gp_root_dags import GPRootDAGRecipe as GPRootDAGRecipe
+from .gp_root_intervention import GPRootIntervention as GPRootIntervention
+from .gp_root_intervention import intervene_gp_root_dag as intervene_gp_root_dag
+from .gp_root_intervention_construction import (
+    construct_gp_root_intervention as construct_gp_root_intervention,
+)
+from .gp_root_intervention_inspection import (
+    validate_gp_intervention_task as validate_gp_intervention_task,
+)
+from .gp_root_intervention_pairs import compare_gp_root_pair as compare_gp_root_pair
+from .gp_root_intervention_pairs import generate_gp_root_pair as generate_gp_root_pair
+from .gp_root_query import GPRootCalibrationQuery as GPRootCalibrationQuery
+from .gp_root_query import realize_gp_root_calibration_query as realize_gp_root_calibration_query
+from .gp_root_query_admission import (
+    preflight_gp_root_calibration_query as preflight_gp_root_calibration_query,
+)
+from .gp_root_query_decoding import (
+    gp_root_calibration_query_from_dict as gp_root_calibration_query_from_dict,
+)
 from .gp_root_task_validation import validate_gp_root_task as validate_gp_root_task
 from .gp_target_environment import GPColumnTargetRecipe as GPColumnTargetRecipe
 from .gp_target_environment import (
