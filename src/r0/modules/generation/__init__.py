@@ -5,6 +5,33 @@ from r0.modules.generation.lib.causal_pairs import save_causal_pair as save_caus
 from r0.modules.generation.lib.config import load_request as load_request
 from r0.modules.generation.lib.config import load_request_document as load_request_document
 from r0.modules.generation.lib.construction import GraphConstruction as GraphConstruction
+from r0.modules.generation.lib.coverage import (
+    CoverageAllocation as CoverageAllocation,
+)
+from r0.modules.generation.lib.coverage import (
+    CoveragePlan as CoveragePlan,
+)
+from r0.modules.generation.lib.coverage import (
+    CoverageShard as CoverageShard,
+)
+from r0.modules.generation.lib.coverage import (
+    CoverageStratum as CoverageStratum,
+)
+from r0.modules.generation.lib.coverage import (
+    coverage_allocations as coverage_allocations,
+)
+from r0.modules.generation.lib.coverage import (
+    coverage_plan_from_json as coverage_plan_from_json,
+)
+from r0.modules.generation.lib.coverage import (
+    coverage_shard as coverage_shard,
+)
+from r0.modules.generation.lib.coverage import (
+    planned_coverage as planned_coverage,
+)
+from r0.modules.generation.lib.coverage import (
+    run_coverage_shard as run_coverage_shard,
+)
 from r0.modules.generation.lib.groups import GroupReceipt as GroupReceipt
 from r0.modules.generation.lib.groups import save_group as save_group
 from r0.modules.generation.lib.groups import verify_group as verify_group
