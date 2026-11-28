@@ -34,10 +34,14 @@ silently rejected.
 
 The `.recipe` is immediately usable with `generate_task` and the CLI. Dataset
 archives retain its realized function and replay values independently of the
-sampler. Save `asdict(sampled)` as a construction receipt alongside those archives
-when the request and construction RNG provenance are needed; the current generic
-archive does not automatically embed this extra receipt. JSON receipt decoding
-checks metadata, declared caller limits, frozen recipe and construction replay.
+sampler. The archive also retains the construction receipt when using
+`GraphConstruction` topology
+`tree-extension` with a complete serialized `TreeExtensionRequest` under
+`request`. This path draws a fresh tree for each episode seed/task ID from a
+domain-separated PCG64 stream that also includes the construction seed. Resume
+checks bind the receipt and compiled recipe to those controls and exact integer
+identities. Direct generation of a fixed `.recipe` still needs a separate receipt
+(`asdict(sampled)`). JSON receipt decoding checks metadata, declared caller limits, frozen recipe and construction replay.
 It requires the recorded NumPy environment rather than claiming cross-version
 bit identity.
 
@@ -55,6 +59,19 @@ as well as their corrected results.
 
 This closes the initial balanced hard/soft model-tree sampling component, not the
 whole extension portfolio. Sampled categorical subsets, unbalanced extension
-profiles, model-tree ensembles, generic archive receipt integration and broader
+profiles, model-tree ensembles and broader
 joint diversity/resource coverage remain open under #29. Full current-head
 verification and the remaining #28/#30 work are separate gates.
+
+
+For fresh per-task trees with archived construction receipts:
+
+```sh
+r0 generate --config configs/generation/per-task-tree-extension-cpu.json --out /tmp/per-task-trees
+```
+
+This configuration generates three 64-row datasets, with depth sampled from one
+through two and both hard and soft families eligible. Reusing the output directory
+checks the retained construction identities before resuming. The CLI example
+completed three tasks locally; focused archive tests check receipt reopening,
+altered seeds, integer identity aliases, different task IDs and zero-work resume.

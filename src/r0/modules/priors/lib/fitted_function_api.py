@@ -71,7 +71,10 @@ from r0.modules.priors.lib.structural_network import FrozenNetworkFunction as Fr
 from r0.modules.priors.lib.structural_network import NetworkAffine as NetworkAffine
 from r0.modules.priors.lib.structural_network import NetworkBlock as NetworkBlock
 from r0.modules.priors.lib.structural_network import NetworkProjection as NetworkProjection
-from r0.modules.priors.lib.tree_extension_decoding import sampled_tree_extension_from_dict
+from r0.modules.priors.lib.tree_extension_decoding import (
+    sampled_tree_extension_from_dict,
+    tree_extension_request_from_dict,
+)
 from r0.modules.priors.lib.tree_extension_sampling import (
     SampledTreeExtension,
     TreeExtensionRequest,
@@ -189,3 +192,6 @@ __all__ += [
 __all__ += ["validate_xgboost_population_task"]
 
 __all__ += ["construct_xgboost_population", "xgboost_population_construction_matches"]
+
+
+__all__ += ["tree_extension_request_from_dict"]

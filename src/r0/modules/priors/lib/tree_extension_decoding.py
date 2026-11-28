@@ -28,20 +28,7 @@ def sampled_tree_extension_from_dict(
     declared = CausalLimits(**fitted_object(raw["limits"], CausalLimits))
     if any(getattr(declared, f.name) > getattr(limits, f.name) for f in fields(limits)):
         raise ValueError("tree receipt declared limits exceed caller limits")
-    request_data = fitted_object(raw["request"], TreeExtensionRequest)
-    task = fitted_object(request_data["task"], LinearRecipe)
-    if type(task["class_offsets"]) not in (tuple, list):
-        raise ValueError("tree receipt class offsets must be an array")
-    task["class_offsets"] = tuple(task["class_offsets"])
-    request_data["task"] = LinearRecipe(**task)
-    for key in ("families", "leaf_families", "temperature_bounds"):
-        if type(request_data[key]) not in (tuple, list):
-            raise ValueError("tree receipt request choices must be arrays")
-        request_data[key] = tuple(request_data[key])
-    if request_data["root"] is not None:
-        request_data["root"] = functional_root(request_data["root"], limits=declared)
-    request = TreeExtensionRequest(**request_data)
-    request.admit(declared)
+    request = tree_extension_request_from_dict(raw["request"], limits=declared)
     recipe = recipe_from_dict(raw["recipe"], limits=declared)
     if not isinstance(recipe, (FunctionalCausalRecipe, NetworkRecipe)):
         raise ValueError("tree extension receipt requires a compatible compiled recipe")
@@ -57,3 +44,24 @@ def sampled_tree_extension_from_dict(
     )
     result.validate_replay()
     return result
+
+
+def tree_extension_request_from_dict(
+    data: Any, *, limits: CausalLimits = _DEFAULT
+) -> TreeExtensionRequest:
+    observation_metadata_cost(data, limits)
+    request_data = fitted_object(data, TreeExtensionRequest)
+    task = fitted_object(request_data["task"], LinearRecipe)
+    if type(task["class_offsets"]) not in (tuple, list):
+        raise ValueError("tree receipt class offsets must be an array")
+    task["class_offsets"] = tuple(task["class_offsets"])
+    request_data["task"] = LinearRecipe(**task)
+    for key in ("families", "leaf_families", "temperature_bounds"):
+        if type(request_data[key]) not in (tuple, list):
+            raise ValueError("tree receipt request choices must be arrays")
+        request_data[key] = tuple(request_data[key])
+    if request_data["root"] is not None:
+        request_data["root"] = functional_root(request_data["root"], limits=limits)
+    request = TreeExtensionRequest(**request_data)
+    request.admit(limits)
+    return request

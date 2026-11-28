@@ -223,6 +223,8 @@ class GraphConstruction:
             "prototype-root-network",
         ):
             controls = controls["source"]
+        if controls.get("topology") == "tree-extension":
+            return controls["request"]["task"]
         if controls.get("topology") == "query-calibrated-gp-root":
             return controls["source"]["original"]["base"]["task"]
         if controls.get("topology") == "calibrate-gp-root":
@@ -279,6 +281,14 @@ class GraphConstruction:
         self, limits: priors.CausalLimits, *, episode_seed: int = 0, task_id: int = 0
     ) -> priors.Recipe:
         fields = json.loads(self.controls_json)
+        if fields.get("topology") == "tree-extension":
+            from r0.modules.generation.lib.tree_extension_construction import (
+                construct_tree_extension,
+            )
+
+            return construct_tree_extension(
+                self, limits=limits, seed=episode_seed, task_id=task_id
+            ).recipe
         if fields.get("topology") == "query-calibrated-gp-root":
             return priors.construct_gp_root_calibration_query(
                 {k: v for k, v in fields.items() if k != "topology"},
