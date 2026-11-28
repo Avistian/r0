@@ -59,6 +59,10 @@ def explain_generation(
         from r0.modules.priors.lib.observation_task_validation import validate_observation_task
 
         validate_observation_task(task, record, limits=limits or CausalLimits())
+    if raw.get("version") in ("sampled-hyperprior-graph-v1", "sampled-joint-hyperprior-graph-v1"):
+        from r0.modules.priors.lib.hyperprior_task_validation import validate_hyperprior_task
+
+        validate_hyperprior_task(task, record, limits=limits or CausalLimits())
     if not 1 <= len(indices) <= 16:
         raise ValueError("select 1..16 original rows")
     if any(type(i) is not int or not 0 <= i < len(task.inputs) for i in indices):
