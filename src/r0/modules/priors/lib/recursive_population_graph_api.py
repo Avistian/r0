@@ -15,6 +15,7 @@ from .calibrated_population_query import (
 from .calibrated_population_query import (
     realize_calibrated_population_query as realize_calibrated_population_query,
 )
+from .calibrated_query_admission import preflight_calibrated_query as preflight_calibrated_query
 from .population_generation_identity import (
     preflight_calibrated_generation as preflight_calibrated_generation,
 )

@@ -13,7 +13,6 @@ from r0.modules.priors.lib.recursive_population_graph_records import (
     RecursivePopulationGraph,
     realize_recursive_population_graph,
 )
-from r0.modules.priors.lib.recursive_population_records import population_identity
 from r0.modules.priors.lib.representatives import record_fingerprint
 
 ENGINES = ("PCG64", "PCG64DXSM", "Philox", "SFC64", "MT19937")
@@ -91,41 +90,16 @@ def realize_calibrated_population_query(
     engine: str | None = None,
     construction_seed: int | None = None,
 ) -> CalibratedPopulationQuery:
-    from r0.modules.priors.lib.calibrated_query_decoding import (
-        admit_query_aggregate,
-        query_source_metadata,
-    )
+    from r0.modules.priors.lib.calibrated_query_admission import preflight_calibrated_query
 
     if type(source) not in (CalibratedPopulationGraph, CalibratedPopulationQuery):
         raise ValueError("fresh calibrated query requires a retained calibrated source")
-    population_identity(seed, task_id)
+    preflight_calibrated_query(
+        source, seed=seed, task_id=task_id, engine=engine, construction_seed=construction_seed
+    )
     owned_seed = seed if construction_seed is None else construction_seed
-    population_identity(owned_seed, task_id)
-    baseline, lineage = (
-        source.lineage() if type(source) is CalibratedPopulationQuery else (source, ())
-    )
-    retained = (baseline.original, baseline.calibration_population, *(q.original for q in lineage))
-    identities: set[tuple[int, int]] = set()
-    for population in retained:
-        if type(population) is not RecursivePopulationGraph:
-            raise ValueError("calibrated query requires complete retained population identities")
-        population_identity(population.seed, population.task_id)
-        identities.add((population.seed, population.task_id))
-    if (seed, task_id) in identities:
-        raise ValueError(
-            "fresh query identity must differ from every source and calibration population"
-        )
     selected = engine if engine is not None else source.original.bindings[0].sample.initial.engine
-    if type(selected) is not str or selected not in ENGINES:
-        raise ValueError("calibrated query requires an explicit supported NumPy engine")
-    cap = source.limits
-    function_record_cost(source, cap)
-    raw = asdict(source)
-    _, _, _, _, _, reports, numbers, storage = query_source_metadata(
-        raw, limits=cap, verify_streams=False
-    )
     request = source.original.request
-    admit_query_aggregate([*reports, request.admit(limits=cap)], numbers, storage, cap)
     source.validate()
     rng = query_stream(asdict(request), seed, task_id, selected, owned_seed)
     original = realize_recursive_population_graph(request, seed=seed, task_id=task_id, rng=rng)
