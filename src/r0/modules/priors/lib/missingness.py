@@ -170,7 +170,8 @@ def draw_missingness(
             draws = np.broadcast_to(active.random((rows, 1)), (rows, count))
         elif plan.mode == "block":
             block_count = math.ceil(rows / plan.block_rows)
-            draws = np.repeat(active.random((block_count, count)), plan.block_rows, axis=0)[:rows]
+            blocks = active.random((block_count, count))
+            draws = blocks[np.arange(rows) // plan.block_rows]
         else:
             draws = active.random((rows, count))
         mask = np.zeros((rows, width), dtype=np.bool_)

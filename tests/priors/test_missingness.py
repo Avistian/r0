@@ -95,3 +95,13 @@ def test_missingness_rejection_preserves_rng() -> None:
     assert rng.bit_generator.state == before
     with pytest.raises(ValueError, match="unmasked"):
         p.MissingnessPlan("mar", (0,), drivers=(0,), coefficients=(1.0,))
+
+
+def test_block_larger_than_table_uses_one_shared_block() -> None:
+    result = p.draw_missingness(
+        p.MissingnessPlan("block", (0, 1), probability=0.5, block_rows=20000),
+        np.ones((2, 2)),
+        rng=np.random.default_rng(30),
+    )
+    expected = np.random.default_rng(30).random((1, 2)) < 0.5
+    np.testing.assert_array_equal(result.mask, np.repeat(expected, 2, axis=0))
