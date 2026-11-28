@@ -4,8 +4,15 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
-    if recipe.get("version") in ("gp-root-dag-v1", "gp-root-calibration-v1"):
-        calibrated = recipe["version"] == "gp-root-calibration-v1"
+    if recipe.get("version") in (
+        "gp-root-dag-v1",
+        "gp-root-calibration-v1",
+        "gp-root-calibration-query-v1",
+    ):
+        calibrated = recipe["version"] != "gp-root-dag-v1"
+        fitting = recipe
+        while fitting["version"] == "gp-root-calibration-query-v1":
+            fitting = fitting["source"]
         original = recipe["original"] if calibrated else recipe
         return {
             "kind": "finite-gp-root-dag",
@@ -13,7 +20,7 @@ def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
             "root_bindings": original["bindings"],
             "runtime": original["base"]["version"],
             "request": original["source"]["request"],
-            "calibration": recipe["calibration"] if calibrated else None,
+            "calibration": fitting["calibration"] if calibrated else None,
             "notice": "Finite GP columns feed the named root inputs; the causal graph "
             "defines targets. Replay preserves all original rows. Independent target "
             "calibration, when present, retains a separate fit population and never "

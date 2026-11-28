@@ -9,6 +9,12 @@ from r0.modules.priors.lib.gp_calibration_construction import (
 from r0.modules.priors.lib.gp_fit_inspection import (
     explain_gp_calibration_fit as explain_gp_calibration_fit,
 )
+from r0.modules.priors.lib.gp_query_construction import (
+    construct_gp_root_calibration_query as construct_gp_root_calibration_query,
+)
+from r0.modules.priors.lib.gp_query_construction import (
+    gp_query_construction_matches as gp_query_construction_matches,
+)
 
 from .gp_column_comparison import GPColumnComparison as GPColumnComparison
 from .gp_column_comparison import compare_gp_columns as compare_gp_columns

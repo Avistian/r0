@@ -60,7 +60,10 @@ def explain_gp_calibration_fit(
             id="fit-statistics",
             label="Fixed calibration statistics from every fitting row",
             parents=[],
-            formula="mean and population std over all independent fit raw scores",
+            formula=(
+                "mean and population std over all independent fit raw scores; "
+                "constant channels keep identity scaling (center 0, scale 1)"
+            ),
             shape=[2, len(calibration.center)],
             column_indices=list(range(start, end)),
             values=[list(calibration.center[start:end]), list(calibration.scale[start:end])],

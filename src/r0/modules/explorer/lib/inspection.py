@@ -140,7 +140,7 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         native = record["recipe"]
         view["native_construction"] = native["version"]
         native_record = record
-        if native["version"] == "gp-root-calibration-v1":
+        if native["version"] in ("gp-root-calibration-v1", "gp-root-calibration-query-v1"):
             native = native["original"]
         if native["version"] == "gp-root-dag-v1":
             native = native["base"]
@@ -224,4 +224,9 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
             "entropy": _summary(entropy),
             "maximum_probability": _summary(probabilities.max(axis=1)),
         }
+    from r0.modules.explorer.lib.target_calibration_view import target_calibration_view
+
+    calibration = target_calibration_view(record["recipe"])
+    if calibration is not None:
+        view["target_calibration"] = calibration
     return view

@@ -14,7 +14,9 @@ from r0.modules.priors.lib.gp_root_query_metadata import query_source_metadata
 _DEFAULT_LIMITS = CausalLimits()
 
 
-def gp_root_calibration_query_from_dict(data: Any, *, limits: CausalLimits = _DEFAULT_LIMITS):
+def gp_root_calibration_query_from_dict(
+    data: Any, *, limits: CausalLimits = _DEFAULT_LIMITS
+) -> GPRootCalibrationQuery:
     metadata = query_source_metadata(data, limits=limits)
     chain: list[dict[str, Any]] = []
     raw = data
