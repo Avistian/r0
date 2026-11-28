@@ -4,6 +4,17 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
+    if recipe.get("version") == "sampled-typed-topology-r0-v1":
+        return {
+            "kind": "typed-topology",
+            "request": recipe["request"],
+            "geometry": recipe["geometry"],
+            "stream_engines": [s["engine"] for s in recipe["initial"]],
+            "notice": "One retained topology feeds typed geometry and mechanisms. "
+            "Replay keeps every construction stream; Next changes only task identity. "
+            "Width and role laws remain explicit in the retained request. "
+            "This composition is an r0 extension, not a complete paper reproduction.",
+        }
     if recipe.get("version") in ("gp-root-dag-v1", "gp-root-calibration-v1"):
         calibrated = recipe["version"] == "gp-root-calibration-v1"
         original = recipe["original"] if calibrated else recipe

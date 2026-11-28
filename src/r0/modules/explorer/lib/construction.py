@@ -24,6 +24,7 @@ from r0.modules.explorer.lib.population_dag_examples import population_dag_examp
 from r0.modules.explorer.lib.prototype_root_examples import prototype_root_examples
 from r0.modules.explorer.lib.source_root_examples import source_root_examples
 from r0.modules.explorer.lib.topology_hyperprior_examples import topology_hyperprior_examples
+from r0.modules.explorer.lib.typed_topology_examples import typed_topology_examples
 from r0.modules.explorer.lib.xgboost_examples import xgboost_examples
 
 
@@ -100,6 +101,7 @@ def construction_examples() -> dict[str, Any]:
         **network_innovation_examples(),
         **converted_examples(),
         **topology_hyperprior_examples(),
+        **typed_topology_examples(),
         **{
             f"Numerical pipeline: {variant}": {
                 **geometry,
@@ -122,6 +124,10 @@ def mechanism_editor(task: priors.TrainingTask, *, limits: priors.CausalLimits) 
 
     raw = json.loads(task.recipe_json)["recipe"]
     recipe = priors.recipe_from_dict(raw, limits=limits)
+    if isinstance(recipe, priors.TypedTopologyGraph) and isinstance(
+        recipe.runtime, priors.ConvertedCausalRecipe
+    ):
+        return converted_editor(recipe.runtime, recipe.version)
     if isinstance(recipe, (priors.ConvertedCausalRecipe, priors.SampledConvertedGraph)):
         return converted_editor(
             recipe.recipe if isinstance(recipe, priors.SampledConvertedGraph) else recipe,

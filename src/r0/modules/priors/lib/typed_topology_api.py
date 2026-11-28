@@ -12,6 +12,9 @@ from r0.modules.priors.lib.fixed_parent_topology import (
 from r0.modules.priors.lib.typed_topology_decoding import (
     typed_topology_graph_from_dict as typed_topology_graph_from_dict,
 )
+from r0.modules.priors.lib.typed_topology_decoding import (
+    typed_topology_request_from_dict as typed_topology_request_from_dict,
+)
 from r0.modules.priors.lib.typed_topology_graph import (
     TypedTopologyGraph as TypedTopologyGraph,
 )
