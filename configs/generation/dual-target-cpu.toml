@@ -1,0 +1,21 @@
+# Classification view of the same regression table; fixed thresholds, no balancing.
+[recipe]
+version = "dual-target-fixed-boundaries-r0-v1"
+boundaries = [-1.0, 0.0, 1.0]
+
+[recipe.base]
+version = "linear-v1"
+rows = 128
+context_rows = 96
+features = 8
+signal_features = 8
+active_features = 4
+noise_ratio = 0.2
+
+[run]
+seed = 28
+count = 2
+group_size = 2
+max_seconds = 60
+max_bytes = 10485760
+device = "cpu"

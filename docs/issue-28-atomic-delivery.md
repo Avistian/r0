@@ -158,3 +158,14 @@ Nine bounded CPU cases have measurements; this does not establish maximal
 combinations, sustained throughput, hosted/GPU or scientific acceptance. Original
 rejections and earlier full-suite results remain historical evidence. Unlisted
 IDs remain NOT_AUDITED; no whole-issue completion percentage is inferred.
+
+## Dual-target table
+
+`G1.structure.01`: `generate_dual_targets` generates one underlying regression table
+and returns both continuous and categorical target views with identical features and
+row splits. `DualTargetRecipe` persists the classification view using explicit fixed
+thresholds, equality to the upper class, and no query fitting/rebalancing. This is a
+named r0 reconstruction; G1's exact mapping remains undisclosed. The core mapping,
+JSON recipe replay and ZIP round trip have focused checks; whole-issue acceptance and
+additional diagnostic presentation are separate. See the runnable
+`configs/generation/dual-target-cpu.toml` and README example.

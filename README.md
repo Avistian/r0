@@ -108,3 +108,29 @@ under `tests/fixtures/`; they are inputs, not generated run outputs.
 Historical issue #28 artifacts formerly under `docs/research/` are retained locally
 in ignored `docs/evidence/issue-28/legacy-research/`. See the
 [evidence retention note](docs/issue-28-evidence-retention.md) for the migration.
+
+## Paired regression and classification targets
+
+`generate_dual_targets` generates one table and exposes its original continuous
+labels alongside threshold-based class labels. Thresholds are explicit: equality
+goes to the upper class, and empty classes are allowed. No query-dependent fitting
+or balancing is performed. This is the named r0 reconstruction for the dual-target
+requirement; the peer algorithm's exact mapping is undisclosed.
+
+```python
+from pathlib import Path
+from r0.modules.priors import LinearRecipe, generate_dual_targets
+from r0.modules.generation import save_group
+
+pair = generate_dual_targets(
+    LinearRecipe(rows=128, context_rows=96),
+    boundaries=(-1.0, 0.0, 1.0), seed=28, task_id=0,
+)
+save_group(Path("/tmp/regression.zip"), [(0, pair.regression)], max_bytes=10_000_000)
+save_group(Path("/tmp/classification.zip"), [(0, pair.classification)], max_bytes=10_000_000)
+```
+
+For classification archives directly from the CLI, use
+`configs/generation/dual-target-cpu.toml` with `r0 generate`. The recipe retains the
+original regression generator, so both views remain reproducible from the same seed
+and task ID. Any supported regression generator can supply the underlying table.

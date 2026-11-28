@@ -22,6 +22,11 @@ from r0.modules.priors.lib.converted_causal_records import ConvertedCausalRecipe
 from r0.modules.priors.lib.converted_decoding import converted_recipe_from_dict
 from r0.modules.priors.lib.converted_graph_decoding import converted_graph_from_dict
 from r0.modules.priors.lib.converted_output import generate_converted
+from r0.modules.priors.lib.dual_targets import (
+    DualTargetRecipe,
+    decode_dual_target,
+    generate_dual_target,
+)
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_decoding import functional_recipe_from_dict
 from r0.modules.priors.lib.functional_causal_evaluation import generate_functional_causal
@@ -108,6 +113,7 @@ type Recipe = (
     | NetworkObservationRecipe
     | HyperpriorGraph
     | TypedTopologyGraph
+    | DualTargetRecipe
     | JointHyperpriorGraph
     | NetworkInputView
     | CausalInterventionRecipe
@@ -144,6 +150,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
     ):
         raise ValueError("prototype batch archive requires an explicit version")
     version = fields.get("version", "linear-v1")
+    if version == "dual-target-fixed-boundaries-r0-v1":
+        return decode_dual_target(fields, limits=limits)
     population = population_recipe_from_dict(fields, limits=limits)
     if population is not None:
         return population
@@ -303,6 +311,8 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
 
 def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu") -> TrainingTask:
     """Generate the selected family without substituting another mechanism."""
+    if isinstance(recipe, DualTargetRecipe):
+        return generate_dual_target(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, GPColumnTargetLink):
         return generate_gp_link(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, GPColumnTargetRecipe):

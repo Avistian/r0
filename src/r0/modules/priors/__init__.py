@@ -1,5 +1,7 @@
 """Inspectable synthetic priors."""
 
+from r0.modules.priors.lib.dual_targets import DualTargetRecipe as DualTargetRecipe
+from r0.modules.priors.lib.dual_targets import generate_dual_targets as generate_dual_targets
 from r0.modules.priors.lib.functional_reference import (
     evaluate_functional_reference as evaluate_functional_reference,
 )

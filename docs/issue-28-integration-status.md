@@ -1,10 +1,19 @@
 # Issue 28 integration status
 
-Latest complete source verification: `bdceb5a3824eac1997edc828c52d22f574dfe64d`,
-**3,778 passed, 1 skipped, 1 warning**, full `make check` with terminal exit0.
-See the [typed/convolution checkpoint](issue-28-typed-convolution-checkpoint.md)
-for its exact included/excluded scope. Later GP, typed UI, internal-DAG and
-topology work remains outside this result; #28 is incomplete.
+Latest complete source verification: `ce859899fd022517d1107232f4f14d6d27baebb1`,
+**5,214 passed, 1 skipped, 1 warning**, full `make check` with terminal exit0.
+This covers the GP integration checkpoint. Later XGBoost population/typed topology
+integration and subsequent generator changes have focused checks but are outside
+that full-suite result. A separate full check is running at immutable `1b69b35`.
+Issue #28 remains incomplete.
+
+The user moved all UI/explorer obligations from #28/#29/#30 to #126. Generator
+completion now prioritizes headless create/save/reload/replay; older UI completion
+clauses below are historical. Recent changes add a direct `r0 generate` command,
+structural topology composition and retained typed intervention policies. The
+GP policy reference helper is a foundation, not a completed sampled GP policy.
+The earlier `bdceb5a` checkpoint passed 3,778 tests and is retained in the
+[typed/convolution checkpoint](issue-28-typed-convolution-checkpoint.md).
 
 
 The accepted scope remains [the full specification](specs/0028-causal-network-generators.md),
