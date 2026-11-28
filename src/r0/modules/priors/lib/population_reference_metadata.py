@@ -6,7 +6,7 @@ from typing import Any, cast
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.population_reference_admission import admit_population_reference
-from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.representatives import encode, record_fingerprint
 
 
 def reference_array(value: Any, length: int) -> list[Any] | tuple[Any, ...]:
@@ -18,6 +18,19 @@ def reference_array(value: Any, length: int) -> list[Any] | tuple[Any, ...]:
     return result
 
 
+def _unique_source_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    source: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in source:
+            raise ValueError("population reference source contains duplicate JSON fields")
+        source[key] = value
+    return source
+
+
+def _reject_source_constant(value: str) -> None:
+    raise ValueError(f"population reference source contains nonfinite JSON constant {value}")
+
+
 def validate_reference_metadata(raw: dict[str, Any], limits: CausalLimits) -> dict[str, Any]:
     if (
         raw["version"] != "population-graph-reference-v1"
@@ -26,7 +39,13 @@ def validate_reference_metadata(raw: dict[str, Any], limits: CausalLimits) -> di
         or type(raw["source_json"]) is not str
     ):
         raise ValueError("population reference requires exact versioned semantics")
-    source = json.loads(raw["source_json"])
+    source = json.loads(
+        raw["source_json"],
+        object_pairs_hook=_unique_source_fields,
+        parse_constant=_reject_source_constant,
+    )
+    if encode(source) != raw["source_json"]:
+        raise ValueError("population reference source JSON must retain exact canonical encoding")
     if type(source) is not dict:
         raise ValueError("population reference requires an object source")
     source = cast(dict[str, Any], source)
