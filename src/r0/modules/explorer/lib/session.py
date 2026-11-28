@@ -152,7 +152,7 @@ class ExplorerSession:
 
         population = population_dag_action(self, action, data)
         if population is not None:
-            return population
+            return _identity_numbers(population, for_browser=True)
         if action == "construction_examples":
             return {"examples": construction_examples()}
         if action == "construct":

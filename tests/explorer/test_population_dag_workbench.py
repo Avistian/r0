@@ -207,3 +207,18 @@ def test_population_change_metadata_rejects_before_snapshot_restore(
             population=1,
             limits=p.CausalLimits(working_bytes=32 * 1024**2),
         )
+
+
+def test_population_controls_preserve_large_split_identity(tmp_path: Path):
+    session = ExplorerSession(tmp_path)
+    controls = next(
+        v
+        for k, v in session.request("construction_examples", {})["examples"].items()
+        if k.startswith("Population DAG: functional linear")
+    )
+    controls["request"]["base"]["task"]["split"] = str(2**55 + 11)
+    session.request(
+        "construct", {"controls": controls, "construction_seed": "17", "seed": "31", "task_id": "7"}
+    )
+    info = session.request("population_dag_controls", {})
+    assert info["controls"]["request"]["base"]["task"]["split"] == str(2**55 + 11)
