@@ -1,6 +1,6 @@
 """Admit independent fitting controls and future custody before decoding GP sources."""
 
-from dataclasses import fields, replace
+from dataclasses import asdict, fields, replace
 from typing import Any
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
@@ -111,6 +111,14 @@ def gp_calibration_construction_matches(
             return False
         validate_gp_execution(record["execution"], "gp-root-calibration-v1")
         raw = record["recipe"]
+        # Construction always retains the caller cap on both new envelopes;
+        # admitting a separately valid lower cap is not request identity binding.
+        if (
+            record["execution"]["device"] != "cpu"
+            or not gp_payload_equal(raw["limits"], asdict(limits))
+            or not gp_payload_equal(raw["fit"]["limits"], asdict(limits))
+        ):
+            return False
         if not gp_payload_equal(raw["original"], controls["source"]):
             return False
         rows, fit_seed, fit_id, locations = preflight_gp_calibration_construction(
