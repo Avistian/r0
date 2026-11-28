@@ -18,6 +18,7 @@ from r0.modules.priors.lib.sampled_xgboost_graph import (
     SampledXGBoostGraph,
     sample_parameterized_xgboost_graph,
 )
+from r0.modules.priors.lib.tabicl_tree import sample_tabicl_tree_graph
 from r0.modules.priors.lib.xgboost_parameter_decoding import sampled_xgboost_plan_from_dict
 from r0.modules.priors.lib.xgboost_parameter_sampling import (
     SampledXGBoostPlan,
@@ -26,6 +27,7 @@ from r0.modules.priors.lib.xgboost_parameter_sampling import (
 )
 
 __all__ = [
+    "sample_tabicl_tree_graph",
     "SampledXGBoostGraph",
     "sample_parameterized_xgboost_graph",
     "XGBoostParameterPrior",

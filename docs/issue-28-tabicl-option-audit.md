@@ -27,10 +27,12 @@ Other inventory groups are not closed by this table.
 | I1.code.10 | Named adaptation: explicit actual-batch construction retains and freezes each realization. A new input batch requires a new construction; replay never silently refits. |
 | I1.code.11 | Component: named `tabicl-individual` initialization, first matrix unmasked, later p capped at 0.99, corrected sqrt(1-p) scaling or explicit disabled scaling; independent raw-mask/scale checks. |
 | I1.code.12 | Component: named `tabicl-block` initialization, source block-count/geometry law and sqrt(realized keep) scaling or explicit disabled scaling; independent geometry/scale checks. |
-| I1.code.13 | Gap: a named source-default configuration with noncausal observations. Existing input-view controls and source scalar hyperpriors do not establish the complete tree architecture override. |
+| I1.code.13 | Named independent-fit adaptation: source noncausal tree geometry (1–2 hidden stages, width 3–9, extra output stage), root/final readouts and source noise placement, with actual frozen XGBoost fits and retained depth/count priors. Actual-batch refitting and full root/hyperprior reproduction are not claimed. |
 | I1.code.14 | Explicit adaptation: actual-population fitting rejects nonfinite input rows, rather than copying source NaN replacement. This preserves the accepted failure-reporting requirement. |
 
 Concrete current contracts:
+
+- [Noncausal tree configuration and explicit fit adaptation](issue-28-tabicl-tree-default.md).
 
 - [Source-weighted activation selector and pipeline composition](issue-28-tabicl-selector.md).
 
