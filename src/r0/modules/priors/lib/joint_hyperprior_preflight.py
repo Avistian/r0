@@ -74,6 +74,11 @@ def preflight_joint_hyperprior_graph(raw: dict[str, Any], request: JointGraphReq
         or runtime.limits != limits
     ):
         raise ValueError("joint graph runtime metadata differs from request")
+    from r0.modules.priors.lib.joint_hyperprior_source_contract import (
+        validate_joint_source_contract,
+    )
+
+    validate_joint_source_contract(raw, request)
     registry = joint_operation_registry_from_dict(raw["registry"], limits=limits)
     planned = complete_topology_record(raw["plan"], JointGraphPlan)
     nodes: list[JointGraphNodePlan] = []

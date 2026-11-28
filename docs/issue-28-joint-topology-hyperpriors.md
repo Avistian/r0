@@ -84,3 +84,29 @@ intervention wrappers remain required follow-ons. Existing authored-template
 support for frozen mechanisms remains available separately. This slice does not
 claim those combinations, scientific equivalence, hosted/GPU verification, or a
 full-suite result.
+
+## Source-owned registry contract repair
+
+Independent review of `6fe0a40` found that changing only the retained registry's
+operation cap from 100000 to 99999 restored all five streams before complete
+replay rejected it. The source sampler has no request-level override for this
+cap. The original REJECT packet remains unchanged in that frozen worktree.
+
+The joint-envelope preflight now binds registry and preference limits to the
+sampler's actual defaults, outer mode/reuse policies to the graph request, the
+operation root to `graph`, and nested categorical weight hyper-samplers to their
+fixed meta/strict/default-limit settings. The generic configurable registry API
+is unchanged. Validation discards no original records and performs no stream
+restore or sampling. Existing ownership, raw-chain, snapshot, realization and
+runtime checks still follow.
+
+Public regressions retain the original two registry-cap failures and six analogous
+preference-cap failures, all now rejected before restore. Other source-policy and
+operation-root checks cover the complete contract. The outside original probe
+reports zero restores for the invalid registry cap and five for its valid control.
+Sixty complete serialized recipe/task artifact hashes match frozen `6fe0a40` across
+all five engines and mode/policy combinations. The focused source-contract,
+envelope, catalog and task-semantics checks pass; separate literal arithmetic/ZIP
+and stream-rollback evidence is retained under ignored
+`docs/evidence/issue-28-joint-source-contract/`. Independent repair acceptance and
+full issue completion remain separate gates; no full suite was run here.
