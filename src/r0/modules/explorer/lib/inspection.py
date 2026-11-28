@@ -224,4 +224,9 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
             "entropy": _summary(entropy),
             "maximum_probability": _summary(probabilities.max(axis=1)),
         }
+    from r0.modules.explorer.lib.target_calibration_view import target_calibration_view
+
+    calibration = target_calibration_view(record["recipe"])
+    if calibration is not None:
+        view["target_calibration"] = calibration
     return view
