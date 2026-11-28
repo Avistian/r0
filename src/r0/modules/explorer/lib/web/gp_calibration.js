@@ -24,7 +24,7 @@ function gpCalibrationView(view){
     const next=BigInt(view.recipe.task_id)+1n;
     $("gp-fit-task").value=String(next<2n**63n?next:0n);
   }
-  $("gp-fit-notice").textContent=intervened?"This intervention retains its original target fit. Inspect the fitting rows or reopen the original source to construct another query." :calibrated
+  $("gp-fit-notice").textContent=intervened?(calibrated?"This intervention retains its original target fit. Inspect the fitting rows or reopen the original source to construct another query.":"This intervention has no independent target fit. Replay preserves its GP population and causal change. Reopen the original source to fit a calibration.") :calibrated
     ? `Fixed calibration retained from ${fit.calibration.rows} separate GP rows. Replay preserves both populations. Open the original dataset to fit another calibration. Use the generation graph population selector to inspect the independent fitting rows. Next draws an independent query and preserves this fixed fit.`
     : categorical?"Direct categorical targets require category-preserving calibration; numeric scaling is unavailable."
     : "Choose a distinct fit seed/task identity. Both populations and the complete fixed fit are retained; failure leaves the current dataset active.";
