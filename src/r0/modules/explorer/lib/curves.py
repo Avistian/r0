@@ -163,6 +163,8 @@ def inspect_network_curve_guarded(
         "functional-causal-v1",
         "functional-causal-v2",
         "xgboost-fitted-functional-causal-v1",
+        "sampled-hyperprior-graph-v1",
+        "sampled-joint-hyperprior-graph-v1",
     )
     result = run_guarded_document(
         {
@@ -225,6 +227,8 @@ def inspect_response_curve(
         "functional-causal-v1",
         "functional-causal-v2",
         "xgboost-fitted-functional-causal-v1",
+        "sampled-hyperprior-graph-v1",
+        "sampled-joint-hyperprior-graph-v1",
         "prototype-batch-network-realized-v1",
         "standalone-network-v1",
         "standalone-network-innovations-v1",

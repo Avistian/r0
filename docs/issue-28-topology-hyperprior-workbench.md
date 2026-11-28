@@ -77,3 +77,16 @@ Native/converted/parent geometry combinations, sampled intervention combinations
 independent population target calibration and remaining issue-28 breadth remain
 required follow-ons. This work does not establish complete issue-28 acceptance or
 change issue-30 selection and issue-39 row-axis boundaries.
+
+## Frozen topology causal references
+
+Authored and joint topology archives use the guarded causal-reference evaluator.
+The realized topology and mechanisms remain frozen; selected observed channels
+are clamped simultaneously at state and readout. Hidden roots stay at the chosen
+original row. Structural innovations are explicitly zero or fixed to that row.
+No new topology, mechanism fit or target calibration is sampled on the query grid.
+The downloaded reference retains complete source JSON, its SHA256, exact original
+seed/task identity and selected row. These are raw target readouts, not conditional
+means or enclosing class probabilities. Binary/multiclass target-adapter and
+probability views remain REQUIRED immediate follow-on work to this bounded raw
+reference repair; raw channels do not substitute for those views.

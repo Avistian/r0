@@ -1,7 +1,7 @@
 "use strict";
 let curve = null;
 function isNoisyNetwork() {return current?.view.recipe.recipe.version === "standalone-network-innovations-v1";}
-function isFunctionalReference() {return ["functional-causal-v1","functional-causal-v2","xgboost-fitted-functional-causal-v1"].includes(current?.view.recipe.recipe.version);}
+function isFunctionalReference() {return ["functional-causal-v1","functional-causal-v2","xgboost-fitted-functional-causal-v1","sampled-hyperprior-graph-v1","sampled-joint-hyperprior-graph-v1"].includes(current?.view.recipe.recipe.version);}
 function isGP() { return current?.view.recipe.recipe.version === "exact-gp-v1"; }
 function clearCurve() {
   curve = null;
