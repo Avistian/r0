@@ -46,6 +46,11 @@ cases rejected under the tested cap remain explicitly unqualified. See the
 
 ## Observations and network structure
 
+The [root option audit](issue-28-root-option-audit.md) reconciles 23 P1/P2/I2
+records with root emitters, calibration, prototype and joint-point paths. It
+explicitly retains P1.root.03 as an undisclosed source algorithm rather than
+equating it with a categorical law or a convenient multivariate replacement.
+
 The [P1 network option audit](issue-28-p1-network-option-audit.md) now maps
 P1.net.01–10 individually to existing implementation paths, specific numerical
 checks and remaining source-profile qualifications. It supersedes old claims
