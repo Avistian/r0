@@ -29,10 +29,10 @@ function nativeCharts(view,feature,channel) {
 function nativeViewControls(view) {
   const native=view.target_origin==="native-variable-v1";
   $("native-notice").hidden=!native;
-  if(native) $("native-notice").textContent="Native direct target · declared categorical values and vocabularies are retained. Numeric arrays encode categories by vocabulary index. Edit equations and domains below; adapter pairs and response curves are unavailable." + (["sampled-native-graph-v1","sampled-native-vector-graph-v1"].includes(view.native_construction) ? " Sampled domain construction and four RNG streams are retained. Frequency weights shift logits or reference cutpoints; they do not guarantee marginal class frequencies." : "");
+  if(native) $("native-notice").textContent="Native direct target · declared categorical values and vocabularies are retained. Numeric arrays encode categories by vocabulary index. Edit equations and domains below; adapter pairs are unavailable. Original-row GP references are available for retained GP-root graphs; other native response curves remain pending." + (["sampled-native-graph-v1","sampled-native-vector-graph-v1"].includes(view.native_construction) ? " Sampled domain construction and four RNG streams are retained. Frequency weights shift logits or reference cutpoints; they do not guarantee marginal class frequencies." : "");
   if(view.converted) $("native-notice").textContent="Typed converter captures · categories are extracted before structural noise and node importance. Descendants use the declared numeric representation, not an implicit one-hot category. Original-input modes preserve latent state. Frozen fitting and raw construction remain in the archive.";
   $("pair-panel").hidden=native;
-  $("curve").closest("article").hidden=native;
+  $("curve").closest("article").hidden=native&&!isGPRootReference();
   $("signal-title").textContent=native ? (view.target_calibration ? "Feature and fixed-calibrated target score" : "Feature and native equation score") : "Feature and latent signal";
   $("difficulty-label").hidden=native;
   for(const id of ["features","active","task-type","classes"]) $(id).disabled=native;
