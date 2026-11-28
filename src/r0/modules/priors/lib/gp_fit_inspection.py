@@ -1,6 +1,5 @@
 """Inspect retained calibration rows without fitting or replacing the active query."""
 
-import json
 from collections.abc import Sequence
 from dataclasses import asdict
 from typing import Any
@@ -9,7 +8,7 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.gp_root_calibration import GPRootCalibration
 from r0.modules.priors.lib.gp_root_calibration_decoding import preflight_gp_root_calibration
 from r0.modules.priors.lib.gp_root_dags import generate_gp_root_dag
-from r0.modules.priors.lib.gp_root_task_validation import validate_gp_root_task
+from r0.modules.priors.lib.gp_root_task_validation import gp_root_task_record, validate_gp_root_task
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -37,7 +36,7 @@ def explain_gp_calibration_fit(
         raise ValueError("fit inspection column_start must be 0..4095")
     if not 1 <= len(indices) <= 16:
         raise ValueError("select 1..16 fit population rows")
-    raw = json.loads(task.recipe_json)["recipe"]
+    raw = gp_root_task_record(task)["recipe"]
     if raw.get("version") != "gp-root-calibration-v1":
         raise ValueError("fit inspection requires a retained GP calibration")
     _, calibration = preflight_gp_root_calibration(raw, limits=limits or CausalLimits())

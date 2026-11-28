@@ -1,6 +1,7 @@
 """Validate complete retained GP-root task identity, semantics and tensors."""
 
 import json
+from typing import Any, cast
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.gp_root_calibration import GPRootCalibration, generate_calibrated_gp_root
@@ -12,6 +13,23 @@ from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
+def gp_root_task_record(task: TrainingTask) -> dict[str, Any]:
+    """Read complete outer custody without replaying either retained population."""
+    try:
+        record = json.loads(task.recipe_json)
+        if type(record) is not dict:
+            raise ValueError("malformed GP root task transport")
+        record = cast(dict[str, Any], record)
+        if (
+            set(record) != {"recipe", "seed", "task_id", "execution"}
+            or type(record["recipe"]) is not dict
+        ):
+            raise ValueError("malformed GP root task transport")
+        return record
+    except (TypeError, AttributeError, RecursionError) as exc:
+        raise ValueError("malformed GP root task transport") from exc
+
+
 def validate_gp_root_task(
     task: TrainingTask,
     *,
@@ -19,7 +37,7 @@ def validate_gp_root_task(
 ) -> tuple[GPRootDAGRecipe | GPRootCalibration, TrainingTask]:
     """Return the admitted recipe and canonical replay after complete validation."""
     try:
-        record = json.loads(task.recipe_json)
+        record = gp_root_task_record(task)
         raw = record["recipe"]
         calibrated = raw.get("version") == "gp-root-calibration-v1"
         source = raw["original"]["source"] if calibrated else raw["source"]
