@@ -31,7 +31,18 @@ class MissingnessPlan:
         if (
             self.version != "r0-missingness-plan-v1"
             or self.mode
-            not in ("mcar", "mar", "mnar-self", "mnar-target", "mnar-latent", "row", "block")
+            not in (
+                "mcar",
+                "mar",
+                "mnar-self",
+                "mnar-target",
+                "mnar-latent",
+                "row",
+                "block",
+                "column",
+                "rectangle",
+                "monotone",
+            )
             or type(self.columns) is not tuple
             or not 1 <= len(self.columns) <= 256
             or any(type(c) is not int or not 0 <= c < 256 for c in self.columns)
@@ -60,8 +71,8 @@ class MissingnessPlan:
                 )
         elif self.drivers or self.coefficients:
             raise ValueError("conditioning columns apply only to MAR")
-        if self.mode != "block" and self.block_rows != 1:
-            raise ValueError("block_rows applies only to block missingness")
+        if self.mode not in ("block", "rectangle") and self.block_rows != 1:
+            raise ValueError("block_rows applies only to block or rectangle missingness")
         logistic = self.mode in ("mar", "mnar-self", "mnar-target", "mnar-latent")
         if logistic and self.probability is not None:
             raise ValueError("logistic masks use intercept/slope, not fixed probability")
@@ -150,7 +161,7 @@ def draw_missingness(
     with raw_transactions({"missingness": rng}, None) as (streams, _):
         active = streams["missingness"]
         initial = snapshot_generator(active)
-        if plan.mode in ("mcar", "row", "block"):
+        if plan.mode in ("mcar", "row", "block", "column", "rectangle", "monotone"):
             assert plan.probability is not None
             selected = np.full((rows, count), plan.probability, dtype=np.float64)
         else:
@@ -166,12 +177,25 @@ def draw_missingness(
             if not np.isfinite(logits).all():
                 raise ValueError("missingness logits overflow; no silent clipping")
             selected = np.broadcast_to(_sigmoid(logits), (rows, count)).copy()
-        if plan.mode == "row":
+        if plan.mode == "monotone":
+            # probability is the conditional dropout hazard at each ordered
+            # column. One row uniform selects a nested missing suffix.
+            assert plan.probability is not None
+            hazard = plan.probability
+            cumulative = (
+                np.ones(count, dtype=np.float64)
+                if hazard == 1
+                else -np.expm1(np.arange(1, count + 1) * math.log1p(-hazard))
+            )
+            selected = np.broadcast_to(cumulative, (rows, count)).copy()
+        if plan.mode in ("row", "monotone"):
             draws = np.broadcast_to(active.random((rows, 1)), (rows, count))
-        elif plan.mode == "block":
+        elif plan.mode == "column":
+            draws = np.broadcast_to(active.random((1, count)), (rows, count))
+        elif plan.mode in ("block", "rectangle"):
             block_count = math.ceil(rows / plan.block_rows)
-            blocks = active.random((block_count, count))
-            draws = blocks[np.arange(rows) // plan.block_rows]
+            blocks = active.random((block_count, 1 if plan.mode == "rectangle" else count))
+            draws = np.broadcast_to(blocks[np.arange(rows) // plan.block_rows], (rows, count))
         else:
             draws = active.random((rows, count))
         mask = np.zeros((rows, width), dtype=np.bool_)

@@ -12,6 +12,9 @@ particular paper/checkpoint.
 | `mcar` | Explicit constant probability; independent uniform draw for each selected cell. |
 | `row` | Explicit constant probability; one uniform draw per row, shared by selected columns. Rows remain present, possibly entirely missing; this does not delete observations. |
 | `block` | Explicit constant probability; one draw per contiguous row block and selected column, repeated over that block. Final partial blocks are retained. Different selected columns draw independently. |
+| `column` | One uniform draw per selected column, shared over all rows: an entire column can be absent. |
+| `rectangle` | One uniform draw per contiguous row block, shared by every selected column. `block_rows` sets the block height; the last partial block is retained. |
+| `monotone` | `probability` is a conditional dropout hazard per column in the declared order. Missingness is a suffix of that order. Marginal probability at position j (one-based) is `1 - (1 - probability)**j`. One uniform draw per row selects the suffix. |
 | `mar` | `sigmoid(intercept + sum(coefficients[j] * inputs[drivers[j]]))`; independent cell draws conditional on named observed drivers. Driver columns cannot also be selected for masking in this plan. |
 | `mnar-self` | `sigmoid(intercept + slope * inputs[row, column])` per selected cell; independent cell draws. |
 | `mnar-target` | `sigmoid(intercept + slope * target[row])`; independent selected-cell draws conditional on the privileged numeric target driver. |
@@ -24,7 +27,10 @@ inside these laws. In particular, a logistic intercept is not an expected table-
 missingness percentage. Invalid/inactive control combinations are rejected.
 
 Uniforms are drawn row-major in selected-column order; row mode draws rows×1,
-and block mode draws ceil(rows/block_rows)×selected-columns. Probabilities zero
+block mode draws ceil(rows/block_rows)×selected-columns; column mode draws
+1×selected-columns; rectangle mode draws ceil(rows/block_rows)×1; monotone mode
+draws rows×1. Monotone probabilities use stable log/exponential arithmetic for
+tiny hazards and handle hazard one explicitly. Column order is never sorted. Probabilities zero
 and one still consume their declared draws. Empty/full realized masks, saturated
 probabilities and all-missing rows/columns are retained. No repair, retries or
 minimum observed-count condition is applied. Stable sigmoid evaluation avoids
@@ -48,8 +54,11 @@ is described below; ordered transformation composition remains pending. In a com
 MAR conditioning columns must remain observed; checking only one plan is not enough
 to claim that an arbitrary composition is MAR. Target-driven masks describe a
 privileged generative assumption and must not expose query labels or driver arrays
-to the learner. Categorical/tail-censoring/near-empty/latent structured families and
-other required #30 variants remain open beyond these initial modes.
+to the learner. Category-dependent and tail-censoring laws, sampled near-empty severity families,
+automatically extracted latent drivers and other required #30 variants remain open.
+Fixed high MCAR probabilities already allow almost-empty columns; whole-column
+dropout is a separate all-or-none law. These new structured modes are named r0
+extensions, not exact reconstructions of paper defaults.
 
 ## Observation tasks and privileged archives
 
@@ -116,6 +125,6 @@ generated task's numeric targets, retained only in privileged truth.
 Resume first checks the underlying source recipe and observation controls, then
 loads and replays masks/probabilities against retained source values. Existing
 specialized source validators receive the restored unmasked task. Tests exercise
-all seven modes through JSON/guarded generation, reject changed observation requests,
+all ten modes through JSON/guarded generation, reject changed observation requests,
 and verify zero-generation resume and latent-driver binding. End-to-end source
 family coverage beyond the inspected examples remains part of the broader audit.

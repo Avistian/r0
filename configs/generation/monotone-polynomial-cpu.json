@@ -1,0 +1,57 @@
+{
+  "recipe": {
+    "rows": 128,
+    "features": 8,
+    "signal_features": 8,
+    "active_features": 4,
+    "context_rows": 96,
+    "split": 0,
+    "noise_ratio": 0.5,
+    "task_type": "regression",
+    "classes": 0,
+    "separation": 1.0,
+    "class_offsets": [],
+    "version": "linear-v1"
+  },
+  "seed": 27,
+  "count": 2,
+  "max_seconds": 60,
+  "max_bytes": 10485760,
+  "start": 0,
+  "group_size": 4,
+  "device": "cpu",
+  "sampling": {
+    "family": "polynomial",
+    "profile": "broad-v1"
+  },
+  "causal_limits": null,
+  "construction": null,
+  "observation": {
+    "plan": {
+      "mode": "monotone",
+      "columns": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "probability": 0.25,
+      "drivers": [],
+      "coefficients": [],
+      "intercept": 0.0,
+      "slope": 1.0,
+      "block_rows": 1,
+      "version": "r0-missingness-plan-v1"
+    },
+    "seed": 30,
+    "latent": [],
+    "latent_provenance": null,
+    "measurements": [],
+    "encodings": [],
+    "quantiles": []
+  }
+}

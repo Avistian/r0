@@ -12,17 +12,31 @@ from r0.modules.generation.lib.requests import record_matches
 
 
 @pytest.mark.parametrize(
-    "mode", ["mcar", "mar", "mnar-self", "mnar-target", "mnar-latent", "row", "block"]
+    "mode",
+    [
+        "mcar",
+        "mar",
+        "mnar-self",
+        "mnar-target",
+        "mnar-latent",
+        "row",
+        "block",
+        "column",
+        "rectangle",
+        "monotone",
+    ],
 )
 def test_guarded_missingness_json_and_resume(mode: str, tmp_path: Path) -> None:
     task = p.LinearRecipe(rows=16, context_rows=8, features=2, signal_features=2, active_features=2)
     plan = p.MissingnessPlan(
         mode,
         (0,),
-        probability=0.4 if mode in ("mcar", "row", "block") else None,
+        probability=0.4
+        if mode in ("mcar", "row", "block", "column", "rectangle", "monotone")
+        else None,
         drivers=(1,) if mode == "mar" else (),
         coefficients=(0.5,) if mode == "mar" else (),
-        block_rows=3 if mode == "block" else 1,
+        block_rows=3 if mode in ("block", "rectangle") else 1,
     )
     observation = g.ObservationRequest(
         plan,
