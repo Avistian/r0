@@ -21,7 +21,10 @@ window.r0request = async (action, data) => {
         (assets / "index.html")
         .read_text()
         .replace("/* STYLES */", (assets / "style.css").read_text())
-        .replace("/* APPLICATION */", (assets / "app.js").read_text())
+        .replace(
+            "/* APPLICATION */",
+            (assets / "task_controls.js").read_text() + "\n" + (assets / "app.js").read_text(),
+        )
         .replace(
             "/* CURVES */",
             (assets / "curves.js").read_text()
