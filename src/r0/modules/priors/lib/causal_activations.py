@@ -7,6 +7,12 @@ from dataclasses import dataclass
 import torch
 from torch.nn import functional as F
 
+from r0.modules.priors.lib.tabicl_fourier import (
+    FOURIER_KINDS,
+    evaluate_fourier_activation,
+    validate_fourier_parameters,
+)
+
 _FIXED: dict[str, Callable[[torch.Tensor], torch.Tensor]] = {
     "identity": lambda x: x,
     "relu": torch.relu,
@@ -110,7 +116,10 @@ class CausalActivation:
         )
 
     def __post_init__(self) -> None:
-        if type(self.kind) is not str or self.kind not in _FIXED.keys() | _PARAMETERS.keys():
+        if (
+            type(self.kind) is not str
+            or self.kind not in _FIXED.keys() | _PARAMETERS.keys() | FOURIER_KINDS
+        ):
             raise ValueError("unsupported causal activation")
         if type(self.parameters) is not tuple or any(
             type(pair) is not tuple
@@ -122,6 +131,11 @@ class CausalActivation:
         ):
             raise ValueError("activation parameters must be named finite numeric pairs")
         names = [name for name, _ in self.parameters]
+        if self.kind in FOURIER_KINDS:
+            if len(set(names)) != len(names):
+                raise ValueError("duplicate Fourier parameter")
+            validate_fourier_parameters(self.kind, dict(self.parameters))
+            return
         if len(set(names)) != len(names) or not set(names) <= _COMMON | _PARAMETERS.get(
             self.kind, set()
         ):
@@ -154,7 +168,9 @@ def primitive_activation(value: torch.Tensor, activation: CausalActivation) -> t
             raise ValueError("nonfinite rescaled activation input; task was not retried")
     if activation.kind == "log" and torch.any(value <= 0):
         raise ValueError("log activation requires strictly positive inputs; use log_abs explicitly")
-    if activation.kind in ("power", "integer_power"):
+    if activation.kind in FOURIER_KINDS:
+        result = evaluate_fourier_activation(value, parameters)
+    elif activation.kind in ("power", "integer_power"):
         exponent = parameters.get("exponent", 2.0)
         if not float(exponent).is_integer() and torch.any(value < 0):
             raise ValueError(
