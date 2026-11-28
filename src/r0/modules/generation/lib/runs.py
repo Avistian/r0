@@ -24,7 +24,12 @@ from r0.modules.generation.lib.requests import (
     record_matches,
     selected_recipe,
 )
-from r0.modules.priors import CalibratedPopulationGraph, TrainingTask, explain_generation
+from r0.modules.priors import (
+    CalibratedPopulationGraph,
+    CalibratedPopulationIntervention,
+    TrainingTask,
+    explain_generation,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -197,7 +202,9 @@ def _run(
                         ):
                             raise ValueError("producer returned a different task or recipe")
                         selected = selected_recipe(request, task_id)
-                        if isinstance(selected, CalibratedPopulationGraph):
+                        if isinstance(
+                            selected, (CalibratedPopulationGraph, CalibratedPopulationIntervention)
+                        ):
                             explain_generation(
                                 task, [0], limits=request.causal_limits or selected.limits
                             )

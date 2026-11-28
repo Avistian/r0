@@ -17,7 +17,7 @@ def population_inspection_steps(
 ) -> dict[str, Any]:
     record = population_task_record(task)
     version = record["recipe"].get("version")
-    if version == "calibrated-population-graph-v1":
+    if version in ("calibrated-population-graph-v1", "calibrated-population-intervention-v1"):
         from r0.modules.priors.lib.population_calibration_inspection import (
             calibrated_population_steps,
         )

@@ -115,7 +115,9 @@ def _population_metadata(data: Any, limits: CausalLimits):
     return raw, request
 
 
-def preflight_calibrated_population(data: Any, *, limits: CausalLimits):
+def preflight_calibrated_population(
+    data: Any, *, limits: CausalLimits, validate_identity: bool = True
+):
     admit_function_metadata(data, limits)
     raw = complete_version(data, CalibratedPopulationGraph)
     declared = CausalLimits(**complete_population_record(raw["limits"], CausalLimits))
@@ -166,7 +168,8 @@ def preflight_calibrated_population(data: Any, *, limits: CausalLimits):
         raise ValueError("aggregate retained calibration replay exceeds caller limits")
     from r0.modules.priors.lib.population_calibration_identity import validate_calibration_identity
 
-    validate_calibration_identity(fit)
+    if validate_identity:
+        validate_calibration_identity(fit)
     return raw, calibration, cap
 
 

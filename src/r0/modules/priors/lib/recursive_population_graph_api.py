@@ -1,5 +1,14 @@
 """Explicit internal-DAG row-owned populations, outside the frozen-function registry."""
 
+from .calibrated_population_intervention import (
+    CalibratedPopulationIntervention as CalibratedPopulationIntervention,
+)
+from .calibrated_population_intervention import (
+    intervene_calibrated_population as intervene_calibrated_population,
+)
+from .calibrated_population_pairs import (
+    generate_calibrated_population_pair as generate_calibrated_population_pair,
+)
 from .population_target_calibration import (
     CalibratedPopulationGraph as CalibratedPopulationGraph,
 )

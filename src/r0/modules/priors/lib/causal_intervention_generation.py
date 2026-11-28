@@ -196,6 +196,12 @@ def compare_causal_pair(
     from r0.modules.priors.lib.generate import generate_task, recipe_from_dict
 
     b, a = json.loads(before.recipe_json), json.loads(after.recipe_json)
+    if a.get("recipe", {}).get("version") == "calibrated-population-intervention-v1":
+        from r0.modules.priors.lib.calibrated_population_pairs import (
+            compare_calibrated_population_pair,
+        )
+
+        return compare_calibrated_population_pair(before, after, limits=limits)
     if any(
         type(record) is dict
         and type(record.get("recipe")) is dict

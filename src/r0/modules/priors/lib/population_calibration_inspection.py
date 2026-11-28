@@ -4,8 +4,10 @@ from collections.abc import Callable, Sequence
 from dataclasses import asdict
 from typing import Any
 
+import numpy as np
 import torch
 
+from r0.modules.priors.lib.causal_intervention_execution import InterventionExecution
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
@@ -32,12 +34,45 @@ def calibrated_population_steps(
 ) -> dict[str, Any]:
     record = population_task_record(task)
     cap = limits or CausalLimits()
-    recipe = calibrated_population_from_dict(record["recipe"], limits=cap)
-    replay = generate_calibrated_population(recipe, seed=record["seed"], task_id=record["task_id"])
+    execution: InterventionExecution | None = None
+    if record["recipe"].get("version") == "calibrated-population-intervention-v1":
+        from r0.modules.priors.lib.calibrated_population_intervention_decoding import (
+            calibrated_intervention_from_dict,
+        )
+        from r0.modules.priors.lib.calibrated_population_intervention_output import (
+            generate_calibrated_intervention,
+        )
+        from r0.modules.priors.lib.recursive_population_graph_intervention import (
+            generate_population_graph_intervention,
+        )
+
+        changed = calibrated_intervention_from_dict(record["recipe"], limits=cap)
+        recipe = changed.base
+        replay = generate_calibrated_intervention(
+            changed, seed=record["seed"], task_id=record["task_id"]
+        )
+        original = generate_population_graph_intervention(
+            changed.original, seed=record["seed"], task_id=record["task_id"]
+        )
+        execution = InterventionExecution(changed.original.change)
+        role = "counterfactual raw population; baseline calibration remains fixed"
+    else:
+        recipe = calibrated_population_from_dict(record["recipe"], limits=cap)
+        replay = generate_calibrated_population(
+            recipe, seed=record["seed"], task_id=record["task_id"]
+        )
+        original = generate_recursive_population_graph(
+            recipe.original, seed=recipe.original.seed, task_id=recipe.original.task_id
+        )
+        role = "retained original population"
     validate_population_task(task, replay, record)
-    original = generate_recursive_population_graph(
-        recipe.original, seed=recipe.original.seed, task_id=recipe.original.task_id
-    )
+
+    def rng(key: str) -> np.random.Generator:
+        if execution is not None:
+            return execution.rng(
+                lambda *keys: functional_rng(record["seed"], record["task_id"], *keys), key
+            )
+        return functional_rng(record["seed"], record["task_id"], key)
 
     def original_step(
         key: str,
@@ -53,7 +88,7 @@ def calibrated_population_steps(
             [f"original-{p}" for p in parents],
             formula,
             values,
-            {**parameters, "calibration_role": "retained original population"},
+            {**parameters, "calibration_role": role},
         )
 
     population_graph_steps(original, indices, original_step, limits=cap)
@@ -94,7 +129,7 @@ def calibrated_population_steps(
             asdict(recipe.task),
             replay.scores[rows],
             indices,
-            lambda key: functional_rng(record["seed"], record["task_id"], key),
+            rng,
             add,
         )
         if not torch.equal(targets, replay.targets[rows]):
@@ -110,7 +145,7 @@ def calibrated_population_steps(
         )
     return {
         "version": "generation-graph-v1",
-        "recipe_version": recipe.version,
+        "recipe_version": record["recipe"]["version"],
         "episode_id": task.episode_id,
         "rows": rows,
         "component": None,
