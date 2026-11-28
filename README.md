@@ -109,6 +109,9 @@ Historical issue #28 artifacts formerly under `docs/research/` are retained loca
 in ignored `docs/evidence/issue-28/legacy-research/`. See the
 [evidence retention note](docs/issue-28-evidence-retention.md) for the migration.
 
+For a spatial causal graph and matching classification view, see the
+[runnable spatial examples](docs/issue-28-spatial-functions.md).
+
 ## Paired regression and classification targets
 
 `generate_dual_targets` generates one table and exposes its original continuous

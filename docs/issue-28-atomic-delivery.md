@@ -169,3 +169,12 @@ named r0 reconstruction; G1's exact mapping remains undisclosed. The core mappin
 JSON recipe replay and ZIP round trip have focused checks; whole-issue acceptance and
 additional diagnostic presentation are separate. See the runnable
 `configs/generation/dual-target-cpu.toml` and README example.
+
+## Spatial reconstruction
+
+`P3.structure.02` and `SPEC.F01.06`: the existing
+`FrozenEMFunction` implements the [r0 normalized spatial basis](issue-28-spatial-functions.md)
+with explicit centers, widths, distance exponents and output maps. Two runnable
+causal/dual-target configurations and independent saved-array calculations make
+this reconstruction concrete. The peer activation remains undisclosed; this is
+an adaptation mapping, not evidence of its exact implementation.
