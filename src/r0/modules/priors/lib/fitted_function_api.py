@@ -63,6 +63,7 @@ from r0.modules.priors.lib.network_sampling_records import (
     NetworkSamplingRequest as NetworkSamplingRequest,
 )
 from r0.modules.priors.lib.network_sampling_records import SampledNetwork as SampledNetwork
+from r0.modules.priors.lib.soft_tree import SoftTreeBranch, compile_soft_tree
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction as FrozenNetworkFunction
 from r0.modules.priors.lib.structural_network import NetworkAffine as NetworkAffine
 from r0.modules.priors.lib.structural_network import NetworkBlock as NetworkBlock
@@ -117,6 +118,8 @@ from r0.modules.priors.lib.xgboost_vector_export import (
 )
 
 __all__ = [
+    "SoftTreeBranch",
+    "compile_soft_tree",
     "XGBoostNodeFit",
     "XGBoostFittedGraph",
     "with_xgboost_fits",
