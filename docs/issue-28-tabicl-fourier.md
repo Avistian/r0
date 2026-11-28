@@ -19,7 +19,8 @@ kinds: `tabicl-paper-fourier-v1` and `tabicl-code-fourier-v1`.
 
 ```python
 activation = priors.sample_tabicl_fourier_activation(
-    rng=np.random.default_rng(28), profile="pinned-code",
+    rng=np.random.default_rng(28),
+    profile="pinned-code",
 )
 ```
 

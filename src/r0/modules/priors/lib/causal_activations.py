@@ -12,6 +12,11 @@ from r0.modules.priors.lib.tabicl_fourier import (
     evaluate_fourier_activation,
     validate_fourier_parameters,
 )
+from r0.modules.priors.lib.tabicl_random_scale import (
+    RANDOM_SCALE_KIND,
+    evaluate_random_scale,
+    validate_random_scale,
+)
 
 _FIXED: dict[str, Callable[[torch.Tensor], torch.Tensor]] = {
     "identity": lambda x: x,
@@ -91,7 +96,9 @@ class CausalActivation:
         return 0
 
     def validate_width(self, width: int) -> None:
-        """Primitive activations accept every channel width."""
+        """Validate fixed channel geometry when a source stage declares it."""
+        if self.kind == RANDOM_SCALE_KIND and dict(self.parameters)["channels"] != width:
+            raise ValueError("random scale width differs from declared channels")
 
     def boundary_diagnostic(self, value: torch.Tensor) -> dict[str, object] | None:
         return None
@@ -116,10 +123,11 @@ class CausalActivation:
         )
 
     def __post_init__(self) -> None:
-        if (
-            type(self.kind) is not str
-            or self.kind not in _FIXED.keys() | _PARAMETERS.keys() | FOURIER_KINDS
-        ):
+        if type(
+            self.kind
+        ) is not str or self.kind not in _FIXED.keys() | _PARAMETERS.keys() | FOURIER_KINDS | {
+            RANDOM_SCALE_KIND
+        }:
             raise ValueError("unsupported causal activation")
         if type(self.parameters) is not tuple or any(
             type(pair) is not tuple
@@ -131,6 +139,11 @@ class CausalActivation:
         ):
             raise ValueError("activation parameters must be named finite numeric pairs")
         names = [name for name, _ in self.parameters]
+        if self.kind == RANDOM_SCALE_KIND:
+            if len(set(names)) != len(names):
+                raise ValueError("duplicate random scale parameter")
+            validate_random_scale(dict(self.parameters))
+            return
         if self.kind in FOURIER_KINDS:
             if len(set(names)) != len(names):
                 raise ValueError("duplicate Fourier parameter")
@@ -168,7 +181,9 @@ def primitive_activation(value: torch.Tensor, activation: CausalActivation) -> t
             raise ValueError("nonfinite rescaled activation input; task was not retried")
     if activation.kind == "log" and torch.any(value <= 0):
         raise ValueError("log activation requires strictly positive inputs; use log_abs explicitly")
-    if activation.kind in FOURIER_KINDS:
+    if activation.kind == RANDOM_SCALE_KIND:
+        result = evaluate_random_scale(value, parameters)
+    elif activation.kind in FOURIER_KINDS:
         result = evaluate_fourier_activation(value, parameters)
     elif activation.kind in ("power", "integer_power"):
         exponent = parameters.get("exponent", 2.0)

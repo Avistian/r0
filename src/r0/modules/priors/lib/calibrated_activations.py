@@ -16,6 +16,10 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 
 _EPSILON = 1e-4
 _DEFAULT_LIMITS = CausalLimits()
+STANDARDIZATION_CONVENTIONS = {
+    "independent-standardization-v1": (0, _EPSILON),
+    "independent-tabicl-standardization-v1": (1, 1e-6),
+}
 
 
 def _finite(value: torch.Tensor) -> torch.Tensor:
@@ -125,7 +129,9 @@ class CalibratedActivation(CausalActivation):
         return _center_scale(transformed, self.output_mean, self.output_inverse_std)
 
 
-def _statistics(value: torch.Tensor) -> tuple[tuple[float, ...], tuple[float, ...]]:
+def _statistics(
+    value: torch.Tensor, *, correction: int = 0, epsilon: float = _EPSILON
+) -> tuple[tuple[float, ...], tuple[float, ...]]:
     _finite(value)
     # Subtract a represented sample value before scaling so a large common
     # offset cannot quantize away a small but representable channel spread.
@@ -139,14 +145,14 @@ def _statistics(value: torch.Tensor) -> tuple[tuple[float, ...], tuple[float, ..
     divisor = torch.where(magnitude == 0, torch.ones_like(magnitude), magnitude)
     scaled = offset / divisor
     mean = _finite(reference + scaled.mean(dim=0) * divisor)
-    std = _finite(scaled.std(dim=0, correction=0) * divisor)
-    inverse = _finite(1 / (std + _EPSILON))
+    std = _finite(scaled.std(dim=0, correction=correction) * divisor)
+    inverse = _finite(1 / (std + epsilon))
     return tuple(float(v) for v in mean), tuple(float(v) for v in inverse)
 
 
 @dataclass(frozen=True, slots=True)
 class CalibratedStandardization(CausalActivation):
-    """One frozen population mean/std stage; epsilon 1e-4 is outside the square root."""
+    """Frozen channel statistics with versioned population or TabICL conventions."""
 
     kind: str = "standardize"
     mean: tuple[float, ...] = ()
@@ -159,8 +165,12 @@ class CalibratedStandardization(CausalActivation):
     def __post_init__(self) -> None:
         if self.kind != "standardize" or self.parameters != ():
             raise ValueError("standalone standardization has no primitive shape parameters")
-        if self.calibration_version != "independent-standardization-v1":
+        if (
+            type(self.calibration_version) is not str
+            or self.calibration_version not in STANDARDIZATION_CONVENTIONS
+        ):
             raise ValueError("unsupported standalone standardization version")
+        correction, epsilon = STANDARDIZATION_CONVENTIONS[self.calibration_version]
         if not self.mean or any(
             type(values) is not tuple
             or len(values) != len(self.mean)
@@ -168,10 +178,13 @@ class CalibratedStandardization(CausalActivation):
             for values in (self.mean, self.inverse_std)
         ):
             raise ValueError("standardization constants must be finite aligned channel tuples")
-        if any(not 0 < value <= 1 / _EPSILON for value in self.inverse_std):
-            raise ValueError("standardization inverse scales must be in (0,10000]")
-        if type(self.calibration_rows) is not int or not 1 <= self.calibration_rows < 2**63:
-            raise ValueError("standardization requires a positive calibration row count")
+        if any(not 0 < value <= 1 / epsilon for value in self.inverse_std):
+            raise ValueError("standardization inverse scales exceed the version's epsilon bound")
+        if (
+            type(self.calibration_rows) is not int
+            or not 1 + correction <= self.calibration_rows < 2**63
+        ):
+            raise ValueError("standardization requires enough calibration rows for its convention")
         if (
             type(self.calibration_id) is not str
             or not self.calibration_id
@@ -203,9 +216,24 @@ def calibrate_standardization(
     calibration: NDArray[np.float64],
     *,
     calibration_id: str,
+    profile: str = "population",
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> CalibratedStandardization:
     """Fit a caller-owned independent sample once; evaluation never refits constants."""
+    if profile not in ("population", "tabicl"):
+        raise ValueError("standardization profile must be population or tabicl")
+    version = (
+        "independent-tabicl-standardization-v1"
+        if profile == "tabicl"
+        else "independent-standardization-v1"
+    )
+    correction, epsilon = STANDARDIZATION_CONVENTIONS[version]
+    if (
+        type(calibration) is np.ndarray
+        and calibration.ndim == 2
+        and calibration.shape[0] <= correction
+    ):
+        raise ValueError("TabICL sample standardization requires at least two calibration rows")
     width = calibration.shape[1] if type(calibration) is np.ndarray and calibration.ndim == 2 else 0
     value, digest = calibration_sample(
         calibration,
@@ -214,13 +242,14 @@ def calibrate_standardization(
         parameters=2 * width + 1,
         working_channels_per_feature=10,
     )
-    mean, inverse = _statistics(value)
+    mean, inverse = _statistics(value, correction=correction, epsilon=epsilon)
     return CalibratedStandardization(
         mean=mean,
         inverse_std=inverse,
         calibration_rows=value.shape[0],
         calibration_id=calibration_id,
         calibration_digest=digest,
+        calibration_version=version,
     )
 
 
@@ -351,7 +380,10 @@ def _fit_source_activation(
 def activation_from_dict(data: dict[str, Any]) -> CausalActivation:
     fields = dict(data)
     fields["parameters"] = tuple(tuple(p) for p in fields.get("parameters", ()))
-    if fields.get("calibration_version") == "independent-standardization-v1":
+    if fields.get("calibration_version") in (
+        "independent-standardization-v1",
+        "independent-tabicl-standardization-v1",
+    ):
         for key in ("mean", "inverse_std"):
             fields[key] = tuple(fields.get(key, ()))
         return CalibratedStandardization(**fields)

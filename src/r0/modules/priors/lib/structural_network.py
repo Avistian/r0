@@ -42,6 +42,8 @@ class NetworkAffine:
                 "network affine requires finite aligned bias/mask and explicit activation"
             )
 
+        self.activation.validate_width(width if self.placement == "before" else height)
+
     @property
     def input_width(self) -> int:
         return len(self.matrix[0])

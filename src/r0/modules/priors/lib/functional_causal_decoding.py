@@ -62,6 +62,7 @@ def _activation(value: Any) -> CausalActivation:
     kinds: dict[str, type[CausalActivation]] = {
         "independent-standard-activation-v1": CalibratedActivation,
         "independent-standardization-v1": CalibratedStandardization,
+        "independent-tabicl-standardization-v1": CalibratedStandardization,
         "independent-transform-v1": CalibratedTransform,
     }
     version = raw.get("calibration_version")

@@ -8,9 +8,9 @@ Other inventory groups are not closed by this table.
 | ID | Current disposition |
 | --- | --- |
 | I1.function.01 | Component: paper-exponent finite sine sum, raw parameters, network/pipeline generation, ZIP replay and independent numerical oracle. Source standardization composition remains a gap. |
-| I1.function.02 | Gap: exact source-profile standardization and independent calibration adaptation. Generic standardization exists but uses different variance/epsilon conventions. |
-| I1.function.03 | Gap: connect the source lognormal rescaling law to the complete activation profile. Generic numerical scales are not evidence of this law. |
-| I1.function.04 | Gap: connect the Gaussian shift law to that profile, retaining the sampled shift. |
+| I1.function.02 | Component: versioned sample-standard-deviation plus 1e-6 convention with independent frozen calibration, JSON/ZIP replay and numerical oracle. Complete selector integration remains open. |
+| I1.function.03 | Component: retained exp(2a) scale with standard Gaussian a; independent draw oracle across five engines. Complete source selector integration remains open. |
+| I1.function.04 | Component: retained standard Gaussian b in exp(2a)*(x+b), composed with standardization and Fourier in archived pipelines. Complete source selector integration remains open. |
 | I1.function.05 | Component: homogeneous activation preferences. Gap: source selector must share the activation type while sampling each layer's random function parameters separately. |
 | I1.function.06 | Component: independent activation preferences. Gap: complete source selector integration. |
 | I1.function.07 | Components: actual XGBoost vector fitting, retained depth/count sampling, independent fitted graph archives; actual-parent population fitting is a separate lifecycle. These do not establish the full source architecture/default prior. |
@@ -18,8 +18,8 @@ Other inventory groups are not closed by this table.
 | I1.code.01 | Component: pinned-code exponent law as a separate finite sine activation. Standardization/profile composition remains a gap. |
 | I1.code.02 | Component: sine with configurable scale/phase and log-uniform parameter laws. Gap: source random-frequency factory with its standardization lifecycle. |
 | I1.code.03 | Component: `heaviside_positive`, including equality at zero; existing primitive tests. |
-| I1.code.04 | Gap: complete shared shift/scale source profile. |
-| I1.code.05 | Gap: complete per-channel shift/scale source profile. |
+| I1.code.04 | Component: frozen shared Gaussian shift/lognormal scale factory. Complete source selector remains open. |
+| I1.code.05 | Component: frozen per-channel Gaussian shift/lognormal scale factory. Complete source selector remains open. |
 | I1.code.06 | Component: actual sklearn DT regressor, random splitter, retained synthetic fits and frozen inference. See fitted-tree contracts. |
 | I1.code.07 | Component: actual ExtraTrees regressor and retained synthetic fitting. |
 | I1.code.08 | Component: actual random-forest regressor and retained synthetic fitting. |
@@ -31,6 +31,8 @@ Other inventory groups are not closed by this table.
 | I1.code.14 | Explicit adaptation: actual-population fitting rejects nonfinite input rows, rather than copying source NaN replacement. This preserves the accepted failure-reporting requirement. |
 
 Concrete current contracts:
+
+- [Standardization and shared/per-channel random scaling](issue-28-tabicl-standardization.md).
 
 - [Corrected mask profiles and retained legacy identity](issue-28-tabicl-mask-profiles.md).
 - [Fourier activation implementation and limitations](issue-28-tabicl-fourier.md).
