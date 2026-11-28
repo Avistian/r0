@@ -10,7 +10,8 @@ def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
             "population_id": recipe["population"]["population_id"],
             "mode": recipe["change"]["mode"],
             "source": construction_details(recipe["base"]),
-            "notice": "Retained GP intervention with its complete original source and fixed fit. "
+            "notice": "Retained GP intervention with its complete original source. "
+            "Any original independent target fit remains unchanged. "
             "Replay preserves this comparison side. Open the original source for another change.",
         }
     if recipe.get("version") in (
