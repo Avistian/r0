@@ -35,6 +35,7 @@ def network_graph(data: dict[str, Any]) -> dict[str, Any]:
             "prototype-batch-network-realized-v1",
             "gp-root-dag-v1",
             "gp-root-calibration-v1",
+            "gp-root-calibration-query-v1",
             "gp-column-recipe-v1",
             "gp-column-target-recipe-v1",
             "gp-column-target-link-v1",

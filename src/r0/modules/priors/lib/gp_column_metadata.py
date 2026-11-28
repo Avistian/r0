@@ -2,6 +2,8 @@
 
 from typing import Any
 
+import numpy as np
+
 from r0.modules.priors.lib.activation_sampling import finite_number
 from r0.modules.priors.lib.gp_column_decoding import gp_fields, gp_payload_equal
 from r0.modules.priors.lib.gp_column_draw import GPColumnDraw
@@ -52,6 +54,18 @@ def gp_draw_metadata(data: Any, request: GPColumnRequest) -> None:
 
     draw = gp_fields(data, GPColumnDraw)
     gp_matrix_metadata(draw["locations"], request.rows, request.dimension)
+    expected_locations = (
+        request.locations
+        if request.location_family == "fixed-r0"
+        else tuple((float(value),) for value in np.linspace(-1, 1, request.rows))
+        if request.location_family == "grid-r0"
+        else None
+    )
+    if expected_locations is not None and any(
+        tuple(row) != expected
+        for row, expected in zip(draw["locations"], expected_locations, strict=True)
+    ):
+        raise ValueError("GP retained locations differ from declared fixed/grid coordinates")
     for key in ("innovations", "values"):
         gp_matrix_metadata(draw[key], request.rows, request.columns)
     gp_sequence(draw["kernels"], len(request.kernels))

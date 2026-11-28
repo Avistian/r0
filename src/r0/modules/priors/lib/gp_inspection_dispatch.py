@@ -16,7 +16,7 @@ def gp_inspection(
     component: int | None,
     limits: CausalLimits | None,
 ) -> dict[str, Any] | None:
-    if raw.get("version") == "gp-root-calibration-v1":
+    if raw.get("version") in ("gp-root-calibration-v1", "gp-root-calibration-query-v1"):
         from r0.modules.priors.lib.gp_root_calibration_inspection import calibrated_gp_root_steps
 
         if component is not None:

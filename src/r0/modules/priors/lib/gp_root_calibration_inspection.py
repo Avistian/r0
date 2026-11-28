@@ -13,6 +13,7 @@ from r0.modules.priors.lib.gp_column_inspection import gp_population_matrices
 from r0.modules.priors.lib.gp_root_calibration import GPRootCalibration
 from r0.modules.priors.lib.gp_root_dags import generate_gp_root_dag
 from r0.modules.priors.lib.gp_root_inspection import gp_root_steps
+from r0.modules.priors.lib.gp_root_query import GPRootCalibrationQuery
 from r0.modules.priors.lib.gp_root_task_validation import validate_gp_root_task
 from r0.modules.priors.lib.target_inspection import target_steps
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -26,7 +27,7 @@ def calibrated_gp_root_steps(
     limits: CausalLimits | None,
 ) -> dict[str, Any]:
     recipe, expected = validate_gp_root_task(task, limits=limits)
-    assert isinstance(recipe, GPRootCalibration)
+    assert isinstance(recipe, (GPRootCalibration, GPRootCalibrationQuery))
     source = recipe.original.source
     original = generate_gp_root_dag(recipe.original, seed=source.seed, task_id=source.task_id)
     ids: set[str] = set()

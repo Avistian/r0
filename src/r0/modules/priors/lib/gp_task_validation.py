@@ -19,10 +19,15 @@ def validate_gp_execution(execution: object, version: str) -> None:
         != {"implementation", "device", "python", "numpy", "torch", "cpu_threads", "cuda", "gpu"}
         or execution.get("implementation") != version
         or execution.get("device") not in ("cpu", "cuda")
-        or any(type(execution[k]) is not str for k in ("python", "numpy", "torch"))
+        or any(
+            type(execution[k]) is not str or not execution[k] for k in ("python", "numpy", "torch")
+        )
         or type(execution["cpu_threads"]) is not int
-        or execution["cpu_threads"] < 1
-        or any(execution[k] is not None and type(execution[k]) is not str for k in ("cuda", "gpu"))
+        or not 1 <= execution["cpu_threads"] < 2**63
+        or any(
+            execution[k] is not None and (type(execution[k]) is not str or not execution[k])
+            for k in ("cuda", "gpu")
+        )
     ):
         raise ValueError("GP execution metadata schema differs")
 

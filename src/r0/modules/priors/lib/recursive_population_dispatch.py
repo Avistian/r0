@@ -2,6 +2,7 @@
 
 from r0.modules.priors.lib.gp_root_calibration import GPRootCalibration, generate_calibrated_gp_root
 from r0.modules.priors.lib.gp_root_dags import GPRootDAGRecipe, generate_gp_root_dag
+from r0.modules.priors.lib.gp_root_query import GPRootCalibrationQuery
 from r0.modules.priors.lib.population_recipe_decoding import (
     population_recipe_from_dict as population_recipe_from_dict,
 )
@@ -14,7 +15,8 @@ from r0.modules.priors.lib.recursive_population_records import RecursivePopulati
 from r0.modules.priors.lib.training_task import TrainingTask
 
 type PopulationRecipe = (
-    GPRootCalibration
+    GPRootCalibrationQuery
+    | GPRootCalibration
     | GPRootDAGRecipe
     | RecursivePopulationRecipe
     | RecursivePopulationIntervention
@@ -23,6 +25,7 @@ type PopulationRecipe = (
 )
 
 POPULATION_RECIPE_TYPES = (
+    GPRootCalibrationQuery,
     GPRootCalibration,
     GPRootDAGRecipe,
     RecursivePopulationRecipe,
@@ -39,7 +42,7 @@ def generate_population_recipe(
     task_id: int,
     device: str,
 ) -> TrainingTask:
-    if isinstance(recipe, GPRootCalibration):
+    if isinstance(recipe, (GPRootCalibration, GPRootCalibrationQuery)):
         return generate_calibrated_gp_root(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, GPRootDAGRecipe):
         return generate_gp_root_dag(recipe, seed=seed, task_id=task_id, device=device)

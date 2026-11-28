@@ -8,6 +8,8 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.gp_root_calibration import GPRootCalibration
 from r0.modules.priors.lib.gp_root_calibration_decoding import preflight_gp_root_calibration
 from r0.modules.priors.lib.gp_root_dags import generate_gp_root_dag
+from r0.modules.priors.lib.gp_root_query import GPRootCalibrationQuery
+from r0.modules.priors.lib.gp_root_query_metadata import query_source_metadata
 from r0.modules.priors.lib.gp_root_task_validation import gp_root_task_record, validate_gp_root_task
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -37,13 +39,17 @@ def explain_gp_calibration_fit(
     if not 1 <= len(indices) <= 16:
         raise ValueError("select 1..16 fit population rows")
     raw = gp_root_task_record(task)["recipe"]
+    if raw.get("version") == "gp-root-calibration-query-v1":
+        query_source_metadata(raw, limits=limits or CausalLimits())
+        while raw["version"] == "gp-root-calibration-query-v1":
+            raw = raw["source"]
     if raw.get("version") != "gp-root-calibration-v1":
         raise ValueError("fit inspection requires a retained GP calibration")
     _, calibration = preflight_gp_root_calibration(raw, limits=limits or CausalLimits())
     if any(type(i) is not int or not 0 <= i < calibration.rows for i in indices):
         raise ValueError("invalid fit population row index")
     recipe, _ = validate_gp_root_task(task, limits=limits)
-    assert isinstance(recipe, GPRootCalibration)
+    assert isinstance(recipe, (GPRootCalibration, GPRootCalibrationQuery))
     source = recipe.fit.source
     fitting = generate_gp_root_dag(recipe.fit, seed=source.seed, task_id=source.task_id)
     graph = explain_generation(fitting, indices, column_start=column_start, limits=limits)

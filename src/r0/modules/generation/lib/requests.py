@@ -9,6 +9,7 @@ from r0.modules.generation.lib.construction import GraphConstruction
 from r0.modules.priors import (
     CausalLimits,
     GPRootCalibration,
+    GPRootCalibrationQuery,
     GPRootDAGRecipe,
     LinearRecipe,
     Recipe,
@@ -61,9 +62,12 @@ class RunRequest:
             math.isfinite(self.max_seconds) and self.max_seconds > 0
         ):
             raise ValueError("max_seconds must be finite and positive")
-        if isinstance(self.recipe, GPRootCalibration) and self.device != "cpu":
+        if (
+            isinstance(self.recipe, (GPRootCalibration, GPRootCalibrationQuery))
+            and self.device != "cpu"
+        ):
             raise ValueError("GP calibrated runs require CPU replay")
-        if isinstance(self.recipe, (GPRootDAGRecipe, GPRootCalibration)):
+        if isinstance(self.recipe, (GPRootDAGRecipe, GPRootCalibration, GPRootCalibrationQuery)):
             _gp_root_run_identity(
                 asdict(self.recipe),
                 seed=self.seed,
@@ -176,7 +180,7 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
         GPColumnTargetRecipe,
     )
 
-    if isinstance(selected, (GPRootDAGRecipe, GPRootCalibration)):
+    if isinstance(selected, (GPRootDAGRecipe, GPRootCalibration, GPRootCalibrationQuery)):
         return (
             set(record) == {"recipe", "seed", "task_id", "execution"}
             and type(record.get("seed")) is int
@@ -301,7 +305,7 @@ def _gp_root_run_identity(
     sampling: Any,
     construction: Any,
 ) -> None:
-    if raw.get("version") == "gp-root-calibration-v1":
+    if raw.get("version") in ("gp-root-calibration-v1", "gp-root-calibration-query-v1"):
         original = raw.get("original")
         if type(original) is not dict:
             raise ValueError("GP calibration requires retained original source identity")
@@ -328,7 +332,11 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
     candidate = fields.get("recipe")
     if type(candidate) is dict:
         candidate = cast(dict[str, Any], candidate)
-        if candidate.get("version") in ("gp-root-dag-v1", "gp-root-calibration-v1"):
+        if candidate.get("version") in (
+            "gp-root-dag-v1",
+            "gp-root-calibration-v1",
+            "gp-root-calibration-query-v1",
+        ):
             _gp_root_run_identity(
                 candidate,
                 seed=fields.get("seed"),
@@ -353,9 +361,10 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
     if type(raw_recipe) is dict and raw_recipe.get("version") in (
         "gp-root-dag-v1",
         "gp-root-calibration-v1",
+        "gp-root-calibration-query-v1",
     ):
         if (
-            raw_recipe["version"] == "gp-root-calibration-v1"
+            raw_recipe["version"] in ("gp-root-calibration-v1", "gp-root-calibration-query-v1")
             and fields.get("device", "cpu") != "cpu"
         ):
             raise ValueError("GP calibrated runs require CPU replay")
