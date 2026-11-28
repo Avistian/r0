@@ -1,5 +1,10 @@
 """Public frozen-function exports."""
 
+from r0.modules.priors.lib.categorical_model_tree import (
+    CategorySubsetSplit,
+    categorical_model_tree_recipe,
+    sample_category_subset_splits,
+)
 from r0.modules.priors.lib.category_subset import category_subset_activation
 from r0.modules.priors.lib.fitted_graph import (
     FittedFunctionalCausalRecipe as FittedFunctionalCausalRecipe,
@@ -195,3 +200,5 @@ __all__ += ["construct_xgboost_population", "xgboost_population_construction_mat
 
 
 __all__ += ["tree_extension_request_from_dict"]
+
+__all__ += ["CategorySubsetSplit", "categorical_model_tree_recipe", "sample_category_subset_splits"]
