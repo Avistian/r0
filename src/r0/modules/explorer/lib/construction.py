@@ -19,6 +19,7 @@ from r0.modules.explorer.lib.network_hyperprior_examples import network_hyperpri
 from r0.modules.explorer.lib.network_innovation_examples import network_innovation_examples
 from r0.modules.explorer.lib.networks import network_editor, network_examples
 from r0.modules.explorer.lib.observation_examples import observation_examples
+from r0.modules.explorer.lib.population_dag_examples import population_dag_examples
 from r0.modules.explorer.lib.prototype_root_examples import prototype_root_examples
 from r0.modules.explorer.lib.source_root_examples import source_root_examples
 from r0.modules.explorer.lib.xgboost_examples import xgboost_examples
@@ -86,6 +87,7 @@ def construction_examples() -> dict[str, Any]:
         **fitted_examples(),
         **xgboost_examples(),
         **convolution_examples(),
+        **population_dag_examples(),
         **network_examples(),
         **observation_examples(),
         **source_root_examples(),
@@ -288,6 +290,8 @@ def guarded_archive_version(version: object) -> bool:
     return frozen_archive_version(version) or version in (
         "gp-column-recipe-v1",
         "gp-column-target-recipe-v1",
+        "recursive-population-graph-v1",
+        "recursive-population-graph-intervention-v1",
         "prototype-batch-network-request-v1",
         "prototype-batch-network-realized-v1",
     )

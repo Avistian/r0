@@ -18,6 +18,8 @@ def inspect_graph(
     from r0.modules.explorer.lib.convolutions import contains_convolution
 
     if not contains_convolution(record["recipe"]) and record["recipe"].get("version") not in (
+        "recursive-population-graph-v1",
+        "recursive-population-graph-intervention-v1",
         "sampled-intervention-policy-v1",
         "sampled-typed-intervention-policy-v1",
         "prototype-batch-network-realized-v1",

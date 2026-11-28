@@ -207,6 +207,8 @@ class GraphConstruction:
             "prototype-root-network",
         ):
             controls = controls["source"]
+        if controls.get("topology") == "recursive-population-dag":
+            return controls["request"]["base"]["task"]
         if controls.get("topology") == "sampled-converted":
             request = priors.converted_request_from_dict(
                 controls["request"],
@@ -243,6 +245,18 @@ class GraphConstruction:
         self, limits: priors.CausalLimits, *, episode_seed: int = 0, task_id: int = 0
     ) -> priors.Recipe:
         fields = json.loads(self.controls_json)
+        if fields.get("topology") == "recursive-population-dag":
+            from r0.modules.generation.lib.population_dag_construction import (
+                construct_population_dag,
+            )
+
+            return construct_population_dag(
+                fields,
+                construction_seed=self.seed,
+                seed=episode_seed,
+                task_id=task_id,
+                limits=limits,
+            )
         if fields.get("topology") == "sampled-population-fitted":
             from r0.modules.generation.lib.sampled_population_construction import (
                 construct_sampled_population,
