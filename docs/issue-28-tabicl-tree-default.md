@@ -3,7 +3,7 @@
 `sample_tabicl_tree_graph` builds a sampled XGBoost graph with the pinned
 noncausal architecture. It samples one or two hidden stages uniformly, one shared
 hidden width from 3 through 9 uniformly, and adds an output tree stage. Original
-Gaussian roots are the observed features; final-stage channels are the target.
+Gaussian roots are the default observed features; final-stage channels are the target.
 The first tree stage has no structural noise. Later stages use standard deviation
 0.01 by default, configurable with `noise_std`. With `pre_sample_noise_std=True`,
 channel scales are frozen absolute Gaussian draws. Depth and estimator counts
@@ -50,3 +50,42 @@ Focused checks exercise both hidden-depth outcomes, fixed and sampled noise,
 root/final readout selection, actual fitting, JSON/ZIP replay, repeated-row
 traces, admission rejection and all-stream rollback after backend failure.
 Full-suite acceptance of this newer helper remains pending.
+
+## Authored root extensions
+
+The optional `root` argument accepts the existing joint, coordinate-law,
+sampled-coordinate-law and frozen-prototype root records. Width must match the
+task's features. Uniform-box and uniform-ball roots, mixed coordinate laws,
+independently calibrated sampled roots and prototype mixtures therefore compose
+with the same source-shaped architecture. This is configurable r0 breadth, not
+an assertion that the complete upstream root-selection mixture is reproduced.
+
+Root selection does not consume any architecture or fit stream. Fitting continues
+to use independent Gaussian input/target tables; changing emitted roots does not
+refit on the changed input distribution. A root can consequently produce inputs
+outside a tree's fitting range and constant or weak outputs remain valid. Existing
+root admission, calibration provenance and replay limits apply unchanged.
+Source categorical coordinate values remain numerical graph inputs here; this
+helper does not declare native categorical feature schemas. Use typed observation
+encodings or the native graph path when categorical schema semantics are needed.
+
+For example, pass this root to the helper in the example above:
+
+```python
+root = priors.SourceRootBase(
+    priors.SourceRootLaw(
+        (
+            priors.SourceRootCoordinate("unit_uniform"),
+            priors.SourceRootCoordinate("categorical", probabilities=(0.2, 0.8)),
+        )
+    )
+)
+```
+
+The realized graph can be serialized in a `generation.RunRequest` and consumed by
+`r0 generate`. Focused checks cover five root cases, unchanged fit records,
+JSON/archive replay, repeated-row tracing and rejection without stream consumption.
+A retained CLI example generated two datasets with uniform and binary-coded root
+coordinates. Logs and the request-construction script are gitignored under
+`docs/evidence/issue-28-tabicl-roots/`. An initial test used 16 fit rows, below the
+existing 32-row minimum; that failed fixture and the corrected run remain retained.
