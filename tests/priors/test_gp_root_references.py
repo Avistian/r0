@@ -178,3 +178,11 @@ def test_reference_controls_reject_before_source_replay(case: str, monkeypatch: 
         ValueError, match="GP|reference|limit|budget|rows|metadata|number|bytes|sizes"
     ):
         p.gp_root_reference_from_source(raw, **kwargs)
+
+
+@pytest.mark.parametrize("invalid", [None, {}, 1, True])
+def test_reference_decoder_requires_typed_caller_limits(invalid: object):
+    from typing import Any, cast
+
+    with pytest.raises(ValueError, match="limits"):
+        p.gp_root_reference_from_dict({}, limits=cast(Any, invalid))

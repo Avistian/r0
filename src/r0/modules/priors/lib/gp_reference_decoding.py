@@ -27,6 +27,8 @@ def _object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 def gp_root_reference_from_dict(
     data: object, *, limits: CausalLimits = _DEFAULT_LIMITS
 ) -> GPRootReference:
+    if type(limits) is not CausalLimits:
+        raise ValueError("GP reference requires explicit caller limits")
     retained_cost(data, limits)
     raw = gp_fields(data, GPRootReference)
     if type(raw["source_json"]) is not str:
