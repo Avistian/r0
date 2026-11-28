@@ -56,7 +56,39 @@ with existing fitting checks, 32 tests pass. Raw evidence, including the initial
 missing-API failure and repaired ledger-transaction failure, is ignored under
 `docs/evidence/issue-28-xgboost-parameter-laws/`.
 
-Automatic graph construction and task archives retaining these parameter samples
-alongside their fitted mechanisms remain unfinished. This is a sampler component,
-not completion of `I1.function.07`, a full source prior, or current-head full-suite
-acceptance. Independent review and the complete repository check remain separate.
+## Generated graph archives
+
+`sample_parameterized_xgboost_graph(skeleton, node_priors, parameter_rng=...,
+input_rng=..., target_rng=..., backend_rng=...)` constructs an authored functional
+DAG with sampled independent XGBoost fits. `node_priors` is an ordered tuple of
+`(node_index, XGBoostParameterPrior)` pairs; selected nodes must retain their input
+and output dimensions and have no pre-fitted numerical pipeline. Root and internal
+mechanisms are supported. Multiple fits retain the shared parameter-stream chain.
+
+The result is a `SampledXGBoostGraph`, version
+`sampled-xgboost-functional-causal-v1`. Its archive binds every parameter sample to
+the exact fitted plan and retains the raw parameter draws, fit draws, native model
+and exported function. Ordinary `generate_task`, JSON decoding, task-group
+save/reload, the generation CLI and numerical traces preserve this record. Replay
+uses frozen functions without importing the fitting backend. Explicit root-stage
+interventions retain the original parameter samples and fits. Construction failures
+roll back all four caller RNG streams.
+
+The graph admits aggregate parameter/fit storage and replay workspace, including
+metadata and worst-prior fitting estimates. The latter is conservative even when
+replay does not refit. Exact admitted-memory-boundary reconstruction and rejection
+one byte below that boundary are checked before nested RNG restoration.
+
+Five integration checks cover generated task ZIP/replay, large task IDs, repeated-row
+traces, memory boundaries, aggregate two-fit preflight, parameter-stream chains,
+backend failure rollback, backend-free replay and a root intervention. Combined with
+existing fit-graph and parameter checks, 21 tests pass. An actual CLI run also created
+two persisted datasets from the complete sampled graph JSON. Evidence is ignored
+under `docs/evidence/issue-28-sampled-xgboost-graph/`; its first trace-dispatch failure
+is retained alongside the repair.
+
+This integration uses independent synthetic fitting. Existing support/batch/ancestor
+XGBoost population lifecycles remain separately implemented; automatic sampled-plan
+composition with those population workflows is not claimed here. The entire source
+prior and all option-level evidence are not closed by this component. Independent
+review and current-head full verification remain separate.

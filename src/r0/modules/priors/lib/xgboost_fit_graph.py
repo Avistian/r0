@@ -32,7 +32,10 @@ class XGBoostFittedGraph(FunctionalCausalRecipe):
 
     def __post_init__(self) -> None:
         if (
-            self.version != "xgboost-fitted-functional-causal-v1"
+            self.version
+            not in ("xgboost-fitted-functional-causal-v1", "sampled-xgboost-functional-causal-v1")
+            or self.version == "sampled-xgboost-functional-causal-v1"
+            and not getattr(self, "parameter_samples", ())
             or type(self.fits) is not tuple
             or not self.fits
             or any(type(f) is not XGBoostNodeFit for f in self.fits)

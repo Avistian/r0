@@ -48,7 +48,7 @@ def raw_fit_reservation(value: Any, limits: CausalLimits, node_count: int) -> Ca
         replay += plan.admit(limits, raw_limits) + 12 * len(model)
     if indices != sorted(set(indices)):
         raise ValueError("XGBoost fits must be ordered and unique")
-    numbers, storage = _raw_cost(raw_fits)
+    numbers, storage = xgboost_raw_record_cost(raw_fits)
     return reserve_fit_workspace(limits, numbers, storage, replay)
 
 
@@ -59,7 +59,7 @@ def _complete(value: Any, kind: type[Any]) -> dict[str, Any]:
     return record
 
 
-def _raw_cost(value: Any) -> tuple[int, int]:
+def xgboost_raw_record_cost(value: Any) -> tuple[int, int]:
     if type(value) in (int, float, bool):
         return 1, 64
     if type(value) is str:
@@ -70,12 +70,12 @@ def _raw_cost(value: Any) -> tuple[int, int]:
     if type(value) is dict:
         mapping = cast(dict[str, Any], value)
         for key, item in mapping.items():
-            n, s = _raw_cost(item)
+            n, s = xgboost_raw_record_cost(item)
             numbers += n
             storage += s + len(key.encode("utf-8"))
     elif type(value) in (list, tuple):
         for item in cast(list[Any] | tuple[Any, ...], value):
-            n, s = _raw_cost(item)
+            n, s = xgboost_raw_record_cost(item)
             numbers += n
             storage += s
     else:

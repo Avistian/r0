@@ -10,8 +10,8 @@ been reproduced. Unlisted options remain NOT_AUDITED.
 
 Draft PR #125 now includes generator checkpoint `79bb57a`, including the CLI and
 recent typed-parent, structural topology, policy, dual-target and runnable example
-work. The latest completed full `make check` remains exact source `ce859899`:
-5,214 passed, one skipped, one warning. That result excludes subsequent changes;
+work. The latest completed full `make check` remains exact source `1b69b350`:
+5,517 passed, one skipped, one warning. That result excludes subsequent changes;
 current-head full verification and independent review of newer deltas are pending.
 Earlier checkpoint descriptions below remain historical component evidence.
 

@@ -32,11 +32,7 @@ def sampled_xgboost_plan_from_dict(
     admit_function_metadata(data, limits)
     try:
         fields = _complete(data, SampledXGBoostPlan)
-        prior = _complete(fields["prior"], XGBoostParameterPrior)
-        prior["base"] = XGBoostFitPlan(**_complete(prior["base"], XGBoostFitPlan))
-        prior["raw_limits"] = RawDrawLimits(**_complete(prior["raw_limits"], RawDrawLimits))
-        fields["prior"] = XGBoostParameterPrior(**prior)
-        fields["prior"].admit(limits)
+        fields["prior"] = xgboost_parameter_prior_from_dict(fields["prior"], limits=limits)
         fields["plan"] = XGBoostFitPlan(**_complete(fields["plan"], XGBoostFitPlan))
         for key in ("initial_rng", "final_rng"):
             fields[key] = GeneratorSnapshot(**_complete(fields[key], GeneratorSnapshot))
@@ -49,3 +45,15 @@ def sampled_xgboost_plan_from_dict(
         return result
     except (KeyError, TypeError, AttributeError, IndexError, OverflowError, RecursionError) as exc:
         raise ValueError("malformed XGBoost parameter archive") from exc
+
+
+def xgboost_parameter_prior_from_dict(
+    data: Any, *, limits: CausalLimits = _DEFAULT
+) -> XGBoostParameterPrior:
+    admit_function_metadata(data, limits)
+    prior = _complete(data, XGBoostParameterPrior)
+    prior["base"] = XGBoostFitPlan(**_complete(prior["base"], XGBoostFitPlan))
+    prior["raw_limits"] = RawDrawLimits(**_complete(prior["raw_limits"], RawDrawLimits))
+    result = XGBoostParameterPrior(**prior)
+    result.admit(limits)
+    return result

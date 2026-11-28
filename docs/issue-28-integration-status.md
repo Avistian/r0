@@ -1,10 +1,13 @@
 # Issue 28 integration status
 
-Latest complete source verification: `ce859899fd022517d1107232f4f14d6d27baebb1`,
-**5,214 passed, 1 skipped, 1 warning**, full `make check` with terminal exit0.
-This covers the GP integration checkpoint. Later XGBoost population/typed topology
-integration and subsequent generator changes have focused checks but are outside
-that full-suite result. A separate full check is running at immutable `1b69b35`.
+Latest complete source verification: `1b69b350a19aaf1b830323a8c8de6c98e6bff9ad`,
+**5,517 passed, 1 skipped, 1 warning**, full `make check` with terminal exit 0
+and 3,926.96 pytest seconds. The retained receipt and exited runner processes were
+verified. This includes the GP/XGBoost population integration and initial typed
+parent-topology checkpoint. Later CLI, structural topology, policy, dual-target
+and sampled-XGBoost changes have scoped checks but are outside that full-suite
+result. Current-head full verification remains pending. Earlier `ce859899` passed
+5,214 tests and remains historical evidence.
 Issue #28 remains incomplete.
 
 The user moved all UI/explorer obligations from #28/#29/#30 to #126. Generator

@@ -206,6 +206,7 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
         "functional-causal-v2",
         "fitted-functional-causal-v1",
         "xgboost-fitted-functional-causal-v1",
+        "sampled-xgboost-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
         "population-fitted-functional-causal-v1",
         "sampled-population-fitted-functional-causal-v1",
