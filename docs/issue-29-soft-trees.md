@@ -34,8 +34,9 @@ Independent NumPy calculations verify oblique gating, linear/tanh leaves and dee
 vector-valued path products. Other checks cover temperature/boundary behavior,
 invalid topology and limits, serialized equations and a generated standalone
 archive with repeated-row numerical traces. This does not close T29-06: categorical
-subset splits, exact hard oblique routing, sampled extension portfolios and full
-composition/diversity coverage still require an explicit disposition.
+subset splits, sampled extension portfolios and full composition/diversity coverage
+remain open. [Exact hard oblique routing](issue-29-hard-oblique-trees.md) now has
+a separate implementation with explicit equality rules.
 
 Run the saved two-feature example with:
 
