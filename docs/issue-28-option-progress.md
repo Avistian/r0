@@ -6,11 +6,43 @@ and requirements remain in scope. These are component-level mappings, not claims
 that a paper prior, its hyperparameter distribution or its trained checkpoint has
 been reproduced. Unlisted options remain NOT_AUDITED.
 
-The latest published source checkpoint is `3e7e17d` (publication `bddeb73`), with
-3,516 passing tests and one skip. Later combined candidate `f9a1093` has focused
-and independent evidence only. Predecessor `6c0cd82` passed full `make check` with 3,600 tests and one skip;
-that source excludes typed policies, the convolution workbench and row-population
-integration. See the [generator-family checkpoint](issue-28-generator-families-checkpoint.md). Do not transfer a predecessor's acceptance to a later source.
+## Current delivery status (2026-11-28)
+
+Draft PR #125 now includes generator checkpoint `79bb57a`, including the CLI and
+recent typed-parent, structural topology, policy, dual-target and runnable example
+work. The latest completed full `make check` remains exact source `ce859899`:
+5,214 passed, one skipped, one warning. That result excludes subsequent changes;
+current-head full verification and independent review of newer deltas are pending.
+Earlier checkpoint descriptions below remain historical component evidence.
+
+Several old backlog statements are superseded by implemented paths:
+
+| Previously listed gap | Current implementation and limit |
+| --- | --- |
+| Finite GP features inside DAGs | `GPRootDAGRecipe` / `generate_gp_root_dag`; retained finite populations, calibration/query envelopes and explicit interventions. See [GP populations](issue-28-gp-column-populations.md). Advanced automatic population policies remain #126. |
+| Row-owned recursive mechanisms inside DAGs | `RecursivePopulationGraphRequest` / `realize_recursive_population_graph`; four authored graph families and retained comparisons. See [population DAGs](issue-28-recursive-population-dags.md) for lifecycle restrictions and historical repairs. |
+| XGBoost ancestor/support/batch lifecycles | `fit_xgboost_population_graph` implements independent-ancestor, support-only and batch-reference fits; [actual-population contract](issue-28-xgboost-population.md). This is not every source/backend parameter option. |
+| Typed topology and parent composition | `TypedParentTopologyRequest` supports four families, explicit/redirection topology and Cauchy/attachment/motif source composition; [contract](issue-28-typed-parent-topology.md). |
+| Direct dataset creation without the explorer | `r0 generate --config REQUEST --out DIRECTORY` uses the guarded generation runner and persisted task groups; see the README. |
+| Dual targets, spatial and high-frequency mappings | [Explicit component mappings and runnable examples](issue-28-atomic-delivery.md#dual-target-table); source-specific undisclosed algorithms are not claimed as reproduced. |
+
+All UI/explorer delivery and the explicitly listed advanced compositions have moved
+to [#126](https://github.com/Avistian/r0/issues/126) under the
+[scope amendment](specs/0028-causal-network-generators.md#scope-amendment-generators-first-2026-11-28).
+Older UI, browser, interactive-Colab and automatic-policy backlog statements below
+must be read with that amendment. Required core source algorithms, numerical
+inspection and explicit intervention semantics remain in #28.
+
+The full option-by-option audit is still incomplete. The finite inventory contains
+406 `REQUIRED_28` entries, 140 specification anchors, and separately classified
+shared/interface/outside/undisclosed entries. These are tracking records, not 546
+unique algorithms. Neither the presence of a module nor a passing example proves
+all options in a broad group. Remaining work includes reconciling each in-scope
+entry with actual behavior/evidence, reviewing newer deltas, current-head full
+checks, and outstanding diversity/environment qualifications. Resource measurements
+now include bounded 100-class cases for all four representations; the larger typed
+cases rejected under the tested cap remain explicitly unqualified. See the
+[resource report](issue-28-network-resource-measurements.md).
 
 ## Observations and network structure
 
