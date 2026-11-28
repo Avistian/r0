@@ -1,5 +1,7 @@
 "use strict";
 function isCalibratedPopulation(recipe){return ["calibrated-population-graph-v1","calibrated-population-query-v1"].includes(recipe?.version);}
+function isRetainedCalibratedPair(recipe){return recipe?.version==="calibrated-population-intervention-v1";}
+function isCalibratedArchive(recipe){return isCalibratedPopulation(recipe)||isRetainedCalibratedPair(recipe);}
 function isPopulationDAG(recipe){return recipe?.version==="recursive-population-graph-v1" || isCalibratedPopulation(recipe);}
 function populationConstructionDraft(){
   const draft=JSON.parse($("construction-controls").value);
@@ -57,19 +59,30 @@ $("mechanism-load").addEventListener("click",event=>{
 
 function populationDAGView(view){
   $("mechanism-load").textContent="Inspect and prepare edit";
-  const calibrated=isCalibratedPopulation(view.recipe.recipe);
+  const calibrated=isCalibratedPopulation(view.recipe.recipe), retained=isRetainedCalibratedPair(view.recipe.recipe);
+  for(const id of ["next","population-dag-load","population-dag-apply"]){
+    const button=$(id);
+    if(retained){button.disabled=true;button.dataset.unavailable="true";button.dataset.calibratedRetained="true";}
+    else if(button.dataset.calibratedRetained==="true"){button.disabled=false;button.dataset.unavailable="false";delete button.dataset.calibratedRetained;}
+  }
   $("population-calibrate").disabled=calibrated || !isPopulationDAG(view.recipe.recipe);
-  $("population-calibration-details").disabled=!calibrated;
+  $("population-calibration-details").disabled=!(calibrated||retained);
   $("population-calibrate").dataset.unavailable=String($("population-calibrate").disabled);
   $("population-calibration-details").dataset.unavailable=String($("population-calibration-details").disabled);
   $("population-calibration-record").textContent="";
   $("population-calibration-notice").textContent=calibrated
     ? "Independent fit retained. Next creates only new query rows; Replay is exact. Matched/fresh interventions preserve the same fit. Geometry or law edits require explicit new calibration."
     : "Fit an independent same-law population explicitly. Original query rows and their archive remain unchanged.";
-  const retained=isPopulationReference(view.recipe.recipe);
-  if(retained){$("curve-points").value=17;populationReferenceControls();}
-  $("next").dataset.unavailable=retained&&!isPopulationDAG(view.recipe.recipe)?"true":"false";
-  if(retained&&!isPopulationDAG(view.recipe.recipe)){$("next").textContent="Retained comparison population";return;}
+  const reference=isPopulationReference(view.recipe.recipe);
+  if(reference){$("curve-points").value=17;populationReferenceControls();}
+  $("next").dataset.unavailable=reference&&!isPopulationDAG(view.recipe.recipe)?"true":"false";
+  if(retained){
+    $("next").textContent="Next unavailable · retained comparison";
+    $("population-calibration-notice").textContent="This is the retained after-side of a calibrated comparison. Replay, inspect and export preserve its current rows, comparison identity and fixed fit. Next for comparison archives remains pending; reopen before.zip for fixed-fit queries. No refitting or new population is implied.";
+    if(!reference){$("curve").disabled=true;$("curve").dataset.unavailable="true";}
+    return;
+  }
+  if(reference&&!isPopulationDAG(view.recipe.recipe)){$("next").textContent="Retained comparison population";return;}
   if(!isPopulationDAG(view.recipe.recipe))return;
   $("next").textContent=calibrated ? "Next query · fixed calibration" : "Next population";
   $("mechanism-load").textContent="Load population construction controls";

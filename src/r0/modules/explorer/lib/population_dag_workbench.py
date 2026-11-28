@@ -31,8 +31,32 @@ def population_dag_action(
 
         return population_reference_action(session, data)
     calibrated = stored.get("version") in CALIBRATED_VERSIONS
-    if stored.get("version") != POPULATION_VERSION and not calibrated:
+    retained = stored.get("version") == "calibrated-population-intervention-v1"
+    if stored.get("version") != POPULATION_VERSION and not calibrated and not retained:
         return None
+    if retained:
+        if action in (
+            "population_calibrate",
+            "population_query",
+            "intervention_controls",
+            "mechanism",
+            "intervene",
+            "sample_intervention_policy",
+            "edit",
+            "pair",
+        ):
+            raise ValueError(
+                "This retained comparison cannot create Next queries or nested edits. "
+                "Reopen its before archive for fixed-fit queries and comparisons."
+            )
+        if action == "population_dag_controls":
+            return {
+                "population_dag": True,
+                "retained_comparison": True,
+                "original_version": stored["version"],
+                "calibration": _calibration_details(stored["base"]),
+                "notice": "Retained comparison: exact replay and export preserve its fixed fit.",
+            }
     original = stored["original"] if calibrated else stored
     if action in ("population_calibrate", "population_query"):
         if action == "population_calibrate":
@@ -95,22 +119,7 @@ def population_dag_action(
         info = intervention_controls(editable)
         for binding in original["request"]["replacements"]:
             info["nodes"][binding["node"]]["population_forest"] = binding["forest"]
-        calibration = None
-        if calibrated:
-            root = stored
-            while root["version"] == "calibrated-population-query-v1":
-                root = root["source"]
-            fit = root["calibration_population"]
-            calibration = {
-                "query_fit": False,
-                "constants": root["calibration"],
-                "fit": {
-                    "seed": fit["seed"],
-                    "task_id": fit["task_id"],
-                    "rows": fit["request"]["base"]["task"]["rows"],
-                },
-                "source_version": stored["version"],
-            }
+        calibration = _calibration_details(stored) if calibrated else None
         info.update(
             calibration=calibration,
             population_dag=True,
@@ -142,3 +151,20 @@ def population_dag_action(
             "follow-ons. Use construction controls for a new population."
         )
     return None
+
+
+def _calibration_details(stored: dict[str, Any]) -> dict[str, Any]:
+    root = stored
+    while root["version"] == "calibrated-population-query-v1":
+        root = root["source"]
+    fit = root["calibration_population"]
+    return {
+        "query_fit": False,
+        "constants": root["calibration"],
+        "fit": {
+            "seed": fit["seed"],
+            "task_id": fit["task_id"],
+            "rows": fit["request"]["base"]["task"]["rows"],
+        },
+        "source_version": stored["version"],
+    }
