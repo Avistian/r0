@@ -22,7 +22,7 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
 
     if request.construction is not None:
         controls = json.loads(request.construction.controls_json)
-        if controls.get("topology") == "tree-extension":
+        if controls.get("topology") in ("tree-extension", "tree-ensemble"):
             from r0.modules.generation.lib.tree_extension_construction import tree_record_matches
 
             return tree_record_matches(

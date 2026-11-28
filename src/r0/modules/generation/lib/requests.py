@@ -159,10 +159,9 @@ def sampling_record(request: RunRequest) -> dict[str, Any] | None:
 
 
 def generate_requested(request: RunRequest, task_id: int) -> TrainingTask:
-    if (
-        request.construction is not None
-        and json.loads(request.construction.controls_json).get("topology") == "tree-extension"
-    ):
+    if request.construction is not None and json.loads(request.construction.controls_json).get(
+        "topology"
+    ) in ("tree-extension", "tree-ensemble"):
         from r0.modules.generation.lib.tree_extension_construction import generate_tree_extension
 
         return generate_tree_extension(

@@ -9,6 +9,7 @@ import numpy as np
 from r0.modules.generation.lib.construction import GraphConstruction
 from r0.modules.priors import (
     CausalLimits,
+    Recipe,
     SampledTreeExtension,
     TrainingTask,
     generate_task,
@@ -50,15 +51,26 @@ def tree_construction_record(
     )
 
 
+def construct_tree_bundle(
+    construction: GraphConstruction, *, limits: CausalLimits, seed: int, task_id: int
+) -> tuple[Recipe, dict[str, Any]]:
+    if json.loads(construction.controls_json).get("topology") == "tree-ensemble":
+        from r0.modules.generation.lib.tree_ensemble_construction import construct_tree_ensemble
+
+        return construct_tree_ensemble(construction, limits=limits, seed=seed, task_id=task_id)
+    sampled = construct_tree_extension(construction, limits=limits, seed=seed, task_id=task_id)
+    return sampled.recipe, tree_construction_record(
+        construction, sampled, seed=seed, task_id=task_id
+    )
+
+
 def generate_tree_extension(
     construction: GraphConstruction, *, limits: CausalLimits, seed: int, task_id: int, device: str
 ) -> TrainingTask:
-    sampled = construct_tree_extension(construction, limits=limits, seed=seed, task_id=task_id)
-    task = generate_task(sampled.recipe, seed=seed, task_id=task_id, device=device)
+    recipe, receipt = construct_tree_bundle(construction, limits=limits, seed=seed, task_id=task_id)
+    task = generate_task(recipe, seed=seed, task_id=task_id, device=device)
     record = json.loads(task.recipe_json)
-    record["construction"] = tree_construction_record(
-        construction, sampled, seed=seed, task_id=task_id
-    )
+    record["construction"] = receipt
     return replace(
         task, recipe_json=json.dumps(record, sort_keys=True, separators=(",", ":"), allow_nan=False)
     )
@@ -72,15 +84,16 @@ def tree_record_matches(
     seed: int,
     task_id: int,
 ) -> bool:
-    sampled = construct_tree_extension(construction, limits=limits, seed=seed, task_id=task_id)
-    expected = tree_construction_record(construction, sampled, seed=seed, task_id=task_id)
+    recipe, expected = construct_tree_bundle(
+        construction, limits=limits, seed=seed, task_id=task_id
+    )
     # JSON equality distinguishes bool/float aliases from integer identities.
     return all(
         json.dumps(actual, sort_keys=True, allow_nan=False)
         == json.dumps(wanted, sort_keys=True, allow_nan=False)
         for actual, wanted in (
             (record.get("construction"), expected),
-            (record.get("recipe"), asdict(sampled.recipe)),
+            (record.get("recipe"), asdict(recipe)),
             (record.get("seed"), seed),
             (record.get("task_id"), task_id),
             (record.get("sampling"), None),

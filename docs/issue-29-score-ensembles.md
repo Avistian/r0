@@ -53,3 +53,36 @@ sums. A three-class example compares raw scores with hand-derived matrix/bias
 arithmetic. Archive reopening and generation traces are checked separately.
 Aggregate node/channel and reduction-matrix admission precede compilation; final
 graph admission accounts for all retained function metadata and workspace.
+
+
+## Fresh ensembles per task
+
+`GraphConstruction` topology `tree-ensemble` takes four fields: `topology`,
+`members` (1..128 complete tree-extension request objects), `weights` (empty or
+one finite value per member), and `reduction` (`mean` or `sum`). Member requests
+must declare identical tasks and root controls. Different tree families, leaf
+laws and shape/depth choices may share that population. This construction uses a
+conservative hard-model-tree node bound before sampling; final aggregate resource
+admission can reject a realized ensemble. It never retries a smaller ensemble.
+
+Each member has a PCG64 stream keyed by a distinct ensemble domain tag, construction
+seed, episode seed, exact task ID and member index. Requests at different positions
+therefore draw independently even when identical. The root realization is shared;
+this does not claim statistical independence of member predictions. This initial
+policy does not sample correlated parameter preferences or ensemble size/weights.
+
+Saved datasets retain ordered member construction receipts, requested weights and
+reduction, and construction/episode/task identities in addition to the compiled
+recipe. Each member receipt reopens independently. Resume binds all those fields
+to the requested configuration and recipe; changing weights or member order is
+not accepted as the same task. Existing single-tree construction streams and
+receipts keep their earlier behavior.
+
+```sh
+r0 generate --config configs/generation/sampled-tree-ensemble-cpu.json --out /tmp/tree-ensembles
+```
+
+The example mixes hard, soft and categorical-pruned trees over a Gaussian plus
+categorical population with relative weights 1:2:3. Verification compares the
+saved ensemble to independently generated member outputs on exactly matched
+inputs, checks receipt reopening/tampering, and resumes with no regeneration.
