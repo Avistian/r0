@@ -23,6 +23,15 @@ Headless generation/artifact verification and backend environment requirements
 remain separate. Preserve existing UI code and evidence for reuse; prioritize
 remaining generator functionality and a direct path to producing dataset files.
 
+The user subsequently instructed: "remember to add all omitted stuff to #126."
+That issue now also tracks deferred nested policy environments, advanced automatic
+GP/fitted/population policy combinations, dual-target diagnostic presentation and
+the supporting engineering those workflows need. These follow-ups are tracked
+explicitly rather than treated as unrecorded omissions or new #28 blockers. Required
+core generator algorithms and explicit hard/soft matched/population interventions
+remain in #28. Add any further deliberately deferred work to #126 with its exact
+remaining behavior and verification needs.
+
 The original commit-pinned specification link remains a historical reference;
 this amendment and the current issue's scope notice record the later user decision.
 
