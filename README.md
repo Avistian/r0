@@ -129,7 +129,9 @@ from r0.modules.generation import save_group
 
 pair = generate_dual_targets(
     LinearRecipe(rows=128, context_rows=96),
-    boundaries=(-1.0, 0.0, 1.0), seed=28, task_id=0,
+    boundaries=(-1.0, 0.0, 1.0),
+    seed=28,
+    task_id=0,
 )
 save_group(Path("/tmp/regression.zip"), [(0, pair.regression)], max_bytes=10_000_000)
 save_group(Path("/tmp/classification.zip"), [(0, pair.classification)], max_bytes=10_000_000)
