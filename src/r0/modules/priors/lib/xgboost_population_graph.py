@@ -131,7 +131,12 @@ def admit_xgboost_population_graph(
     if population == "independent-ancestors":
         fit_base = fit_population_base(base, population, plans[0][1].rows)
         ancestor_work += replace(fit_base, limits=limits).admit()["estimated_working_bytes"]
-    numbers, storage = observation_metadata_cost((base, plans, retained), limits)
+    # The prospective fit reservation already includes every retained fit table,
+    # native model and stream record. Validate supplied metadata without charging
+    # its actual size a second time during construction completion or replay.
+    if retained is not None:
+        observation_metadata_cost(retained, limits)
+    numbers, storage = observation_metadata_cost((base, plans), limits)
     if (
         ancestor_work + cost + 4 * storage > limits.working_bytes
         or report["parameters"] + numbers + sum(p.retained_number_bound for _, p in plans)

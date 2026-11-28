@@ -222,3 +222,26 @@ def test_population_fit_budget_precedes_draw_and_backend(
             limits=replace(p.CausalLimits(), **{budget: 1}),
         )
     assert [r.bit_generator.state for r in streams] == before
+
+
+def test_population_prospective_record_reservation_is_not_charged_twice():
+    from dataclasses import replace
+
+    graph = p.fit_xgboost_population_graph(
+        gp_root_recipe("functional").base,
+        (
+            (
+                1,
+                p.PopulationXGBoostPlan(
+                    rows=8, input_width=2, output_width=1, estimators=2, depth=2
+                ),
+            ),
+        ),
+        population="support-only",
+        seed=47,
+        task_id=59,
+        target_rng=np.random.default_rng(7),
+        backend_rng=np.random.default_rng(11),
+        limits=replace(p.CausalLimits(), parameters=5400),
+    )
+    assert p.recipe_from_dict(asdict(graph), limits=graph.limits) == graph

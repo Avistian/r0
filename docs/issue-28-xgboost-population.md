@@ -92,7 +92,9 @@ Public tests cover actual-input native fitting, four graph families across
 three lifecycles, sequential fitted ancestors, full JSON and ZIP replay,
 large task IDs, repeated inspection rows, producer tensor custody, malformed
 outer metadata before restore, resource rejection before backend work, and
-transaction rollback. Genuine missing-API RED results and the inspection
+transaction rollback. A near-limit 5,400-parameter construction/replay check
+protects against charging the prospective retained-fit reservation twice.
+Genuine missing-API RED results and the inspection
 metadata rejection RED are retained separately from GREEN results.
 
 Outside pytest, 60 graph cases (four families × three lifecycles × five RNG
