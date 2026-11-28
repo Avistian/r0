@@ -87,6 +87,7 @@ from r0.modules.priors.lib.oblique_tree import oblique_tree_recipe
 from r0.modules.priors.lib.observation_encoding import (
     ColumnEncoding,
     EncodedObservation,
+    column_encodings_from_dict,
     encode_observation_columns,
 )
 from r0.modules.priors.lib.score_ensemble import score_ensemble_recipe
@@ -235,3 +236,5 @@ __all__ += ["MeasurementDraw", "MeasurementStage", "draw_measurements"]
 __all__ += ["measurement_stages_from_dict"]
 
 __all__ += ["ColumnEncoding", "EncodedObservation", "encode_observation_columns"]
+
+__all__ += ["column_encodings_from_dict"]

@@ -83,7 +83,11 @@ class TrainingTask:
         if self.observation_truth is not None or (
             isinstance(declared_observation, dict)
             and cast(dict[str, Any], declared_observation).get("version")
-            in ("r0-missing-observation-v1", "r0-missing-observation-v2")
+            in (
+                "r0-missing-observation-v1",
+                "r0-missing-observation-v2",
+                "r0-missing-observation-v3",
+            )
         ):
             validate_missing_observation(self)
 

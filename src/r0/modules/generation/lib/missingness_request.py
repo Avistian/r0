@@ -9,9 +9,11 @@ import torch
 
 from r0.modules.priors import (
     CausalLimits,
+    ColumnEncoding,
     MeasurementStage,
     MissingnessPlan,
     TrainingTask,
+    column_encodings_from_dict,
     measurement_stages_from_dict,
     observe_missingness,
     restore_observation_source,
@@ -25,8 +27,16 @@ class ObservationRequest:
     latent: tuple[float, ...] = ()
     latent_provenance: str | None = None
     measurements: tuple[MeasurementStage, ...] = ()
+    encodings: tuple[ColumnEncoding, ...] = ()
 
     def __post_init__(self) -> None:
+        if (
+            type(self.encodings) is not tuple
+            or len(self.encodings) > 256
+            or any(type(e) is not ColumnEncoding for e in self.encodings)
+            or len({e.column for e in self.encodings}) != len(self.encodings)
+        ):
+            raise ValueError("observation encodings require unique bounded frozen mappings")
         if (
             type(self.measurements) is not tuple
             or len(self.measurements) > 64
@@ -58,6 +68,7 @@ class ObservationRequest:
             self.plan,
             seed=self.seed,
             measurements=self.measurements,
+            encodings=self.encodings,
             latent=torch.tensor(self.latent, dtype=torch.float64) if self.latent else None,
             latent_provenance=self.latent_provenance,
             limits=limits,
@@ -69,7 +80,9 @@ class ObservationRequest:
             return False
         actual = cast(dict[str, Any], actual)
         expected = {
-            "version": "r0-missing-observation-v2"
+            "version": "r0-missing-observation-v3"
+            if self.encodings
+            else "r0-missing-observation-v2"
             if self.measurements
             else "r0-missing-observation-v1",
             "plan": asdict(self.plan),
@@ -79,6 +92,14 @@ class ObservationRequest:
             if self.plan.mode == "mnar-target"
             else self.latent_provenance,
         }
+        if self.encodings:
+            encoding = actual.get("encoding")
+            if type(encoding) is not dict or json.dumps(
+                cast(dict[str, Any], encoding).get("encodings"), sort_keys=True
+            ) != json.dumps([asdict(e) for e in self.encodings], sort_keys=True):
+                return False
+        if bool(actual.get("measurement")) != bool(self.measurements):
+            return False
         if self.measurements:
             measurement = actual.get("measurement")
             if type(measurement) is not dict or json.dumps(
@@ -107,6 +128,11 @@ class ObservationRequest:
 
 def observation_request_from_dict(data: dict[str, Any]) -> ObservationRequest:
     fields: dict[str, Any] = dict(data)
+    if "encodings" in fields:
+        value = fields["encodings"]
+        if type(value) not in (list, tuple):
+            raise ValueError("encodings must be an array")
+        fields["encodings"] = column_encodings_from_dict(value) if value else ()
     if "measurements" in fields:
         value = fields["measurements"]
         if type(value) not in (list, tuple):

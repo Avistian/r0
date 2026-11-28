@@ -3,7 +3,7 @@
 import hashlib
 import json
 from dataclasses import asdict, dataclass
-from typing import Literal
+from typing import Any, Literal, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -140,3 +140,21 @@ def encode_observation_columns(
         values[:, encoding.column] = output
         output_schema[encoding.column] = TrainingFeature(encoding.kind, encoding.vocabulary)
     return EncodedObservation(encodings, values, tuple(output_schema), digest.hexdigest())
+
+
+def column_encodings_from_dict(data: Any) -> tuple[ColumnEncoding, ...]:
+    """Decode a bounded JSON encoding list without coercing scalar controls."""
+    if type(data) not in (list, tuple) or not 1 <= len(data) <= 256:
+        raise ValueError("column encodings require a bounded array")
+    result: list[ColumnEncoding] = []
+    for item in cast(list[Any], data):
+        if type(item) is not dict:
+            raise ValueError("column encoding requires an object")
+        fields = dict(cast(dict[str, Any], item))
+        for key in ("cutpoints", "vocabulary"):
+            if key in fields:
+                if type(fields[key]) not in (list, tuple):
+                    raise ValueError("encoding cutpoints and vocabulary require arrays")
+                fields[key] = tuple(fields[key])
+        result.append(ColumnEncoding(**fields))
+    return tuple(result)

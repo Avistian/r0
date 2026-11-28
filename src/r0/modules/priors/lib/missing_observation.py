@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass, replace
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 import torch
@@ -16,7 +16,13 @@ from r0.modules.priors.lib.measurement_observation import (
 )
 from r0.modules.priors.lib.measurement_pipeline import MeasurementStage
 from r0.modules.priors.lib.missingness import MissingnessPlan, draw_missingness
+from r0.modules.priors.lib.observation_encoding import (
+    ColumnEncoding,
+    column_encodings_from_dict,
+    encode_observation_columns,
+)
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.training_features import TrainingFeature
 
 if TYPE_CHECKING:
     from r0.modules.priors.lib.training_task import TrainingTask
@@ -50,6 +56,18 @@ def _rng(seed: int, source: dict[str, Any]) -> np.random.Generator:
 
 
 def _identities(record: dict[str, Any]) -> tuple[str, str]:
+    if "encoding" in record:
+        source = record_fingerprint(
+            (
+                record["source_task_id"],
+                record["plan"],
+                record["seed"],
+                record.get("measurement"),
+                record["encoding"],
+            )
+        )
+        episode = record_fingerprint((record["episode_id"], source, record["binding"]))
+        return "observed-" + source, "observed-" + episode
     if "measurement" in record:
         source = record_fingerprint(
             (
@@ -74,6 +92,7 @@ def observe_missingness(
     *,
     seed: int,
     measurements: tuple[MeasurementStage, ...] = (),
+    encodings: tuple[ColumnEncoding, ...] = (),
     latent: torch.Tensor | None = None,
     latent_provenance: str | None = None,
     limits: CausalLimits = _DEFAULT,
@@ -111,6 +130,24 @@ def observe_missingness(
         measured, measurement_record = measure_observation(
             measurements, task.inputs, task.feature_schema, seed=seed, source=source, limits=limits
         )
+    if type(encodings) is not tuple:
+        raise ValueError("observation encodings must be an immutable tuple")
+    output_schema = task.feature_schema
+    encoding_record = None
+    if encodings:
+        encoded = encode_observation_columns(
+            encodings,
+            np.asarray(measured.detach().numpy(), dtype=np.float64),
+            schema=task.feature_schema,
+            limits=limits,
+        )
+        measured = torch.tensor(encoded.values)
+        output_schema = encoded.schema
+        encoding_record = {
+            "encodings": [asdict(e) for e in encodings],
+            "binding": encoded.binding,
+            "source_schema": [asdict(f) for f in task.feature_schema],
+        }
     raw = np.asarray(measured.detach().numpy(), dtype=np.float64)
     values = None if driver is None else np.asarray(driver.detach().numpy(), dtype=np.float64)
     sampled = draw_missingness(
@@ -138,6 +175,9 @@ def observe_missingness(
     if measurement_record is not None:
         record["version"] = "r0-missing-observation-v2"
         record["measurement"] = measurement_record
+    if encoding_record is not None:
+        record["version"] = "r0-missing-observation-v3"
+        record["encoding"] = encoding_record
     truth = ObservationTruth(
         task.inputs.clone(),
         torch.tensor(sampled.probabilities),
@@ -151,6 +191,7 @@ def observe_missingness(
     return replace(
         task,
         inputs=inputs,
+        feature_schema=output_schema,
         missing_mask=mask,
         observation_truth=truth,
         source_task_id=source_id,
@@ -192,28 +233,58 @@ def validate_missing_observation(task: TrainingTask) -> None:
         "episode_id",
         "driver_provenance",
     }
-    if record.get("version") == "r0-missing-observation-v2":
+    if record.get("version") == "r0-missing-observation-v2" or (
+        record.get("version") == "r0-missing-observation-v3" and "measurement" in record
+    ):
         expected_fields.add("measurement")
+    if record.get("version") == "r0-missing-observation-v3":
+        expected_fields.add("encoding")
     source = json.loads(task.recipe_json)
     if (
         set(record) != expected_fields
-        or record["version"] not in ("r0-missing-observation-v1", "r0-missing-observation-v2")
+        or record["version"]
+        not in (
+            "r0-missing-observation-v1",
+            "r0-missing-observation-v2",
+            "r0-missing-observation-v3",
+        )
         or encode(source.get("observation")) != encode(record)
         or _identities(record) != (task.source_task_id, task.episode_id)
     ):
         raise ValueError("observation metadata or identity differs")
+    source_schema = task.feature_schema
+    if "encoding" in record:
+        source_schema = _source_schema(record)
     measured = raw
-    if record["version"] == "r0-missing-observation-v2":
+    if "measurement" in record:
         measured, expected_measurement = measure_observation(
             measurement_stages_from_dict(record["measurement"]["stages"]),
             raw,
-            task.feature_schema,
+            source_schema,
             seed=record["seed"],
             source=source,
             limits=CausalLimits(**record["limits"]),
         )
         if encode(expected_measurement) != encode(record["measurement"]):
             raise ValueError("measurement receipt differs from retained replay")
+    if "encoding" in record:
+        encoded = encode_observation_columns(
+            column_encodings_from_dict(record["encoding"]["encodings"]),
+            np.asarray(measured.detach().numpy(), dtype=np.float64),
+            schema=source_schema,
+            limits=CausalLimits(**record["limits"]),
+        )
+        expected_encoding = {
+            "encodings": [asdict(e) for e in encoded.encodings],
+            "binding": encoded.binding,
+            "source_schema": [asdict(f) for f in source_schema],
+        }
+        if (
+            encode(expected_encoding) != encode(record["encoding"])
+            or encoded.schema != task.feature_schema
+        ):
+            raise ValueError("encoding receipt or output schema differs from retained replay")
+        measured = torch.tensor(encoded.values)
     plan = _plan(record["plan"])
     driver = truth.driver
     if plan.mode == "mnar-target":
@@ -261,9 +332,27 @@ def restore_observation_source(task: TrainingTask) -> TrainingTask:
     return replace(
         task,
         inputs=truth.raw_inputs.clone(),
+        feature_schema=_source_schema(record) if "encoding" in record else task.feature_schema,
         missing_mask=None,
         observation_truth=None,
         source_task_id=record["source_task_id"],
         episode_id=record["episode_id"],
         recipe_json=encode(source),
     )
+
+
+def _source_schema(record: dict[str, Any]) -> tuple[TrainingFeature, ...]:
+    raw = record["encoding"]["source_schema"]
+    if type(raw) is not list or len(cast(list[Any], raw)) > 256:
+        raise ValueError("encoding source schema must be a bounded array")
+    features: list[TrainingFeature] = []
+    for item in cast(list[Any], raw):
+        if type(item) is not dict:
+            raise ValueError("encoding source feature must be an object")
+        fields = cast(dict[str, Any], item)
+        if set(fields) != {"kind", "vocabulary"} or type(fields["vocabulary"]) is not list:
+            raise ValueError("encoding source feature fields differ")
+        features.append(
+            TrainingFeature(fields["kind"], tuple(cast(list[Any], fields["vocabulary"])))
+        )
+    return tuple(features)
