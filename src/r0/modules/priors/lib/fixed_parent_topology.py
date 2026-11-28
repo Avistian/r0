@@ -33,6 +33,14 @@ class FixedParentTopology:
     def nodes(self) -> int:
         return len(self.parents)
 
+    @property
+    def minimum_nodes(self) -> int:
+        return self.nodes
+
+    @property
+    def maximum_nodes(self) -> int:
+        return self.nodes
+
     def admit(self, limits: CausalLimits) -> None:
         if type(limits) is not CausalLimits:
             raise ValueError("fixed topology requires caller-owned limits")
@@ -55,6 +63,24 @@ class RetainedParentTopology:
     @property
     def parents(self) -> tuple[tuple[int, ...], ...]:
         return self.prior.parents
+
+    @property
+    def components(self) -> tuple[tuple[int, ...], ...]:
+        labels = list(range(len(self.parents)))
+
+        def root(node: int) -> int:
+            while labels[node] != node:
+                labels[node] = labels[labels[node]]
+                node = labels[node]
+            return node
+
+        for node, parents in enumerate(self.parents):
+            for parent in parents:
+                labels[root(node)] = root(parent)
+        groups: dict[int, list[int]] = {}
+        for node in range(len(labels)):
+            groups.setdefault(root(node), []).append(node)
+        return tuple(tuple(group) for group in groups.values())
 
     @property
     def raw(self) -> tuple[RawDrawRecord, ...]:

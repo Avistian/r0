@@ -5,12 +5,17 @@ from typing import Any
 from r0.modules.priors.lib.converted_graph_request import ConvertedGraphRequest
 from r0.modules.priors.lib.fixed_parent_topology import FixedParentTopology
 from r0.modules.priors.lib.geometry_graph_request import GeometryGraphRequest
+from r0.modules.priors.lib.geometry_parent_request import GeometryParentRequest
 from r0.modules.priors.lib.geometry_pipeline_request import GeometryPipelineRequest
 from r0.modules.priors.lib.native_graph_request import NativeGraphRequest
+from r0.modules.priors.lib.native_parent_request import NativeParentGraphRequest
 from r0.modules.priors.lib.native_vector_request import NativeVectorGraphRequest
 from r0.modules.priors.lib.typed_topology_admission import typed_topology_child_limits
 from r0.modules.priors.lib.typed_topology_geometry import NativeTopologyGeometry
-from r0.modules.priors.lib.typed_topology_request import TypedTopologyRequest
+from r0.modules.priors.lib.typed_topology_request import (
+    TypedParentTopologyRequest,
+    TypedTopologyRequest,
+)
 
 
 def typed_topology_child_request(
@@ -18,6 +23,7 @@ def typed_topology_child_request(
     parents: tuple[tuple[int, ...], ...],
     geometry: NativeTopologyGeometry | None,
 ):
+    composition = request.composition if isinstance(request, TypedParentTopologyRequest) else None
     limits = typed_topology_child_limits(request)
     common: dict[str, Any] = dict(
         calibration_rows=request.calibration_rows,
@@ -39,6 +45,10 @@ def typed_topology_child_request(
             width_prior=request.width_prior,
             **common,
         )
+        if composition is not None:
+            return GeometryParentRequest(
+                **controls, composition=composition, pipeline_prior=request.pipeline
+            )
         return (
             GeometryGraphRequest(**controls)
             if request.pipeline is None
@@ -58,6 +68,7 @@ def typed_topology_child_request(
             request.width_prior,
             pipeline_prior=request.pipeline,
             converter_prior=request.converted.converter,
+            composition=composition,
             **common,
         )
     if geometry is None or request.native is None:
@@ -78,7 +89,10 @@ def typed_topology_child_request(
         **common,
     )
     if request.family == "native":
-        return NativeGraphRequest(
+        constructor = NativeParentGraphRequest if composition is not None else NativeGraphRequest
+        if composition is not None:
+            native_controls["composition"] = composition
+        return constructor(
             domains=tuple(
                 request.native.for_width(d, w)
                 for d, w in zip(domains, geometry.widths, strict=True)
@@ -88,6 +102,7 @@ def typed_topology_child_request(
     # First variable carries the semantic node role; remaining variables are
     # genuinely hidden variables, each with its own sampled domain and output.
     return NativeVectorGraphRequest(
+        composition=composition,
         domains=tuple(
             (d,) + (request.native.hidden,) * (w - 1)
             for d, w in zip(domains, geometry.widths, strict=True)

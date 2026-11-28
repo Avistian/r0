@@ -67,7 +67,10 @@ def explain_generation(
         raise ValueError("invalid original row index")
     if type(column_start) is not int or not 0 <= column_start <= 4095:
         raise ValueError("column_start must be 0..4095")
-    if raw.get("version") == "sampled-typed-topology-r0-v1":
+    if raw.get("version") in (
+        "sampled-typed-topology-r0-v1",
+        "sampled-typed-parent-topology-r0-v1",
+    ):
         from r0.modules.priors.lib.typed_topology_output import typed_topology_trace
 
         if component is not None:

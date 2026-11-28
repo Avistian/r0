@@ -23,7 +23,7 @@ def population_recipe_from_dict(fields: dict[str, Any], *, limits: CausalLimits)
         )
 
         return xgboost_population_graph_from_dict(fields, limits=limits)
-    if version == "sampled-typed-topology-r0-v1":
+    if version in ("sampled-typed-topology-r0-v1", "sampled-typed-parent-topology-r0-v1"):
         from r0.modules.priors.lib.typed_topology_decoding import typed_topology_graph_from_dict
 
         return typed_topology_graph_from_dict(fields, limits=limits)

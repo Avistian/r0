@@ -6,6 +6,7 @@ from dataclasses import asdict, replace
 from typing import Any
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.fixed_parent_topology import RetainedParentTopology
 from r0.modules.priors.lib.hyperprior_task_validation import validate_hyperprior_task
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -44,6 +45,10 @@ def generate_typed_topology(
             "geometry latent plus reserved capture channels"
         ),
     )
+    if isinstance(valid.topology, RetainedParentTopology):
+        card["source_semantics"] = (
+            "Explicit retained DAG with typed r0 geometry and source-specific parent composition"
+        )
     source = record_fingerprint((record["recipe"], seed, task_id))
     return replace(
         task,
@@ -77,7 +82,9 @@ def typed_topology_trace(
             id="typed-topology-construction",
             label="Retained topology and typed geometry",
             parents=[],
-            formula="one topology draw; typed geometry preserves every parent edge",
+            formula="retained explicit topology; no topology draw"
+            if isinstance(recipe.topology, RetainedParentTopology)
+            else "one topology draw; typed geometry preserves every parent edge",
             shape=[1, 2],
             column_indices=[0, 1],
             values=[[len(recipe.topology.parents), len(recipe.topology.components)]],
@@ -86,7 +93,9 @@ def typed_topology_trace(
                 columns=["nodes", "components"],
                 family=recipe.request.family,
                 receipt=result["topology_envelope"],
-                source="P2 topology reconstruction + explicit r0 typed composition",
+                source="Explicit retained DAG + source-specific parent composition"
+                if isinstance(recipe.topology, RetainedParentTopology)
+                else "P2 topology reconstruction + explicit r0 typed composition",
             ),
         ),
     )

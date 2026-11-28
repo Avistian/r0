@@ -22,6 +22,9 @@ from r0.modules.priors.lib.typed_topology_graph import (
     sample_typed_topology_graph as sample_typed_topology_graph,
 )
 from r0.modules.priors.lib.typed_topology_request import (
+    TypedParentTopologyRequest as TypedParentTopologyRequest,
+)
+from r0.modules.priors.lib.typed_topology_request import (
     TypedTopologyRequest as TypedTopologyRequest,
 )
 from r0.modules.priors.lib.typed_topology_roles import (

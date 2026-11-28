@@ -6,6 +6,11 @@ import numpy as np
 
 from r0.modules.priors.lib.converted_graph_request import ConvertedGraphRequest
 from r0.modules.priors.lib.converted_graph_sampling import sample_converted_graph
+from r0.modules.priors.lib.fixed_parent_topology import (
+    FixedParentTopology,
+    RetainedParentTopology,
+    retain_parent_topology,
+)
 from r0.modules.priors.lib.generator_snapshot import GeneratorSnapshot, snapshot_generator
 from r0.modules.priors.lib.geometry_graph_request import GeometryGraphRequest
 from r0.modules.priors.lib.geometry_graph_sampling import sample_geometry_graph
@@ -31,7 +36,10 @@ from r0.modules.priors.lib.typed_topology_geometry import (
     NativeTopologyGeometry,
     sample_native_topology_geometry,
 )
-from r0.modules.priors.lib.typed_topology_request import TypedTopologyRequest
+from r0.modules.priors.lib.typed_topology_request import (
+    TypedParentTopologyRequest,
+    TypedTopologyRequest,
+)
 
 type TypedTopologyMechanisms = (
     SampledGeometryGraph | SampledNativeGraph | SampledNativeVectorGraph | SampledConvertedGraph
@@ -41,7 +49,7 @@ type TypedTopologyMechanisms = (
 @dataclass(frozen=True, slots=True)
 class TypedTopologyGraph:
     request: TypedTopologyRequest
-    topology: SampledTopologyHyperprior
+    topology: SampledTopologyHyperprior | RetainedParentTopology
     geometry: NativeTopologyGeometry | None
     graph: TypedTopologyMechanisms
     initial: tuple[GeneratorSnapshot, ...]
@@ -79,7 +87,7 @@ def sample_typed_topology_graph(
     calibration_rng: np.random.Generator,
     fit_rng: np.random.Generator,
 ) -> TypedTopologyGraph:
-    if type(request) is not TypedTopologyRequest:
+    if type(request) not in (TypedTopologyRequest, TypedParentTopologyRequest):
         raise ValueError("typed topology requires its frozen request")
     request.admit()
     callers = dict(
@@ -96,11 +104,15 @@ def sample_typed_topology_graph(
             snapshot_generator(r, byte_limit=request.raw_limits.state_bytes)
             for r in streams.values()
         )
-        topology = sample_topology_hyperprior(
-            request.topology,
-            rng=streams["topology"],
-            limits=request.limits,
-            raw_limits=request.raw_limits,
+        topology = (
+            retain_parent_topology(request.topology, limits=request.limits)
+            if isinstance(request.topology, FixedParentTopology)
+            else sample_topology_hyperprior(
+                request.topology,
+                rng=streams["topology"],
+                limits=request.limits,
+                raw_limits=request.raw_limits,
+            )
         )
         geometry = (
             sample_native_topology_geometry(request, len(topology.parents), streams["raw"])
@@ -127,4 +139,9 @@ def sample_typed_topology_graph(
             snapshot_generator(r, byte_limit=request.raw_limits.state_bytes)
             for r in streams.values()
         )
-        return TypedTopologyGraph(request, topology, geometry, graph, initial, final)
+        version = (
+            "sampled-typed-parent-topology-r0-v1"
+            if isinstance(request, TypedParentTopologyRequest)
+            else "sampled-typed-topology-r0-v1"
+        )
+        return TypedTopologyGraph(request, topology, geometry, graph, initial, final, version)

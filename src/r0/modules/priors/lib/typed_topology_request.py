@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.fixed_parent_topology import FixedParentTopology
 from r0.modules.priors.lib.joint_function_prior import JointFunctionPrior
 from r0.modules.priors.lib.joint_pipeline_plans import (
     JointInnovationPipelinePrior,
@@ -11,6 +12,7 @@ from r0.modules.priors.lib.joint_pipeline_plans import (
 from r0.modules.priors.lib.joint_root_plans import JointRootPrior
 from r0.modules.priors.lib.joint_width_plans import JointWidthPrior
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.parent_composition_plans import ParentCompositionPrior
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
 from r0.modules.priors.lib.topology_hyperprior import (
     FixedSizeTopologyHyperprior,
@@ -22,7 +24,7 @@ from r0.modules.priors.lib.typed_topology_roles import ConvertedTopologyRoles, N
 
 @dataclass(frozen=True, slots=True)
 class TypedTopologyRequest:
-    topology: TopologyHyperpriorRequest
+    topology: TopologyHyperpriorRequest | FixedParentTopology
     task: LinearRecipe
     family: str = "functional"
     width_prior: JointWidthPrior = JointWidthPrior()
@@ -41,9 +43,18 @@ class TypedTopologyRequest:
     version: str = "typed-topology-request-r0-v1"
 
     def __post_init__(self) -> None:
+        composed = type(self) is TypedParentTopologyRequest
+        expected_version = (
+            "typed-parent-topology-request-r0-v1" if composed else "typed-topology-request-r0-v1"
+        )
+        topology_types = (
+            (TopologyHyperprior, FixedSizeTopologyHyperprior, FixedParentTopology)
+            if composed
+            else (TopologyHyperprior, FixedSizeTopologyHyperprior)
+        )
         if (
-            self.version != "typed-topology-request-r0-v1"
-            or type(self.topology) not in (TopologyHyperprior, FixedSizeTopologyHyperprior)
+            self.version != expected_version
+            or type(self.topology) not in topology_types
             or type(self.task) is not LinearRecipe
             or self.family not in ("functional", "native", "native-vector", "converted")
             or type(self.width_prior) is not JointWidthPrior
@@ -126,3 +137,14 @@ class TypedTopologyRequest:
         from r0.modules.priors.lib.typed_topology_admission import admit_typed_topology
 
         return admit_typed_topology(self)
+
+
+@dataclass(frozen=True, slots=True)
+class TypedParentTopologyRequest(TypedTopologyRequest):
+    composition: ParentCompositionPrior = ParentCompositionPrior()
+    version: str = "typed-parent-topology-request-r0-v1"
+
+    def admit(self) -> dict[str, int]:
+        from r0.modules.priors.lib.typed_parent_admission import admit_typed_parent_topology
+
+        return admit_typed_parent_topology(self)

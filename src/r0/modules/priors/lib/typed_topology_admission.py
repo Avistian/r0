@@ -3,6 +3,7 @@
 from dataclasses import replace
 from typing import TYPE_CHECKING
 
+from r0.modules.priors.lib.fixed_parent_topology import FixedParentTopology
 from r0.modules.priors.lib.joint_function_admission import function_record_cost
 from r0.modules.priors.lib.joint_hyperprior_request import JointHyperpriorGraphRequest
 from r0.modules.priors.lib.joint_hyperprior_support import function_support
@@ -34,6 +35,7 @@ def admit_typed_topology(request: "TypedTopologyRequest") -> dict[str, int]:
     )
     # A redirection forest has at most one predecessor: unequal rectangular
     # matrices fit inside the W x W support used by the existing catalog planner.
+    assert not isinstance(request.topology, FixedParentTopology)
     proxy = JointHyperpriorGraphRequest(
         request.task,
         request.topology,
@@ -118,7 +120,12 @@ def admit_typed_topology(request: "TypedTopologyRequest") -> dict[str, int]:
 def typed_topology_child_limits(request: "TypedTopologyRequest"):
     from r0.modules.priors.lib.topology_hyperprior_admission import admit_topology_hyperprior
 
-    top = admit_topology_hyperprior(request.topology, request.limits, request.raw_limits)
+    if isinstance(request.topology, FixedParentTopology):
+        request.topology.admit(request.limits)
+        values, memory = function_record_cost(request.topology, request.limits)
+        top = {"parameters": values, "estimated_working_bytes": memory}
+    else:
+        top = admit_topology_hyperprior(request.topology, request.limits, request.raw_limits)
     numbers, storage = function_record_cost(request, request.limits)
     # Outer request/topology/geometry survive alongside the complete child.
     return replace(
