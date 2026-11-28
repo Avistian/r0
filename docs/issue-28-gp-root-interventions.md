@@ -38,6 +38,26 @@ Identity must match the current source exactly. Admission reserves the complete
 retained lineage and future population before covariance or random work.
 Replay is CPU-only, with the original identity.
 
-This core API does not yet provide Workbench intervention controls, sampled
-population policies, nested intervention-source editing or GP-law editing.
+This API does not yet provide sampled population policies, nested
+intervention-source editing or GP-law editing.
 Those remain separate requirements of issue #28.
+
+## Workbench
+
+Prepare causal intervention on a plain, calibrated or continued GP-root dataset.
+The existing typed controls select hard clamps, soft mechanisms, noise and
+converter locations. Matched/population mode applies to the complete GP-root
+comparison. Generation runs in the bounded worker; success stores a before/after
+pair while keeping the original dataset active. Invalid controls and timeouts
+retain the last successful dataset and comparison.
+
+The comparison supports repeated-row before/after traces, export and reopening.
+Opening its `after.zip` activates the intervened dataset: replay retains its
+original identity, full GP source and fixed calibration. Its generation graph
+can inspect query rows or, when calibrated, the separate fitting population.
+Covariance views retain complete population matrices.
+
+Nested interventions, sampled policies and generic task-property pairs remain
+pending. The reopened intervention disables unsupported creation controls and
+keeps replay and inspection available. Reopen its original source to construct
+another explicit comparison.

@@ -7,10 +7,11 @@ $("gp-fit-create").onclick=()=>act("Fitting targets on an independent GP populat
 });
 function gpCalibrationView(view){
   const stored=view.recipe.recipe,source=gpRootEnvelope(stored);
-  const calibrated=["gp-root-calibration-v1","gp-root-calibration-query-v1"].includes(stored.version);
-  let fit=stored;while(fit.version==="gp-root-calibration-query-v1")fit=fit.source;
+  const intervened=stored.version==="gp-root-intervention-v1",retained=intervened?stored.base:stored;
+  const calibrated=["gp-root-calibration-v1","gp-root-calibration-query-v1"].includes(retained.version);
+  let fit=retained;while(fit.version==="gp-root-calibration-query-v1")fit=fit.source;
   $("graph-population-label").hidden=!calibrated;
-  $("gp-query-create").disabled=!calibrated;$("gp-query-create").dataset.unavailable=String(!calibrated);
+  $("gp-query-create").disabled=!calibrated||intervened;$("gp-query-create").dataset.unavailable=String(!calibrated||intervened);
   $("gp-query-seed").value=String(view.recipe.seed);
   $("gp-query-task").value=String(BigInt(view.recipe.task_id)+1n);
   $("gp-query-notice").textContent=calibrated?"Construct uses these exact identifiers and locations. Next uses the main seed and next task identifier with these location controls. Full history and the original fixed fit remain retained; duplicate identities or exhausted limits fail without changing the active dataset.":"Fit or open a calibrated GP-root dataset first.";
@@ -23,7 +24,7 @@ function gpCalibrationView(view){
     const next=BigInt(view.recipe.task_id)+1n;
     $("gp-fit-task").value=String(next<2n**63n?next:0n);
   }
-  $("gp-fit-notice").textContent=calibrated
+  $("gp-fit-notice").textContent=intervened?"This intervention retains its original target fit. Inspect the fitting rows or reopen the original source to construct another query." :calibrated
     ? `Fixed calibration retained from ${fit.calibration.rows} separate GP rows. Replay preserves both populations. Open the original dataset to fit another calibration. Use the generation graph population selector to inspect the independent fitting rows. Next draws an independent query and preserves this fixed fit.`
     : categorical?"Direct categorical targets require category-preserving calibration; numeric scaling is unavailable."
     : "Choose a distinct fit seed/task identity. Both populations and the complete fixed fit are retained; failure leaves the current dataset active.";

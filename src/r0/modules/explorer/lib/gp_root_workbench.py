@@ -22,15 +22,32 @@ def gp_root_action(
     record = json.loads(session.task.recipe_json)
     recipe = record["recipe"]
     if recipe.get("version") not in (
+        "gp-root-intervention-v1",
         "gp-root-dag-v1",
         "gp-root-calibration-v1",
         "gp-root-calibration-query-v1",
     ):
         return None
+    retained = recipe["base"] if recipe["version"] == "gp-root-intervention-v1" else recipe
+    if recipe["version"] == "gp-root-intervention-v1" and action in (
+        "gp_root_query",
+        "gp_root_calibrate",
+        "gp_root_controls",
+        "intervention_controls",
+        "intervene",
+        "sample_intervention_policy",
+        "edit",
+        "mechanism",
+        "curve",
+    ):
+        raise ValueError(
+            "Open the original GP source to create another change; "
+            "nested GP intervention edits remain pending"
+        )
     original = (
-        recipe["original"]
-        if recipe["version"] in ("gp-root-calibration-v1", "gp-root-calibration-query-v1")
-        else recipe
+        retained["original"]
+        if retained["version"] in ("gp-root-calibration-v1", "gp-root-calibration-query-v1")
+        else retained
     )
     if action == "gp_root_query":
         if recipe["version"] == "gp-root-dag-v1":
@@ -110,7 +127,7 @@ def gp_root_action(
             ),
         )
         return info
-    if action in ("curve", "sample_intervention_policy", "edit", "intervene"):
+    if action in ("curve", "sample_intervention_policy", "edit"):
         raise ValueError(
             "GP-root graphs require retained-population-aware references and interventions; "
             "these workbench operations are pending integration"

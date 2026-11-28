@@ -3,10 +3,10 @@ let gpPopulationMatrices=null;
 function clearGPPopulationMatrices(){gpPopulationMatrices=null;$("gp-covariance-panel").hidden=true;$("gp-matrix-plot").replaceChildren();$("gp-matrix-table").replaceChildren();}
 function showGPPopulationMatrices(graph, selectedRecipe=null, origin="active dataset"){
   clearGPPopulationMatrices();
-  if(!["gp_column_population","gp_target_environment","gp_root_dag","gp_root_calibration","gp_root_fit"].includes(graph.kind)||!graph.shared_matrices?.length)return;
+  if(!["gp_column_population","gp_target_environment","gp_root_dag","gp_root_calibration","gp_root_intervention","gp_root_fit"].includes(graph.kind)||!graph.shared_matrices?.length)return;
   const recipe=selectedRecipe || current.view.recipe.recipe;
-  let fitting=recipe;while(fitting.version==="gp-root-calibration-query-v1")fitting=fitting.source;
-  let base=["gp-root-calibration-v1","gp-root-calibration-query-v1"].includes(recipe.version)?(graph.population_role==="fit"?fitting.fit:recipe.original):recipe,depth=0;
+  let fitting=recipe.version==="gp-root-intervention-v1"?recipe.base:recipe;while(fitting.version==="gp-root-calibration-query-v1")fitting=fitting.source;
+  let base=recipe.version==="gp-root-intervention-v1"?(graph.population_role==="fit"?fitting.fit:gpRootEnvelope(recipe)):["gp-root-calibration-v1","gp-root-calibration-query-v1"].includes(recipe.version)?(graph.population_role==="fit"?fitting.fit:recipe.original):recipe,depth=0;
   while(base.version==="gp-column-target-link-v1" && depth<8){base=base.parent;depth++;}
   const environment=base.version==="gp-column-target-recipe-v1", source=environment?base.comparison:base.source;
   if(!source?.draw)return;

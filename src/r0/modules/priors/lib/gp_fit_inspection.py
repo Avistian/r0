@@ -39,6 +39,12 @@ def explain_gp_calibration_fit(
     if not 1 <= len(indices) <= 16:
         raise ValueError("select 1..16 fit population rows")
     raw = gp_root_task_record(task)["recipe"]
+    intervention = raw.get("version") == "gp-root-intervention-v1"
+    if intervention:
+        from r0.modules.priors.lib.gp_root_intervention_decoding import preflight_gp_intervention
+
+        preflight_gp_intervention(raw, limits=limits or CausalLimits())
+        raw = raw["base"]
     if raw.get("version") == "gp-root-calibration-query-v1":
         query_source_metadata(raw, limits=limits or CausalLimits())
         while raw["version"] == "gp-root-calibration-query-v1":
@@ -48,7 +54,15 @@ def explain_gp_calibration_fit(
     _, calibration = preflight_gp_root_calibration(raw, limits=limits or CausalLimits())
     if any(type(i) is not int or not 0 <= i < calibration.rows for i in indices):
         raise ValueError("invalid fit population row index")
-    recipe, _ = validate_gp_root_task(task, limits=limits)
+    if intervention:
+        from r0.modules.priors.lib.gp_root_intervention_inspection import (
+            validate_gp_intervention_task,
+        )
+
+        change, _ = validate_gp_intervention_task(task, limits=limits or CausalLimits())
+        recipe = change.base
+    else:
+        recipe, _ = validate_gp_root_task(task, limits=limits)
     assert isinstance(recipe, (GPRootCalibration, GPRootCalibrationQuery))
     source = recipe.fit.source
     fitting = generate_gp_root_dag(recipe.fit, seed=source.seed, task_id=source.task_id)

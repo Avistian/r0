@@ -290,6 +290,7 @@ def population_identity(record: dict[str, Any], data: dict[str, Any]) -> dict[st
 def guarded_archive_version(version: object) -> bool:
     """Batch reconstruction and frozen replay both belong in the bounded worker."""
     return frozen_archive_version(version) or version in (
+        "gp-root-intervention-v1",
         "gp-root-dag-v1",
         "gp-root-calibration-v1",
         "gp-root-calibration-query-v1",

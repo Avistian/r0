@@ -9,6 +9,7 @@ def target_calibration_view(recipe: dict[str, Any]) -> dict[str, Any] | None:
         "calibrated-population-query-v1",
         "gp-root-calibration-query-v1",
         "calibrated-population-intervention-v1",
+        "gp-root-intervention-v1",
     ):
         recipe = recipe[
             "source"

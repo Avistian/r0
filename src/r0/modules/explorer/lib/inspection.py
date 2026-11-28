@@ -96,7 +96,7 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
     )
     indices = _sample_rows(len(x), sample_rows, np.random.default_rng(sample_seed))
     runtime_mechanism = mechanism
-    if mechanism["family"] == "gp_root_calibration":
+    if mechanism["family"] in ("gp_root_calibration", "gp_root_intervention"):
         runtime_mechanism = mechanism["original"]
     if runtime_mechanism["family"] == "gp_root_dag":
         runtime_mechanism = runtime_mechanism["runtime"]
@@ -140,6 +140,9 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         native = record["recipe"]
         view["native_construction"] = native["version"]
         native_record = record
+        if native["version"] == "gp-root-intervention-v1":
+            native = native["change"]
+            native_record = {**record, "recipe": native}
         if native["version"] in ("gp-root-calibration-v1", "gp-root-calibration-query-v1"):
             native = native["original"]
         if native["version"] == "gp-root-dag-v1":

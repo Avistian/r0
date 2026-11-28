@@ -20,10 +20,12 @@ function gpRootCapabilities(view){
   if(["gp-root-calibration-v1","gp-root-calibration-query-v1"].includes(recipe.version))
     for(const id of ["rows","context","features","active","task-type","classes","difficulty"])
       pendingGPRootButton(id,"The retained fixed fit requires unchanged graph and task geometry. Use an original GP-root construction to define a different task.");
-  const intervention="Unavailable for GP-root datasets: interventions require retained-population integration. This remains required work; the current dataset and its GP source are preserved.";
-  for(const id of ["intervention-load","intervention-add","intervention-create"])
-    pendingGPRootButton(id,intervention,id==="intervention-load");
-  $("intervention-controls").hidden=true;
+  if(recipe.version==="gp-root-intervention-v1"){
+    const message="Open the original GP source to create another change. Nested intervention editing remains pending; replay and inspection retain this result.";
+    for(const id of ["next","gp-query-create","gp-root-load","mechanism-load","intervention-load","intervention-add","intervention-create"])
+      pendingGPRootButton(id,message,id==="intervention-load");
+    $("intervention-controls").hidden=true;
+  }
   const policy="Unavailable for GP-root datasets: sampled intervention policies require retained-population integration and remain required work.";
   for(const id of ["policy-draft","policy-add-location","policy-create"])
     pendingGPRootButton(id,policy,id==="policy-draft");

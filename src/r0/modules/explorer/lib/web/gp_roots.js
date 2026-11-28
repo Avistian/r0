@@ -1,5 +1,5 @@
 "use strict";
-function gpRootEnvelope(recipe){return ["gp-root-calibration-v1","gp-root-calibration-query-v1"].includes(recipe?.version)?recipe.original:recipe?.version==="gp-root-dag-v1"?recipe:null;}
+function gpRootEnvelope(recipe){if(recipe?.version==="gp-root-intervention-v1")return {...gpRootEnvelope(recipe.base),source:recipe.population};return ["gp-root-calibration-v1","gp-root-calibration-query-v1"].includes(recipe?.version)?recipe.original:recipe?.version==="gp-root-dag-v1"?recipe:null;}
 function gpRootDraft(){
   const draft=JSON.parse($("construction-controls").value);
   if(draft.topology!=="gp-root-dag")throw new Error("Select or load a GP root DAG construction first.");
