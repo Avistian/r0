@@ -61,7 +61,15 @@ def population_task_record(task: TrainingTask) -> dict[str, Any]:
     """Validate the complete public record before accessing any required field."""
     if type(task) is not TrainingTask or type(task.recipe_json) is not str:
         raise ValueError("population task requires its typed semantic record")
-    raw = _json_record(task.recipe_json)
+    return validate_population_record_metadata(_json_record(task.recipe_json))
+
+
+def validate_population_record_metadata(raw: Any) -> dict[str, Any]:
+    """Admit serialized saved-record primitives without source replay or task tensors.
+
+    Historical execution descriptions need not match the current environment;
+    they must retain the same complete primitive schema as saved task inspection.
+    """
     if type(raw) is not dict:
         raise ValueError("population record must be a complete object")
     record = cast(dict[str, Any], raw)

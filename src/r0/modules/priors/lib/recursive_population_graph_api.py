@@ -28,11 +28,24 @@ from .population_generation_identity import (
 from .population_graph_change_construction import (
     construct_population_graph_change as construct_population_graph_change,
 )
+from .population_reference import PopulationGraphReference as PopulationGraphReference
+from .population_reference import (
+    evaluate_population_graph_reference as evaluate_population_graph_reference,
+)
+from .population_reference import (
+    population_graph_reference_from_dict as population_graph_reference_from_dict,
+)
+from .population_reference import (
+    population_reference_from_source as population_reference_from_source,
+)
 from .population_target_calibration import (
     CalibratedPopulationGraph as CalibratedPopulationGraph,
 )
 from .population_target_calibration import (
     calibrate_population_graph as calibrate_population_graph,
+)
+from .population_task_semantics import (
+    validate_population_record_metadata as validate_population_record_metadata,
 )
 from .recursive_population_graph_decoding import (
     recursive_population_graph_from_dict as recursive_population_graph_from_dict,

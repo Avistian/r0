@@ -117,7 +117,77 @@ Earlier fixture mistakes and failed browser stages remain retained separately.
 
 Independent target calibration remains REQUIRED and unavailable in this freeze;
 existing node pipelines retain their declared calibration constants without query
-fitting. Population reference curves, sampled/nested intervention policies and linked
-mechanism-edit comparisons remain required follow-ons. Explicit interventions and
+fitting. Population reference curves are delivered below. Sampled/nested intervention policies
+and linked mechanism-edit comparisons remain required follow-ons. Explicit interventions and
 new construction drafts are available. No whole-issue or full-suite acceptance is
 claimed by this workbench slice.
+
+### Original-row population references
+
+`evaluate_population_graph_reference(source, row=..., feature=..., values=(...),
+capture_location="capture")` returns a versioned `PopulationGraphReference` retaining
+the complete original or matched/fresh population source, exact identity, query values,
+anchor, feature/target vocabularies, scores, probabilities and realized targets.
+`population_reference_from_source` admits serialized sources before replay;
+`population_graph_reference_from_dict` verifies exported reference receipts.
+
+Each query evaluates the retained full original row shape with the same per-row
+forests and keyed hidden-root, structural, categorical and adapter streams, then
+selects the requested original row. A different query is never assigned a different
+forest. Fresh comparisons retain their already constructed fresh population and
+population index. Soft function replacements keep disabling the replaced population
+mechanism. Frozen feature convolutions, networks and other ordinary descendants run
+through their existing evaluators.
+
+All observed inputs are anchored simultaneously. Functional and converted numeric
+channels clamp state and readout; native values clamp the emitted variable and its
+encoded descendant span. Converter categories offer capture-only or explicit
+representation-and-capture cuts. An original-input (`_id`) converter cannot invent a
+unique category representation. Reference cuts override prior hard cuts only at the
+same observed locations; unrelated cuts and effective soft mechanisms remain. An
+ambiguous capture-only overlap with an existing incompatible representation cut
+rejects rather than silently discarding the original cut.
+
+The explorer provides active/before/after source selection, original-row selection,
+continuous grids or declared-category enumeration, target scores/probabilities/realized
+target views and complete JSON export. Numeric bounds may extrapolate: tree leaves and
+frozen equations determine the results. Curves connect only evaluated continuous grid
+points; categorical queries use points. These responses are causal references, not
+conditional means or a shared function across population rows. Realized targets retain
+the selected row's original stochastic label/noise draw. Classifier forest probabilities
+remain their exact emitted winner indicators where that is the declared domain law.
+
+Admission reserves the complete source archive, runtime and retained query output
+before nested construction replay. Queries run sequentially at original shape, with
+an explicit r0 maximum of129 values and20,000 total population-row evaluations; these
+are resource guards, not source-paper laws or timing guarantees. UI decode/replay runs
+inside the killable worker. Invalid/stale requests and timeouts preserve the saved
+baseline and comparison. Historical descriptive execution metadata remains permitted;
+source implementation and exact seed/task identity are bound.
+
+Author public checks, outside-test literal tree/probability oracles, actual browser
+RED/GREEN and legacy hashes are retained under ignored
+`docs/evidence/issue-28-population-reference/`. Independent review is separate.
+Fixed independent population target-calibration wrapper composition remains a required
+follow-on with the separately authored calibration slice; it must retain the complete
+wrapper and apply fixed constants before its target adapter, never fit query points.
+No hosted/GPU/full-suite or whole-issue acceptance is claimed here.
+
+### Exact reference receipt geometry
+
+Reference decoding now derives exact score and probability columns and target
+labels from the admitted effective target before restoring any population stream.
+Functional binary adapters retain one latent score and two probabilities; direct
+native threshold scores retain one column unless a scalar native hard category
+cut replaces them with the full indicator vector. Vector-native threshold cuts
+retain their scalar score span. Converted capture scores use the target vocabulary
+width, independently of the converter representation width. Continuous selected
+targets remain scalar. Effective soft domains and retained matched/fresh cuts are
+included in the metadata calculation.
+
+This closes the historical `cf8` late rejection of impossible score widths and
+also binds exact labels. No reference evaluator or serialized output fields were
+changed. The repair preserves the original review rejection; independent repair
+review and broader population-reference acceptance remain separate gates. Raw
+RED/GREEN, outside restore counts and complete20preset before/after task/reference
+hashes live under ignored `docs/evidence/issue-28-population-reference-geometry/`.

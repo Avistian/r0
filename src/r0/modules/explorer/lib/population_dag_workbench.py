@@ -23,6 +23,13 @@ def population_dag_action(
         return None
     record = json.loads(session.task.recipe_json)
     stored = record["recipe"]
+    if action == "curve" and stored.get("version") in (
+        POPULATION_VERSION,
+        "recursive-population-graph-intervention-v1",
+    ):
+        from r0.modules.explorer.lib.population_reference import population_reference_action
+
+        return population_reference_action(session, data)
     calibrated = stored.get("version") in CALIBRATED_VERSIONS
     if stored.get("version") != POPULATION_VERSION and not calibrated:
         return None
@@ -131,7 +138,7 @@ def population_dag_action(
     if action in ("curve", "sample_intervention_policy", "edit"):
         raise ValueError(
             "Population DAGs require original-row traces and explicit retained interventions; "
-            "reference curves, sampled policies and linked mechanism editing remain required "
+            "sampled policies and linked mechanism editing remain required "
             "follow-ons. Use construction controls for a new population."
         )
     return None

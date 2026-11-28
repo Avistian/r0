@@ -66,12 +66,13 @@ function populationDAGView(view){
   $("population-calibration-notice").textContent=calibrated
     ? "Independent fit retained. Next creates only new query rows; Replay is exact. Matched/fresh interventions preserve the same fit. Geometry or law edits require explicit new calibration."
     : "Fit an independent same-law population explicitly. Original query rows and their archive remain unchanged.";
+  const retained=isPopulationReference(view.recipe.recipe);
+  if(retained){$("curve-points").value=17;populationReferenceControls();}
+  $("next").dataset.unavailable=retained&&!isPopulationDAG(view.recipe.recipe)?"true":"false";
+  if(retained&&!isPopulationDAG(view.recipe.recipe)){$("next").textContent="Retained comparison population";return;}
   if(!isPopulationDAG(view.recipe.recipe))return;
   $("next").textContent=calibrated ? "Next query · fixed calibration" : "Next population";
   $("mechanism-load").textContent="Load population construction controls";
-  $("curve").disabled=true;$("curve").dataset.unavailable="true";
-  $("curve-description").textContent="Population DAGs retain row-owned mechanisms. Reference curves remain a required follow-on.";
-  $("curve-note").textContent="Population DAG reference curves remain a required follow-on. Inspect original-row forest paths and retained matched/fresh comparisons; no shared frozen response is substituted.";
 }
 
 $("population-calibrate").onclick=()=>act("Fitting retained independent population…",async()=>{

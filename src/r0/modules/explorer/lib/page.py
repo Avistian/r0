@@ -31,7 +31,12 @@ window.r0request = async (action, data) => {
             + "\n"
             + (assets / "gp_column_curves.js").read_text()
             + "\n"
-            + (assets / "gp_target_edits.js").read_text(),
+            + (assets / "gp_target_edits.js").read_text()
+            + "\n"
+            + (assets / "population_reference.js").read_text(),
+        )
+        .replace(
+            "<!-- POPULATION REFERENCE -->", (assets / "population_reference.html").read_text()
         )
         .replace("<!-- GP TARGET CONTROLS -->", (assets / "gp_column_curves.html").read_text())
         .replace(
