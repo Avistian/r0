@@ -11,7 +11,7 @@ function pendingGPRootButton(id,message,notice=false){
   button.dataset.gpRootPending="true";button.title=message;
   if(notice){
     let note=$(id+"-gp-root-pending");
-    if(!note){note=document.createElement("p");note.id=id+"-gp-root-pending";note.className="muted gp-root-pending-notice";button.before(note);}
+    if(!note){note=document.createElement("p");note.id=id+"-gp-root-pending";note.className="muted gp-root-pending-notice";if(id==="next")button.parentElement.after(note);else button.before(note);}
     note.hidden=false;note.textContent=message;
   }
 }
