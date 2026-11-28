@@ -3,6 +3,7 @@
 from dataclasses import asdict, replace
 from typing import Any
 
+from r0.modules.priors.lib.activation_sampling import finite_number
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.gp_population_metadata_cost import (
     future_gp_root_cost,
@@ -16,7 +17,13 @@ from r0.modules.priors.lib.weight_geometry import Matrix
 
 
 def query_construction_plan(
-    source: Any, *, seed: int, task_id: int, locations: Matrix | None, limits: CausalLimits
+    source: Any,
+    *,
+    seed: int,
+    task_id: int,
+    locations: Any,
+    limits: CausalLimits,
+    raw_locations: bool = False,
 ):
     if type(limits) is not CausalLimits:
         raise ValueError("GP query requires explicit caller limits")
@@ -26,10 +33,23 @@ def query_construction_plan(
     if (seed, task_id) in metadata.identities:
         raise ValueError("GP query cannot reuse an original, fit or ancestral identity")
     cap = metadata.limits
-    request = replace(
-        metadata.request, locations=metadata.request.locations if locations is None else locations
-    )
+    request = metadata.request
+    if locations is not None:
+        containers = (tuple, list) if raw_locations else (tuple,)
+        rows = request.rows if request.location_family == "fixed-r0" else 0
+        if type(locations) not in containers or len(locations) != rows:
+            raise ValueError("GP query locations must match the retained location law and rows")
+        if any(
+            type(row) not in containers
+            or len(row) != request.dimension
+            or any(not finite_number(value) for value in row)
+            for row in locations
+        ):
+            raise ValueError("GP query locations require finite coordinates of retained dimension")
     request.admit(cap)
+    # Replacement coordinates preserve location law and geometry. Every numeric
+    # scalar has the same retained 64-byte charge, so this prospective cost is
+    # exact before copying any caller-owned location rows.
     future = record_cost(
         GPRootCalibrationQuery,
         dict(
@@ -42,6 +62,11 @@ def query_construction_plan(
         ),
     )
     admit_query_envelope(future, (*metadata.populations, (request, metadata.base)), cap)
+    if locations is not None:
+        request = replace(
+            request,
+            locations=tuple(tuple(row) for row in locations) if raw_locations else locations,
+        )
     return metadata, request
 
 

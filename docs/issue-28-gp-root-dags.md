@@ -145,3 +145,11 @@ forged active tensors, and guarded session preservation. Independent acceptance
 and the combined full check remain pending. This inspection increment does not
 implement fixed-fit query continuation or the remaining intervention/reference
 workflows.
+
+Typed continuous target views disclose when retained independent target calibration
+is applied. Their score axes and table headings identify fixed-calibrated scores;
+the notice names the independent population and all-row fitting scope, rather than
+claiming an unnormalized native target. Ordinary uncalibrated native targets keep
+the direct-target description. The same metadata lookup recognizes retained
+row-owned calibration/query/intervention envelopes when those workflows are
+integrated; this does not implement new calibration or continuation behavior.
