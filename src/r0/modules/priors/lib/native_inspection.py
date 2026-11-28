@@ -21,6 +21,7 @@ from r0.modules.priors.lib.network_inspection import network_steps
 from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
 from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
 from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_steps
+from r0.modules.priors.lib.root_populations import RootPopulations
 from r0.modules.priors.lib.source_root_base import functional_root_values
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -32,6 +33,7 @@ def native_steps(
     add: Callable[..., None],
     *,
     limits: CausalLimits | None,
+    root_populations: RootPopulations | None = None,
 ) -> dict[str, Any]:
     record, card = json.loads(task.recipe_json), json.loads(task.mechanism_json)
     recipe = (
@@ -39,7 +41,9 @@ def native_steps(
         if record["recipe"].get("version") == "sampled-native-graph-v1"
         else native_recipe_from_dict(record["recipe"], limits=limits or CausalLimits())
     )
-    result = evaluate_native_graph(recipe, seed=record["seed"], task_id=record["task_id"])
+    result = evaluate_native_graph(
+        recipe, seed=record["seed"], task_id=record["task_id"], root_populations=root_populations
+    )
     selection = list(indices)
     for i, node in enumerate(recipe.nodes):
         parents = [f"causal-{p}" for p in node.equation.parents]
@@ -67,15 +71,25 @@ def native_steps(
                 inputs = torch.cat([result.states[p] for p in node.equation.parents], dim=1)
             else:
                 assert node.equation.root is not None
-                inputs = torch.tensor(
-                    functional_root_values(
-                        node.equation.root,
-                        recipe.task.rows,
-                        native_rng(record["seed"], record["task_id"], "root", i),
-                        limits=recipe.limits,
-                    ),
-                    dtype=torch.float64,
+                external = (
+                    root_populations.values(
+                        i, recipe.task.rows, node.equation.function.input_width, "cpu"
+                    )
+                    if root_populations
+                    else None
                 )
+                if external is not None:
+                    inputs = external
+                else:
+                    inputs = torch.tensor(
+                        functional_root_values(
+                            node.equation.root,
+                            recipe.task.rows,
+                            native_rng(record["seed"], record["task_id"], "root", i),
+                            limits=recipe.limits,
+                        ),
+                        dtype=torch.float64,
+                    )
                 parents = [f"root-{i}"]
                 add(
                     parents[0],

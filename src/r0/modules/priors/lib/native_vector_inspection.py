@@ -24,6 +24,7 @@ from r0.modules.priors.lib.network_inspection import network_steps
 from r0.modules.priors.lib.parent_function_inspection import parent_function_steps
 from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
 from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_steps
+from r0.modules.priors.lib.root_populations import RootPopulations
 from r0.modules.priors.lib.source_root_base import functional_root_values
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
@@ -35,6 +36,7 @@ def native_vector_steps(
     add: Callable[..., None],
     *,
     limits: CausalLimits | None,
+    root_populations: RootPopulations | None = None,
 ) -> dict[str, Any]:
     record = json.loads(task.recipe_json)
     data = record["recipe"]
@@ -43,7 +45,9 @@ def native_vector_steps(
         if data["version"] == "sampled-native-vector-graph-v1"
         else native_vector_recipe_from_dict(data, limits=limits or CausalLimits())
     )
-    values = evaluate_native_vector_graph(recipe, seed=record["seed"], task_id=record["task_id"])
+    values = evaluate_native_vector_graph(
+        recipe, seed=record["seed"], task_id=record["task_id"], root_populations=root_populations
+    )
     selected = list(indices)
     inputs = torch.stack([values.values[i][j].to(torch.float64) for i, j in recipe.observed], dim=1)
     target = values.values[recipe.target[0]][recipe.target[1]]
@@ -74,15 +78,25 @@ def native_vector_steps(
             ),
         ):
             if node.equation.root is not None:
-                network_inputs = torch.tensor(
-                    functional_root_values(
-                        node.equation.root,
-                        recipe.task.rows,
-                        native_vector_rng(record["seed"], record["task_id"], "root", index),
-                        limits=recipe.limits,
-                    ),
-                    dtype=torch.float64,
+                external = (
+                    root_populations.values(
+                        index, recipe.task.rows, node.equation.function.input_width, "cpu"
+                    )
+                    if root_populations
+                    else None
                 )
+                if external is not None:
+                    network_inputs = external
+                else:
+                    network_inputs = torch.tensor(
+                        functional_root_values(
+                            node.equation.root,
+                            recipe.task.rows,
+                            native_vector_rng(record["seed"], record["task_id"], "root", index),
+                            limits=recipe.limits,
+                        ),
+                        dtype=torch.float64,
+                    )
                 parents = [f"root-{index}"]
                 add(
                     parents[0],

@@ -11,6 +11,7 @@ from r0.modules.priors.lib.functional_causal_decoding import functional_recipe_f
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng, functional_values
 from r0.modules.priors.lib.functional_target_calibration import target_calibration_from_dict
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.root_populations import RootPopulations
 
 
 def functional_steps(
@@ -20,6 +21,7 @@ def functional_steps(
     add: Callable[..., None],
     *,
     limits: CausalLimits | None = None,
+    root_populations: RootPopulations | None = None,
 ) -> torch.Tensor:
     limits = CausalLimits() if limits is None else limits
     raw_recipe = record["recipe"]
@@ -100,6 +102,7 @@ def functional_steps(
         add=add,
         indices=indices,
         readouts=values,
+        root_populations=root_populations,
     )
     scores = torch.stack([values[i][list(indices), j] for i, j in recipe.target], dim=1)
     parameters: dict[str, Any] = {"target": recipe.target}

@@ -20,6 +20,7 @@ from r0.modules.priors.lib.node_mechanisms import NodeMechanisms
 from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.root_populations import RootPopulations
 from r0.modules.priors.lib.signal_noise import signal_noise_scale
 from r0.modules.priors.lib.source_root_base import functional_root_values
 
@@ -49,6 +50,7 @@ def evaluate_native_vector_graph(
     device: str = "cpu",
     execution: InterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
+    root_populations: RootPopulations | None = None,
 ) -> NativeVectorEvaluation:
     if type(recipe) is not NativeVectorRecipe or any(
         type(v) is not int or not 0 <= v < 2**63 for v in (seed, task_id)
@@ -68,6 +70,7 @@ def evaluate_native_vector_graph(
         device,
         execution=execution,
         mechanisms=mechanisms,
+        root_populations=root_populations,
         limits=recipe.limits,
     )
 
@@ -80,6 +83,7 @@ def evaluate_native_vector_nodes(
     *,
     execution: InterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
+    root_populations: RootPopulations | None = None,
     capture: RawDrawLedger | None = None,
     owner: tuple[str, ...] = ("native",),
     limits: CausalLimits = _DEFAULT_LIMITS,
@@ -116,18 +120,28 @@ def evaluate_native_vector_nodes(
                     execution.record(index, **{f"forced-probability:{j}": encoded})
             continue
         if equation.root:
-            inputs = torch.tensor(
-                functional_root_values(
-                    equation.root,
-                    rows,
-                    rng("root", index),
-                    capture=capture,
-                    owner=(*owner, f"node:{index}", "root"),
-                    limits=limits,
-                ),
-                dtype=torch.float64,
-                device=device,
+            external = (
+                root_populations.values(index, rows, equation.function.input_width, device)
+                if root_populations
+                else None
             )
+            if external is not None:
+                if capture is not None:
+                    raise ValueError("external root populations cannot create iid draw receipts")
+                inputs = external
+            else:
+                inputs = torch.tensor(
+                    functional_root_values(
+                        equation.root,
+                        rows,
+                        rng("root", index),
+                        capture=capture,
+                        owner=(*owner, f"node:{index}", "root"),
+                        limits=limits,
+                    ),
+                    dtype=torch.float64,
+                    device=device,
+                )
         else:
             inputs = torch.cat([states[p] for p in equation.parents], dim=1)
         if execution:

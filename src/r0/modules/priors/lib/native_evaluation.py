@@ -21,6 +21,7 @@ from r0.modules.priors.lib.node_pipeline import PipelineEvaluation
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
 from r0.modules.priors.lib.recursive_function_metadata import recursive_mechanism_metadata
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.root_populations import RootPopulations
 from r0.modules.priors.lib.signal_noise import signal_noise_scale
 from r0.modules.priors.lib.source_root_base import functional_root_values
 from r0.modules.priors.lib.training_features import TrainingFeature
@@ -52,6 +53,7 @@ def evaluate_native_graph(
     device: str = "cpu",
     execution: InterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
+    root_populations: RootPopulations | None = None,
 ) -> NativeEvaluation:
     """Discrete node values are int64; their descendants receive explicit one-hot state."""
     if type(recipe) is not NativeCausalRecipe:
@@ -72,6 +74,7 @@ def evaluate_native_graph(
         device,
         execution=execution,
         mechanisms=mechanisms,
+        root_populations=root_populations,
         limits=recipe.limits,
     )
 
@@ -86,6 +89,7 @@ def evaluate_native_nodes(
     owner: tuple[str, ...] = ("native",),
     execution: InterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
+    root_populations: RootPopulations | None = None,
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> NativeEvaluation:
     """Evaluate an already admitted prefix; callers own resource and certificate checks."""
@@ -132,18 +136,28 @@ def evaluate_native_nodes(
             scores.append(state)
             continue
         if equation.root:
-            inputs = torch.tensor(
-                functional_root_values(
-                    equation.root,
-                    rows,
-                    rng("root", index),
-                    capture=capture,
-                    owner=(*owner, f"node:{index}", "root"),
-                    limits=limits,
-                ),
-                dtype=torch.float64,
-                device=device,
+            external = (
+                root_populations.values(index, rows, equation.function.input_width, device)
+                if root_populations
+                else None
             )
+            if external is not None:
+                if capture is not None:
+                    raise ValueError("external root populations cannot create iid draw receipts")
+                inputs = external
+            else:
+                inputs = torch.tensor(
+                    functional_root_values(
+                        equation.root,
+                        rows,
+                        rng("root", index),
+                        capture=capture,
+                        owner=(*owner, f"node:{index}", "root"),
+                        limits=limits,
+                    ),
+                    dtype=torch.float64,
+                    device=device,
+                )
             if execution:
                 execution.record(index, root=inputs)
         else:
@@ -265,6 +279,7 @@ def generate_native_causal(
     device: str = "cpu",
     execution: InterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
+    root_populations: RootPopulations | None = None,
 ) -> TrainingTask:
     result = evaluate_native_graph(
         recipe,
@@ -273,6 +288,7 @@ def generate_native_causal(
         device=device,
         execution=execution,
         mechanisms=mechanisms,
+        root_populations=root_populations,
     )
     config = asdict(recipe)
     source = {

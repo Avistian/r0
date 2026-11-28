@@ -20,6 +20,7 @@ from r0.modules.priors.lib.node_mechanisms import NodeMechanisms
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline, PipelineEvaluation
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, recorded_draw
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.root_populations import RootPopulations
 
 _DEFAULT_LIMITS = CausalLimits()
 
@@ -150,6 +151,7 @@ def evaluate_converted_nodes(
     indices: Sequence[int] = (),
     execution: ConverterInterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
+    root_populations: RootPopulations | None = None,
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> ConvertedEvaluation:
     emissions: dict[tuple[int, str], CategoricalEmission] = {}
@@ -185,6 +187,7 @@ def evaluate_converted_nodes(
         limits=limits,
         execution=execution,
         mechanisms=mechanisms,
+        root_populations=root_populations,
     )
     if mechanisms:
         for (index, name), emission in emissions.items():
@@ -211,6 +214,7 @@ def evaluate_converted(
     indices: Sequence[int] = (),
     execution: ConverterInterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
+    root_populations: RootPopulations | None = None,
 ) -> ConvertedEvaluation:
     if type(recipe) is not ConvertedCausalRecipe or any(
         type(i) is not int or not 0 <= i < 2**63 for i in (seed, task_id)
@@ -235,5 +239,6 @@ def evaluate_converted(
         indices=indices,
         execution=execution,
         mechanisms=mechanisms,
+        root_populations=root_populations,
         limits=recipe.limits,
     )

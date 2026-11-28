@@ -71,14 +71,10 @@ from r0.modules.priors.lib.prototype_batch_network import (
     RealizedPrototypeBatchNetworkRecipe,
 )
 from r0.modules.priors.lib.recursive_population_dispatch import (
+    POPULATION_RECIPE_TYPES,
+    PopulationRecipe,
     generate_population_recipe,
 )
-from r0.modules.priors.lib.recursive_population_graph_intervention import (
-    RecursivePopulationGraphIntervention,
-)
-from r0.modules.priors.lib.recursive_population_graph_records import RecursivePopulationGraph
-from r0.modules.priors.lib.recursive_population_intervention import RecursivePopulationIntervention
-from r0.modules.priors.lib.recursive_population_records import RecursivePopulationRecipe
 from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
 from r0.modules.priors.lib.sampled_converted_output import generate_sampled_converted
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
@@ -100,10 +96,9 @@ from r0.modules.priors.lib.training_task import TrainingTask
 from r0.modules.priors.lib.typed_policy_records import SampledTypedInterventionPolicy
 
 type Recipe = (
-    GPColumnTargetLink
+    PopulationRecipe
+    | GPColumnTargetLink
     | GPColumnRecipe
-    | RecursivePopulationGraph
-    | RecursivePopulationGraphIntervention
     | GPColumnTargetRecipe
     | PrototypeBatchNetworkRecipe
     | RealizedPrototypeBatchNetworkRecipe
@@ -111,8 +106,6 @@ type Recipe = (
     | NetworkObservationRecipe
     | HyperpriorGraph
     | JointHyperpriorGraph
-    | RecursivePopulationIntervention
-    | RecursivePopulationRecipe
     | NetworkInputView
     | CausalInterventionRecipe
     | SampledInterventionPolicy
@@ -319,15 +312,7 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
         return generate_hyperprior_graph(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkObservationRecipe):
         return generate_network_observations(recipe, seed=seed, task_id=task_id, device=device)
-    if isinstance(
-        recipe,
-        (
-            RecursivePopulationRecipe,
-            RecursivePopulationIntervention,
-            RecursivePopulationGraph,
-            RecursivePopulationGraphIntervention,
-        ),
-    ):
+    if isinstance(recipe, POPULATION_RECIPE_TYPES):
         return generate_population_recipe(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, SampledConvertedGraph):
         return generate_sampled_converted(recipe, seed=seed, task_id=task_id, device=device)

@@ -12,6 +12,7 @@ from r0.modules.priors.lib.converted_decoding import converted_recipe_from_dict
 from r0.modules.priors.lib.converted_evaluation import evaluate_converted
 from r0.modules.priors.lib.converted_graph_decoding import converted_graph_from_dict
 from r0.modules.priors.lib.converted_output import converted_value
+from r0.modules.priors.lib.root_populations import RootPopulations
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -21,6 +22,7 @@ def converted_steps(
     add: Callable[..., None],
     *,
     limits: CausalLimits | None,
+    root_populations: RootPopulations | None = None,
 ) -> dict[str, Any]:
     record = json.loads(task.recipe_json)
     data = record["recipe"]
@@ -30,7 +32,12 @@ def converted_steps(
         else converted_recipe_from_dict(data, limits=limits or CausalLimits())
     )
     result = evaluate_converted(
-        recipe, seed=record["seed"], task_id=record["task_id"], add=add, indices=indices
+        recipe,
+        seed=record["seed"],
+        task_id=record["task_id"],
+        add=add,
+        indices=indices,
+        root_populations=root_populations,
     )
     inputs = torch.stack(
         [converted_value(result, ref).to(torch.float64) for ref in recipe.observed], dim=1

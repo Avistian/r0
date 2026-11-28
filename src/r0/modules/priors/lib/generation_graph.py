@@ -89,19 +89,11 @@ def explain_generation(
             }
         )
 
-    if raw.get("version") in ("gp-column-target-recipe-v1", "gp-column-target-link-v1"):
-        from r0.modules.priors.lib.gp_target_inspection import gp_target_steps
+    from r0.modules.priors.lib.gp_inspection_dispatch import gp_inspection
 
-        if component is not None:
-            raise ValueError("GP target environments do not have composite children")
-        return {**gp_target_steps(task, indices, add, limits=limits), "nodes": nodes}
-
-    if raw.get("version") == "gp-column-recipe-v1":
-        from r0.modules.priors.lib.gp_column_inspection import gp_column_steps
-
-        if component is not None:
-            raise ValueError("GP column populations do not have composite children")
-        return {**gp_column_steps(task, indices, add, limits=limits), "nodes": nodes}
+    gp_trace = gp_inspection(task, raw, indices, add, component=component, limits=limits)
+    if gp_trace is not None:
+        return {**gp_trace, "nodes": nodes}
 
     from r0.modules.priors.lib.population_task_semantics import is_population_task_record
 

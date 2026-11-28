@@ -16,6 +16,7 @@ from r0.modules.priors.lib.converter_intervention_execution import ConverterInte
 from r0.modules.priors.lib.node_mechanisms import NodeMechanisms
 from r0.modules.priors.lib.recursive_function_metadata import recursive_mechanism_metadata
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.root_populations import RootPopulations
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
@@ -34,6 +35,7 @@ def generate_converted(
     device: str = "cpu",
     execution: ConverterInterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
+    root_populations: RootPopulations | None = None,
 ) -> TrainingTask:
     result = evaluate_converted(
         recipe,
@@ -42,6 +44,7 @@ def generate_converted(
         device=device,
         execution=execution,
         mechanisms=mechanisms,
+        root_populations=root_populations,
     )
     config = asdict(recipe)
     source = {

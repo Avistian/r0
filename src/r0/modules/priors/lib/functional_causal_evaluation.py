@@ -22,6 +22,7 @@ from r0.modules.priors.lib.node_mechanisms import NodeMechanisms
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions
 from r0.modules.priors.lib.recursive_function_metadata import recursive_mechanism_metadata
 from r0.modules.priors.lib.representatives import record_fingerprint
+from r0.modules.priors.lib.root_populations import RootPopulations
 from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
 from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
 from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
@@ -48,6 +49,7 @@ def functional_values(
     rows: int | None = None,
     execution: InterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
+    root_populations: RootPopulations | None = None,
     population_recipe: FunctionalCausalRecipe | None = None,
 ) -> list[torch.Tensor]:
     rows = recipe.task.rows if rows is None else rows
@@ -69,6 +71,7 @@ def functional_values(
         diagnostics=diagnostics,
         execution=execution,
         mechanisms=mechanisms,
+        root_populations=root_populations,
         population_partitions=partitions,
         limits=recipe.limits,
     )
@@ -148,6 +151,7 @@ def generate_functional_causal(
     device: str = "cpu",
     execution: InterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
+    root_populations: RootPopulations | None = None,
     calibration_recipe: FunctionalCausalRecipe | None = None,
 ) -> TrainingTask:
     construction = (
@@ -205,6 +209,7 @@ def generate_functional_causal(
         diagnostics=diagnostics,
         execution=execution,
         mechanisms=mechanisms,
+        root_populations=root_populations,
         population_recipe=calibration_recipe,
     )
     inputs = torch.stack([values[i][:, j] for i, j in recipe.observed], dim=1)
@@ -226,7 +231,9 @@ def generate_functional_causal(
         )
         scores = calibration.apply(scores)
     _, certificates = functional_certificates(
-        recipe.nodes, mechanism=mechanisms.certify if mechanisms else None
+        recipe.nodes,
+        mechanism=mechanisms.certify if mechanisms else None,
+        roots=root_populations.certificates if root_populations else None,
     )
     target_sources = frozenset[tuple[int, int]]().union(
         *(certificates[i][j].sources for i, j in recipe.target)

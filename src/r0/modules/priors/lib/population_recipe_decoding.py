@@ -7,6 +7,14 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 
 def population_recipe_from_dict(fields: dict[str, Any], *, limits: CausalLimits):
     version = fields.get("version", "linear-v1")
+    if version == "gp-root-calibration-v1":
+        from r0.modules.priors.lib.gp_root_calibration_decoding import gp_root_calibration_from_dict
+
+        return gp_root_calibration_from_dict(fields, limits=limits)
+    if version == "gp-root-dag-v1":
+        from r0.modules.priors.lib.gp_root_decoding import gp_root_dag_from_dict
+
+        return gp_root_dag_from_dict(fields, limits=limits)
     if version == "network-input-view-v2":
         from r0.modules.priors.lib.matched_network_view import matched_view_from_dict
 
@@ -59,6 +67,10 @@ def population_recipe_from_dict(fields: dict[str, Any], *, limits: CausalLimits)
     ) != "recursive-population-graph-intervention-v1":
         raise ValueError("population DAG intervention requires its explicit version")
     version = fields.get("version", "linear-v1")
+    if version == "gp-root-dag-v1":
+        from r0.modules.priors.lib.gp_root_decoding import gp_root_dag_from_dict
+
+        return gp_root_dag_from_dict(fields, limits=limits)
     if version == "network-input-view-v2":
         from r0.modules.priors.lib.matched_network_view import matched_view_from_dict
 

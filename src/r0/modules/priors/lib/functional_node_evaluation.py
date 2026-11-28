@@ -21,6 +21,7 @@ from r0.modules.priors.lib.parent_function_inspection import parent_function_ste
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger
 from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
 from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_steps
+from r0.modules.priors.lib.root_populations import RootPopulations
 from r0.modules.priors.lib.signal_noise import signal_noise_scale
 from r0.modules.priors.lib.source_root_base import functional_root_values
 
@@ -64,6 +65,7 @@ def evaluate_functional_nodes(
     pipeline_factory: Callable[[int, FunctionalCausalNode], PipelineEvaluation] | None = None,
     population_partitions: tuple[tuple[int, ...], ...] = (),
     mechanisms: NodeMechanisms | None = None,
+    root_populations: RootPopulations | None = None,
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> list[torch.Tensor]:
     from r0.modules.priors.lib.population_exogenous import population_exogenous
@@ -88,7 +90,18 @@ def evaluate_functional_nodes(
             continue
         parents = [f"causal-{p}" for p in node.parents]
         if node.root is not None:
-            if population_partitions:
+            external = (
+                root_populations.values(index, rows, node.function.input_width, device)
+                if root_populations
+                else None
+            )
+            if external is not None:
+                if capture is not None or population_partitions:
+                    raise ValueError(
+                        "external root populations require explicit retained-row evaluation"
+                    )
+                inputs = external
+            elif population_partitions:
                 inputs = torch.tensor(
                     population_exogenous(
                         node, index, rows, rng, population_partitions, root=True, limits=limits
@@ -114,9 +127,13 @@ def evaluate_functional_nodes(
                     parents[0],
                     f"Root base {index}",
                     [],
-                    "frozen base law applied to raw draws",
+                    "retained external root population"
+                    if external is not None
+                    else "frozen base law applied to raw draws",
                     inputs[list(indices)],
-                    asdict(node.root),
+                    root_populations.metadata(index)
+                    if external is not None and root_populations
+                    else asdict(node.root),
                 )
         else:
             inputs = torch.cat([values[p] for p in node.parents], dim=1)

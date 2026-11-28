@@ -9,17 +9,14 @@ from r0.modules.priors.lib.gp_column_decoding import gp_payload_equal
 from r0.modules.priors.lib.training_task import TrainingTask
 
 
-def validate_gp_task(task: TrainingTask, expected: TrainingTask, version: str) -> None:
-    record = json.loads(task.recipe_json)
-    expected_record = json.loads(expected.recipe_json)
-    if set(record) != set(expected_record) or any(
-        not gp_payload_equal(v, expected_record[k]) for k, v in record.items() if k != "execution"
-    ):
-        raise ValueError("GP task provenance differs from replay")
-    execution = cast(dict[str, Any], record["execution"])
+def validate_gp_execution(execution: object, version: str) -> None:
+    """Reject malformed execution headers before numerical replay."""
+    if type(execution) is not dict:
+        raise ValueError("GP execution metadata schema differs")
+    execution = cast(dict[str, Any], execution)
     if (
-        type(execution) is not dict
-        or set(execution) != set(expected_record["execution"])
+        set(execution)
+        != {"implementation", "device", "python", "numpy", "torch", "cpu_threads", "cuda", "gpu"}
         or execution.get("implementation") != version
         or execution.get("device") not in ("cpu", "cuda")
         or any(type(execution[k]) is not str for k in ("python", "numpy", "torch"))
@@ -28,6 +25,16 @@ def validate_gp_task(task: TrainingTask, expected: TrainingTask, version: str) -
         or any(execution[k] is not None and type(execution[k]) is not str for k in ("cuda", "gpu"))
     ):
         raise ValueError("GP execution metadata schema differs")
+
+
+def validate_gp_task(task: TrainingTask, expected: TrainingTask, version: str) -> None:
+    record = json.loads(task.recipe_json)
+    expected_record = json.loads(expected.recipe_json)
+    if set(record) != set(expected_record) or any(
+        not gp_payload_equal(v, expected_record[k]) for k, v in record.items() if k != "execution"
+    ):
+        raise ValueError("GP task provenance differs from replay")
+    validate_gp_execution(record["execution"], version)
     if not gp_payload_equal(json.loads(task.mechanism_json), json.loads(expected.mechanism_json)):
         raise ValueError("GP mechanism metadata differs from replay")
     for field in (

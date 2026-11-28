@@ -8,6 +8,8 @@ from typing import Any, cast
 from r0.modules.generation.lib.construction import GraphConstruction
 from r0.modules.priors import (
     CausalLimits,
+    GPRootCalibration,
+    GPRootDAGRecipe,
     LinearRecipe,
     Recipe,
     TrainingTask,
@@ -59,6 +61,17 @@ class RunRequest:
             math.isfinite(self.max_seconds) and self.max_seconds > 0
         ):
             raise ValueError("max_seconds must be finite and positive")
+        if isinstance(self.recipe, GPRootCalibration) and self.device != "cpu":
+            raise ValueError("GP calibrated runs require CPU replay")
+        if isinstance(self.recipe, (GPRootDAGRecipe, GPRootCalibration)):
+            _gp_root_run_identity(
+                asdict(self.recipe),
+                seed=self.seed,
+                start=self.start,
+                count=self.count,
+                sampling=self.sampling,
+                construction=self.construction,
+            )
         if self.construction is not None:
             if type(self.construction) is not GraphConstruction or self.sampling is not None:
                 raise ValueError("graph construction cannot also use recipe sampling")
@@ -125,6 +138,16 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
         GPColumnTargetRecipe,
     )
 
+    if isinstance(selected, (GPRootDAGRecipe, GPRootCalibration)):
+        return (
+            set(record) == {"recipe", "seed", "task_id", "execution"}
+            and type(record.get("seed")) is int
+            and record["seed"] == request.seed
+            and type(record.get("task_id")) is int
+            and record["task_id"] == task_id
+            and json.dumps(record.get("recipe"), sort_keys=True, allow_nan=False)
+            == json.dumps(asdict(selected), sort_keys=True, allow_nan=False)
+        )
     if isinstance(selected, (GPColumnTargetRecipe, GPColumnTargetLink)):
         if any(
             type(record.get(k)) is not int or record[k] != v
@@ -231,8 +254,51 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
     )
 
 
+def _gp_root_run_identity(
+    raw: dict[str, Any],
+    *,
+    seed: Any,
+    start: Any,
+    count: Any,
+    sampling: Any,
+    construction: Any,
+) -> None:
+    if raw.get("version") == "gp-root-calibration-v1":
+        original = raw.get("original")
+        if type(original) is not dict:
+            raise ValueError("GP calibration requires retained original source identity")
+        raw = cast(dict[str, Any], original)
+    source = raw.get("source")
+    if type(source) is not dict:
+        raise ValueError("GP root run requires exactly one retained source identity")
+    source = cast(dict[str, Any], source)
+    if (
+        any(type(v) is not int for v in (seed, start, count))
+        or count != 1
+        or any(
+            type(source.get(k)) is not int or source[k] != value
+            for k, value in (("seed", seed), ("task_id", start))
+        )
+        or sampling is not None
+        or construction is not None
+    ):
+        raise ValueError("GP root run requires exactly one retained source identity")
+
+
 def request_from_dict(data: dict[str, Any]) -> RunRequest:
     fields = dict(data)
+    candidate = fields.get("recipe")
+    if type(candidate) is dict:
+        candidate = cast(dict[str, Any], candidate)
+        if candidate.get("version") in ("gp-root-dag-v1", "gp-root-calibration-v1"):
+            _gp_root_run_identity(
+                candidate,
+                seed=fields.get("seed"),
+                start=fields.get("start", 0),
+                count=fields.get("count"),
+                sampling=fields.get("sampling"),
+                construction=fields.get("construction"),
+            )
     raw_limits = fields.pop("causal_limits", None)
     limits = None if raw_limits is None else CausalLimits(**raw_limits)
     raw_construction = fields.pop("construction", None)
@@ -240,11 +306,32 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
     # Construction-only transport derives its task inside the guarded worker.
     # Explicit recipe controls still take precedence and must pass RunRequest's
     # geometry binding check, so contradictory controls cannot be ignored.
-    raw_recipe = (
+    raw_recipe = cast(
+        dict[str, Any],
         construction.task_record()
         if "recipe" not in fields and construction is not None
-        else fields.pop("recipe", None)
+        else fields.pop("recipe", None),
     )
+    if type(raw_recipe) is dict and raw_recipe.get("version") in (
+        "gp-root-dag-v1",
+        "gp-root-calibration-v1",
+    ):
+        if (
+            raw_recipe["version"] == "gp-root-calibration-v1"
+            and fields.get("device", "cpu") != "cpu"
+        ):
+            raise ValueError("GP calibrated runs require CPU replay")
+        _gp_root_run_identity(
+            raw_recipe,
+            seed=fields.get("seed"),
+            start=fields.get("start", 0),
+            count=fields.get("count"),
+            sampling=fields.get("sampling"),
+            construction=construction,
+        )
+        # Admit the ordinary run header before decoding any retained covariance.
+        header = {k: v for k, v in fields.items() if k != "sampling"}
+        RunRequest(LinearRecipe(), causal_limits=limits, **header)
     recipe = recipe_from_dict(raw_recipe, limits=limits or CausalLimits())
     sampling = fields.pop("sampling", None)
     return RunRequest(

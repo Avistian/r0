@@ -15,6 +15,7 @@ from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
 from r0.modules.priors.lib.node_mechanisms import NodeMechanisms
 from r0.modules.priors.lib.recursive_function_metadata import recursive_mechanism_metadata
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.root_populations import RootPopulations
 from r0.modules.priors.lib.training_features import TrainingFeature
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -27,6 +28,7 @@ def generate_native_vector(
     device: str = "cpu",
     execution: InterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
+    root_populations: RootPopulations | None = None,
 ) -> TrainingTask:
     result = evaluate_native_vector_graph(
         recipe,
@@ -35,6 +37,7 @@ def generate_native_vector(
         device=device,
         execution=execution,
         mechanisms=mechanisms,
+        root_populations=root_populations,
     )
     config = asdict(recipe)
     source = {
