@@ -8,6 +8,7 @@ from typing import Any, cast
 from r0.modules.generation.lib.construction import GraphConstruction
 from r0.modules.priors import (
     CalibratedPopulationGraph,
+    CalibratedPopulationIntervention,
     CausalLimits,
     LinearRecipe,
     Recipe,
@@ -61,7 +62,7 @@ class RunRequest:
             math.isfinite(self.max_seconds) and self.max_seconds > 0
         ):
             raise ValueError("max_seconds must be finite and positive")
-        if isinstance(self.recipe, CalibratedPopulationGraph):
+        if isinstance(self.recipe, (CalibratedPopulationGraph, CalibratedPopulationIntervention)):
             preflight_calibrated_generation(
                 self.recipe,
                 seed=self.seed,
@@ -241,7 +242,8 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
     candidate = fields.get("recipe")
     if (
         type(candidate) is dict
-        and cast(dict[str, Any], candidate).get("version") == "calibrated-population-graph-v1"
+        and cast(dict[str, Any], candidate).get("version")
+        in ("calibrated-population-graph-v1", "calibrated-population-intervention-v1")
         and any(fields.get(key) is not None for key in ("construction", "sampling"))
     ):
         raise ValueError("fixed calibrated population cannot use construction or sampling")
@@ -257,9 +259,9 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
         if "recipe" not in fields and construction is not None
         else fields.pop("recipe", None)
     )
-    if (
-        type(raw_recipe) is dict
-        and cast(dict[str, Any], raw_recipe).get("version") == "calibrated-population-graph-v1"
+    if type(raw_recipe) is dict and cast(dict[str, Any], raw_recipe).get("version") in (
+        "calibrated-population-graph-v1",
+        "calibrated-population-intervention-v1",
     ):
         raw_recipe = cast(dict[str, Any], raw_recipe)
         preflight_calibrated_generation(
@@ -272,7 +274,12 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
         if construction is not None or fields.get("sampling") is not None:
             raise ValueError("fixed calibrated population cannot use construction or sampling")
         try:
-            task_fields = dict(raw_recipe["original"]["request"]["base"]["task"])
+            task_source = (
+                raw_recipe["base"]
+                if raw_recipe["version"] == "calibrated-population-intervention-v1"
+                else raw_recipe
+            )
+            task_fields = dict(task_source["original"]["request"]["base"]["task"])
             if type(task_fields["class_offsets"]) not in (tuple, list):
                 raise ValueError("class_offsets must be an array")
             task_fields["class_offsets"] = tuple(task_fields["class_offsets"])

@@ -10,6 +10,7 @@ from r0.modules.priors.lib.causal_intervention_execution import InterventionExec
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
 from r0.modules.priors.lib.population_calibrated_output import apply_population_calibration
+from r0.modules.priors.lib.population_generation_identity import preflight_calibrated_generation
 from r0.modules.priors.lib.recursive_population_graph_intervention import (
     generate_population_graph_intervention,
 )
@@ -20,6 +21,7 @@ from r0.modules.priors.lib.training_task import TrainingTask
 def generate_calibrated_intervention(
     recipe: CalibratedPopulationIntervention, *, seed: int, task_id: int, device: str = "cpu"
 ) -> TrainingTask:
+    preflight_calibrated_generation(recipe, seed=seed, task_id=task_id, device=device)
     recipe.validate()
     raw = generate_population_graph_intervention(
         recipe.original, seed=seed, task_id=task_id, device=device

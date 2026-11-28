@@ -16,6 +16,7 @@ def preflight_calibrated_generation(
         raise ValueError("calibrated population generation requires CPU execution")
     if type(count) is not int or count != 1:
         raise ValueError("calibrated population generation requires count=1 for its fixed identity")
+    source = _baseline_source(source)
     if type(source) is CalibratedPopulationGraph:
         if (
             source.version != "calibrated-population-graph-v1"
@@ -35,3 +36,26 @@ def preflight_calibrated_generation(
     population_identity(cast(int, expected[0]), cast(int, expected[1]))
     if (seed, task_id) != expected:
         raise ValueError("calibrated population generation requires its exact retained identity")
+
+
+def _baseline_source(source: object) -> object:
+    from r0.modules.priors.lib.calibrated_population_intervention import (
+        CalibratedPopulationIntervention,
+    )
+    from r0.modules.priors.lib.recursive_population_graph_intervention import (
+        RecursivePopulationGraphIntervention,
+    )
+
+    if type(source) is CalibratedPopulationIntervention:
+        if (
+            source.version != "calibrated-population-intervention-v1"
+            or type(source.original) is not RecursivePopulationGraphIntervention
+        ):
+            raise ValueError("calibrated intervention requires its retained original identity")
+        return source.base
+    elif (
+        type(source) is dict
+        and cast(dict[str, Any], source).get("version") == "calibrated-population-intervention-v1"
+    ):
+        return cast(dict[str, Any], source).get("base")
+    return cast(object, source)
