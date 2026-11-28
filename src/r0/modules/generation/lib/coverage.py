@@ -125,6 +125,9 @@ class CoveragePlan:
             data["hierarchy"]["weights"] = sorted(data["hierarchy"]["weights"])
         data["strata"] = sorted(data["strata"], key=lambda s: s["key"])
         for stratum in data["strata"]:
+            observation = stratum["request"].get("observation")
+            if observation is not None and not observation.get("quantiles"):
+                observation.pop("quantiles", None)
             stratum["tags"] = sorted(stratum["tags"])
         return _canonical(data)
 

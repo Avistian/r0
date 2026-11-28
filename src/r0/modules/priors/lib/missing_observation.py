@@ -21,6 +21,11 @@ from r0.modules.priors.lib.observation_encoding import (
     column_encodings_from_dict,
     encode_observation_columns,
 )
+from r0.modules.priors.lib.quantile_observation import (
+    QuantileColumnSpec,
+    quantile_observation,
+    quantile_specs_from_dict,
+)
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 from r0.modules.priors.lib.training_features import TrainingFeature
 
@@ -93,6 +98,7 @@ def observe_missingness(
     seed: int,
     measurements: tuple[MeasurementStage, ...] = (),
     encodings: tuple[ColumnEncoding, ...] = (),
+    quantiles: tuple[QuantileColumnSpec, ...] = (),
     latent: torch.Tensor | None = None,
     latent_provenance: str | None = None,
     limits: CausalLimits = _DEFAULT,
@@ -125,10 +131,17 @@ def observe_missingness(
     if type(measurements) is not tuple:
         raise ValueError("observation measurements must be an immutable tuple")
     measured = task.inputs
+    quantile_record = None
+    if type(quantiles) is not tuple:
+        raise ValueError("quantile specifications must be immutable")
+    if quantiles:
+        measured, quantile_record = quantile_observation(
+            quantiles, measured, task.context_indices, task.feature_schema, limits
+        )
     measurement_record = None
     if measurements:
         measured, measurement_record = measure_observation(
-            measurements, task.inputs, task.feature_schema, seed=seed, source=source, limits=limits
+            measurements, measured, task.feature_schema, seed=seed, source=source, limits=limits
         )
     if type(encodings) is not tuple:
         raise ValueError("observation encodings must be an immutable tuple")
@@ -178,6 +191,9 @@ def observe_missingness(
     if encoding_record is not None:
         record["version"] = "r0-missing-observation-v3"
         record["encoding"] = encoding_record
+    if quantile_record is not None:
+        record["version"] = "r0-missing-observation-v4"
+        record["quantile"] = quantile_record
     truth = ObservationTruth(
         task.inputs.clone(),
         torch.tensor(sampled.probabilities),
@@ -234,11 +250,16 @@ def validate_missing_observation(task: TrainingTask) -> None:
         "driver_provenance",
     }
     if record.get("version") == "r0-missing-observation-v2" or (
-        record.get("version") == "r0-missing-observation-v3" and "measurement" in record
+        record.get("version") in ("r0-missing-observation-v3", "r0-missing-observation-v4")
+        and "measurement" in record
     ):
         expected_fields.add("measurement")
-    if record.get("version") == "r0-missing-observation-v3":
+    if record.get("version") == "r0-missing-observation-v3" or (
+        record.get("version") == "r0-missing-observation-v4" and "encoding" in record
+    ):
         expected_fields.add("encoding")
+    if record.get("version") == "r0-missing-observation-v4":
+        expected_fields.add("quantile")
     source = json.loads(task.recipe_json)
     if (
         set(record) != expected_fields
@@ -247,6 +268,7 @@ def validate_missing_observation(task: TrainingTask) -> None:
             "r0-missing-observation-v1",
             "r0-missing-observation-v2",
             "r0-missing-observation-v3",
+            "r0-missing-observation-v4",
         )
         or encode(source.get("observation")) != encode(record)
         or _identities(record) != (task.source_task_id, task.episode_id)
@@ -256,10 +278,20 @@ def validate_missing_observation(task: TrainingTask) -> None:
     if "encoding" in record:
         source_schema = _source_schema(record)
     measured = raw
+    if "quantile" in record:
+        measured, expected_quantile = quantile_observation(
+            quantile_specs_from_dict(record["quantile"]["specs"]),
+            raw,
+            task.context_indices,
+            source_schema,
+            CausalLimits(**record["limits"]),
+        )
+        if encode(expected_quantile) != encode(record["quantile"]):
+            raise ValueError("quantile receipt differs from retained context replay")
     if "measurement" in record:
         measured, expected_measurement = measure_observation(
             measurement_stages_from_dict(record["measurement"]["stages"]),
-            raw,
+            measured,
             source_schema,
             seed=record["seed"],
             source=source,

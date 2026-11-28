@@ -87,6 +87,7 @@ class TrainingTask:
                 "r0-missing-observation-v1",
                 "r0-missing-observation-v2",
                 "r0-missing-observation-v3",
+                "r0-missing-observation-v4",
             )
         ):
             validate_missing_observation(self)

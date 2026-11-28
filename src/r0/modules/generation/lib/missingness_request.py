@@ -12,10 +12,12 @@ from r0.modules.priors import (
     ColumnEncoding,
     MeasurementStage,
     MissingnessPlan,
+    QuantileColumnSpec,
     TrainingTask,
     column_encodings_from_dict,
     measurement_stages_from_dict,
     observe_missingness,
+    quantile_specs_from_dict,
     restore_observation_source,
 )
 
@@ -28,8 +30,16 @@ class ObservationRequest:
     latent_provenance: str | None = None
     measurements: tuple[MeasurementStage, ...] = ()
     encodings: tuple[ColumnEncoding, ...] = ()
+    quantiles: tuple[QuantileColumnSpec, ...] = ()
 
     def __post_init__(self) -> None:
+        if (
+            type(self.quantiles) is not tuple
+            or len(self.quantiles) > 256
+            or any(type(s) is not QuantileColumnSpec for s in self.quantiles)
+            or len({s.column for s in self.quantiles}) != len(self.quantiles)
+        ):
+            raise ValueError("quantiles require unique bounded column specifications")
         if (
             type(self.encodings) is not tuple
             or len(self.encodings) > 256
@@ -69,6 +79,7 @@ class ObservationRequest:
             seed=self.seed,
             measurements=self.measurements,
             encodings=self.encodings,
+            quantiles=self.quantiles,
             latent=torch.tensor(self.latent, dtype=torch.float64) if self.latent else None,
             latent_provenance=self.latent_provenance,
             limits=limits,
@@ -80,7 +91,9 @@ class ObservationRequest:
             return False
         actual = cast(dict[str, Any], actual)
         expected = {
-            "version": "r0-missing-observation-v3"
+            "version": "r0-missing-observation-v4"
+            if self.quantiles
+            else "r0-missing-observation-v3"
             if self.encodings
             else "r0-missing-observation-v2"
             if self.measurements
@@ -92,6 +105,14 @@ class ObservationRequest:
             if self.plan.mode == "mnar-target"
             else self.latent_provenance,
         }
+        if bool(actual.get("quantile")) != bool(self.quantiles):
+            return False
+        if self.quantiles:
+            quantile = actual.get("quantile")
+            if type(quantile) is not dict or json.dumps(
+                cast(dict[str, Any], quantile).get("specs"), sort_keys=True
+            ) != json.dumps([asdict(s) for s in self.quantiles], sort_keys=True):
+                return False
         if self.encodings:
             encoding = actual.get("encoding")
             if type(encoding) is not dict or json.dumps(
@@ -128,6 +149,11 @@ class ObservationRequest:
 
 def observation_request_from_dict(data: dict[str, Any]) -> ObservationRequest:
     fields: dict[str, Any] = dict(data)
+    if "quantiles" in fields:
+        value = fields["quantiles"]
+        if type(value) not in (list, tuple):
+            raise ValueError("quantiles must be an array")
+        fields["quantiles"] = quantile_specs_from_dict(value) if value else ()
     if "encodings" in fields:
         value = fields["encodings"]
         if type(value) not in (list, tuple):

@@ -153,6 +153,8 @@ def _run(
     else:
         if not request.observation.measurements:
             config["observation"].pop("measurements")
+        if not request.observation.quantiles:
+            config["observation"].pop("quantiles")
         if not request.observation.encodings:
             config["observation"].pop("encodings")
     config["format"] = "generation-run-v1" if request.sampling is None else "generation-run-v2"

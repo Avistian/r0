@@ -96,6 +96,7 @@ from r0.modules.priors.lib.quantile_map import (
     fit_quantile_map,
     fitted_quantile_map_from_dict,
 )
+from r0.modules.priors.lib.quantile_observation import QuantileColumnSpec, quantile_specs_from_dict
 from r0.modules.priors.lib.score_ensemble import score_ensemble_recipe
 from r0.modules.priors.lib.soft_tree import SoftTreeBranch, compile_soft_tree
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction as FrozenNetworkFunction
@@ -249,3 +250,5 @@ __all__ += ["column_encodings_from_dict"]
 __all__ += ["NumericProjectionSplit", "mixed_model_tree_recipe"]
 
 __all__ += ["FittedQuantileMap", "fit_quantile_map", "fitted_quantile_map_from_dict"]
+
+__all__ += ["QuantileColumnSpec", "quantile_specs_from_dict"]
