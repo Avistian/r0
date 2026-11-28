@@ -7,7 +7,6 @@ function gpRootCurveControls(){
   $("curve-description").textContent="Clamp every observed input while preserving the selected original row's hidden GP coordinates. Choose retained or zero structural innovations. The original independent fit remains fixed; no new GP population or target fit is created. This is not a conditional expectation.";
   $("curve").textContent="Evaluate GP causal reference";
   $("curve-points").max=129;
-  if(number("curve-points")>129)$("curve-points").value=33;
   $("gp-root-reference-metric").querySelector('option[value="scores"]').textContent=current.view.recipe.recipe.version==="gp-root-dag-v1"?"Target score (no independent fit)":"Fixed-calibrated target score";
   const categorical=current.view.task_type!=="regression";
   for(const option of $("gp-root-reference-metric").options)option.disabled=option.value==="probabilities"?!categorical:option.value==="target_mean"?categorical:false;
