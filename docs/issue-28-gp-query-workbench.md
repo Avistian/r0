@@ -15,6 +15,12 @@ Runs require one population. A failed construction leaves the active dataset
 unchanged. Graph/task geometry controls remain unavailable on calibrated archives;
 new task geometry starts from an explicit original construction.
 
+Raw location controls are checked against the retained location law, row count,
+coordinate dimension and finite numeric schema before copying them. Constructor
+and producer matching share the prospective query planner. Fixed-coordinate
+replacements have identical metadata geometry and scalar charges, so the complete
+future envelope is admitted before the normalized coordinate tuples are allocated.
+
 All four graph families are supported for regression. Functional binary and
 multiclass targets preserve their fixed calibration and stochastic adapter laws.
 Direct native categorical targets retain the existing category-preserving

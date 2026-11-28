@@ -5,7 +5,7 @@ from typing import Any
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.gp_root_calibration_decoding import gp_root_calibration_from_dict
 from r0.modules.priors.lib.gp_root_query import realize_gp_root_calibration_query
-from r0.modules.priors.lib.gp_root_query_admission import preflight_gp_root_calibration_query
+from r0.modules.priors.lib.gp_root_query_admission import query_construction_plan
 from r0.modules.priors.lib.gp_root_query_decoding import gp_root_calibration_query_from_dict
 
 
@@ -14,15 +14,13 @@ def construct_gp_root_calibration_query(
 ):
     if type(data) is not dict or set(data) != {"source", "locations"}:
         raise ValueError("GP query requires complete source and explicit location controls")
-    locations = data["locations"]
-    if locations is not None:
-        if type(locations) not in (list, tuple) or any(
-            type(row) not in (list, tuple) for row in locations
-        ):
-            raise ValueError("GP query locations require a matrix or null")
-        locations = tuple(tuple(row) for row in locations)
-    preflight_gp_root_calibration_query(
-        data["source"], seed=seed, task_id=task_id, locations=locations, limits=limits
+    _, request = query_construction_plan(
+        data["source"],
+        seed=seed,
+        task_id=task_id,
+        locations=data["locations"],
+        limits=limits,
+        raw_locations=True,
     )
     decoder = (
         gp_root_calibration_query_from_dict
@@ -31,7 +29,7 @@ def construct_gp_root_calibration_query(
     )
     source = decoder(data["source"], limits=limits)
     return realize_gp_root_calibration_query(
-        source, seed=seed, task_id=task_id, locations=locations, limits=limits
+        source, seed=seed, task_id=task_id, locations=request.locations, limits=limits
     )
 
 
@@ -46,7 +44,6 @@ def gp_query_construction_matches(
     from dataclasses import asdict
 
     from r0.modules.priors.lib.gp_column_decoding import gp_payload_equal
-    from r0.modules.priors.lib.gp_root_query_admission import query_construction_plan
     from r0.modules.priors.lib.gp_root_query_metadata import query_source_metadata
     from r0.modules.priors.lib.gp_task_validation import validate_gp_execution
 
@@ -69,11 +66,13 @@ def gp_query_construction_matches(
             raw["source"], controls["source"]
         ):
             return False
-        locations = controls["locations"]
-        if locations is not None:
-            locations = tuple(tuple(row) for row in locations)
         metadata, request = query_construction_plan(
-            controls["source"], seed=seed, task_id=task_id, locations=locations, limits=limits
+            controls["source"],
+            seed=seed,
+            task_id=task_id,
+            locations=controls["locations"],
+            limits=limits,
+            raw_locations=True,
         )
         query_source_metadata(raw, limits=limits)
         current = raw["original"]["source"]
