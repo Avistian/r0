@@ -9,6 +9,12 @@ from .calibrated_population_intervention import (
 from .calibrated_population_pairs import (
     generate_calibrated_population_pair as generate_calibrated_population_pair,
 )
+from .calibrated_population_query import (
+    CalibratedPopulationQuery as CalibratedPopulationQuery,
+)
+from .calibrated_population_query import (
+    realize_calibrated_population_query as realize_calibrated_population_query,
+)
 from .population_generation_identity import (
     preflight_calibrated_generation as preflight_calibrated_generation,
 )

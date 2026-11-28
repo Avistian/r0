@@ -7,6 +7,10 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 
 def population_recipe_from_dict(fields: dict[str, Any], *, limits: CausalLimits):
     version = fields.get("version", "linear-v1")
+    if version == "calibrated-population-query-v1":
+        from r0.modules.priors.lib.calibrated_query_decoding import calibrated_query_from_dict
+
+        return calibrated_query_from_dict(fields, limits=limits)
     if version == "calibrated-population-intervention-v1":
         from r0.modules.priors.lib.calibrated_population_intervention_decoding import (
             calibrated_intervention_from_dict,

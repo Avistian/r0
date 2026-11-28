@@ -27,6 +27,7 @@ from r0.modules.generation.lib.requests import (
 from r0.modules.priors import (
     CalibratedPopulationGraph,
     CalibratedPopulationIntervention,
+    CalibratedPopulationQuery,
     TrainingTask,
     explain_generation,
 )
@@ -203,7 +204,12 @@ def _run(
                             raise ValueError("producer returned a different task or recipe")
                         selected = selected_recipe(request, task_id)
                         if isinstance(
-                            selected, (CalibratedPopulationGraph, CalibratedPopulationIntervention)
+                            selected,
+                            (
+                                CalibratedPopulationGraph,
+                                CalibratedPopulationIntervention,
+                                CalibratedPopulationQuery,
+                            ),
                         ):
                             explain_generation(
                                 task, [0], limits=request.causal_limits or selected.limits

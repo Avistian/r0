@@ -6,15 +6,16 @@ from typing import Any
 from r0.modules.priors.lib.calibrated_population_intervention import (
     CalibratedPopulationIntervention,
 )
+from r0.modules.priors.lib.calibrated_population_query import CalibratedPopulationQuery
+from r0.modules.priors.lib.calibrated_query_decoding import (
+    calibrated_source_from_dict,
+    query_source_metadata,
+)
 from r0.modules.priors.lib.causal_intervention_records import CausalInterventionRecipe
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.joint_function_admission import function_record_cost
 from r0.modules.priors.lib.population_calibration_custody import preflight_calibration_custody
-from r0.modules.priors.lib.population_calibration_decoding import (
-    calibrated_population_from_dict,
-    preflight_calibrated_population,
-)
 from r0.modules.priors.lib.population_graph_intervention_decoding import (
     population_graph_intervention_from_dict,
     preflight_population_graph_intervention,
@@ -43,15 +44,18 @@ def _aggregate(
 
 
 def admit_calibrated_change(
-    base: CalibratedPopulationGraph, change: CausalInterventionRecipe
+    base: CalibratedPopulationGraph | CalibratedPopulationQuery, change: CausalInterventionRecipe
 ) -> None:
-    reports = [
-        r.admit(limits=base.limits)
-        for r in (base.original.request, base.calibration_population.request, base.original.request)
-    ]
-    reports.append(change.admit())
     numbers, storage = function_record_cost((base, change), base.limits)
-    _aggregate(reports, numbers, storage, base.limits)
+    _, _, _, _, _, reports, _, _ = query_source_metadata(
+        asdict(base), limits=base.limits, verify_streams=False
+    )
+    _aggregate(
+        [*reports, base.original.request.admit(limits=base.limits), change.admit()],
+        numbers,
+        storage,
+        base.limits,
+    )
 
 
 def preflight_calibrated_intervention(data: Any, *, limits: CausalLimits):
@@ -60,23 +64,17 @@ def preflight_calibrated_intervention(data: Any, *, limits: CausalLimits):
     numbers, storage = population_raw_cost(raw, limits)
     if numbers >= limits.parameters or 8 * storage >= limits.working_bytes:
         raise ValueError("calibrated intervention metadata exceeds caller limits")
-    base, _, cap = preflight_calibrated_population(
-        raw["base"], limits=limits, validate_identity=False
+    _, _, current, _, cap, reports, _, _ = query_source_metadata(
+        raw["base"], limits=limits, verify_streams=False
     )
-    if encode(raw["original"].get("base")) != encode(base["original"]):
+    if encode(raw["original"].get("base")) != encode(current):
         raise ValueError("calibrated intervention must retain its exact original population")
     preflight_calibration_custody(raw["original"], cap)
     _, _, _, _, after_report = preflight_population_graph_intervention(raw["original"], limits=cap)
-    reports: list[dict[str, int]] = []
-    for population in (base["original"], base["calibration_population"], raw["original"]["base"]):
-        preview = authored_semantic_preview(recursive_authored_preview(population["request"]))
-        request = recursive_population_graph_request_from_dict(preview, limits=cap)
-        reports.append(request.admit(limits=cap))
-    reports.append(after_report)
-    _aggregate(reports, numbers, storage, cap)
-    from r0.modules.priors.lib.population_calibration_identity import validate_calibration_identity
-
-    validate_calibration_identity(base["calibration_population"])
+    preview = authored_semantic_preview(recursive_authored_preview(current["request"]))
+    request = recursive_population_graph_request_from_dict(preview, limits=cap)
+    _aggregate([*reports, request.admit(limits=cap), after_report], numbers, storage, cap)
+    query_source_metadata(raw["base"], limits=cap)
     return raw, cap
 
 
@@ -84,7 +82,7 @@ def calibrated_intervention_from_dict(data: Any, *, limits: CausalLimits):
     try:
         raw, cap = preflight_calibrated_intervention(data, limits=limits)
         result = CalibratedPopulationIntervention(
-            calibrated_population_from_dict(raw["base"], limits=cap),
+            calibrated_source_from_dict(raw["base"], limits=cap),
             population_graph_intervention_from_dict(raw["original"], limits=cap),
             raw["version"],
         )

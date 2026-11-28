@@ -60,6 +60,16 @@ def calibrated_population_steps(
         )
         execution = InterventionExecution(changed.original.change)
         role = "counterfactual raw population; baseline calibration remains fixed"
+    elif record["recipe"].get("version") == "calibrated-population-query-v1":
+        from r0.modules.priors.lib.calibrated_query_decoding import calibrated_query_from_dict
+        from r0.modules.priors.lib.calibrated_query_output import generate_calibrated_query
+
+        recipe = calibrated_query_from_dict(record["recipe"], limits=cap)
+        replay = generate_calibrated_query(recipe, seed=record["seed"], task_id=record["task_id"])
+        original = generate_recursive_population_graph(
+            recipe.original, seed=record["seed"], task_id=record["task_id"]
+        )
+        role = "fresh query population; complete source lineage and baseline calibration retained"
     else:
         recipe = calibrated_population_from_dict(record["recipe"], limits=cap)
         replay = generate_calibrated_population(

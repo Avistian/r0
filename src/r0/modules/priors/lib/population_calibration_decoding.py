@@ -37,7 +37,7 @@ from r0.modules.priors.lib.representatives import encode, record_fingerprint
 _DEFAULT_LIMITS = CausalLimits()
 
 
-def _population_metadata(data: Any, limits: CausalLimits):
+def calibration_population_metadata(data: Any, limits: CausalLimits):
     raw = complete_version(data, RecursivePopulationGraph)
     population_identity(raw["seed"], raw["task_id"])
     request_raw, _, _, _, effective, plans = admit_population_graph_request(raw["request"], limits)
@@ -130,8 +130,8 @@ def preflight_calibrated_population(
     from r0.modules.priors.lib.population_calibration_custody import preflight_calibration_custody
 
     preflight_calibration_custody(data, cap)
-    original, query = _population_metadata(raw["original"], cap)
-    fit, fit_request = _population_metadata(raw["calibration_population"], cap)
+    original, query = calibration_population_metadata(raw["original"], cap)
+    fit, fit_request = calibration_population_metadata(raw["calibration_population"], cap)
     if not isinstance(query.base, FunctionalCausalRecipe) and query.task.task_type != "regression":
         raise ValueError("direct category targets cannot be numerically calibrated")
     width = len(query.base.target) if isinstance(query.base, FunctionalCausalRecipe) else 1

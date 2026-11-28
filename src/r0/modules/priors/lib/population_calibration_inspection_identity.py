@@ -21,7 +21,11 @@ def preflight_calibrated_inspection(task: TrainingTask, record: dict[str, Any]) 
     )
     if execution["implementation"] != source["version"]:
         raise ValueError("calibrated inspection implementation differs from retained source")
-    original = source["original"]
+    original = (
+        source["base"]["original"]
+        if source["version"] == "calibrated-population-intervention-v1"
+        else source["original"]
+    )
     request = original.get("request")
     base = cast(dict[str, Any], request).get("base") if type(request) is dict else None
     geometry = cast(dict[str, Any], base).get("task") if type(base) is dict else None

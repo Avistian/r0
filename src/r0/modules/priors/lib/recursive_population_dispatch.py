@@ -3,6 +3,7 @@
 from r0.modules.priors.lib.calibrated_population_intervention import (
     CalibratedPopulationIntervention,
 )
+from r0.modules.priors.lib.calibrated_population_query import CalibratedPopulationQuery
 from r0.modules.priors.lib.population_recipe_decoding import (
     population_recipe_from_dict as population_recipe_from_dict,
 )
@@ -16,7 +17,8 @@ from r0.modules.priors.lib.recursive_population_records import RecursivePopulati
 from r0.modules.priors.lib.training_task import TrainingTask
 
 type PopulationRecipe = (
-    CalibratedPopulationGraph
+    CalibratedPopulationQuery
+    | CalibratedPopulationGraph
     | CalibratedPopulationIntervention
     | RecursivePopulationRecipe
     | RecursivePopulationIntervention
@@ -25,6 +27,7 @@ type PopulationRecipe = (
 )
 
 POPULATION_TYPES = (
+    CalibratedPopulationQuery,
     CalibratedPopulationGraph,
     CalibratedPopulationIntervention,
     RecursivePopulationRecipe,
@@ -41,6 +44,10 @@ def generate_population_recipe(
     task_id: int,
     device: str,
 ) -> TrainingTask:
+    if isinstance(recipe, CalibratedPopulationQuery):
+        from r0.modules.priors.lib.calibrated_query_output import generate_calibrated_query
+
+        return generate_calibrated_query(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, CalibratedPopulationIntervention):
         from r0.modules.priors.lib.calibrated_population_intervention_output import (
             generate_calibrated_intervention,

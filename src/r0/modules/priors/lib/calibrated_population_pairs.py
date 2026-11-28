@@ -10,9 +10,9 @@ from r0.modules.priors.lib.calibrated_population_intervention import (
 from r0.modules.priors.lib.calibrated_population_intervention_output import (
     generate_calibrated_intervention,
 )
+from r0.modules.priors.lib.calibrated_population_query import CalibratedPopulationQuery
 from r0.modules.priors.lib.causal_intervention_records import CausalInterventionRecipe
 from r0.modules.priors.lib.causal_limits import CausalLimits
-from r0.modules.priors.lib.population_calibrated_output import generate_calibrated_population
 from r0.modules.priors.lib.population_graph_comparison import population_graph_pair_card
 from r0.modules.priors.lib.population_target_calibration import CalibratedPopulationGraph
 from r0.modules.priors.lib.population_task_semantics import (
@@ -24,7 +24,7 @@ from r0.modules.priors.lib.training_task import TrainingTask
 
 
 def calibrated_pair_card(
-    base: CalibratedPopulationGraph,
+    base: CalibratedPopulationGraph | CalibratedPopulationQuery,
     changed: CalibratedPopulationIntervention,
     before: TrainingTask,
     after: TrainingTask,
@@ -46,14 +46,14 @@ def calibrated_pair_card(
 
 
 def generate_calibrated_population_pair(
-    base: CalibratedPopulationGraph, change: CausalInterventionRecipe
+    base: CalibratedPopulationGraph | CalibratedPopulationQuery, change: CausalInterventionRecipe
 ):
     from r0.modules.priors.lib.pairs import TaskPair
 
     changed = intervene_calibrated_population(base, change)
-    before = generate_calibrated_population(
-        base, seed=base.original.seed, task_id=base.original.task_id
-    )
+    from r0.modules.priors.lib.generate import generate_task
+
+    before = generate_task(base, seed=base.original.seed, task_id=base.original.task_id)
     after = generate_calibrated_intervention(
         changed, seed=base.original.seed, task_id=base.original.task_id
     )

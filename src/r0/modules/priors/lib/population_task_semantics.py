@@ -34,6 +34,7 @@ def is_population_task_record(record: Any, card: Any) -> bool:
         return False
     recipe = cast(dict[str, Any], record).get("recipe")
     return type(recipe) is dict and cast(dict[str, Any], recipe).get("version") in (
+        "calibrated-population-query-v1",
         "calibrated-population-graph-v1",
         "calibrated-population-intervention-v1",
         "recursive-population-v1",

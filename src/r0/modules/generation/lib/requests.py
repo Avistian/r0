@@ -9,6 +9,7 @@ from r0.modules.generation.lib.construction import GraphConstruction
 from r0.modules.priors import (
     CalibratedPopulationGraph,
     CalibratedPopulationIntervention,
+    CalibratedPopulationQuery,
     CausalLimits,
     LinearRecipe,
     Recipe,
@@ -62,7 +63,14 @@ class RunRequest:
             math.isfinite(self.max_seconds) and self.max_seconds > 0
         ):
             raise ValueError("max_seconds must be finite and positive")
-        if isinstance(self.recipe, (CalibratedPopulationGraph, CalibratedPopulationIntervention)):
+        if isinstance(
+            self.recipe,
+            (
+                CalibratedPopulationGraph,
+                CalibratedPopulationIntervention,
+                CalibratedPopulationQuery,
+            ),
+        ):
             preflight_calibrated_generation(
                 self.recipe,
                 seed=self.seed,
@@ -243,7 +251,11 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
     if (
         type(candidate) is dict
         and cast(dict[str, Any], candidate).get("version")
-        in ("calibrated-population-graph-v1", "calibrated-population-intervention-v1")
+        in (
+            "calibrated-population-graph-v1",
+            "calibrated-population-intervention-v1",
+            "calibrated-population-query-v1",
+        )
         and any(fields.get(key) is not None for key in ("construction", "sampling"))
     ):
         raise ValueError("fixed calibrated population cannot use construction or sampling")
@@ -262,6 +274,7 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
     if type(raw_recipe) is dict and cast(dict[str, Any], raw_recipe).get("version") in (
         "calibrated-population-graph-v1",
         "calibrated-population-intervention-v1",
+        "calibrated-population-query-v1",
     ):
         raw_recipe = cast(dict[str, Any], raw_recipe)
         preflight_calibrated_generation(

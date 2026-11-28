@@ -2,6 +2,7 @@
 
 from dataclasses import asdict, dataclass
 
+from r0.modules.priors.lib.calibrated_population_query import CalibratedPopulationQuery
 from r0.modules.priors.lib.causal_intervention_records import CausalInterventionRecipe
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.exact_frozen_record import exact_frozen_equal
@@ -15,7 +16,7 @@ from r0.modules.priors.lib.recursive_population_graph_intervention import (
 
 @dataclass(frozen=True, slots=True)
 class CalibratedPopulationIntervention:
-    base: CalibratedPopulationGraph
+    base: CalibratedPopulationGraph | CalibratedPopulationQuery
     original: RecursivePopulationGraphIntervention
     version: str = "calibrated-population-intervention-v1"
 
@@ -37,7 +38,7 @@ class CalibratedPopulationIntervention:
         )
 
         if (
-            type(self.base) is not CalibratedPopulationGraph
+            type(self.base) not in (CalibratedPopulationGraph, CalibratedPopulationQuery)
             or type(self.original) is not RecursivePopulationGraphIntervention
             or self.version != "calibrated-population-intervention-v1"
             or not exact_frozen_equal(self.original.base, self.base.original)
@@ -51,13 +52,16 @@ class CalibratedPopulationIntervention:
 
 
 def intervene_calibrated_population(
-    base: CalibratedPopulationGraph, change: CausalInterventionRecipe
+    base: CalibratedPopulationGraph | CalibratedPopulationQuery, change: CausalInterventionRecipe
 ) -> CalibratedPopulationIntervention:
     from r0.modules.priors.lib.calibrated_population_intervention_decoding import (
         admit_calibrated_change,
     )
 
-    if type(base) is not CalibratedPopulationGraph or type(change) is not CausalInterventionRecipe:
+    if (
+        type(base) not in (CalibratedPopulationGraph, CalibratedPopulationQuery)
+        or type(change) is not CausalInterventionRecipe
+    ):
         raise ValueError("calibrated intervention requires a retained baseline and causal change")
     if not exact_frozen_equal(change.base, base.original.request.base):
         raise ValueError("calibrated intervention change must retain the original authored DAG")
