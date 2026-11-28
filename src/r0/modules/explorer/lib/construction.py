@@ -24,6 +24,7 @@ from r0.modules.explorer.lib.population_dag_examples import population_dag_examp
 from r0.modules.explorer.lib.prototype_root_examples import prototype_root_examples
 from r0.modules.explorer.lib.source_root_examples import source_root_examples
 from r0.modules.explorer.lib.topology_hyperprior_examples import topology_hyperprior_examples
+from r0.modules.explorer.lib.typed_parent_topology_examples import typed_parent_topology_examples
 from r0.modules.explorer.lib.typed_topology_examples import typed_topology_examples
 from r0.modules.explorer.lib.xgboost_examples import xgboost_examples
 from r0.modules.explorer.lib.xgboost_population_examples import xgboost_population_examples
@@ -104,6 +105,7 @@ def construction_examples() -> dict[str, Any]:
         **converted_examples(),
         **topology_hyperprior_examples(),
         **typed_topology_examples(),
+        **typed_parent_topology_examples(),
         **{
             f"Numerical pipeline: {variant}": {
                 **geometry,

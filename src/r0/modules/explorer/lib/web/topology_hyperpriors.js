@@ -1,4 +1,10 @@
 "use strict";
+function topologySizeVisibility(){
+  const retained=$("topology-size").value==="retained";
+  $("topology-parent-label").hidden=!retained;
+  for(const id of ["nodes","log-low","log-high","round","shape","rate","components","transform"])$("topology-"+id).parentElement.hidden=retained;
+}
+$("topology-size").onchange=topologySizeVisibility;
 function topologyDraft() {
   const draft=JSON.parse($("construction-controls").value);
   if(!["joint-topology-hyperprior","authored-topology-hyperprior","typed-topology-hyperprior"].includes(draft.topology)) throw new Error("Choose a Topology hyperprior construction first.");
@@ -7,7 +13,13 @@ function topologyDraft() {
 function topologyLoad() {
   const draft=topologyDraft(), req=draft.request, top=req.topology;
   $("topology-engine").value=draft.engine;
-  $("topology-size").value=top.version==="topology-hyperprior-r0-v1"?"log":"fixed";
+  const composed=req.version==="typed-parent-topology-request-r0-v1";
+  $("topology-size").querySelector('[value="retained"]').disabled=!composed;
+  $("topology-size").value=top.version==="fixed-parent-topology-r0-v1"?"retained":top.version==="topology-hyperprior-r0-v1"?"log":"fixed";
+  $("topology-parents").value=pretty(top.parents||[]);
+  $("topology-parent-composition").hidden=!composed;
+  if(composed)$("topology-composition").value=pretty(req.composition);
+  topologySizeVisibility();
   for(const [id,key] of [["nodes","nodes"],["log-low","log_nodes_low"],["log-high","log_nodes_high"],["round","rounding"],["shape","gamma_shape"],["rate","gamma_rate"],["components","components"],["transform","probability_transform"]]) if(top[key]!==undefined)$("topology-"+id).value=top[key];
   const typed=draft.topology==="typed-topology-hyperprior", joint=draft.topology==="joint-topology-hyperprior"||typed;
   $("topology-typed-controls").hidden=!typed;
@@ -35,9 +47,13 @@ $("topology-apply").onclick=()=>act("Updating topology draft…",async()=>{
     const value=Number($("topology-"+id).value);
     if(!Number.isFinite(value))throw new Error("Topology controls must be finite.");return value;
   };
+  if($("topology-size").value==="retained")req.topology={parents:JSON.parse($("topology-parents").value),version:"fixed-parent-topology-r0-v1"};
+  else {
   req.topology={gamma_shape:numeric("shape"),gamma_rate:numeric("rate"),components:numeric("components"),probability_transform:$("topology-transform").value};
   if($("topology-size").value==="fixed")Object.assign(req.topology,{nodes:numeric("nodes"),version:"fixed-size-topology-hyperprior-r0-v1"});
   else Object.assign(req.topology,{log_nodes_low:numeric("log-low"),log_nodes_high:numeric("log-high"),rounding:$("topology-round").value,version:"topology-hyperprior-r0-v1"});
+  }
+  if(req.version==="typed-parent-topology-request-r0-v1")req.composition=JSON.parse($("topology-composition").value);
   draft.engine=$("topology-engine").value;
   if(["joint-topology-hyperprior","typed-topology-hyperprior"].includes(draft.topology)){
     req.mode=$("topology-mode").value;req.categorical_policy=$("topology-reuse").value;req.global_policy=$("topology-global").value;
@@ -60,7 +76,7 @@ $("topology-adopt-caps").onclick=()=>act("Applying explicit topology caps…",as
 $("topology-records").onclick=()=>act("Reading retained topology records…",async()=>{
   if(!current?.recipe_json)throw new Error("Construct or open a topology dataset first.");
   const recipe=JSON.parse(current.recipe_json).recipe;
-  if(!recipe.topology?.initial)throw new Error("The active dataset is not a topology hyperprior graph.");
+  if(!recipe.topology?.initial && recipe.topology?.version!=="retained-parent-topology-r0-v1")throw new Error("The active dataset is not a topology hyperprior graph.");
   $("topology-archive").value=current.recipe_json;
-  $("topology-summary").textContent=pretty({version:recipe.version,request:recipe.request,topology:recipe.topology.topology,topology_engine:recipe.topology.initial.engine,mechanism_engines:recipe.graph?.initial.map(s=>s.engine),raw_draw_count:recipe.graph?.raw?.length ?? recipe.graph?.raw_draws?.length ?? null,construction:"Exact integer snapshot payloads are retained in the raw text below and ZIP; this summary is descriptive."});
+  $("topology-summary").textContent=pretty({version:recipe.version,request:recipe.request,topology:recipe.topology.topology||recipe.topology.prior,topology_engine:recipe.topology.initial?.engine||recipe.initial?.[0].engine,composition:recipe.request.composition||null,mechanism_engines:recipe.graph?.initial.map(s=>s.engine),raw_draw_count:recipe.graph?.raw?.length ?? recipe.graph?.raw_draws?.length ?? null,construction:"Exact integer snapshot payloads are retained in the raw text below and ZIP; this summary is descriptive."});
 });

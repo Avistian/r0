@@ -4,7 +4,10 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
-    if recipe.get("version") == "sampled-typed-topology-r0-v1":
+    if recipe.get("version") in (
+        "sampled-typed-topology-r0-v1",
+        "sampled-typed-parent-topology-r0-v1",
+    ):
         return {
             "kind": "typed-topology",
             "request": recipe["request"],

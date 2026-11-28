@@ -1,9 +1,9 @@
 <details id="topology-workbench"><summary>Topology hyperpriors · authored, joint and typed geometry</summary>
-<p>Choose a “Topology hyperprior” construction above, then load its controls here. Log-size rounding and Gamma-to-probability mappings are explicit r0 reconstructions. Whole-support admission rejects an oversized request before drawing; no family is silently removed and numerical failures are not retried.</p>
+<p>Choose a “Topology hyperprior” or “Parent topology” construction above, then load its controls here. Log-size rounding and Gamma-to-probability mappings are explicit r0 reconstructions. Whole-support admission rejects an oversized request before drawing; no family is silently removed and numerical failures are not retried.</p>
 <div class="controls">
 <button id="topology-load">Load construction draft</button>
 <label>Generator engine<select id="topology-engine"><option>PCG64</option><option>PCG64DXSM</option><option>Philox</option><option>SFC64</option><option>MT19937</option></select></label>
-<label>Size law<select id="topology-size"><option value="fixed">Fixed node count</option><option value="log">Uniform log node count</option></select></label>
+<label>Size law<select id="topology-size"><option value="fixed">Fixed node count</option><option value="log">Uniform log node count</option><option value="retained">Explicit retained parents</option></select></label>
 <label>Fixed nodes<input id="topology-nodes" type="number" value="3" min="1"></label>
 <label>Log size low<input id="topology-log-low" type="number" step="any" value="1.0986122886681098"></label>
 <label>Log size high<input id="topology-log-high" type="number" step="any" value="1.3862943611198906"></label>
@@ -12,6 +12,11 @@
 <label>Gamma rate<input id="topology-rate" type="number" step="any" value="2"></label>
 <label>Components<input id="topology-components" type="number" value="1" min="1"></label>
 <label>Probability mapping<select id="topology-transform"><option value="gamma-odds-r0">g / (1 + g) · gamma-odds-r0</option><option value="gamma-exp-r0">1 − exp(−g) · gamma-exp-r0</option></select></label>
+</div>
+<label id="topology-parent-label" hidden>Ordered parent indices (one list per node)<textarea id="topology-parents" rows="5"></textarea></label>
+<div id="topology-parent-composition" hidden>
+<label>Parent composition source, mode and reduction<textarea id="topology-composition" rows="5"></textarea></label>
+<p>TabICLv2: concat or aggregate with sum, product, max or logsumexp. MITRA2: joint member plus one linear projection per parent, with mean, weighted, mlp, product or max. Extension: all seven reductions. Use “sample” to retain the full source-specific catalog. Redirection forests have at most one parent; explicit parent lists can express multi-parent interactions.</p>
 </div>
 <div id="topology-joint-controls">
 <div class="controls">
