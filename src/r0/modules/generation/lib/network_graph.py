@@ -29,6 +29,8 @@ def network_graph(data: dict[str, Any]) -> dict[str, Any]:
             "converted-causal-v1",
             "sampled-intervention-policy-v1",
             "sampled-typed-intervention-policy-v1",
+            "sampled-joint-hyperprior-graph-v1",
+            "sampled-hyperprior-graph-v1",
             "prototype-batch-network-realized-v1",
             "gp-root-dag-v1",
             "gp-root-calibration-v1",

@@ -27,13 +27,18 @@ window.r0request = async (action, data) => {
         )
         .replace(
             "/* CURVES */",
-            (assets / "curves.js").read_text()
+            (assets / "topology_curve_output.js").read_text()
+            + (assets / "curves.js").read_text()
             + "\n"
             + (assets / "gp_column_curves.js").read_text()
             + "\n"
             + (assets / "gp_target_edits.js").read_text(),
         )
         .replace("<!-- GP TARGET CONTROLS -->", (assets / "gp_column_curves.html").read_text())
+        .replace(
+            "<!-- TOPOLOGY REFERENCE OUTPUT -->",
+            (assets / "topology_curve_output.html").read_text(),
+        )
         .replace(
             "/* GRAPHS */",
             (assets / "graphs.js").read_text() + (assets / "gp_covariance.js").read_text(),
@@ -57,7 +62,8 @@ window.r0request = async (action, data) => {
             + (assets / "observations.html").read_text()
             + (assets / "convolutions.html").read_text()
             + (assets / "population_dags.html").read_text()
-            + (assets / "gp_roots.html").read_text(),
+            + (assets / "gp_roots.html").read_text()
+            + (assets / "topology_hyperpriors.html").read_text(),
         )
         .replace("<!-- NETWORK WORKBENCH -->", (assets / "network_workbench.html").read_text())
         .replace(
@@ -73,7 +79,12 @@ window.r0request = async (action, data) => {
             + (assets / "convolutions.js").read_text(),
         )
         .replace("<!-- FITTED CONTROLS -->", (assets / "fitted_controls.html").read_text())
-        .replace("/* WORKBENCH */", (assets / "workbench.js").read_text())
+        .replace(
+            "/* WORKBENCH */",
+            (assets / "workbench.js").read_text()
+            + "\n"
+            + (assets / "topology_hyperpriors.js").read_text(),
+        )
         .replace("/* NATIVE */", (assets / "native.js").read_text())
         .replace("/* INNOVATIONS */", (assets / "innovations.js").read_text())
         .replace("<!-- INNOVATIONS -->", (assets / "innovations.html").read_text())

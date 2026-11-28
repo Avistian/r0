@@ -24,10 +24,23 @@ def _summary(values: NDArray[np.float64]) -> dict[str, Any]:
     scaled = values / magnitude if magnitude else values
     low, high = float(scaled.min()), float(scaled.max())
     if low == high:
-        counts, edges = [len(values)], [float(values[0]), float(values[0])]
+        counts, edges = [len(values)], [float(values.min()), float(values.max())]
     else:
-        counts_array, edges_array = np.histogram(scaled, bins=20, range=(low, high))
-        counts, edges = counts_array.tolist(), (edges_array * magnitude).tolist()
+        scaled_edges = np.linspace(low, high, 21)
+        display_edges = scaled_edges * magnitude
+        if np.any(np.diff(scaled_edges) <= 0) or np.any(np.diff(display_edges) <= 0):
+            # Adjacent floats cannot support twenty distinct intervals. Collapse
+            # only unrepresentable boundaries, and count the untouched values
+            # against explicit edges (avoiding the equal-bin division algorithm).
+            minimum, maximum = values.min(), values.max()
+            edges_array = np.unique(
+                np.concatenate(([minimum], np.clip(display_edges, minimum, maximum), [maximum]))
+            )
+            counts_array, _ = np.histogram(values, bins=edges_array)
+            counts, edges = counts_array.tolist(), edges_array.tolist()
+        else:
+            counts_array, edges_array = np.histogram(scaled, bins=20, range=(low, high))
+            counts, edges = counts_array.tolist(), (edges_array * magnitude).tolist()
     mean, std = float(scaled.mean()) * magnitude, float(scaled.std()) * magnitude
     return {
         "count": len(values),

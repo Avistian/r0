@@ -4,8 +4,14 @@ from .hyperprior_graph import HyperpriorGraph as HyperpriorGraph
 from .hyperprior_graph import sample_hyperprior_graph as sample_hyperprior_graph
 from .hyperprior_graph_decoding import hyperprior_graph_from_dict as hyperprior_graph_from_dict
 from .hyperprior_graph_request import HyperpriorGraphRequest as HyperpriorGraphRequest
+from .hyperprior_request_decoding import (
+    hyperprior_graph_request_from_dict as hyperprior_graph_request_from_dict,
+)
 from .joint_hyperprior_decoding import (
     joint_hyperprior_graph_from_dict as joint_hyperprior_graph_from_dict,
+)
+from .joint_hyperprior_decoding import (
+    joint_hyperprior_request_from_dict as joint_hyperprior_request_from_dict,
 )
 from .joint_hyperprior_graph import JointHyperpriorGraph as JointHyperpriorGraph
 from .joint_hyperprior_graph import sample_joint_hyperprior_graph as sample_joint_hyperprior_graph
@@ -21,3 +27,4 @@ from .topology_hyperprior_decoding import (
 from .topology_hyperprior_decoding import (
     topology_hyperprior_from_dict as topology_hyperprior_from_dict,
 )
+from .topology_target_reference import topology_reference_targets as topology_reference_targets

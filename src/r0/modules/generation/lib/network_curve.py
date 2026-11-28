@@ -17,7 +17,17 @@ def network_curve(data: dict[str, Any]) -> dict[str, Any]:
     if len(json.dumps(data, allow_nan=False).encode()) > maximum:
         raise ValueError("network curve request exceeds byte cap")
     limits = priors.CausalLimits(**data["causal_limits"])
+    from r0.modules.generation.lib.topology_curve_identity import topology_curve_identity
+
+    topology_identity = topology_curve_identity(data)
     recipe = priors.recipe_from_dict(data["recipe"], limits=limits)
+    topology_source = (
+        recipe
+        if isinstance(recipe, (priors.HyperpriorGraph, priors.JointHyperpriorGraph))
+        else None
+    )
+    if topology_source is not None:
+        recipe = topology_source.runtime
     if isinstance(recipe, priors.RealizedPrototypeBatchNetworkRecipe):
         # Observed grid coordinates already are convex mixtures; do not redraw
         # prototypes, row weights, or source normalization for response queries.
@@ -99,8 +109,21 @@ def network_curve(data: dict[str, Any]) -> dict[str, Any]:
             if isinstance(recipe, priors.NetworkInputView)
             else priors.evaluate_frozen_function(recipe.function, x, limits=recipe.limits)
         )
+    target_reference = (
+        priors.topology_reference_targets(
+            topology_source,
+            scores,
+            seed=data["seed"],
+            task_id=data["task_id"],
+            row=data["anchor_row"],
+        )
+        if topology_source is not None
+        else {}
+    )
     result = {
+        **target_reference,
         **reference,
+        **topology_identity,
         "values": np.asarray(values.numpy(), dtype=np.float64).tolist(),
         "scores": np.asarray(scores.numpy(), dtype=np.float64).tolist(),
     }
