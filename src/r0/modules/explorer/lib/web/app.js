@@ -12,7 +12,9 @@ const format = value => {
 };
 
 async function request(action, data = {}) {
-  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
+  if(current && isObservation(current.view.recipe.recipe) && action === "graph") data={...limits(),...data};
+  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export", "mechanism", "network_draft", "observation_draft", "edit", "edit_export", "intervention_controls", "intervene", "intervention_graph", "intervention_export", "population_calibrate", "population_query", "population_dag_replay", "population_dag_controls"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
+  if (["graph", "pair", "open_pair", "mechanism", "network_draft", "observation_draft", "edit", "intervention_controls"].includes(action)) data = {...data, ...explorationLimits()};
   if (window.r0request) return window.r0request(action, data);
   const response = await fetch("/api", {
     method: "POST", headers: {"Content-Type": "application/json", "X-r0-explorer": window.r0token},
@@ -37,11 +39,10 @@ async function act(message, work) {
     $("status").textContent = error.message;
   } finally {
     busy = false;
-    document.querySelectorAll("button").forEach(button => button.disabled = false);
+    document.querySelectorAll("button").forEach(button => button.disabled = button.dataset.unavailable === "true");
   }
 }
 
-function taskControls(recipe) { return recipe.task || recipe; }
 function parseRecipe() {
   return JSON.parse($("recipe").value, (key, value) => {
     if (key === "split" && typeof value === "number" && !Number.isSafeInteger(value)) throw new Error("Write large split identifiers as quoted decimal strings to preserve every digit.");
@@ -50,13 +51,23 @@ function parseRecipe() {
 }
 function fillControls(recipe) {
   const task = taskControls(recipe);
+  const native=isCalibratedArchive(recipe) || ["native-causal-v1","sampled-native-graph-v1","native-vector-causal-v1","sampled-native-vector-graph-v1","converted-causal-v1","sampled-converted-graph-v1"].includes(recipe.version);
+  $("difficulty-label").hidden=native;
+  for(const id of ["rows","context","difficulty"]) $(id).disabled=isCalibratedArchive(recipe);
+  for(const id of ["features","active","task-type","classes"]) $(id).disabled=native || isPrototypeBatch(recipe);
   for (const [id, key] of Object.entries({rows: "rows", context: "context_rows", features: "features", active: "active_features", "task-type": "task_type", classes: "classes"})) $(id).value = task[key];
   $("difficulty").value = task.task_type === "regression" ? task.noise_ratio : task.separation;
   $("difficulty-label").firstChild.textContent = task.task_type === "regression" ? "Noise / signal" : "Class separation";
   $("recipe").value = pretty(recipe);
 }
 function updateRecipe(changed) {
-  const recipe = parseRecipe(), task = taskControls(recipe);
+  let recipe = parseRecipe();
+  if (isPrototypeBatch(recipe)) {
+    if (!["rows","context","difficulty"].includes(changed)) throw new Error("Use the architecture editor to change batch network geometry.");
+    recipe=recipe.request || recipe;
+  }
+  const task = taskControls(recipe);
+  if (isCalibratedArchive(recipe) || recipe.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(recipe.version) || isObservation(recipe) || isConvolutionRecipe(recipe) || (isStandaloneNetwork(recipe) && !isPrototypeBatch(recipe))) throw new Error("Frozen construction archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
   const fields = {rows: "rows", context: "context_rows", features: "features", active: "active_features", classes: "classes"};
   if (fields[changed]) task[fields[changed]] = number(changed);
   if (changed === "difficulty") task[task.task_type === "regression" ? "noise_ratio" : "separation"] = number("difficulty");
@@ -79,9 +90,21 @@ function updateRecipe(changed) {
   }
   fillControls(recipe);
 }
-function limits() { return {device: $("device").value, max_seconds: number("seconds"), max_bytes: number("bytes") * 1024 ** 2}; }
+function limits() { return {...explorationLimits(), device: $("device").value, max_seconds: number("seconds"), max_bytes: number("bytes") * 1024 ** 2}; }
 async function generate() {
-  const result = await request("generate", {recipe: parseRecipe(), seed: $("seed").value, task_id: $("task-id").value, ...limits()});
+  const stored=current?.view?.recipe?.recipe;
+  const batch=["prototype-batch-network-realized-v1","gp-column-recipe-v1"].includes(stored?.version) && $("recipe").value===pretty(stored);
+  const frozen=stored && !isPrototypeBatch(stored) && (stored.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(stored.version) || isStandaloneNetwork(stored) || isObservation(stored) || isConvolutionRecipe(stored)) && $("recipe").value===pretty(stored);
+  const identity={seed:$("seed").value,task_id:$("task-id").value};
+  const candidate=parseRecipe();
+  let taskOverride=false;
+  if(stored?.version==="prototype-batch-network-realized-v1" && candidate.version==="prototype-batch-network-request-v1") {
+    const original=JSON.parse(JSON.stringify(stored.request)), check=JSON.parse(JSON.stringify(candidate));
+    delete original.source.task;delete check.source.task;
+    taskOverride=pretty(original)===pretty(check);
+  }
+  const payload=taskOverride ? {record_json:current.recipe_json,population_identity:identity,population_task:taskControls(candidate)} : batch ? {record_json:current.recipe_json,population_identity:identity} : frozen ? {record_json:current.recipe_json,frozen_identity:identity} : {recipe:parseRecipe(),...identity};
+  const result = await request("generate", {...payload,...limits()});
   show(result);
 }
 function download(name, blob) {
@@ -168,6 +191,7 @@ function scatter(container, points, xName, yName) {
 function charts() {
   if (!current) return;
   const view = current.view, feature = number("feature"), channel = number("channel");
+  if(view.target_origin === "native-variable-v1") {nativeCharts(view,feature,channel);return;}
   histogram("feature-hist", view.features[feature].summary, `x${feature}`);
   histogram("target-hist", view.target, "Target");
   scatter("signal-plot", view.rows.map(row => ({...row, x: row.inputs[feature], y: row.scores[Math.min(channel, row.scores.length - 1)]})), `x${feature}`, "Latent signal");
@@ -181,33 +205,6 @@ function charts() {
     scatter("diagnostic-plot", view.rows.map(row => ({...row, x: row.inputs[feature], y: row.probabilities[channel]})), `x${feature}`, "Class probability");
   }
   table("table", ["Row", "Split", ...view.features.map(f => `${f.name} (${f.role})`), "Target", "Signal", "Probability / noise"], view.rows.slice(0, 64).map(row => [row.index, row.role, ...row.inputs, row.target, row.scores[Math.min(channel, row.scores.length - 1)], row.probabilities ? row.probabilities[channel] : row.noise]));
-}
-function show(result) {
-  current = result; const view = result.view;
-  $("empty").hidden = true; $("results").hidden = false;
-  $("family-title").textContent = view.family;
-  $("task-title").textContent = view.task_type === "regression" ? "Regression dataset" : `${view.classes.length}-class dataset`;
-  $("metrics").replaceChildren();
-  for (const [label, value] of [["TOTAL ROWS", view.total_rows], ["FEATURES", view.features.length], ["CONTEXT ROWS", view.split_counts.context], ["QUERY ROWS", view.split_counts.query]]) {
-    const box = document.createElement("div"); box.className = "metric";
-    const strong = document.createElement("strong"), caption = document.createElement("span"); strong.textContent = format(value); caption.textContent = label; box.append(strong, caption); $("metrics").append(box);
-  }
-  $("sampling").textContent = `Charts show ${view.shown_rows} of ${view.total_rows} rows: ${view.sampling}. The table previews the first ${Math.min(64, view.shown_rows)} sampled rows. Distribution summaries use all ${view.total_rows} rows.`;
-  $("identity").textContent = pretty({source_task_id: view.source_task_id, episode_id: view.episode_id, archive: result.archive, generation: result.run?.summary, elapsed_seconds: result.run?.elapsed_seconds, execution: view.recipe.execution});
-  $("feature").replaceChildren(...view.features.map(feature => new Option(`${feature.name} · ${feature.role}`, feature.index)));
-  $("channel").replaceChildren(...(view.classes.length ? view.classes : ["Signal"]).map((name, i) => new Option(name, i)));
-  $("class-panel").hidden = !view.classification;
-  if (view.classification) {
-    const stats = view.classification;
-    table("class-counts", ["Class", "Observed", "Context", "Query", "Expected"], view.classes.map((name, i) => [name, stats.observed_counts[i], stats.context_counts[i], stats.query_counts[i], stats.expected_counts[i]]));
-  }
-  $("selected-row").hidden = true; $("parameter-values").textContent = "";
-  $("row-index").max = view.total_rows - 1; $("row-index").value = 0;
-  $("archive-path").value = result.archive; $("saved-id").value = view.recipe.task_id;
-  $("replay-record").value = result.recipe_json; $("seed").value = view.recipe.seed; $("task-id").value = view.recipe.task_id;
-  $("curve-row").value = 0; $("curve-row").max = view.total_rows - 1;
-  $("gp-approximate").checked = false;
-  fillControls(view.recipe.recipe); charts(); clearCurve(); resetGraph(); resetPair();
 }
 async function inspectRow(index) {
   await act("Loading row…", async () => {

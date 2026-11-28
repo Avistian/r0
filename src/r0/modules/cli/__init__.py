@@ -1,10 +1,12 @@
 """Parse CLI requests and apply the console output policy."""
 
 import argparse
+import json
 from importlib.metadata import version
 from pathlib import Path
 from typing import TYPE_CHECKING, NoReturn, TextIO, cast
 
+from r0.modules.generation import load_request_document, run_guarded_document
 from r0.modules.replay import write_oracle_report, write_prior_diagnostics, write_report
 
 if TYPE_CHECKING:
@@ -50,14 +52,16 @@ def run(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> None:
         "--version", action="store_true", help="show program's version number and exit"
     )
     parser.add_argument("--hello", action="store_true", help="print hello")
-    parser.add_argument("command", nargs="?", choices=("replay", "oracle", "diagnose-priors"))
+    parser.add_argument(
+        "command", nargs="?", choices=("replay", "oracle", "diagnose-priors", "generate")
+    )
     parser.add_argument("--config", type=Path)
     parser.add_argument("--out", type=Path)
     parser.add_argument(
         "--expected", type=Path, help="independent numeric reference card for oracle"
     )
     args = parser.parse_args(argv)
-    if args.command in ("replay", "oracle", "diagnose-priors"):
+    if args.command in ("replay", "oracle", "diagnose-priors", "generate"):
         if args.version or args.hello:
             parser.error(f"{args.command} cannot be combined with --version or --hello")
         if args.config is None or args.out is None:
@@ -65,6 +69,15 @@ def run(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> None:
         if args.command != "oracle" and args.expected is not None:
             parser.error("--expected requires oracle")
         try:
+            if args.command == "generate":
+                result = run_guarded_document(load_request_document(args.config), args.out)
+                if not args.quiet and result.summary is not None:
+                    print(json.dumps(result.summary, sort_keys=True), file=stdout)
+                if result.timed_out:
+                    parser.exit(1, f"generation timed out; retained outputs at {args.out}\n")
+                if result.returncode != 0 or result.summary is None:
+                    parser.exit(1, result.stderr or f"generation incomplete; inspect {args.out}\n")
+                return
             if args.command == "oracle":
                 report = write_oracle_report(args.config, args.out, args.expected)
                 verification = report["verification"]
@@ -87,7 +100,7 @@ def run(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> None:
     if args.expected is not None:
         parser.error("--expected requires oracle")
     if args.config is not None or args.out is not None:
-        parser.error("--config and --out require replay, oracle, or diagnose-priors")
+        parser.error("--config and --out require replay, oracle, diagnose-priors, or generate")
     if not args.quiet:
         greeting = "hello" if args.hello else "r0"
         print(version("r0") if args.version else greeting, file=stdout)

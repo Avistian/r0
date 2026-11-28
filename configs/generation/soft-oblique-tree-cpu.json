@@ -1,0 +1,174 @@
+{
+  "recipe": {
+    "task": {
+      "rows": 64,
+      "features": 2,
+      "signal_features": 2,
+      "active_features": 2,
+      "context_rows": 48,
+      "split": 0,
+      "noise_ratio": 0.0,
+      "task_type": "regression",
+      "classes": 0,
+      "separation": 1.0,
+      "class_offsets": [],
+      "version": "linear-v1"
+    },
+    "network": {
+      "input_width": 2,
+      "blocks": [
+        {
+          "parents": [
+            0
+          ],
+          "experts": [
+            {
+              "matrix": [
+                [
+                  1.0,
+                  0.0
+                ]
+              ],
+              "bias": [
+                3.0
+              ],
+              "mask": [],
+              "multiplier": 1.0,
+              "activation": {
+                "kind": "tanh",
+                "parameters": []
+              },
+              "placement": "after"
+            }
+          ],
+          "gate": null,
+          "skips": []
+        },
+        {
+          "parents": [
+            0
+          ],
+          "experts": [
+            {
+              "matrix": [
+                [
+                  0.0,
+                  0.0
+                ]
+              ],
+              "bias": [
+                -2.0
+              ],
+              "mask": [],
+              "multiplier": 1.0,
+              "activation": {
+                "kind": "identity",
+                "parameters": []
+              },
+              "placement": "after"
+            }
+          ],
+          "gate": null,
+          "skips": []
+        },
+        {
+          "parents": [
+            0,
+            2,
+            1
+          ],
+          "experts": [
+            {
+              "matrix": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "bias": [
+                0.0
+              ],
+              "mask": [],
+              "multiplier": 1.0,
+              "activation": {
+                "kind": "identity",
+                "parameters": []
+              },
+              "placement": "after"
+            },
+            {
+              "matrix": [
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "bias": [
+                0.0
+              ],
+              "mask": [],
+              "multiplier": 1.0,
+              "activation": {
+                "kind": "identity",
+                "parameters": []
+              },
+              "placement": "after"
+            }
+          ],
+          "gate": {
+            "matrix": [
+              [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                -20.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "bias": [
+              0.0,
+              -2.5
+            ],
+            "mask": [],
+            "multiplier": 1.0,
+            "activation": {
+              "kind": "identity",
+              "parameters": []
+            },
+            "placement": "after"
+          },
+          "skips": []
+        }
+      ],
+      "version": "frozen-structural-network-v1"
+    },
+    "root": null,
+    "limits": {
+      "nodes": 1024,
+      "node_channels": 1024,
+      "total_channels": 8192,
+      "parameters": 1000000,
+      "working_bytes": 268435456
+    },
+    "version": "standalone-network-v1"
+  },
+  "seed": 29,
+  "count": 2,
+  "max_seconds": 60,
+  "max_bytes": 10485760,
+  "start": 0,
+  "group_size": 2,
+  "device": "cpu",
+  "sampling": null,
+  "causal_limits": null,
+  "construction": null
+}

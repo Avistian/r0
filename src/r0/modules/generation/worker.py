@@ -6,21 +6,97 @@ import resource
 import subprocess
 import sys
 import time
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 from threading import Lock
 
 import numpy as np
 import torch
 
-from r0.modules.generation import run_generation
+from r0.modules.generation import load_group, run_generation
 from r0.modules.generation.lib.requests import generate_requested, request_from_dict
-from r0.modules.priors import TrainingTask
+from r0.modules.priors import TrainingTask, compare_pair, paired_recipe
 
 
 def main() -> int:
     data = json.load(sys.stdin)
-    request = request_from_dict(data["request"])
+    raw_request = dict(data["request"])
+    if "causal_action" in raw_request:
+        from r0.modules.generation.lib.causal_jobs import causal_job
+
+        print(json.dumps(causal_job(raw_request, Path(data["out"])), sort_keys=True))
+        return 0
+    if raw_request.get("validation") in ("convolution-editor", "convolution-draft"):
+        from r0.modules.generation.lib.convolution_editor import convolution_editor
+
+        print(json.dumps(convolution_editor(raw_request), allow_nan=False))
+        return 0
+    if raw_request.get("validation") in ("observation-editor", "observation-draft"):
+        from r0.modules.generation.lib.observation_construction import observation_editor
+
+        print(json.dumps(observation_editor(raw_request), allow_nan=False))
+        return 0
+    if raw_request.get("validation") == "gp-root-curve":
+        from r0.modules.generation.lib.gp_root_curve import gp_root_curve
+
+        print(json.dumps(gp_root_curve(raw_request), allow_nan=False))
+        return 0
+    if raw_request.get("validation") == "gp-column-curve":
+        from r0.modules.generation.lib.gp_column_curve import gp_column_curve
+
+        print(json.dumps(gp_column_curve(raw_request), allow_nan=False))
+        return 0
+    if raw_request.get("validation") == "observation-curve":
+        from r0.modules.generation.lib.observation_curve import observation_curve
+
+        print(json.dumps(observation_curve(raw_request), allow_nan=False))
+        return 0
+    if raw_request.get("validation") == "network-graph":
+        from r0.modules.generation.lib.network_graph import network_graph
+
+        print(json.dumps(network_graph(raw_request), allow_nan=False))
+        return 0
+    if raw_request.get("validation") in ("network-noise-editor", "network-noise-draft"):
+        from r0.modules.generation.lib.network_innovation_validation import noise_editor
+
+        print(json.dumps(noise_editor(raw_request), allow_nan=False))
+        return 0
+    if raw_request.get("validation") == "population-curve":
+        from r0.modules.generation.lib.population_curve import population_curve
+
+        print(json.dumps(population_curve(raw_request), allow_nan=False))
+        return 0
+    if raw_request.get("validation") == "network-curve":
+        from r0.modules.generation.lib.network_curve import network_curve
+
+        print(json.dumps(network_curve(raw_request), allow_nan=False))
+        return 0
+    if raw_request.get("validation") in ("network-draft", "network-editor"):
+        from r0.modules.generation.lib.network_validation import validate_network_draft
+
+        print(json.dumps(validate_network_draft(raw_request), allow_nan=False))
+        return 0
+    pairing = raw_request.pop("pairing", None)
+    edit_policy = raw_request.pop("edit_policy", None)
+    if edit_policy is not None:
+        from r0.modules.generation.lib.authored_xgboost import prepare_authored_xgboost
+
+        prepare_authored_xgboost(raw_request, edit_policy)
+    request = request_from_dict(raw_request)
+    if edit_policy is not None:
+        from r0.modules.generation.lib.edit_validation import validate_edit_request
+
+        validate_edit_request(request, edit_policy)
+    if pairing is not None:
+        request = replace(
+            request,
+            recipe=paired_recipe(
+                request.recipe,
+                intervention=pairing["intervention"],
+                value=pairing["value"],
+                allow_estimated_variance=pairing["allow_estimated_variance"],
+            ),
+        )
     sync_path: str | None = data["sync_path"]
     generated = 0
     counter = Lock()
@@ -70,6 +146,27 @@ def main() -> int:
         "torch": torch.__version__,
         "cuda": torch.version.cuda,
     }
+    if pairing is not None and result.status == "COMPLETE":
+        before = next(
+            task
+            for task in load_group(Path(pairing["before_archive"]))
+            if json.loads(task.recipe_json)["task_id"] == request.start
+        )
+        archives = list(Path(data["out"]).glob("groups/**/*.zip"))
+        if len(archives) != 1:
+            raise ValueError("paired generation requires one completed archive")
+        after = next(
+            task
+            for task in load_group(archives[0])
+            if json.loads(task.recipe_json)["task_id"] == request.start
+        )
+        report["pair_card"] = compare_pair(
+            before,
+            after,
+            intervention=pairing["intervention"],
+            allow_estimated_variance=pairing["allow_estimated_variance"],
+            limits=request.causal_limits,
+        )
     print(json.dumps(report, sort_keys=True))
     return 0 if result.status == "COMPLETE" else 1
 

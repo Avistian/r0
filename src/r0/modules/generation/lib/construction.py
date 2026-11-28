@@ -1,0 +1,379 @@
+"""Graph construction runs inside the guarded generation worker."""
+
+import json
+from dataclasses import asdict, dataclass
+from typing import Any, cast
+
+import numpy as np
+
+from r0.modules import priors
+from r0.modules.generation.lib.fitted_construction import construct_fitted
+from r0.modules.generation.lib.native_construction import construct_native
+from r0.modules.generation.lib.network_construction import construct_network
+from r0.modules.generation.lib.sampled_fitted_construction import construct_sampled_fitted
+
+
+def _tuples(value: Any) -> Any:
+    if type(value) is list:
+        return tuple(_tuples(v) for v in cast(list[Any], value))
+    if type(value) is dict:
+        return {k: _tuples(v) for k, v in cast(dict[str, Any], value).items()}
+    return value
+
+
+def construct_graph(
+    controls: dict[str, Any], *, seed: int, limits: priors.CausalLimits
+) -> priors.Recipe:
+    """Sample bounded construction; its archive retains actual four-stream states."""
+    if type(seed) is not int or not 0 <= seed < 2**63:
+        raise ValueError("construction seed must be an integer in [0, 2**63)")
+    fields = _tuples(controls)
+    topology = fields.pop("topology")
+    if topology == "gp-columns":
+        if set(fields) != {"request", "task"}:
+            raise ValueError("GP construction requires complete request and task controls")
+        return priors.recipe_from_dict(
+            {
+                "version": "gp-column-recipe-v1",
+                "source": fields["request"],
+                "task": fields["task"],
+            },
+            limits=limits,
+        )
+    if topology in (
+        "joint-topology-hyperprior",
+        "authored-topology-hyperprior",
+        "typed-topology-hyperprior",
+    ):
+        from r0.modules.generation.lib.topology_hyperprior_construction import (
+            construct_topology_hyperprior,
+        )
+
+        return construct_topology_hyperprior(
+            fields,
+            seed=seed,
+            limits=limits,
+            authored=topology == "authored-topology-hyperprior",
+            typed=topology == "typed-topology-hyperprior",
+        )
+    if topology == "network-observations":
+        from r0.modules.generation.lib.observation_construction import construct_observations
+
+        return construct_observations(fields, seed=seed, limits=limits)
+    if topology == "prototype-root-network":
+        from r0.modules.generation.lib.prototype_root_construction import (
+            construct_prototype_network,
+        )
+
+        return construct_prototype_network(fields, seed=seed, limits=limits)
+    if topology == "source-root-network":
+        from r0.modules.generation.lib.source_root_construction import construct_source_root_network
+
+        return construct_source_root_network(fields, seed=seed, limits=limits)
+    if topology == "network-innovations":
+        from r0.modules.generation.lib.network_innovation_construction import (
+            construct_network_innovations,
+        )
+
+        return construct_network_innovations(fields, seed=seed, limits=limits)
+    if topology == "network-hyperprior":
+        from r0.modules.generation.lib.network_hyperprior_construction import (
+            construct_hyperprior_network,
+        )
+
+        return construct_hyperprior_network(fields, seed=seed, limits=limits)
+    if topology in ("network", "network-authored"):
+        return construct_network(
+            fields, seed=seed, limits=limits, authored=topology == "network-authored"
+        )
+    if topology == "sampled-fitted":
+        return construct_sampled_fitted(fields, seed=seed, limits=limits)
+    if topology == "sampled-converted":
+        request = priors.converted_request_from_dict(
+            {**fields["request"], "limits": asdict(limits)}, limits=limits
+        )
+        streams = [np.random.default_rng(s) for s in np.random.SeedSequence(seed).spawn(4)]
+        return priors.sample_converted_graph(
+            request,
+            named_rng=streams[0],
+            raw_rng=streams[1],
+            calibration_rng=streams[2],
+            fit_rng=streams[3],
+        )
+    if topology == "feature-convolution":
+        from r0.modules.generation.lib.convolution_construction import construct_convolution
+
+        return construct_convolution(fields, seed=seed, limits=limits)
+    if topology == "xgboost-fitted":
+        from r0.modules.generation.lib.xgboost_construction import construct_xgboost
+
+        return construct_xgboost(fields, seed=seed, limits=limits)
+    if topology == "fitted":
+        return construct_fitted(fields, seed=seed, limits=limits)
+    if topology == "sampled-native-vector":
+        request = priors.native_vector_request_from_dict(
+            {**fields, "limits": asdict(limits)}, limits=limits
+        )
+        streams = [np.random.default_rng(s) for s in np.random.SeedSequence(seed).spawn(4)]
+        return priors.sample_native_vector_graph(
+            request,
+            named_rng=streams[0],
+            raw_rng=streams[1],
+            calibration_rng=streams[2],
+            fit_rng=streams[3],
+        )
+    if topology == "sampled-native":
+        return construct_native(fields, seed=seed, limits=limits)
+    task = priors.recipe_from_dict(fields.pop("task"))
+    if type(task) is not priors.LinearRecipe:
+        raise ValueError("graph construction requires linear task controls")
+    if topology in ("native", "native-vector"):
+        native = priors.recipe_from_dict(
+            {"task": asdict(task), "limits": asdict(limits), **fields}, limits=limits
+        )
+        if type(native) not in (priors.NativeCausalRecipe, priors.NativeVectorRecipe):
+            raise ValueError("native construction requires an authored native recipe")
+        return native
+    raw_composition = fields.pop("composition", None)
+    composition = (
+        None if raw_composition is None else priors.ParentCompositionPrior(**raw_composition)
+    )
+    if composition is not None and topology == "cauchy":
+        raise ValueError("parent composition uses explicit or geometry topology controls")
+    functions = fields.pop("function_prior")
+    matrix = priors.JointMatrixPrior(**functions.pop("matrix"))
+    function = priors.JointFunctionPrior(matrix=matrix, **functions)
+    roots = priors.JointRootPrior(families=fields.pop("root_families"), function=function)
+    streams = [np.random.default_rng(s) for s in np.random.SeedSequence(seed).spawn(4)]
+    rngs = dict(
+        named_rng=streams[0], raw_rng=streams[1], calibration_rng=streams[2], fit_rng=streams[3]
+    )
+    if topology in ("geometry", "attachment-geometry", "motif-geometry"):
+        geometry_prior: (
+            priors.CauchyGraphPrior | priors.AttachmentGraphPrior | priors.MotifGraphPrior
+        )
+        if topology == "geometry":
+            geometry_prior = priors.CauchyGraphPrior(
+                nodes=fields.pop("nodes"), offset=fields.pop("offset")
+            )
+        elif topology == "attachment-geometry":
+            geometry_prior = priors.AttachmentGraphPrior(**fields.pop("topology_prior"))
+        else:
+            geometry_prior = priors.MotifGraphPrior(**fields.pop("topology_prior"))
+        widths = priors.JointWidthPrior(**fields.pop("width_prior"))
+        pipeline = fields.pop("pipeline_prior", None)
+        request_type = priors.GeometryGraphRequest
+        if pipeline is not None:
+            fields["pipeline_prior"] = priors.pipeline_prior_from_dict(pipeline)
+            request_type = priors.GeometryPipelineRequest
+        if composition is not None:
+            request_type = priors.GeometryParentRequest
+            fields["composition"] = composition
+        geometry = request_type(
+            task=task,
+            topology=geometry_prior,
+            width_prior=widths,
+            root_prior=roots,
+            function_prior=function,
+            limits=limits,
+            **fields,
+        )
+        return priors.sample_geometry_graph(geometry, **rngs)
+    if topology == "cauchy":
+        prior = priors.CauchyGraphPrior(nodes=len(fields["widths"]), offset=fields.pop("offset"))
+        request = priors.TopologyGraphRequest(
+            task=task,
+            topology=prior,
+            root_prior=roots,
+            function_prior=function,
+            limits=limits,
+            **fields,
+        )
+        return priors.sample_topology_graph(request, **rngs)
+    elif topology == "explicit":
+        request = priors.JointGraphRequest(
+            task=task, root_prior=roots, function_prior=function, limits=limits, **fields
+        )
+        if composition is not None:
+            return priors.sample_parent_graph(request, composition=composition, **rngs)
+        return priors.sample_joint_graph(request, **rngs)
+    else:
+        raise ValueError("unknown graph construction topology")
+
+
+@dataclass(frozen=True, slots=True)
+class GraphConstruction:
+    controls_json: str
+    seed: int
+
+    def __post_init__(self) -> None:
+        if type(self.seed) is not int or not 0 <= self.seed < 2**63:
+            raise ValueError("construction seed must be an integer in [0, 2**63)")
+        if type(self.controls_json) is not str or len(self.controls_json.encode()) > 1024**2:
+            raise ValueError("construction controls must be JSON below 1 MiB")
+        if type(json.loads(self.controls_json)) is not dict:
+            raise ValueError("construction controls must be an object")
+
+    def task_record(self) -> dict[str, Any]:
+        """Return preconstruction row geometry; sampled native target type is not yet known."""
+        controls = json.loads(self.controls_json)
+        if controls.get("topology") == "per-task":
+            from r0.modules.generation.lib.task_construction import task_construction_source
+
+            return GraphConstruction(
+                json.dumps(task_construction_source(self)), self.seed
+            ).task_record()
+        while controls.get("topology") in (
+            "source-root-network",
+            "network-innovations",
+            "prototype-root-network",
+        ):
+            controls = controls["source"]
+        if controls.get("topology") == "tree-ensemble":
+            return controls["members"][0]["task"]
+        if controls.get("topology") == "tree-extension":
+            return controls["request"]["task"]
+        if controls.get("topology") == "query-calibrated-gp-root":
+            return controls["source"]["original"]["base"]["task"]
+        if controls.get("topology") == "calibrate-gp-root":
+            return controls["source"]["base"]["task"]
+        if controls.get("topology") in ("gp-root-dag", "xgboost-population"):
+            return controls["base"]["task"]
+        if controls.get("topology") in ("calibrate-population", "calibrated-population-query"):
+            source = controls["source"]
+            original = (
+                source if controls["topology"] == "calibrate-population" else source["original"]
+            )
+            return original["request"]["base"]["task"]
+        if controls.get("topology") == "recursive-population-dag":
+            return controls["request"]["base"]["task"]
+        if controls.get("topology") in (
+            "typed-topology-hyperprior",
+            "joint-topology-hyperprior",
+            "authored-topology-hyperprior",
+        ):
+            return controls["request"]["task"]
+        if controls.get("topology") == "sampled-converted":
+            request = priors.converted_request_from_dict(
+                controls["request"],
+                limits=priors.CausalLimits(**controls["request"].get("limits", {})),
+            )
+            return asdict(request.task())
+        if controls.get("topology") in (
+            "fitted",
+            "xgboost-fitted",
+            "feature-convolution",
+            "sampled-fitted",
+            "population-fitted",
+            "sampled-population-fitted",
+        ):
+            return controls["skeleton"]["task"]
+        if controls.get("topology") not in ("sampled-native", "sampled-native-vector"):
+            return controls["task"]
+        observed = controls["observed"]
+        if type(observed) is not list:
+            raise ValueError("sampled native observed channels must be an array")
+        count = len(cast(list[Any], observed))
+        return asdict(
+            priors.LinearRecipe(
+                rows=controls.get("rows", 64),
+                context_rows=controls.get("context_rows", 48),
+                split=controls.get("split", 0),
+                features=count,
+                signal_features=count,
+                active_features=count,
+            )
+        )
+
+    def build(
+        self, limits: priors.CausalLimits, *, episode_seed: int = 0, task_id: int = 0
+    ) -> priors.Recipe:
+        fields = json.loads(self.controls_json)
+        if fields.get("topology") == "per-task":
+            from r0.modules.generation.lib.task_construction import resolve_task_construction
+
+            effective, _ = resolve_task_construction(
+                self, episode_seed=episode_seed, task_id=task_id
+            )
+            return effective.build(limits, episode_seed=episode_seed, task_id=task_id)
+        if fields.get("topology") in ("tree-extension", "tree-ensemble"):
+            from r0.modules.generation.lib.tree_extension_construction import (
+                construct_tree_bundle,
+            )
+
+            return construct_tree_bundle(self, limits=limits, seed=episode_seed, task_id=task_id)[0]
+        if fields.get("topology") == "query-calibrated-gp-root":
+            return priors.construct_gp_root_calibration_query(
+                {k: v for k, v in fields.items() if k != "topology"},
+                seed=episode_seed,
+                task_id=task_id,
+                limits=limits,
+            )
+        if fields.get("topology") == "calibrate-gp-root":
+            return priors.construct_gp_root_calibration(
+                {k: v for k, v in fields.items() if k != "topology"},
+                seed=episode_seed,
+                task_id=task_id,
+                limits=limits,
+            )
+        if fields.get("topology") == "gp-root-dag":
+            controls = {k: v for k, v in fields.items() if k != "topology"}
+            return priors.construct_gp_root_dag(
+                controls,
+                seed=episode_seed,
+                task_id=task_id,
+                limits=limits,
+            )
+        if fields.get("topology") in ("calibrate-population", "calibrated-population-query"):
+            return priors.construct_calibrated_population(
+                fields,
+                seed=episode_seed,
+                task_id=task_id,
+                construction_seed=self.seed,
+                limits=limits,
+            )
+        if fields.get("topology") == "xgboost-population":
+            return priors.construct_xgboost_population(
+                fields,
+                construction_seed=self.seed,
+                seed=episode_seed,
+                task_id=task_id,
+                limits=limits,
+            )
+        if fields.get("topology") == "recursive-population-dag":
+            from r0.modules.generation.lib.population_dag_construction import (
+                construct_population_dag,
+            )
+
+            return construct_population_dag(
+                fields,
+                construction_seed=self.seed,
+                seed=episode_seed,
+                task_id=task_id,
+                limits=limits,
+            )
+        if fields.get("topology") == "sampled-population-fitted":
+            from r0.modules.generation.lib.sampled_population_construction import (
+                construct_sampled_population,
+            )
+
+            return construct_sampled_population(
+                fields,
+                construction_seed=self.seed,
+                seed=episode_seed,
+                task_id=task_id,
+                limits=limits,
+            )
+        if fields.get("topology") == "population-fitted":
+            from r0.modules.generation.lib.population_fitted_construction import (
+                construct_population_fitted,
+            )
+
+            return construct_population_fitted(
+                fields,
+                construction_seed=self.seed,
+                seed=episode_seed,
+                task_id=task_id,
+                limits=limits,
+            )
+        return construct_graph(fields, seed=self.seed, limits=limits)

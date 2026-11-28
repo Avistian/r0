@@ -1,0 +1,292 @@
+"""Root and structural-noise laws through public generation and original-row traces."""
+
+import json
+import math
+from dataclasses import asdict
+
+import pytest
+import torch
+
+from r0.modules.priors import (
+    CausalNode,
+    CausalRecipe,
+    LinearRecipe,
+    explain_generation,
+    generate_task,
+    recipe_from_dict,
+)
+
+
+def test_uniform_root_law_is_saved_replayed_and_named_in_the_trace() -> None:
+    controls = LinearRecipe(
+        rows=64, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(), CausalNode()),
+            observed=((0, 0),),
+            target=((1, 0),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][0]["exogenous"] = {
+        "inputs": {"distribution": "uniform", "location": 0.5, "scale": 1 / math.sqrt(12)}
+    }
+    recipe = recipe_from_dict(json.loads(json.dumps(data)))
+    task = generate_task(recipe, seed=28, task_id=6)
+    assert torch.all((task.inputs >= 0) & (task.inputs <= 1))
+    assert float(task.inputs.min()) < 0.1
+    assert float(task.inputs.max()) > 0.9
+    restored = recipe_from_dict(json.loads(json.dumps(asdict(recipe))))
+    assert generate_task(restored, seed=28, task_id=6).episode() == task.episode()
+    trace = explain_generation(task, [0, 63])
+    nodes = {n["id"]: n for n in trace["nodes"]}
+    assert nodes["exogenous-0"]["parameters"]["distribution"]["inputs"]["distribution"] == "uniform"
+    assert nodes["exogenous-0"]["values"] == nodes["innovation-0"]["values"]
+    assert nodes["causal-0"]["values"][0][0] == float(task.inputs[0, 0])
+    card = json.loads(task.mechanism_json)
+    assert "recorded exogenous" in card["innovation"]
+
+
+def test_correlated_exogenous_channels_keep_their_factor_and_shared_ancestry() -> None:
+    controls = LinearRecipe(
+        rows=32, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(bias=(0.0, 0.0), noise_scale=(1.0, 1.0)),),
+            observed=((0, 0),),
+            target=((0, 1),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][0]["exogenous"] = {"factor": [[1, 2], [0, 0]]}
+    recipe = recipe_from_dict(data)
+    task = generate_task(recipe, seed=28, task_id=0)
+    torch.testing.assert_close(task.scores[:, 0], 2 * task.inputs[:, 0], rtol=0, atol=0)
+    card = json.loads(task.mechanism_json)
+    assert "disconnected_target" not in card["flags"]
+    assert card["nodes"][0]["exogenous"]["factor"] == [[1, 2], [0, 0]]
+    trace = explain_generation(task, [1, 31])
+    assert trace["target_max_error"] == 0
+    assert (
+        generate_task(
+            recipe_from_dict(json.loads(json.dumps(asdict(recipe)))), seed=28, task_id=0
+        ).episode()
+        == task.episode()
+    )
+
+
+def test_uniform_volume_ball_roots_obey_radial_law_and_keep_row_prefixes() -> None:
+    controls = LinearRecipe(
+        rows=2000, context_rows=32, features=2, signal_features=2, active_features=2
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(bias=(0.0,) * 3, noise_scale=(1.0,) * 3),),
+            observed=((0, 0), (0, 1)),
+            target=((0, 2),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][0]["exogenous"] = {"geometry": "ball"}
+    recipe = recipe_from_dict(data)
+    task = generate_task(recipe, seed=28, task_id=5)
+    values = torch.cat((task.inputs, task.scores), dim=1)
+    radii = values.square().sum(dim=1).sqrt()
+    assert torch.all(radii <= 1 + 1e-14)
+    # For uniform volume in dimension3, R**3 ~ Uniform(0,1), E[R**2]=3/5.
+    assert abs(float((radii**3).mean()) - 0.5) < 0.04
+    assert abs(float((radii**2).mean()) - 0.6) < 0.04
+    assert torch.all(values.mean(dim=0).abs() < 0.04)
+    data["task"]["rows"] = 2100
+    longer = generate_task(recipe_from_dict(data), seed=28, task_id=5)
+    torch.testing.assert_close(task.inputs, longer.inputs[:2000], rtol=0, atol=0)
+    assert explain_generation(task, [0, 1999])["target_max_error"] < 1e-14
+
+
+def test_signal_dependent_noise_preserves_exogenous_draws_and_affine_dependencies() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(
+                CausalNode(),
+                CausalNode(parents=(0,), weights=((2.0,),), bias=(1.0,), noise_scale=(0.5,)),
+            ),
+            observed=((0, 0),),
+            target=((1, 0),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][1].update(
+        exogenous={"inputs": {"distribution": "student_t", "df": 5}},
+        noise_response={"offset": 1.0, "strength": 0.25, "power": 2.0},
+        noise_position="after_output",
+        output_activation={"kind": "identity", "parameters": [["output_scale", 0]]},
+    )
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=4)
+    nodes = {n["id"]: n for n in explain_generation(task, list(range(16)))["nodes"]}
+    for row in range(16):
+        affine = 2 * float(task.inputs[row, 0]) + 1
+        scale = 0.5 * (1 + 0.25 * abs(affine) ** 2)
+        raw = nodes["exogenous-1"]["values"][row][0]
+        assert math.isclose(nodes["noise-scale-1"]["values"][row][0], scale, rel_tol=1e-14)
+        assert math.isclose(float(task.scores[row, 0]), scale * raw, rel_tol=1e-14)
+    assert "disconnected_target" not in json.loads(task.mechanism_json)["flags"]
+    data["nodes"][1]["noise_response"]["strength"] = 0
+    constant = generate_task(recipe_from_dict(data), seed=28, task_id=4)
+    constant_nodes = {n["id"]: n for n in explain_generation(constant, list(range(16)))["nodes"]}
+    assert constant_nodes["exogenous-1"]["values"] == nodes["exogenous-1"]["values"]
+    assert constant.source_task_id != task.source_task_id
+    assert "disconnected_target" in json.loads(constant.mechanism_json)["flags"]
+
+
+@pytest.mark.parametrize(("activation", "df"), [("identity", 2.0), ("square", 4.0)])
+def test_normalization_rejects_unproven_target_second_moments_but_keeps_raw_draws(
+    activation: str, df: float
+) -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(), CausalNode(parents=(0,), weights=((1.0,),), noise_scale=(0.0,))),
+            observed=((0, 0),),
+            target=((1, 0),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][0]["exogenous"] = {"inputs": {"distribution": "student_t", "df": df}}
+    data["nodes"][1]["output_activation"] = {"kind": activation}
+    raw = generate_task(recipe_from_dict(data), seed=28, task_id=9)
+    assert torch.isfinite(raw.scores).all()
+    data["normalize"] = True
+    with pytest.raises(ValueError, match="second moment"):
+        recipe_from_dict(data)
+    data["nodes"][1]["output_activation"] = {"kind": "tanh"}
+    bounded = generate_task(recipe_from_dict(data), seed=28, task_id=9)
+    assert torch.isfinite(bounded.scores).all()
+    assert json.loads(bounded.mechanism_json)["moment_contract"]["target_orders"] == ["all"]
+
+
+def test_zero_structural_noise_response_does_not_create_a_shared_random_cause() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(bias=(2.0, 3.0), noise_scale=(1.0, 1.0)),),
+            observed=((0, 0),),
+            target=((0, 1),),
+            version="causal-v2",
+            normalize=True,
+        )
+    )
+    data["nodes"][0].update(
+        exogenous={"factor": [[1, 2], [0, 0]]}, noise_response={"offset": 0, "strength": 0}
+    )
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=0)
+    assert torch.all(task.inputs == 2)
+    assert torch.all(task.scores == 3)
+    card = json.loads(task.mechanism_json)
+    assert "disconnected_target" in card["flags"]
+    assert "zero_target_dispersion" in card["flags"]
+
+
+def test_constant_transformed_target_retains_identity_calibration() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(), CausalNode(bias=(1.0,), noise_scale=(0.0,))),
+            observed=((0, 0),),
+            target=((1, 0),),
+            version="causal-v2",
+            normalize=True,
+        )
+    )
+    data["nodes"][1].update(exogenous={}, output_activation={"kind": "exp"})
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=1)
+    assert torch.all(task.scores == math.e)
+    card = json.loads(task.mechanism_json)
+    assert card["calibration"]["constant_channels"] == [0]
+    assert card["moment_contract"]["target_orders"] == ["all"]
+
+
+def test_stochastic_admission_includes_exogenous_and_scale_buffers() -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(bias=(0.0, 0.0), noise_scale=(1.0, 1.0)),),
+            observed=((0, 0),),
+            target=((0, 1),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][0]["exogenous"] = {"factor": [[1, 2], [0, 0]]}
+    # Four affine scalars plus eleven distribution/response scalars cost1,920 bytes
+    # in the declared parameter-storage estimate. Extra raw/scale evaluation buffers
+    # push the sixteen-row vector workload past this deliberately tiny6,000-byte cap.
+    data["limits"]["working_bytes"] = 6000
+    with pytest.raises(ValueError, match="working memory"):
+        recipe_from_dict(data)
+    data["limits"]["working_bytes"] = 100_000
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=1)
+    assert json.loads(task.mechanism_json)["resource_admission"]["parameters"] == 15
+
+
+@pytest.mark.parametrize(
+    ("bias", "base_scale", "strength", "expected_scale"),
+    [
+        (1e200, 0, 1, 0),
+        (1e200, 1e-200, 1, 1e200),
+        (1e100, 1e-200, 1e200, 1e200),
+        (1e-200, 1e200, 1, 1e-200),
+        (1e-200, 1e300, 1e300, 1e200),
+        (1e-100, 1e300, 1e-200, 1e-100),
+    ],
+)
+def test_finite_structural_scales_survive_extreme_intermediate_values(
+    bias: float, base_scale: float, strength: float, expected_scale: float
+) -> None:
+    controls = LinearRecipe(
+        rows=16, context_rows=8, features=1, signal_features=1, active_features=1
+    )
+    data = asdict(
+        CausalRecipe(
+            task=controls,
+            nodes=(CausalNode(), CausalNode(bias=(bias,), noise_scale=(base_scale,))),
+            observed=((0, 0),),
+            target=((1, 0),),
+            version="causal-v2",
+        )
+    )
+    data["nodes"][1].update(
+        exogenous={},
+        noise_response={"offset": 0, "strength": strength, "power": 2},
+        output_activation={"kind": "tanh"},
+    )
+    task = generate_task(recipe_from_dict(data), seed=28, task_id=0)
+    trace = {n["id"]: n for n in explain_generation(task, list(range(16)))["nodes"]}
+    for row in range(16):
+        scale = trace["noise-scale-1"]["values"][row][0]
+        assert math.isclose(scale, expected_scale, rel_tol=2e-13)
+        raw = trace["exogenous-1"]["values"][row][0]
+        expected = math.tanh(bias + expected_scale * raw)
+        # tanh is 1-Lipschitz; propagate the declared scale tolerance through
+        # its innovation instead of demanding relative accuracy after cancellation.
+        tolerance = 2e-13 * min(1.0, expected_scale * abs(raw))
+        assert math.isclose(float(task.scores[row, 0]), expected, rel_tol=2e-13, abs_tol=tolerance)

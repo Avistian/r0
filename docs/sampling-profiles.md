@@ -176,3 +176,66 @@ resource qualification matrix. Raw records remain in the ignored local directory
 The runtime/source version is recorded independently of later documentation edits.
 CI runs the same walkthrough and retains its output as a temporary Actions artifact
 for 14 days. Generated evidence stays out of Git.
+
+
+### Recorded importance-weighted causal profile
+
+`causal-importance-v1` supports `forward`, `layered` and `redirection` with the
+existing activation preferences, widths 1/2/4 and independently sampled uniform or
+polynomial/log-Gaussian row importance. Records retain Gaussian draws, vector
+parameters/permutations and epsilon-normalized projections. See the
+[exact law, source adaptations, admission and unfiltered census](issue-28-importance-weights.md).
+Source shared numerical preferences remain separate pending work.
+
+
+### Recorded matrix-family profiles
+
+`causal-matrices-v1` samples Gaussian, importance, positive-vector factorized,
+signed-kernel and flattened-activation projections, with recorded jitter and row
+normalization. `causal-gaussian-matrices-v1` restricts the raw source to Gaussian.
+Both support `forward`, `layered` and `redirection` with widths 1/2/4 and existing
+node activation preferences. Kernel records distinguish Gaussian-mixture and
+random-covariance points. [Exact laws, local adaptations, limits and retained failures](issue-28-matrix-families.md)
+remain separate from complete source joint-prior reproduction.
+
+## Shared matrix preference profiles
+
+`causal-shared-matrices-v1`, `causal-refreshed-matrices-v1`,
+`causal-local-matrices-v1` and `causal-global-matrices-v1` extend the matrix families
+with retained named numerical/categorical choices. Each supports forward, layered
+and redirection topologies and preserves every sampled decision through saved
+replay. Shared/refreshed modes use Beta numerical laws and polynomial categorical
+weights; local/global modes use uniform category choices. Global numerical draws
+explicitly reuse quantiles across width-dependent bounds. All four use polynomial
+matrix vectors; CausalMatrixPrior also exposes uniform vectors and restricted
+family/point-law/base choices. [Laws, bindings, source adaptations and delivery
+state](issue-28-shared-matrix-preferences.md). These are r0 exploration profiles,
+not a claim of complete source joint-prior reproduction.
+
+## Source activation profiles
+
+The eight `causal-source-{standard,plain}{,-refreshed,-local,-global}-v1` profiles
+bind the source's hierarchical primitive preferences to Gaussian-affine causal
+structures. Standard profiles use independent ancestral calibration and retain
+fixed input/output standardization, shifts and shared named rescale preferences.
+Plain profiles retain unwrapped primitives. All support forward, layered and
+redirection graphs through the shared saved backend path. They preserve explicit
+overflow failures and valid degenerate draws. See
+[source causal profile laws and qualifications](issue-28-source-causal-profiles.md).
+Their matrix-integrated counterparts are described below. Remaining wrappers,
+full source joint-prior reproduction and browser/Colab acceptance remain required.
+
+## Joint source activation and matrix profiles
+
+The eight `causal-source-{standard,plain}{,-refreshed,-local,-global}-matrices-v1`
+profiles extend the same graph, width, placement and calibration settings with
+all five recorded matrix families. Transformed matrices and node stages share
+one source activation selector scope; matrix transformations always use its plain
+selector. Matrix numerical/categorical preferences retain their complete field
+bindings. Standard node wrappers fit independent ancestral samples through the
+materialized matrix equations, including their retained noise order. Public
+`with_source_matrices` also exposes uniform positive vectors and matrix-family,
+point-law and covariance-base restrictions. See
+[joint laws and verification state](issue-28-source-matrix-profiles.md).
+These remain declared r0 exploration profiles, with broader exogenous integration
+and other accepted #28 options still required.

@@ -1,0 +1,90 @@
+{
+  "construction": {
+    "controls_json": "{\"topology\": \"tree-ensemble\", \"members\": [{\"task\": {\"rows\": 32, \"features\": 2, \"signal_features\": 2, \"active_features\": 2, \"context_rows\": 16, \"split\": 0, \"noise_ratio\": 0.0, \"task_type\": \"regression\", \"classes\": 0, \"separation\": 1.0, \"class_offsets\": [], \"version\": \"linear-v1\"}, \"families\": [\"hard\"], \"leaf_families\": [\"constant\", \"linear\", \"tanh\", \"sin\"], \"min_depth\": 1, \"max_depth\": 2, \"split_density\": 0.5, \"coefficient_scale\": 1.0, \"threshold_bound\": 3.0, \"temperature_bounds\": [0.05, 2.0], \"equality\": \"left\", \"root\": {\"law\": {\"coordinates\": [{\"family\": \"gaussian\", \"location\": 0.0, \"scale\": 1.0, \"probabilities\": [], \"exponent\": 2.0, \"clip\": null, \"version\": \"source-root-coordinate-v1\"}, {\"family\": \"categorical\", \"location\": 0.0, \"scale\": 1.0, \"probabilities\": [0.2, 0.3, 0.5], \"exponent\": 2.0, \"clip\": null, \"version\": \"source-root-coordinate-v1\"}], \"version\": \"source-root-law-v1\"}, \"calibration\": null, \"version\": \"source-root-base-v1\"}, \"version\": \"r0-tree-extension-request-v1\"}, {\"task\": {\"rows\": 32, \"features\": 2, \"signal_features\": 2, \"active_features\": 2, \"context_rows\": 16, \"split\": 0, \"noise_ratio\": 0.0, \"task_type\": \"regression\", \"classes\": 0, \"separation\": 1.0, \"class_offsets\": [], \"version\": \"linear-v1\"}, \"families\": [\"soft\"], \"leaf_families\": [\"constant\", \"linear\", \"tanh\", \"sin\"], \"min_depth\": 1, \"max_depth\": 2, \"split_density\": 0.5, \"coefficient_scale\": 1.0, \"threshold_bound\": 3.0, \"temperature_bounds\": [0.05, 2.0], \"equality\": \"left\", \"root\": {\"law\": {\"coordinates\": [{\"family\": \"gaussian\", \"location\": 0.0, \"scale\": 1.0, \"probabilities\": [], \"exponent\": 2.0, \"clip\": null, \"version\": \"source-root-coordinate-v1\"}, {\"family\": \"categorical\", \"location\": 0.0, \"scale\": 1.0, \"probabilities\": [0.2, 0.3, 0.5], \"exponent\": 2.0, \"clip\": null, \"version\": \"source-root-coordinate-v1\"}], \"version\": \"source-root-law-v1\"}, \"calibration\": null, \"version\": \"source-root-base-v1\"}, \"version\": \"r0-tree-extension-request-v1\"}, {\"task\": {\"rows\": 32, \"features\": 2, \"signal_features\": 2, \"active_features\": 2, \"context_rows\": 16, \"split\": 0, \"noise_ratio\": 0.0, \"task_type\": \"regression\", \"classes\": 0, \"separation\": 1.0, \"class_offsets\": [], \"version\": \"linear-v1\"}, \"families\": [\"categorical-pruned\"], \"leaf_families\": [\"constant\", \"linear\", \"tanh\", \"sin\"], \"min_depth\": 1, \"max_depth\": 2, \"split_density\": 0.5, \"coefficient_scale\": 1.0, \"threshold_bound\": 3.0, \"temperature_bounds\": [0.05, 2.0], \"equality\": \"left\", \"root\": {\"law\": {\"coordinates\": [{\"family\": \"gaussian\", \"location\": 0.0, \"scale\": 1.0, \"probabilities\": [], \"exponent\": 2.0, \"clip\": null, \"version\": \"source-root-coordinate-v1\"}, {\"family\": \"categorical\", \"location\": 0.0, \"scale\": 1.0, \"probabilities\": [0.2, 0.3, 0.5], \"exponent\": 2.0, \"clip\": null, \"version\": \"source-root-coordinate-v1\"}], \"version\": \"source-root-law-v1\"}, \"calibration\": null, \"version\": \"source-root-base-v1\"}, \"version\": \"r0-tree-extension-request-v1\"}], \"weights\": [1.0, 2.0, 3.0], \"reduction\": \"mean\"}",
+    "seed": 42
+  },
+  "seed": 29,
+  "count": 2,
+  "max_seconds": 60,
+  "max_bytes": 16000000,
+  "observation": {
+    "seed": 30,
+    "plan": {
+      "mode": "mnar-self",
+      "columns": [
+        0,
+        1
+      ],
+      "intercept": -1.0,
+      "slope": 0.5
+    },
+    "measurements": [
+      {
+        "kind": "affine",
+        "columns": [
+          0
+        ],
+        "parameters": [
+          [
+            "scale",
+            1.5
+          ],
+          [
+            "shift",
+            -0.2
+          ]
+        ]
+      },
+      {
+        "kind": "gaussian-noise",
+        "columns": [
+          0
+        ],
+        "parameters": [
+          [
+            "scale",
+            0.2
+          ]
+        ]
+      },
+      {
+        "kind": "clip",
+        "columns": [
+          0
+        ],
+        "parameters": [
+          [
+            "lower",
+            -2.0
+          ],
+          [
+            "upper",
+            2.0
+          ]
+        ]
+      }
+    ],
+    "encodings": [
+      {
+        "column": 0,
+        "kind": "ordinal",
+        "cutpoints": [
+          -0.5,
+          0.5
+        ],
+        "vocabulary": [
+          "low",
+          "middle",
+          "high"
+        ]
+      }
+    ],
+    "quantiles": [
+      {
+        "column": 0,
+        "kind": "quantile-normal",
+        "tail_probability": null
+      }
+    ]
+  }
+}

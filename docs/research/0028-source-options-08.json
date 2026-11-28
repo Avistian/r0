@@ -1,0 +1,394 @@
+[
+  {
+    "id": "K1.structure.06",
+    "option": "L2 cluster distance",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.07",
+    "option": "Variable cluster log-width spread",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.08",
+    "option": "K1-described historical I2 fixed-width spread",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.09",
+    "option": "Product with MLP child",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.10",
+    "option": "Product with cluster child",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.11",
+    "option": "Product with tree child",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.12",
+    "option": "Product with discretization child",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.13",
+    "option": "Product with GP child",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.14",
+    "option": "Product with linear child",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.15",
+    "option": "Product with quadratic child",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.16",
+    "option": "Deterministic argmax categories",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.17",
+    "option": "Linear target reconstruction mechanism",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.18",
+    "option": "MLP target reconstruction mechanism",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.19",
+    "option": "GP target reconstruction mechanism",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.boundary.01",
+    "option": "Readout-only Kumaraswamy warp",
+    "source": "K1 A",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "K1.boundary.02",
+    "option": "Numerical measurement noise",
+    "source": "K1 A",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "K1.boundary.03",
+    "option": "Shared-noise column blocks",
+    "source": "K1 A",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "K1.boundary.04",
+    "option": "Feature coarsening",
+    "source": "K1 A",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "K1.boundary.05",
+    "option": "Rank-based high-cardinality coding",
+    "source": "K1 A",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "K1.boundary.06",
+    "option": "Heavy-tail target transform",
+    "source": "K1 A",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "K1.boundary.07",
+    "option": "Missingness",
+    "source": "K1 A",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "K1.boundary.08",
+    "option": "Posthoc target recomputation policy",
+    "source": "K1 A",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "K1.boundary.09",
+    "option": "Learnability rejection",
+    "source": "K1 A",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "G1.structure.01",
+    "option": "Dual regression/classification target table",
+    "source": "G1 3.2",
+    "disposition": "REQUIRED_28",
+    "notes": "Document named independent r0 mapping; exact peer algorithm undisclosed."
+  },
+  {
+    "id": "G1.structure.02",
+    "option": "SCM nonlinear mapping",
+    "source": "G1 3.2",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "G1.structure.03",
+    "option": "Algebraic aggregation",
+    "source": "G1 3.2",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "G1.structure.04",
+    "option": "Mixed-type readout",
+    "source": "G1 3.2",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "G1.boundary.01",
+    "option": "Missingness",
+    "source": "G1 3.2",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "G1.boundary.02",
+    "option": "Observation noise",
+    "source": "G1 3.2",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "G1.boundary.03",
+    "option": "Class balance policy",
+    "source": "G1 3.2",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "P35.structure.01",
+    "option": "High-cardinality typed variables",
+    "source": "P35 3.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P35.structure.02",
+    "option": "Large observed-feature sets",
+    "source": "P35 3.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P35.boundary.01",
+    "option": "Train/test grouped shifts",
+    "source": "P35 3.3",
+    "disposition": "INTERFACE_30_39",
+    "notes": ""
+  },
+  {
+    "id": "P35.unknown.01",
+    "option": "Unnamed expanded generator algorithms",
+    "source": "P35 3.3",
+    "disposition": "UNDISCLOSED",
+    "notes": ""
+  },
+  {
+    "id": "P25.unknown.01",
+    "option": "Unnamed broadened synthetic distributions",
+    "source": "P25 3 Data",
+    "disposition": "UNDISCLOSED",
+    "notes": ""
+  },
+  {
+    "id": "P25.boundary.01",
+    "option": "Real-data continued pretraining",
+    "source": "P25 3",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "P25.boundary.02",
+    "option": "TabPFN surrogate prior tuning",
+    "source": "P25 3",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "P25.boundary.03",
+    "option": "Model distillation",
+    "source": "P25 3",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "P3.structure.01",
+    "option": "High-frequency sinusoidal mechanism",
+    "source": "P3 2.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P3.structure.02",
+    "option": "Spatial activation",
+    "source": "P3 2.5",
+    "disposition": "REQUIRED_28",
+    "notes": "Exact peer form undisclosed; named r0 spatial reconstruction required."
+  },
+  {
+    "id": "P3.structure.03",
+    "option": "Many-class typed generation",
+    "source": "P3 2.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "P3.unknown.01",
+    "option": "Unnamed graph algorithms",
+    "source": "P3 2.5",
+    "disposition": "UNDISCLOSED",
+    "notes": ""
+  },
+  {
+    "id": "P3.unknown.02",
+    "option": "Unnamed combiner algorithms",
+    "source": "P3 2.5",
+    "disposition": "UNDISCLOSED",
+    "notes": ""
+  },
+  {
+    "id": "P3.unknown.03",
+    "option": "Unnamed categorical variants",
+    "source": "P3 2.5",
+    "disposition": "UNDISCLOSED",
+    "notes": ""
+  },
+  {
+    "id": "P3.boundary.01",
+    "option": "Discrete-time dynamic SCM",
+    "source": "P3 2.5",
+    "disposition": "INTERFACE_30_39",
+    "notes": ""
+  },
+  {
+    "id": "P3.boundary.02",
+    "option": "Out-of-distribution task generation",
+    "source": "P3 2.5",
+    "disposition": "INTERFACE_30_39",
+    "notes": ""
+  },
+  {
+    "id": "CORPUS.boundary.01",
+    "option": "APT adaptive adversarial prior",
+    "source": "Audit0023 C17/C19/C22-C26",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "CORPUS.boundary.02",
+    "option": "RAD-TFM adaptive adversarial prior",
+    "source": "Audit0023 C17/C19/C22-C26",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "CORPUS.boundary.03",
+    "option": "Two Is Enough binary-to-multiclass learner",
+    "source": "Audit0023 C17/C19/C22-C26",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "CORPUS.boundary.04",
+    "option": "Curriculum Matters relational curriculum",
+    "source": "Audit0023 C17/C19/C22-C26",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "CORPUS.boundary.05",
+    "option": "Coverage/density measurement",
+    "source": "Audit0023 C17/C19/C22-C26",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "CORPUS.boundary.06",
+    "option": "Playing with priors fixed-protocol comparison",
+    "source": "Audit0023 C17/C19/C22-C26",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "CORPUS.boundary.07",
+    "option": "TabDPT real-data pretraining",
+    "source": "Audit0023 C17/C19/C22-C26",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "CORPUS.boundary.08",
+    "option": "Real-TabPFN continued real-data pretraining",
+    "source": "Audit0023 C17/C19/C22-C26",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "CORPUS.boundary.09",
+    "option": "Streaming/shards/cache execution",
+    "source": "Audit0023 C17/C19/C22-C26",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  },
+  {
+    "id": "CORPUS.boundary.10",
+    "option": "Learner tokenization/output heads",
+    "source": "Audit0023 C17/C19/C22-C26",
+    "disposition": "OUTSIDE_28",
+    "notes": ""
+  }
+]

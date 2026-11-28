@@ -70,3 +70,58 @@
 **Chart sample**: A declared subset of a task's rows used for visualization; full-task summaries and exports still cover every row.
 
 **Replay bundle**: A collection of a task's identity, recipe, sampled mechanism and observations, with predictor data separated from diagnostic truth.
+
+## Generator diagnostics
+
+**Diagnostic flag**:
+A recorded property of a sampled synthetic task that warrants inspection without,
+by itself, making the task invalid.
+
+**Inspection filter**:
+An explicit selection rule used to examine a subset of sampled synthetic tasks and
+compare its distribution with the original draws.
+
+
+## Causal and neural generators
+
+**Structural causal model**:
+A collection of variables whose values are determined by structural mechanisms,
+their causal parents and exogenous variables.
+
+**Hidden variable**:
+A variable in the generating model that is absent from the predictor's observations.
+_Avoid_: Missing value
+
+**Structural innovation**:
+An exogenous input supplying variation to a variable's structural mechanism.
+_Avoid_: Added observation noise
+
+**Hard intervention**:
+A replacement of a variable's structural mechanism with an externally specified
+value or value-setting rule, removing its usual dependence on causal parents.
+
+**Soft intervention**:
+A change to a variable's structural mechanism or exogenous-input distribution
+without necessarily removing its dependence on causal parents.
+
+
+**Node channel**:
+One component of the value of a vector-valued causal variable; different channels
+may be observed or hidden in a prediction task.
+
+**Mechanism calibration**:
+The determination of fixed properties of a sampled data-generating mechanism using
+analytic quantities or an independent calibration sample.
+
+**Matched intervention comparison**:
+A comparison of outcomes for the same generated individuals before and after an
+intervention, preserving their exogenous draws wherever the intervention permits.
+
+**Population intervention comparison**:
+A comparison of distributions before and after an intervention that can use new
+exogenous draws rather than matching the same generated individuals.
+
+
+**Native categorical target**:
+A categorical variable of the generating model that is itself the prediction
+outcome, rather than a label produced by a separate target adapter.

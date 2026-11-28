@@ -5,6 +5,7 @@ from dataclasses import asdict, replace
 
 import numpy as np
 
+from r0.modules.priors.lib.causal_sampling import sample_causal_profile
 from r0.modules.priors.lib.compositions import (
     Combination,
     CompositeRecipe,
@@ -24,11 +25,14 @@ from r0.modules.priors.lib.kernels import (
     StationaryKernel,
 )
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.matrix_preference_prior import PREFERRED_MATRIX_PROFILES
 from r0.modules.priors.lib.polynomial import PolynomialRecipe
 from r0.modules.priors.lib.quadratic import QuadraticRecipe
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.sampling import BaseRecipe
 from r0.modules.priors.lib.smooth import SmoothRecipe
+from r0.modules.priors.lib.source_causal_prior import SOURCE_ACTIVATION_PROFILES
+from r0.modules.priors.lib.source_matrix_sampling import SOURCE_MATRIX_PROFILES
 
 BROAD_FAMILIES = (
     "linear",
@@ -312,9 +316,44 @@ def sample_recipe(
     families = {
         "broad-v1": BROAD_FAMILIES,
         "tabiclv2-adapted-v1": ("power", "quadratic", "rff", "product"),
+        "causal-affine-v1": ("forward", "layered", "redirection"),
+        "causal-activated-v1": ("forward", "layered", "redirection"),
+        "causal-preferences-v1": ("forward", "layered", "redirection"),
+        "causal-exogenous-v1": ("forward", "layered", "redirection"),
+        "causal-factorized-v1": ("forward", "layered", "redirection"),
+        "causal-importance-v1": ("forward", "layered", "redirection"),
+        "causal-matrices-v1": ("forward", "layered", "redirection"),
+        "causal-gaussian-matrices-v1": ("forward", "layered", "redirection"),
+        **{profile: ("forward", "layered", "redirection") for profile in PREFERRED_MATRIX_PROFILES},
+        **{
+            profile: ("forward", "layered", "redirection") for profile in SOURCE_ACTIVATION_PROFILES
+        },
     }
+    families.update(
+        {name: ("forward", "layered", "redirection") for name in SOURCE_MATRIX_PROFILES}
+    )
     if profile not in families or family not in families[profile]:
         raise ValueError("unsupported sampling profile or family")
+    if profile in (
+        "causal-affine-v1",
+        "causal-activated-v1",
+        "causal-preferences-v1",
+        "causal-exogenous-v1",
+        "causal-factorized-v1",
+        "causal-importance-v1",
+        "causal-matrices-v1",
+        "causal-gaussian-matrices-v1",
+        *PREFERRED_MATRIX_PROFILES,
+        *SOURCE_ACTIVATION_PROFILES,
+        *SOURCE_MATRIX_PROFILES,
+    ):
+        return sample_causal_profile(
+            family,
+            task=task,
+            seed=seed,
+            task_id=task_id,
+            profile=profile,
+        )
     rng = np.random.default_rng(
         int(record_fingerprint((profile, family, asdict(task), seed, task_id)), 16)
     )

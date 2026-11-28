@@ -1,0 +1,160 @@
+{
+  "recipe": {
+    "task": {
+      "rows": 256,
+      "features": 2,
+      "signal_features": 2,
+      "active_features": 2,
+      "context_rows": 192,
+      "split": 0,
+      "noise_ratio": 0.0,
+      "task_type": "regression",
+      "classes": 0,
+      "separation": 1.0,
+      "class_offsets": [],
+      "version": "linear-v1"
+    },
+    "nodes": [
+      {
+        "parents": [],
+        "function": {
+          "matrix": [
+            [
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "version": "frozen-linear-function-v1"
+        },
+        "root": {
+          "family": "gaussian",
+          "width": 2,
+          "gaussian_factor": null,
+          "weights": null,
+          "factor": null,
+          "covariance_base": null,
+          "version": "joint-root-base-v1"
+        },
+        "noise_scale": [],
+        "exogenous": {
+          "inputs": {
+            "distribution": "gaussian",
+            "location": 0.0,
+            "scale": 1.0,
+            "df": 5.0,
+            "mixture_gap": 2.0,
+            "bound": null,
+            "version": "inputs-v1"
+          },
+          "version": "exogenous-v1",
+          "factor": [],
+          "geometry": "independent"
+        },
+        "noise_response": {
+          "offset": 1.0,
+          "strength": 0.0,
+          "power": 1.0
+        },
+        "pipeline": null,
+        "version": "functional-causal-node-v1"
+      },
+      {
+        "parents": [
+          0
+        ],
+        "function": {
+          "frequencies": [
+            [
+              32.0,
+              128.0,
+              64.0
+            ],
+            [
+              0.0,
+              16.0,
+              -64.0
+            ]
+          ],
+          "phases": [
+            4.71238898038469,
+            4.71238898038469,
+            4.71238898038469
+          ],
+          "coefficients": [
+            [
+              1.0
+            ],
+            [
+              0.5
+            ],
+            [
+              -0.25
+            ]
+          ],
+          "version": "frozen-rff-function-v1"
+        },
+        "root": null,
+        "noise_scale": [],
+        "exogenous": {
+          "inputs": {
+            "distribution": "gaussian",
+            "location": 0.0,
+            "scale": 1.0,
+            "df": 5.0,
+            "mixture_gap": 2.0,
+            "bound": null,
+            "version": "inputs-v1"
+          },
+          "version": "exogenous-v1",
+          "factor": [],
+          "geometry": "independent"
+        },
+        "noise_response": {
+          "offset": 1.0,
+          "strength": 0.0,
+          "power": 1.0
+        },
+        "pipeline": null,
+        "version": "functional-causal-node-v1"
+      }
+    ],
+    "observed": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "target": [
+      [
+        1,
+        0
+      ]
+    ],
+    "limits": {
+      "nodes": 1024,
+      "node_channels": 1024,
+      "total_channels": 8192,
+      "parameters": 1000000,
+      "working_bytes": 268435456
+    },
+    "version": "functional-causal-v1"
+  },
+  "seed": 28,
+  "count": 2,
+  "max_seconds": 60,
+  "max_bytes": 10485760,
+  "start": 0,
+  "group_size": 2,
+  "device": "cpu",
+  "sampling": null,
+  "causal_limits": null,
+  "construction": null
+}

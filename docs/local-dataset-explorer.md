@@ -93,3 +93,8 @@ recipes, row lookup, zero-new-generation replay, reopening, ZIP/SVG/PNG download
 classification counts, 63-bit identities, full versus sampled rows, visible failure
 with preserved prior data, and mobile overflow. It writes screenshots and a receipt.
 Browser checks are separate from Python tests and hosted Colab/GPU acceptance.
+
+The [sampled causal mechanism workbench](issue-28-workbench.md) adds explicit-DAG
+and Cauchy construction, causal node/channel inspection, editable mechanisms,
+and saved/reopenable edit comparisons. Its exploration caps and construction
+controls are separate from the analytic starting recipes above.

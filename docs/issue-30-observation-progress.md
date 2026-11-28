@@ -1,0 +1,50 @@
+# Issue 30 generator implementation progress
+
+The full issue remains open. These are component-level implementation records,
+not acceptance of the complete observation or mixture portfolio. UI/explorer
+presentation belongs to #126; generator algorithms and headless evidence stay here.
+
+| Requirement | Current component and remaining work |
+| --- | --- |
+| O30-01 Typed observations | `TrainingFeature` now transports continuous/count/binary/categorical/ordinal columns, including singleton categories and declared ordinal order. Explicit cutpoint-based binary/categorical/ordinal maps and scaled count rounding now compose after measurements and before masking; receipts retain original schema and raw-value binding. Sampled/fitted maps and shared preferences remain open. |
+| O30-02 Marginals/measurements | An ordered measurement kernel now implements affine/power/log/bounded/periodic/exponential maps, clipping/rounding, Gaussian/shared/heteroscedastic/Student noise and additive outliers. API/CLI integration now retains a v2 receipt and replays measurements before masking against privileged raw inputs. Typed cutpoint/count encodings now integrate with original-schema restoration. Context-fitted rank/uniform/normal quantile maps now retain v4 calibration receipts. Linear mixing now supports fixed-width projections and redundancy, with nuisance columns composed from existing stages. Sparse authored quadratic products/squares now add nonlinear cross-column interactions. Sampled interaction/projection hyperpriors and further fitted/measurement families remain open. |
+| O30-03 Missingness | `TrainingTask.missing_mask` and archive transport now preserve explicit missing cells for all feature kinds. A bounded MCAR/MAR/self-target-latent MNAR/row/block kernel now retains probabilities, value binding and RNG snapshots. Single-stage CPU observation tasks now retain privileged raw inputs/drivers and verify mask replay on archive loading. CLI/guarded requests now apply masks after source generation and validate observation receipts on resume. Additional structured families, automatic latent-driver extraction, stronger latent provenance and indicator policies remain open. |
+| O30-04 Targets/difficulty | Existing task adapters are reusable; the issue-wide observation/label-noise and difficulty inventory remains open. |
+| O30-05 Shapes/regimes | Existing bounded task sizes are reusable; observation-regime hyperpriors, shared preferences and rare-regime sampling remain open. |
+| O30-06 Composition | Ordered numerical measurements followed by one mask are now integrated with replay and continuous-column schema checks. Explicit typed conversions now run between measurements and masking with replayed output schemas. Context-fitted quantile maps now precede measurements; linear-mix stages compose inside the ordered measurement pipeline. Arbitrary stage interleaving, broader compatibility/exclusion rules and measured joint coverage remain open. |
+| M30-01 Outer mixtures | Exact quotas, rare minimums, hierarchical allocations, lazy global-ID shards and declared marginal/joint reports now exist. Saved-task audits report task/row/query denominators. Random/correlated mixture weights, curricula, adaptive/cost-aware policies and complete denominator accounting remain open. Per-table ensembles remain distinct. |
+| M30-02 Curricula/adaptation | Policy state, approved feedback signals, probability floors and adaptive/curriculum candidates remain open. |
+| M30-03 Rejection/accounting | Shard/campaign inspection now distinguishes admissions, committed/pending IDs, unresolved/recovered failures and incomplete archives. Full stage-specific reasons, transformation/rejection/queue/consumption accounting remain open; external consumption depends on #33. |
+| M30-04 Diversity | Declared marginal/joint quotas and disk-backed exact observed-task duplicate audits now exist, with task/row/query counts. Measured property coverage, near-duplicate/mechanism equivalence, correlations and opportunity-cost comparisons remain open; downstream benefit measurements depend on #36. |
+
+## Typed and missing-cell transport
+
+Count columns store nonnegative integer-valued numbers, decoded as integers.
+Ordinal columns store vocabulary indices and preserve their declared order in
+`Episode.features`. Categorical/ordinal vocabularies may contain a single category;
+constant columns are not repaired. Binary columns keep their two-label encoding.
+
+`TrainingTask.missing_mask` is an optional boolean tensor with exactly the input
+shape and device. When supplied, it must identify exactly the input NaNs, and all
+unmasked cells must be finite. A finite sentinel cannot masquerade as a missing
+cell. Masked category/count values are excluded from code/value validation; all
+present values still obey their declared types. Episode conversion maps missing
+cells to `None` and never passes NaN through the immutable episode contract.
+
+Archives store context/query mask arrays alongside the corresponding predictor
+inputs. Loading requires both arrays with matching boolean shapes and validates
+them against reassembled inputs. Masks describe the observed missingness pattern;
+they do not contain latent mask-generation drivers. With no mask, the existing
+archive field layout is unchanged. Existing schema records retain the same two
+fields (`kind`, `vocabulary`); older archives do not need a new schema flag.
+
+Focused checks cover count/ordinal/singleton-category values, exact missing masks,
+archive reopening, episode values/order and invalid counts/codes. Native-variable
+and existing archive regressions are also run. The later observation integrations retain transformation identity, raw-value custody
+and replay. This still does not claim that a trained model handles missingness.
+
+[Initial missingness laws and integration limits](issue-30-missingness.md).
+
+[Measurement laws and integration limits](issue-30-measurements.md).
+
+[Context-fitted quantiles](issue-30-quantile-maps.md), [coverage plans and outcomes](issue-30-coverage-plans.md), and [observed-content audit](issue-30-content-audit.md).

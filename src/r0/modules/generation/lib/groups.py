@@ -66,12 +66,30 @@ def _entries(task: TrainingTask) -> Iterable[tuple[str, bytes]]:
             context_x=task.inputs[context],
             context_y=task.targets[context],
             query_x=task.inputs[queries],
+            **(
+                {
+                    "context_missing": task.missing_mask[context],
+                    "query_missing": task.missing_mask[queries],
+                }
+                if task.missing_mask is not None
+                else {}
+            ),
         ),
     )
     yield (
         "predictor.json",
         _json(
             {
+                **(
+                    {"feature_schema": [asdict(f) for f in task.feature_schema]}
+                    if task.feature_schema
+                    else {}
+                ),
+                **(
+                    {"target_origin": task.target_origin}
+                    if task.target_origin != "adapter-v1"
+                    else {}
+                ),
                 "task_type": task.task_type,
                 "classes": task.classes,
                 "feature_names": [f"x{i}" for i in range(task.inputs.shape[1])],
@@ -83,11 +101,21 @@ def _entries(task: TrainingTask) -> Iterable[tuple[str, bytes]]:
     truth = {"query_y": task.targets[queries], "scores": task.scores}
     if task.probabilities is not None:
         truth["probabilities"] = task.probabilities
+    if task.observation_truth is not None:
+        truth["observation_raw_inputs"] = task.observation_truth.raw_inputs
+        truth["observation_probabilities"] = task.observation_truth.probabilities
+        if task.observation_truth.driver is not None:
+            truth["observation_driver"] = task.observation_truth.driver
     yield "truth.npz", _arrays(**truth)
     yield (
         "card.json",
         _json(
             {
+                **(
+                    {"observation_truth": json.loads(task.observation_truth.record_json)}
+                    if task.observation_truth is not None
+                    else {}
+                ),
                 "source_task_id": task.source_task_id,
                 "episode_id": task.episode_id,
                 "recipe": json.loads(task.recipe_json),

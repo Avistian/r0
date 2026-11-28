@@ -1,0 +1,11 @@
+<section id="gp-edit-section" hidden>
+<h2>GP target equation comparison</h2><label>Retained parent for this edit<select id="gp-edit-parent"><option value="active">Active dataset</option><option value="before">Comparison before</option><option value="after">Comparison after</option></select></label>
+<p>Keep the original population and adapter. Edit a linear, full quadratic or tanh neural target, including every weight and bias. Each target is normalized using the same original independent marginal calibration inputs; calibration is never fitted on query rows. Changing only a bias may cancel after normalization.</p>
+<div class="fields"><label>Target family<select id="gp-edit-family"><option>linear</option><option>quadratic</option><option>neural</option></select></label><label>Neural hidden width for starting draft<input id="gp-edit-hidden" type="number" min="1" max="64" value="4"></label></div>
+<button id="gp-edit-original">Load original frozen target</button><button id="gp-edit-preset">Prepare authored starting draft</button>
+<p class="muted">Starting drafts are explicit deterministic r0 examples, not draws from the original paper's undisclosed target prior. The JSON below is authoritative; preparing a draft does not change the baseline.</p>
+<label>Frozen replacement target JSON<textarea id="gp-edit-json" rows="12" spellcheck="false"></textarea></label>
+<div class="fields"><label>Comparison environment<select id="gp-edit-mode"><option value="retain">Retain selected comparison environment</option><option value="matched">Matched original innovations</option><option value="fresh">Fresh innovations at original locations/kernels</option></select></label><label>Fresh innovation seed (exact decimal)<input id="gp-edit-seed" value="1" inputmode="numeric"></label></div>
+<p id="gp-edit-mode-note" class="muted"></p><button id="gp-edit-create">Save target comparison</button>
+<p>Saved comparisons appear in the paired panels below, with original-row traces, reopen and ZIP export. Reference controls select active, before or after equations. Further edits retain their selected parent exactly, with an explicit maximum of eight links; reopen any earlier parent to branch a new comparison.</p>
+</section>

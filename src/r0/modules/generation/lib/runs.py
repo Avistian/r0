@@ -17,6 +17,7 @@ from r0.modules.generation.lib.groups import (
     verify_group,
     write_record,
 )
+from r0.modules.generation.lib.loading import load_group
 from r0.modules.generation.lib.parallel import parallel_tasks
 from r0.modules.generation.lib.requests import (
     RunRequest,
@@ -24,7 +25,18 @@ from r0.modules.generation.lib.requests import (
     record_matches,
     selected_recipe,
 )
-from r0.modules.priors import TrainingTask
+from r0.modules.priors import (
+    CalibratedPopulationGraph,
+    CalibratedPopulationIntervention,
+    CalibratedPopulationQuery,
+    CausalLimits,
+    GPRootCalibration,
+    GPRootCalibrationQuery,
+    GPRootDAGRecipe,
+    TrainingTask,
+    explain_generation,
+    validate_gp_root_task,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -62,6 +74,9 @@ def _previous(group: Path, request: RunRequest) -> tuple[set[int], set[int]]:
                     record = json.loads(data.read(f"{task_id}/card.json"))["recipe"]
                     if not record_matches(record, request, task_id):
                         raise ValueError("saved group belongs to a different recipe or task")
+            if request.observation is not None:
+                for observed in load_group(archive):
+                    request.observation.validate(observed, request.causal_limits or CausalLimits())
             completed.update(receipt.task_ids)
     failed.difference_update(completed)
     return completed, failed
@@ -129,6 +144,19 @@ def _run(
     config = json.loads(json.dumps(asdict(request), sort_keys=True))
     if request.sampling is None:
         config.pop("sampling")
+    if request.causal_limits is None:
+        config.pop("causal_limits")
+    if request.construction is None:
+        config.pop("construction")
+    if request.observation is None:
+        config.pop("observation")
+    else:
+        if not request.observation.measurements:
+            config["observation"].pop("measurements")
+        if not request.observation.quantiles:
+            config["observation"].pop("quantiles")
+        if not request.observation.encodings:
+            config["observation"].pop("encodings")
     config["format"] = "generation-run-v1" if request.sampling is None else "generation-run-v2"
     header = out / "run.json"
     if header.exists():
@@ -192,6 +220,54 @@ def _run(
                             or task.inputs.device.type != request.device
                         ):
                             raise ValueError("producer returned a different task or recipe")
+                        source_task = (
+                            request.observation.validate(
+                                task, request.causal_limits or CausalLimits()
+                            )
+                            if request.observation is not None
+                            else task
+                        )
+                        if record["recipe"].get("version") == "population-xgboost-graph-v1":
+                            from r0.modules.priors.lib.xgboost_population_task import (
+                                validate_xgboost_population_task,
+                            )
+
+                            validate_xgboost_population_task(
+                                source_task, limits=request.causal_limits or CausalLimits()
+                            )
+                        if record["recipe"].get("version") in (
+                            "gp-root-dag-v1",
+                            "gp-root-calibration-v1",
+                            "gp-root-calibration-query-v1",
+                        ):
+                            cap = request.causal_limits or (
+                                request.recipe.limits
+                                if isinstance(
+                                    request.recipe,
+                                    (GPRootDAGRecipe, GPRootCalibration, GPRootCalibrationQuery),
+                                )
+                                else CausalLimits()
+                            )
+                            validate_gp_root_task(source_task, limits=cap)
+                        if record["recipe"].get("version") in (
+                            "calibrated-population-graph-v1",
+                            "calibrated-population-query-v1",
+                            "calibrated-population-intervention-v1",
+                        ):
+                            selected = selected_recipe(request, task_id)
+                            if isinstance(
+                                selected,
+                                (
+                                    CalibratedPopulationGraph,
+                                    CalibratedPopulationIntervention,
+                                    CalibratedPopulationQuery,
+                                ),
+                            ):
+                                explain_generation(
+                                    source_task,
+                                    [0],
+                                    limits=request.causal_limits or selected.limits,
+                                )
                     except (ValueError, RuntimeError) as error:
                         failures[str(task_id)] = _record_failure(failure_log, task_id, error)
                         if persist is not None:

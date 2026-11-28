@@ -11,7 +11,7 @@ import numpy as np
 import torch
 
 from r0.modules.generation.lib.groups import verify_group
-from r0.modules.priors import TrainingTask
+from r0.modules.priors import ObservationTruth, TrainingFeature, TrainingTask
 
 
 def _tensors(archive: zipfile.ZipFile, name: str) -> dict[str, torch.Tensor]:
@@ -52,7 +52,41 @@ def _load_task(archive: zipfile.ZipFile, task_id: int) -> TrainingTask:
     targets = torch.empty(rows, dtype=predictor["context_y"].dtype)
     inputs[context], inputs[query] = predictor["context_x"], predictor["query_x"]
     targets[context], targets[query] = predictor["context_y"], truth["query_y"]
+    masks = {"context_missing", "query_missing"} & predictor.keys()
+    missing_mask = None
+    if masks:
+        if masks != {"context_missing", "query_missing"}:
+            raise ValueError("saved missing masks require both context and query arrays")
+        if any(predictor[k].dtype != torch.bool for k in masks):
+            raise ValueError("saved missing masks must be boolean")
+        if (
+            predictor["context_missing"].shape != predictor["context_x"].shape
+            or predictor["query_missing"].shape != predictor["query_x"].shape
+        ):
+            raise ValueError("saved missing masks must match input shapes")
+        missing_mask = torch.empty_like(inputs, dtype=torch.bool)
+        missing_mask[context] = predictor["context_missing"]
+        missing_mask[query] = predictor["query_missing"]
+    observation_truth = None
+    observation_record = card.get("observation_truth")
+    observation_arrays = {key for key in truth if key.startswith("observation_")}
+    if observation_record is not None:
+        required = {"observation_raw_inputs", "observation_probabilities"}
+        if not required <= observation_arrays or observation_arrays - required - {
+            "observation_driver"
+        }:
+            raise ValueError("saved observation truth arrays differ")
+        observation_truth = ObservationTruth(
+            truth["observation_raw_inputs"],
+            truth["observation_probabilities"],
+            truth.get("observation_driver"),
+            json.dumps(observation_record, sort_keys=True, allow_nan=False),
+        )
+    elif observation_arrays:
+        raise ValueError("observation arrays lack a provenance record")
     return TrainingTask(
+        observation_truth=observation_truth,
+        missing_mask=missing_mask,
         source_task_id=card["source_task_id"],
         episode_id=card["episode_id"],
         task_type=metadata["task_type"],
@@ -69,4 +103,9 @@ def _load_task(archive: zipfile.ZipFile, task_id: int) -> TrainingTask:
         context_indices=context,
         query_indices=query,
         classes=tuple(metadata["classes"]),
+        feature_schema=tuple(
+            TrainingFeature(f["kind"], tuple(f["vocabulary"]))
+            for f in metadata.get("feature_schema", ())
+        ),
+        target_origin=metadata.get("target_origin", "adapter-v1"),
     )

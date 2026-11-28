@@ -1,19 +1,21 @@
 "use strict";
 let generationGraph = null, graphNode = null, graphScale = 1;
 function clearGraph() {
+  clearGPPopulationMatrices();
   generationGraph = null; graphNode = null;
   $("generation-graph").replaceChildren(); $("graph-downloads").replaceChildren();
   $("graph-detail").hidden = true; $("graph-tools").hidden = true;
   $("graph-note").textContent = "Built on demand from saved parameters. Dataset values remain unchanged.";
 }
 function resetGraph() {
+  $("graph-population").value="query";
   $("graph-rows").value = "0,3"; $("graph-column").value = 0;
   $("graph-component").replaceChildren(new Option("Whole task", "")); clearGraph();
 }
 function graphRequest() {
   const parts = $("graph-rows").value.split(",").map(value => value.trim());
   if (parts.some(value => !/^\d+$/.test(value))) throw new Error("Enter comma-separated original row indices.");
-  return {indices: parts.map(Number), component: $("graph-component").value === "" ? null : number("graph-component"), column_start: number("graph-column")};
+  return {...limits(), population:$("graph-population").value, indices: parts.map(Number), component: $("graph-component").value === "" ? null : number("graph-component"), column_start: number("graph-column")};
 }
 function graphStyle(node) {
   if (node.id === "inputs") return {color:"#3674c5",light:"#eef5ff",kind:"INPUTS",icon:"x"};
@@ -35,10 +37,11 @@ function fitGraph() {
 }
 function drawGenerationGraph(graph) {
   generationGraph = graph;
+  showGPPopulationMatrices(graph);
   const selected = graph.component === null ? "" : String(graph.component);
   $("graph-component").replaceChildren(new Option("Whole task", ""), ...Array.from({length: graph.component_count}, (_, i) => new Option(`Component ${i}`, i)));
   $("graph-component").value = selected;
-  $("graph-note").textContent = `${graph.nodes.length} steps · original rows ${graph.rows.join(", ")} · select any step to follow its inputs and outputs. Values show at most 32 columns; parameter lists show their first 32 items. Full parameters are in the dataset export.`;
+  $("graph-note").textContent = `${graph.nodes.length} steps · ${graph.population_role==="fit"?"independent fitting":"original query"} rows ${graph.rows.join(", ")} · select any step to follow its inputs and outputs. Values show at most 32 columns; parameter lists show their first 32 items. Full parameters are in the dataset export.`;
   const positions = new Map(), counts = new Map();
   for (const node of graph.nodes) {
     const level = node.parents.length ? Math.max(...node.parents.map(id => positions.get(id).level)) + 1 : 0;
@@ -105,12 +108,16 @@ function drawGenerationGraph(graph) {
   $("graph-downloads").append(json); $("graph-values").textContent=pretty(graph);
   selectGraphNode(graph.nodes.some(node=>node.id==="target")?"target":graph.nodes.at(-1).id);
 }
-function matrixContext(node, rowCount = node.values.length) {
+function matrixContext(node, rowCount = node.values.length, originalRows = generationGraph.rows) {
   const p = node.parameters, columns = node.column_indices;
-  let rowLabels = generationGraph.rows, columnLabels = columns, rowHeading = "Original row", columnHeading = "Column";
+  let rowLabels = originalRows, columnLabels = columns, rowHeading = "Original row", columnHeading = "Column";
   let count = `${rowCount} of ${node.shape[0]} selected rows · ${columns.length} of ${node.shape[1]} columns`;
-  let axes = `Original row order: ${generationGraph.rows.join(", ")}`;
-  if (p.support_indices_shown) {
+  let axes = `Original row order: ${originalRows.join(", ")}`;
+  if (Array.isArray(p.row_labels) && p.row_labels.length===node.shape[0]) {
+    rowLabels=p.row_labels;rowHeading=p.row_heading || "Parameter";columnHeading=p.column_heading || "Column";
+    count=`${rowCount} retained statistics · ${columns.length} of ${node.shape[1]} score channels`;
+    axes=p.axes || p.scope || "Shared values with named axes.";
+  } else if (p.support_indices_shown) {
     rowLabels = p.support_indices_shown; rowHeading = "Support row";
     count = `${rowCount} of ${p.full_shape[0]} support rows · ${columns.length} of ${p.full_shape[1]} output columns`;
     axes = "Original joint standard normals; first support rows, not observation rows.";
@@ -122,6 +129,10 @@ function matrixContext(node, rowCount = node.values.length) {
     rowLabels = node.values.map((_, i) => i); rowHeading = "Matrix row";
     count = `${rowCount} of ${node.shape[0]} matrix rows · ${columns.length} of ${node.shape[1]} columns`;
     axes = p.axes;
+  } else if (p.scope?.includes("not an emitted dataset row") || node.values.length !== originalRows.length) {
+    rowLabels = node.values.map((_, i) => i); rowHeading = "Shared draw";
+    count = `${rowCount} shared construction / environment rows · ${columns.length} columns`;
+    axes = p.scope || "Shared values; not indexed by selected dataset rows.";
   }
   return {count, axes, rowLabels, columnLabels, rowHeading, columnHeading};
 }
@@ -180,7 +191,7 @@ $("graph").onclick = () => act("Reconstructing generation steps…", async () =>
   const result = await request("graph", data);
   if (pretty(data) === pretty(graphRequest())) drawGenerationGraph(result.graph);
 });
-for (const id of ["graph-rows", "graph-column", "graph-component"]) $(id).onchange = clearGraph;
+for (const id of ["graph-rows", "graph-column", "graph-component", "graph-population"]) $(id).onchange = clearGraph;
 $("graph-input").onchange = showGraphInput;
 $("graph-expand").onclick = () => {$("graph-component").value = graphNode.component; $("graph").click();};
 

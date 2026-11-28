@@ -1,0 +1,772 @@
+[
+  {
+    "id": "I2.measurement.01",
+    "option": "Corrected readout Kumaraswamy converter",
+    "source": "I2S _converter.py",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "I2.measurement.02",
+    "option": "Corrected readout activation converter",
+    "source": "I2S _converter.py",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "I2.measurement.03",
+    "option": "Disable target warp",
+    "source": "I2S _converter.py",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.01",
+    "option": "Log-absolute stabilized",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.02",
+    "option": "Log-sigmoid",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.03",
+    "option": "Rounding",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.04",
+    "option": "Softmax across channels",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.05",
+    "option": "Tied-maximum indicator",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.06",
+    "option": "One-hot argmax paper variant",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.07",
+    "option": "Channel rank",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.08",
+    "option": "Channel argsort",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.09",
+    "option": "Positive ReLU powers",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.10",
+    "option": "Signed absolute powers",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.11",
+    "option": "Stabilized reciprocal absolute powers",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.12",
+    "option": "Integer powers",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.13",
+    "option": "Paper interval[0,1] indicator",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.14",
+    "option": "Source abs(x)<=1 indicator",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.15",
+    "option": "Source sign(0)=1",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.16",
+    "option": "Source Heaviside(0)=1",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.17",
+    "option": "Fractional-part modulo",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.18",
+    "option": "Standard fixed/Relu-power/signed-power selector",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.19",
+    "option": "Plain activation selector including reciprocal/integer powers",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.20",
+    "option": "Input standardization",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.21",
+    "option": "Input random rescaling",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.22",
+    "option": "Input sample-derived shifts",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.23",
+    "option": "Output standardization",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "I2.activation.24",
+    "option": "Batch-scalar L2 normalization",
+    "source": "I2 E; I2S _activation.py",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.01",
+    "option": "Chain-plus-skip graph",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.02",
+    "option": "Variable-width vector nodes",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.03",
+    "option": "MLP structural mapping",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.04",
+    "option": "Decision-tree structural mapping",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.05",
+    "option": "ExtraTrees structural mapping",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.06",
+    "option": "Random-forest structural mapping",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.07",
+    "option": "RFF GP structural mapping",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.08",
+    "option": "Linear parent projections",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.09",
+    "option": "Residual mean aggregation",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.10",
+    "option": "Residual softmax-weighted aggregation",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.11",
+    "option": "Residual MLP aggregation",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.12",
+    "option": "Residual product aggregation",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.13",
+    "option": "Residual maximum aggregation",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.14",
+    "option": "Node standardization",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.15",
+    "option": "Node feature-importance scaling",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.mechanism.16",
+    "option": "Node L2 normalization",
+    "source": "M2 2.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "M2.selection.01",
+    "option": "K-means variable selection",
+    "source": "M2 2.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "M2.selection.02",
+    "option": "Farthest-point variable selection",
+    "source": "M2 2.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "M2.selection.03",
+    "option": "Random variable selection",
+    "source": "M2 2.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "M2.selection.04",
+    "option": "Quantile classification adapter",
+    "source": "M2 2.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "M2.selection.05",
+    "option": "Posthoc feature categorization",
+    "source": "M2 2.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "M2.temporal.01",
+    "option": "VAR mechanism",
+    "source": "M2 2.3",
+    "disposition": "INTERFACE_39",
+    "notes": ""
+  },
+  {
+    "id": "M2.temporal.02",
+    "option": "1D convolution",
+    "source": "M2 2.3",
+    "disposition": "INTERFACE_39",
+    "notes": "Axis must be explicit; do not count feature-axis implementation as row-axis coverage."
+  },
+  {
+    "id": "M2.outer.01",
+    "option": "Standalone DT",
+    "source": "M2 2.2",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "M2.outer.02",
+    "option": "Standalone ExtraTrees",
+    "source": "M2 2.2",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "M2.outer.03",
+    "option": "Standalone GBDT",
+    "source": "M2 2.2",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "M2.outer.04",
+    "option": "Standalone RF",
+    "source": "M2 2.2",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "M2.outer.05",
+    "option": "Standalone directly sampled RF",
+    "source": "M2 2.2",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "M2.outer.06",
+    "option": "Base/hybrid/tree table mixture",
+    "source": "M2 2.2",
+    "disposition": "INTERFACE_29_30",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.01",
+    "option": "Normal parameter hyperpriors",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.02",
+    "option": "Uniform parameter hyperpriors",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.03",
+    "option": "Beta parameter hyperpriors",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.04",
+    "option": "Chain motif",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.05",
+    "option": "Common-cause motif",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.06",
+    "option": "Collider motif",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.07",
+    "option": "Recursive motif expansion",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.08",
+    "option": "Acyclic edge redirection",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.09",
+    "option": "Local-path replacement",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.10",
+    "option": "Node structural transformation",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.11",
+    "option": "MLP edge",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.12",
+    "option": "Decision-tree edge",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.13",
+    "option": "Linear edge",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.14",
+    "option": "Kernel edge",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.15",
+    "option": "Piecewise edge",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.16",
+    "option": "Periodic edge",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.17",
+    "option": "Multiplicative edge",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.18",
+    "option": "Composite edge",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.19",
+    "option": "Mean aggregation",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.20",
+    "option": "Weighted aggregation",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.21",
+    "option": "Neural aggregation",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.22",
+    "option": "Root-law parameter variation",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.23",
+    "option": "Subgraph descriptors",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.structure.24",
+    "option": "Redundancy descriptors",
+    "source": "L2 4.1-4.5",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "L2.unknown.01",
+    "option": "CNN axis",
+    "source": "L2 4.1-4.5",
+    "disposition": "UNDISCLOSED",
+    "notes": "CNN documented; feature-axis r0 reconstruction allowed, temporal interpretation belongs #39."
+  },
+  {
+    "id": "L2.unknown.02",
+    "option": "Unnamed root-law catalog",
+    "source": "L2 4.1-4.5",
+    "disposition": "UNDISCLOSED",
+    "notes": "Sample explicit r0 families; do not attribute undisclosed complete peer catalog."
+  },
+  {
+    "id": "L2.unknown.03",
+    "option": "Unnamed kernel catalog",
+    "source": "L2 4.1-4.5",
+    "disposition": "UNDISCLOSED",
+    "notes": "Generic kernel composition required; exact peer kernel list unknown."
+  },
+  {
+    "id": "L2.boundary.01",
+    "option": "Multi-objective descriptor selection",
+    "source": "L2 4.1-4.5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L2.boundary.02",
+    "option": "Linear observation warp",
+    "source": "L2 4.1-4.5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L2.boundary.03",
+    "option": "Monotone observation warp",
+    "source": "L2 4.1-4.5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L2.boundary.04",
+    "option": "Log observation warp",
+    "source": "L2 4.1-4.5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L2.boundary.05",
+    "option": "Exponential observation warp",
+    "source": "L2 4.1-4.5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L2.boundary.06",
+    "option": "Composed observation warp",
+    "source": "L2 4.1-4.5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L2.boundary.07",
+    "option": "Random-interval classification",
+    "source": "L2 4.1-4.5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "L2.boundary.08",
+    "option": "Varied class frequencies",
+    "source": "L2 4.1-4.5",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "A1.structure.01",
+    "option": "Cauchy graph base",
+    "source": "A1 3.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "A1.structure.02",
+    "option": "Vector-node base",
+    "source": "A1 3.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "A1.structure.03",
+    "option": "Independent node-function choice",
+    "source": "A1 3.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "A1.structure.04",
+    "option": "Conditional function-parameter choice",
+    "source": "A1 3.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "A1.structure.05",
+    "option": "Partial-channel observation",
+    "source": "A1 3.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "A1.structure.06",
+    "option": "Discretization categoricals",
+    "source": "A1 3.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "A1.structure.07",
+    "option": "Stochastic-softmax categoricals",
+    "source": "A1 3.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "A1.structure.08",
+    "option": "Cardinality/emission/one-hot consistency",
+    "source": "A1 3.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "A1.structure.09",
+    "option": "Dirichlet class frequencies",
+    "source": "A1 3.3",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "A1.unknown.01",
+    "option": "Unnamed richer function catalog",
+    "source": "A1 3.3",
+    "disposition": "UNDISCLOSED",
+    "notes": ""
+  },
+  {
+    "id": "A1.unknown.02",
+    "option": "Unnamed additional frequency-distribution catalog",
+    "source": "A1 3.3",
+    "disposition": "UNDISCLOSED",
+    "notes": ""
+  },
+  {
+    "id": "A1.unknown.03",
+    "option": "Converter-versus-function description ambiguity",
+    "source": "A1 3.3",
+    "disposition": "UNDISCLOSED",
+    "notes": ""
+  },
+  {
+    "id": "A1.boundary.01",
+    "option": "No posthoc target warp",
+    "source": "A1 3.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "A1.boundary.02",
+    "option": "Final signal rejection",
+    "source": "A1 3.3",
+    "disposition": "INTERFACE_30",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.01",
+    "option": "Per-table Dirichlet function preferences",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.02",
+    "option": "Per-table Dirichlet activation preferences",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.03",
+    "option": "Per-table Dirichlet converter preferences",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.04",
+    "option": "Retain target-disconnected graph",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  },
+  {
+    "id": "K1.structure.05",
+    "option": "L1 cluster distance",
+    "source": "K1 A",
+    "disposition": "REQUIRED_28",
+    "notes": ""
+  }
+]

@@ -15,7 +15,9 @@ concurrency:
 jobs:
   checks:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Full generator/explorer checks have measured ~70 minutes locally. Keep all
+    # tests and walkthroughs, with a bounded allowance for hosted-run variance.
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
         with:

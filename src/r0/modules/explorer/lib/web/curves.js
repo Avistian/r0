@@ -1,29 +1,49 @@
 "use strict";
 let curve = null;
+function isNoisyNetwork() {return current?.view.recipe.recipe.version === "standalone-network-innovations-v1";}
+function isFunctionalReference() {return ["functional-causal-v1","functional-causal-v2","xgboost-fitted-functional-causal-v1","sampled-hyperprior-graph-v1","sampled-joint-hyperprior-graph-v1"].includes(current?.view.recipe.recipe.version);}
 function isGP() { return current?.view.recipe.recipe.version === "exact-gp-v1"; }
 function clearCurve() {
   curve = null;
+  clearTopologyCurveOutput();
   $("response-plot").replaceChildren(); $("curve-values").textContent = ""; $("curve-json").hidden = true;
+  const observed=isObservation(current?.view?.recipe?.recipe);
+  $("curve").hidden=false; $("curve").disabled=false; $("curve").dataset.unavailable="false";
+  const noisy=isNoisyNetwork(), functional=isFunctionalReference(); $("network-reference-label").hidden=!(noisy || functional || observed);
   const gp = isGP(); $("gp-options").hidden = !gp;
   $("curve-title").textContent = gp ? "Conditional GP view" : "Response curve";
   $("curve-description").textContent = gp
     ? "Vary one feature while fixing the others to the selected row. Condition on the complete saved GP draw, including calibration points. The mean and additional draws are new values; dots show original dataset values on this slice. Observation noise and class adjustments are excluded."
     : "Vary the feature selected above. Every other input stays fixed at the chosen row. This shows the saved function, without observation noise or class-separation adjustments.";
+  if(noisy) {$("curve-title").textContent="Internal-noise latent reference"; $("curve-description").textContent="Vary one observed feature while fixing other inputs. Choose zero innovations (mean terms retained), or hold every internal innovation at the selected original row's draw. Root transformations and target adapters are not reapplied. This is not a conditional mean or class probability.";}
+  if(functional) {$("curve-title").textContent="Causal fixed-latent reference"; $("curve-description").textContent="Vary one observed channel while fixing the other observed channels at the selected row. These are simultaneous state-and-readout clamps. Hidden root draws stay fixed; choose zero structural draws or their original-row values. The result is a raw target readout, not a conditional mean, calibrated task score or enclosing task probability.";}
   $("curve").textContent = gp ? "Evaluate conditional view" : "Evaluate response curve";
   $("curve-points").max = gp ? 256 : 512;
   $("curve-note").textContent = gp
     ? "Uses the full observed feature range. Additional draws use the seed above; changing the query points changes their joint draw."
     : "The curve uses the full observed feature range. Select a row and evaluate to see the response.";
+  if(observed) {$("curve-title").textContent="Observation causal reference"; $("curve-description").textContent="Vary one selected observed channel, clamping every observed channel at both state and readout. Hidden roots stay at the selected original row; choose zero or original structural innovations. Target aliases propagate their parent clamps. These are raw target readouts, not conditional means, class probabilities or target-adapted scores."; $("curve-note").textContent="The full source and selection receipt remains attached to this original-row causal reference."; $("curve").textContent="Evaluate causal reference";}
+  if(["sampled-intervention-policy-v1","sampled-typed-intervention-policy-v1"].includes(current?.view?.recipe?.recipe?.version)){$("curve").disabled=true;$("curve").dataset.unavailable="true";$("curve-description").textContent="Policy-environment reference curves remain pending explicit intervention-aware semantics. Inspect repeated original rows and the saved before/after comparison; no conditional mean is inferred.";}
+  describeTopologyCurveOutput();
+  if(isConvolutionRecipe(current?.view?.recipe?.recipe) && !functional){$("curve").disabled=true;$("curve").dataset.unavailable="true";$("curve-description").textContent="Typed convolution curves remain pending explicit category/capture reference semantics. Inspect original-row kernel stages or use causal interventions; no continuous response is substituted for native emissions.";}
+
+  gpColumnCurveControls();
+  populationReferenceControls();
+  gpRootCurveControls();
 }
 function drawCurve() {
   if (!curve) return;
-  if (curve.kind === "gp_conditional_curve") drawGP();
+  if (curve.kind === "population_original_row_reference") drawPopulationReference();
+  else if (curve.kind === "gp_root_causal_reference") drawGPRootCurve();
+  else if (curve.kind === "gp_column_target_reference") drawGPColumnCurve();
+  else if (curve.kind === "gp_conditional_curve") drawGP();
   else {
-    const channel = Math.min(number("channel"), curve.scores[0].length - 1);
-    const values = curve.scores.map(row => row[channel]);
-    const {svg, x, y} = plotFrame("response-plot", "Saved function response", `x${curve.feature}`, `Latent signal ${channel}`, ...curve.bounds, Math.min(...values), Math.max(...values));
+    const selected = topologyCurveOutput(curve);
+    const channel = Math.min(number("channel"), selected.matrix[0].length - 1);
+    const values = selected.matrix.map(row => row[channel]);
+    const {svg, x, y} = plotFrame("response-plot", ["network_innovation_reference","functional_causal_reference","observation_causal_reference"].includes(curve.kind) ? `${curve.reference} innovation reference` : "Saved function response", `x${curve.feature}`, `${selected.label || (curve.kind === "observation_causal_reference" ? "Raw target readout" : "Raw latent signal")} ${channel}`, ...curve.bounds, Math.min(...values), Math.max(...values));
     svg.append(element("polyline", {points: curve.values.map((value, i) => `${x(value)},${y(values[i])}`).join(" "), fill: "none", stroke: "#17826b", "stroke-width": 2}));
-    $("curve-note").textContent = `${curve.points} evaluated points across the observed range of x${curve.feature} (${curve.feature_role}). All other inputs are fixed to row ${curve.anchor_row}. Lines connect these points; behavior between them is not resolved.`;
+    $("curve-note").textContent = `${curve.points} evaluated points across the observed range of x${curve.feature} (${curve.feature_role}). All other inputs are fixed to row ${curve.anchor_row}. Lines connect these points; behavior between them is not resolved. ${curve.target_reference_version && $("topology-output").value !== "scores" ? curve.target_semantics : curve.score_semantics || ""}`;
   }
   $("curve-values").textContent = pretty(curve); $("curve-json").hidden = false;
 }
@@ -55,13 +75,13 @@ function drawGP() {
   $("curve-note").textContent = `${numerical}. ${curve.points} points; ${samples.length} additional draws${samples.length ? ` with seed ${curve.sampling.seed}` : ""}. The band is pointwise uncertainty of the latent function, not observation noise. Lines connect evaluated points. Dots match the fixed active coordinates; irrelevant inputs may differ. ${diagnostics.approximate ? "The reported error is the largest normalized change to the saved support projection. Original values still take precedence at exact saved coordinates." : ""}`;
 }
 function curveArguments() {
-  return {feature: number("feature"), anchor_row: number("curve-row"), points: number("curve-points"), ...(isGP() ? {draws: number("gp-draws"), seed: number("gp-draws") ? $("gp-seed").value : null, allow_rank_truncation: $("gp-approximate").checked} : {})};
+  return {...populationReferenceArguments(), ...(isGPRootReference()?gpRootCurveArguments():{}), ...(isGPTargetReference()?gpColumnCurveArguments():{}), feature: number("feature"), anchor_row: number("curve-row"), points: number("curve-points"), ...((isNoisyNetwork() || isFunctionalReference() || isObservation(current?.view?.recipe?.recipe)) ? {reference:$("network-reference").value} : {}), ...(isGP() ? {draws: number("gp-draws"), seed: number("gp-draws") ? $("gp-seed").value : null, allow_rank_truncation: $("gp-approximate").checked} : {})};
 }
-for (const id of ["curve-row", "curve-points", "gp-draws", "gp-seed", "gp-approximate"]) $(id).onchange = clearCurve;
+for (const id of ["network-reference", "curve-row", "curve-points", "gp-draws", "gp-seed", "gp-approximate"]) $(id).onchange = clearCurve;
 $("curve").onclick = () => act("Evaluating saved function…", async () => {
   clearCurve();
   const parameters = curveArguments();
-  const result = await request(isGP() ? "gp_curve" : "curve", parameters);
+  const result = await request(isGP() ? "gp_curve" : "curve", {...parameters,...limits()});
   if (pretty(parameters) === pretty(curveArguments())) { curve = result.curve; drawCurve(); }
 });
-$("curve-json").onclick = () => download("response-curve.json", new Blob([pretty(curve)], {type: "application/json"}));
+$("curve-json").onclick = () => download("response-curve.json", new Blob([curve?.reference_json || pretty(curve)], {type: "application/json"}));

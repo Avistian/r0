@@ -1,0 +1,40 @@
+<article id="intervention-panel">
+<p class="eyebrow">CAUSAL INTERVENTIONS</p><h3>Change a variable's equation or value</h3>
+<p class="muted">This comparison retains the original graph and frozen calibration. It is distinct from the authored mechanism editor and from observational conditioning. The original dataset remains active.</p>
+<button id="intervention-load">Prepare causal intervention</button>
+<p id="intervention-notice" class="muted">CPU execution. Hosted Colab and GPU verification remain pending.</p>
+<div id="intervention-controls" hidden>
+<div class="fields"><label>Node<select id="intervention-node"></select></label><label>Change<select id="intervention-kind"><option value="hard">Hard clamp</option><option value="soft">Soft equation / noise change</option><option value="stage">Root / pipeline change</option><option value="domain">Native emission domain change</option><option value="converter">Frozen categorical converter change</option></select></label></div>
+<label id="intervention-variable-label" hidden>Logical variable<select id="intervention-variable"></select></label>
+<div id="intervention-converter-fields" hidden><label>Typed location<select id="intervention-converter"><option value="">Numerical state / readout channels</option></select></label><label>Category clamp location<select id="intervention-converter-location"><option value="capture">Captured category only</option><option value="representation_and_capture">Representation and captured category</option></select></label><label id="intervention-converter-json-label" hidden>Replacement frozen converter (JSON; same name, span and vocabulary)<textarea id="intervention-converter-json" rows="7"></textarea></label></div>
+<p id="intervention-node-note" class="muted"></p>
+<div id="intervention-hard">
+<label id="intervention-category-label" hidden>Declared category<select id="intervention-category"></select></label>
+<div id="intervention-numerical" class="fields"><label>Channels (JSON array)<input id="intervention-channels" value="[0]"></label><label>Constant values (JSON array)<input id="intervention-values" value="[4]"></label><label>Location<select id="intervention-location"><option value="state">Propagated state</option><option value="readout">Captured / observed readout only</option><option value="state_and_readout">State and readout explicitly</option></select></label></div>
+<p id="intervention-location-note" class="muted"></p>
+</div>
+<div id="intervention-soft" hidden><label>Replacement frozen function (JSON; null keeps it)<textarea id="intervention-function" rows="7"></textarea></label><label>Noise changes (JSON; omit fields to retain them)<textarea id="intervention-noise" rows="3">{}</textarea></label><p class="muted">Function input/output dimensions stay fixed. Optional fields: noise_scale, noise_response, exogenous. Original pipeline and calibration stay frozen; this does not refit a tree or network.</p></div>
+<div id="intervention-stage-fields" hidden><label>Stage change fields (JSON; root, replace_pipeline, pipeline)<textarea id="intervention-stage-fields-json" rows="5">{}</textarea></label></div>
+<div id="intervention-domain-fields" hidden><label>Replacement emission domain (JSON)<textarea id="intervention-domain-json" rows="5">{}</textarea></label></div>
+<button id="intervention-add">Add change to comparison</button>
+<label>All interventions (editable JSON array; multiple disjoint changes)<textarea id="intervention-json" rows="8">[]</textarea></label>
+<div class="fields"><label>Draw coupling<select id="intervention-mode"><option value="matched">Matched original exogenous draws</option><option value="population">Fresh population draws</option></select></label><label>Population key (exact integer)<input id="intervention-population" value="1" inputmode="numeric"></label></div>
+<p id="intervention-mode-note" class="muted"></p><button id="intervention-create" class="primary">Generate and save causal comparison</button>
+</div>
+<details id="policy-panel"><summary>Sample an intervention policy</summary>
+<p class="muted">TAFFY source selection remains restricted to authored numerical functional graphs. Typed r0 policies additionally retain native/vector/converter and sampled/fixed-fitted graph envelopes. TAFFY selection excludes labels and samples ceil(5% of non-label nodes) without replacement, then generates a fresh population. Numerical parameter laws and independent calibration are explicit r0 adaptations. The original dataset stays active. Support/batch-refitted lifecycle policies remain separate required work.</p>
+<div class="fields"><label>Policy kind<select id="policy-kind"><option value="hard">Sample constant hard values</option><option value="soft">Resample declared numerical parameters</option></select></label><label>Selection profile<select id="policy-profile"><option value="taffy-selection-r0-laws-v1">TAFFY selection / declared r0 laws</option><option value="explicit-policy-r0-v1">Explicit r0 eligibility/count/locations</option><option value="explicit-typed-policy-r0-v1">Typed r0 addresses / retained construction</option></select></label><label>Hard-bound reference<select id="policy-lifecycle"><option value="independent-calibration-r0">Independent frozen calibration (r0)</option><option value="source-reference-population">Original complete population extrema</option></select></label></div>
+<button id="policy-draft">Prepare policy settings</button>
+<!-- TYPED_POLICY_FIELDS -->
+<label>Policy settings (JSON; stream seeds are exact integers, all explicit controls retained)<textarea id="policy-json" rows="10">{"streams":[3,5,7],"kind":"hard","profile":"taffy-selection-r0-laws-v1","bounds_lifecycle":"independent-calibration-r0","reference_rows":64}</textarea></label>
+<p class="muted">For soft policies, supply parameter_laws for every eligible node: node, path (field names / canonical array indices), family (normal-r0, uniform-r0, log-uniform-r0, choice-r0), location, scale, choices. Only finite floating parameter groups can change; family, geometry and unlisted parameters remain frozen. Explicit profile also accepts eligibility, count, fraction, mode (matched/population), population, location (state/readout/state_and_readout). Soft policies require state_and_readout. Hard values are constant per environment; no silent count repair or retries.</p>
+<button id="policy-create" class="primary">Sample, verify and save policy comparison</button>
+<p class="muted">Replay/open/export below retain the entire receipt, laws, selected nodes, bounds and raw draws. Change the three stream seeds explicitly for another policy. Baseline Next changes the query task; independently calibrated bounds remain frozen on receipt replay. Source-reference reconstruction uses its declared complete population. Hosted Colab verification remains pending.</p>
+</details>
+<div class="fields"><label>Saved causal comparison directory<input id="intervention-path" placeholder="interventions/…/pair"></label><button id="intervention-open">Open causal comparison</button></div>
+<section id="intervention-results" hidden><h4>Saved causal comparison</h4><p id="intervention-result-note" class="muted"></p><div class="chart-grid"><div id="intervention-before-plot" class="plot"></div><div id="intervention-after-plot" class="plot"></div></div>
+<label>Original row indices (comma separated)<input id="intervention-rows" value="0,1,2"></label><button id="intervention-inspect">Inspect before / after traces</button>
+<div id="intervention-traces" hidden><label>Trace stage<select id="intervention-stage"></select></label><div id="intervention-trace-table" class="table-wrap"></div><details><summary>Actual replayed trace equations and parameters</summary><pre id="intervention-trace-json"></pre></details></div>
+<button id="policy-activate">Open sampled policy result as active dataset for Next / replay</button>
+<button id="intervention-export">Download replayable causal pair</button><details><summary>Comparison card and draw equality checks</summary><pre id="intervention-card"></pre></details></section>
+</article>

@@ -8,10 +8,28 @@ import numpy as np
 import torch
 from numpy.typing import NDArray
 
+from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.compositions import CompositeRecipe
+from r0.modules.priors.lib.converted_causal_records import ConvertedCausalRecipe
 from r0.modules.priors.lib.generate import Recipe, generate_task, recipe_from_dict
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.native_causal import NativeCausalRecipe
+from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
+from r0.modules.priors.lib.network_input_view import NetworkInputView
+from r0.modules.priors.lib.network_recipe import NetworkRecipe
+from r0.modules.priors.lib.network_view_pairs import (
+    input_mask,
+    network_input_pair,
+    network_pair_equalities,
+)
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.sampled_converted_graph import SampledConvertedGraph
+from r0.modules.priors.lib.sampled_functional_graph import SampledFunctionalGraph
+from r0.modules.priors.lib.sampled_geometry_graph import SampledGeometryGraph
+from r0.modules.priors.lib.sampled_native_graph import SampledNativeGraph
+from r0.modules.priors.lib.sampled_native_vector_graph import SampledNativeVectorGraph
+from r0.modules.priors.lib.sampled_parent_graph import SampledParentGraph
+from r0.modules.priors.lib.sampled_topology_graph import SampledTopologyGraph
 from r0.modules.priors.lib.training_task import TrainingTask
 
 _FIELDS = {
@@ -29,8 +47,26 @@ class TaskPair:
     card_json: str
 
 
-def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> Recipe:
+def paired_recipe(
+    recipe: Recipe, *, intervention: str, value: int | float, allow_estimated_variance: bool = False
+) -> Recipe:
     """Construct one explicit change; preserve all other recipe controls."""
+    if type(allow_estimated_variance) is not bool:
+        raise ValueError("allow_estimated_variance must be a boolean")
+    if isinstance(
+        recipe,
+        (
+            NativeCausalRecipe,
+            SampledNativeGraph,
+            NativeVectorRecipe,
+            SampledNativeVectorGraph,
+            ConvertedCausalRecipe,
+            SampledConvertedGraph,
+        ),
+    ):
+        raise ValueError(
+            "native graph pairs require domain/equation interventions, not adapter controls"
+        )
     if intervention not in _FIELDS:
         raise ValueError("unsupported pair intervention")
     controls = recipe if isinstance(recipe, LinearRecipe) else recipe.task
@@ -38,6 +74,32 @@ def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> R
     if value == getattr(controls, field):
         raise ValueError("pair intervention must change the selected value")
     changed = replace(controls, **{field: value})
+    from r0.modules.priors.lib.network_innovation_recipe import NetworkInnovationRecipe
+    from r0.modules.priors.lib.prototype_batch_network import (
+        PrototypeBatchNetworkRecipe,
+        RealizedPrototypeBatchNetworkRecipe,
+    )
+
+    if isinstance(recipe, (PrototypeBatchNetworkRecipe, RealizedPrototypeBatchNetworkRecipe)):
+        if intervention not in ("noise", "separation"):
+            raise ValueError(
+                "prototype batch pairs support only noise/separation on the same population"
+            )
+        return recipe.with_task(changed)
+    if isinstance(recipe, NetworkInnovationRecipe):
+        if intervention not in ("noise", "separation") or recipe.source is None:
+            raise ValueError(
+                "noisy networks support task noise/separation pairs; "
+                "edit architecture or importance explicitly"
+            )
+        return replace(recipe, task=changed, source=replace(recipe.source, task=changed))
+    if isinstance(recipe, (NetworkRecipe, NetworkInputView)):
+        return network_input_pair(
+            recipe,
+            changed,
+            intervention=intervention,
+            allow_estimated_variance=allow_estimated_variance,
+        )
     if intervention == "sparsity" and isinstance(recipe, CompositeRecipe):
         components = tuple(
             component
@@ -49,6 +111,11 @@ def paired_recipe(recipe: Recipe, *, intervention: str, value: int | float) -> R
             for component in recipe.components
         )
         return replace(recipe, task=changed, components=components)
+    if isinstance(
+        recipe,
+        (SampledFunctionalGraph, SampledTopologyGraph, SampledGeometryGraph, SampledParentGraph),
+    ):
+        return recipe.with_task(changed)
     return changed if isinstance(recipe, LinearRecipe) else replace(recipe, task=changed)
 
 
@@ -61,10 +128,23 @@ def generate_pair(
     task_id: int,
     device: str = "cpu",
     allow_estimated_variance: bool = False,
+    limits: CausalLimits | None = None,
 ) -> TaskPair:
     """Generate two coupled variants; neither failures nor changed properties are hidden."""
+    if limits is not None:
+        # Validate without replacing the original record: some decoders tighten
+        # stored limits, which must not change the source archive's identity.
+        # In particular, matching may fit a new population inside paired_recipe.
+        recipe_from_dict(asdict(recipe), limits=limits)
     _variance_control(recipe, intervention, allow_estimated_variance)
-    changed = paired_recipe(recipe, intervention=intervention, value=value)
+    changed = paired_recipe(
+        recipe,
+        intervention=intervention,
+        value=value,
+        allow_estimated_variance=allow_estimated_variance,
+    )
+    if limits is not None:
+        recipe_from_dict(asdict(changed), limits=limits)
     before = generate_task(recipe, seed=seed, task_id=task_id, device=device)
     after = generate_task(changed, seed=seed, task_id=task_id, device=device)
     return TaskPair(
@@ -76,6 +156,7 @@ def generate_pair(
                 after,
                 intervention=intervention,
                 allow_estimated_variance=allow_estimated_variance,
+                limits=limits,
             )
         ),
     )
@@ -87,17 +168,21 @@ def compare_pair(
     *,
     intervention: str,
     allow_estimated_variance: bool = False,
+    limits: CausalLimits | None = None,
 ) -> dict[str, Any]:
     """Verify a saved pair through the same interface used by local/notebook inspection."""
     records = [json.loads(task.recipe_json) for task in (before, after)]
-    recipes = [recipe_from_dict(record["recipe"]) for record in records]
+    recipes = [recipe_from_dict(record["recipe"], limits=limits) for record in records]
     controls = [recipe if isinstance(recipe, LinearRecipe) else recipe.task for recipe in recipes]
     if intervention not in _FIELDS:
         raise ValueError("unsupported pair intervention")
     variance_control = _variance_control(recipes[0], intervention, allow_estimated_variance)
     field = _FIELDS[intervention]
     expected = paired_recipe(
-        recipes[0], intervention=intervention, value=getattr(controls[1], field)
+        recipes[0],
+        intervention=intervention,
+        value=getattr(controls[1], field),
+        allow_estimated_variance=allow_estimated_variance,
     )
     if asdict(expected) != asdict(recipes[1]):
         raise ValueError("pair changes recipe properties outside the declared intervention")
@@ -113,6 +198,11 @@ def compare_pair(
         "query_indices": torch.equal(before.query_indices, after.query_indices),
         "classes": before.classes == after.classes,
     }
+    network_pair = all(isinstance(r, (NetworkRecipe, NetworkInputView)) for r in recipes)
+    if isinstance(recipes[0], (NetworkRecipe, NetworkInputView)) and isinstance(
+        recipes[1], (NetworkRecipe, NetworkInputView)
+    ):
+        equalities.update(network_pair_equalities(before, after, recipes[0], recipes[1]))
     if intervention == "irrelevant":
         equalities["targets"] = torch.equal(before.targets, after.targets)
         equalities["probabilities"] = (
@@ -127,6 +217,12 @@ def compare_pair(
         required.pop("scores")
         required.pop("mechanism")
         active = [set(json.loads(task.mechanism_json)["active"]) for task in (before, after)]
+        if network_pair:
+            active = [
+                set(input_mask(r))
+                for r in recipes
+                if isinstance(r, (NetworkRecipe, NetworkInputView))
+            ]
         required["nested_active_features"] = active[0] < active[1] or active[1] < active[0]
     failed = [name for name, same in required.items() if not same]
     if failed:
@@ -163,6 +259,10 @@ def _variance_control(recipe: Recipe, intervention: str, allow_estimate: bool) -
         raise ValueError("allow_estimated_variance must be a boolean")
     if intervention != "sparsity":
         return "unchanged_mechanism"
+    if isinstance(recipe, (NetworkRecipe, NetworkInputView)):
+        if allow_estimate:
+            return "independent_network_baseline_moments_estimate"
+        return "network_input_mask_uncontrolled"
     if isinstance(recipe, LinearRecipe):
         return "analytic_unit_variance"
     if not allow_estimate:
