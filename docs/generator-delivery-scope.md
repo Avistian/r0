@@ -25,6 +25,40 @@ remain generator work. Headless evidence remains required. Training-consumption
 integration and downstream benefit experiments preserve #33/#36 dependencies;
 unrun consumption or scientific measurements must not be invented.
 
+## Generation notebook and 100M coverage target
+
+The user subsequently requested a full generator, a Colab generation notebook and
+a practical usage guide, and confirmed that 100 million datasets is the target.
+The generation-focused notebook and guide are required delivery here; they do
+not reinstate the explorer/UI requirements moved to #126.
+
+The scale target means independently sampled source tasks. Repeating episodes
+from one frozen sampled function must not be counted as independent mechanism
+coverage. A large count or unique IDs alone does not establish useful variety.
+Required planning and reporting include:
+
+- Versioned, reproducible mixture allocations and rare-regime minimums, with
+  hierarchical choices and explicit source/adaptation/extension labels.
+- Globally unique task ranges, deterministic shard assignment, independently
+  sampled construction where declared, and resume without silent duplication.
+- Coverage of generator families, task types, shapes, roots, topology, mechanism
+  choices, noise and missingness; selected joint interactions as well as marginal
+  counts. Do not promise exhaustive coverage of the full Cartesian product.
+- Proposal, rejection and committed-output accounting, including weak/rare valid
+  draws, duplicate diagnostics and reports that compare requested allocations
+  with realized outputs. Planned allocation is not measured realized coverage.
+- Small representative pilots before scaling, with measured time, serialized
+  bytes, memory, failure rates and diversity. Extrapolations must state which
+  recipe/hardware/storage measurements they use and their limitations.
+
+The notebook must cover setup, selecting/configuring generators, a bounded pilot,
+checking saved artifacts, persistent output, resuming interruptions and producing
+larger shard plans. The guide must explain how to interpret coverage and failure
+reports and preserve predictor/truth separation. Local notebook-cell checks and
+actual hosted Colab execution are distinct evidence; hosted execution remains
+NOT_RUN until observed. This target is not authorization for a paid or full-scale
+100M launch, and generator coverage does not establish downstream model quality.
+
 Authoritative issue descriptions, with preserved original requirements:
 [#28](https://github.com/Avistian/r0/issues/28),
 [#29](https://github.com/Avistian/r0/issues/29),
