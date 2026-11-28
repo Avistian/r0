@@ -1,6 +1,6 @@
 """Complete XGBoost population outer semantics precede source and fit replay."""
 
-from dataclasses import asdict, fields
+from dataclasses import asdict, fields, replace
 from typing import Any, cast
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
@@ -106,6 +106,9 @@ def xgboost_population_graph_from_dict(
     if type(base) not in ANCESTOR_TYPES:
         raise ValueError("population XGBoost requires authored base")
     base = cast(PopulationAncestors, base)
+    # The caller cap was enforced by the complete outer preflight and decode.
+    # Preserve the authored graph's declared policy instead of rewriting custody.
+    base = replace(base, limits=CausalLimits(**raw["base"]["limits"]))
     fits = tuple(
         PopulationXGBoostNodeFit(
             n["node"],
