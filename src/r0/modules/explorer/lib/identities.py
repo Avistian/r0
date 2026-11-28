@@ -16,6 +16,8 @@ def identity_numbers(value: Any, *, for_browser: bool) -> Any:
             "task_id",
             "split",
             "population",
+            "calibration_seed",
+            "calibration_task_id",
             "reference_seed",
             "reference_task_id",
             "fresh_seed",

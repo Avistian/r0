@@ -74,7 +74,7 @@ Traces run through the guarded worker, retain requested row order and duplicates
 and show full source covariance, factors, locations, innovations and values.
 Matrix downloads include root-input bindings; graph traces show the downstream
 mechanisms. Failed construction preserves the active dataset. Calibrated
-fixed-fit Next, fit controls, graph edits and response/intervention controls still
+fixed-fit Next, graph edits and response/intervention controls still
 require their own implementations; unavailable actions report this explicitly.
 
 Author Chromium evidence covers six family/mechanism/target combinations, matrix
@@ -83,3 +83,33 @@ checks on the saved browser artifacts reconstruct RBF matrices, GP draws, root
 and descendant equations and classification probabilities. Evidence is ignored
 under docs/evidence/issue-28-gp-root-workbench. These are bounded author checks;
 independent review and a full check of the combined change remain required.
+
+## Guarded independent GP fitting
+
+The explorer can fit fixed target centers/scales on a separately keyed GP
+population, preserving the active query graph, its source identity and both full
+populations in the saved calibration envelope. Fit rows, seed, task identifier
+and optional fixed-location matrix are explicit controls. Typed continuous
+targets and functional regression/binary/multiclass adapters retain their
+semantics. Direct categorical scaling remains unavailable until a
+category-preserving policy is implemented. Fitting never uses the query rows.
+
+Raw construction admits the complete future original/fit/calibration metadata and
+runtimes before decoding the retained source. Known producer mismatches bind to
+the requested original, independent fit identity and geometry before any GP work;
+full canonical construction and tensor validation still follow. Transport
+requires one exact retained query identity and CPU execution. Large fit IDs use
+exact decimal-string browser transport. Failure keeps the active dataset; replay
+retains the fixed fit. Fit controls disable on already calibrated datasets so a
+second fitting action requires opening the original explicitly.
+
+Author checks cover four continuous graph families, separate fit arithmetic,
+invalid controls, coherent aggregate rejection before covariance reconstruction,
+producer metadata and guarded replay. Six Chromium workflows cover four-family
+regression plus functional binary/multiclass, invalid-fit rollback, exact IDs,
+repeated-row traces, ZIP downloads and replay. Literal checks reconstruct fit
+means/scales and query scores/probabilities from the downloaded populations.
+Evidence remains ignored under docs/evidence/issue-28-gp-calibration-workbench.
+Independent review and a full check of this child are still required. Fixed-fit
+Next, fit-population graph inspection, matched/fresh interventions and broader
+calibration policies remain required work.

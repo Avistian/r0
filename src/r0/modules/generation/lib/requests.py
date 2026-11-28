@@ -75,6 +75,20 @@ class RunRequest:
         if self.construction is not None:
             if type(self.construction) is not GraphConstruction or self.sampling is not None:
                 raise ValueError("graph construction cannot also use recipe sampling")
+            controls = json.loads(self.construction.controls_json)
+            if controls.get("topology") == "calibrate-gp-root":
+                source = controls.get("source", {}).get("source", {})
+                if (
+                    self.device != "cpu"
+                    or self.count != 1
+                    or type(source.get("seed")) is not int
+                    or source["seed"] != self.seed
+                    or type(source.get("task_id")) is not int
+                    or source["task_id"] != self.start
+                ):
+                    raise ValueError(
+                        "GP fitting requires one exact retained source identity and CPU"
+                    )
             if json.loads(json.dumps(self.construction.task_record())) != json.loads(
                 json.dumps(asdict(self.recipe))
             ):
@@ -132,6 +146,17 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
 
     if request.construction is not None:
         controls = json.loads(request.construction.controls_json)
+        if controls.get("topology") == "calibrate-gp-root":
+            from r0.modules.priors import gp_calibration_construction_matches
+
+            if not gp_calibration_construction_matches(
+                controls,
+                record,
+                seed=request.seed,
+                task_id=task_id,
+                limits=request.causal_limits or CausalLimits(),
+            ):
+                return False
         if controls.get("topology") == "gp-root-dag":
             from r0.modules.priors import gp_root_construction_matches
 

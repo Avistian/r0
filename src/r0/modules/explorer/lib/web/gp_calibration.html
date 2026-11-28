@@ -1,0 +1,9 @@
+<fieldset id="gp-fit-controls"><legend>Independent GP target calibration</legend>
+<p>Fit target centers and scales on a separately keyed GP population with the same causal graph. Query rows never determine the fit. The saved result retains both populations and fixed calibration constants.</p>
+<label>Independent fit rows<input id="gp-fit-rows" type="number" min="32" max="1024" value="32"></label>
+<label>Fit seed<input id="gp-fit-seed" inputmode="numeric" value=""></label>
+<label>Fit task identifier<input id="gp-fit-task" inputmode="numeric" value=""></label>
+<label>Fit locations (JSON matrix, or null for the source location law)<textarea id="gp-fit-locations" rows="3">null</textarea></label>
+<button id="gp-fit-create">Fit and save independent GP calibration</button>
+<p id="gp-fit-notice" class="muted">Generate or open an uncalibrated GP-root dataset first. Direct categorical target calibration requires a category-preserving policy and remains unavailable.</p>
+</fieldset>

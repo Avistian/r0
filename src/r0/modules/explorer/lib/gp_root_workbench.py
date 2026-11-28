@@ -24,6 +24,28 @@ def gp_root_action(
     if recipe.get("version") not in ("gp-root-dag-v1", "gp-root-calibration-v1"):
         return None
     original = recipe["original"] if recipe["version"] == "gp-root-calibration-v1" else recipe
+    if action == "gp_root_calibrate":
+        if recipe["version"] != "gp-root-dag-v1":
+            raise ValueError(
+                "Open the original GP-root dataset to fit a new independent calibration"
+            )
+        return session.request(
+            "construct",
+            {
+                **data,
+                "controls": {
+                    "topology": "calibrate-gp-root",
+                    "source": original,
+                    "calibration_rows": data["calibration_rows"],
+                    "calibration_seed": data["calibration_seed"],
+                    "calibration_task_id": data["calibration_task_id"],
+                    "calibration_locations": data.get("calibration_locations"),
+                },
+                "construction_seed": 0,
+                "seed": record["seed"],
+                "task_id": record["task_id"],
+            },
+        )
     if action == "gp_root_replay":
         task, archive, run = run_saved_document(
             session.output_dir,

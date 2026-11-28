@@ -57,7 +57,8 @@ window.r0request = async (action, data) => {
             + (assets / "observations.html").read_text()
             + (assets / "convolutions.html").read_text()
             + (assets / "population_dags.html").read_text()
-            + (assets / "gp_roots.html").read_text(),
+            + (assets / "gp_roots.html").read_text()
+            + (assets / "gp_calibration.html").read_text(),
         )
         .replace("<!-- NETWORK WORKBENCH -->", (assets / "network_workbench.html").read_text())
         .replace(
@@ -82,7 +83,8 @@ window.r0request = async (action, data) => {
             (assets / "converters.js").read_text()
             + "\n"
             + (assets / "population_dags.js").read_text()
-            + (assets / "gp_roots.js").read_text(),
+            + (assets / "gp_roots.js").read_text()
+            + (assets / "gp_calibration.js").read_text(),
         )
         .replace("<!-- CONVERTERS -->", (assets / "converters.html").read_text())
         .replace("/* TRANSPORT */", transport)

@@ -1,5 +1,12 @@
 """Public finite GP feature-column construction interface."""
 
+from r0.modules.priors.lib.gp_calibration_construction import (
+    construct_gp_root_calibration as construct_gp_root_calibration,
+)
+from r0.modules.priors.lib.gp_calibration_construction import (
+    gp_calibration_construction_matches as gp_calibration_construction_matches,
+)
+
 from .gp_column_comparison import GPColumnComparison as GPColumnComparison
 from .gp_column_comparison import compare_gp_columns as compare_gp_columns
 from .gp_column_comparison import gp_column_comparison_from_dict as gp_column_comparison_from_dict
