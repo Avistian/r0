@@ -8,6 +8,7 @@ from r0.modules.priors.lib.joint_function_admission import function_record_cost
 from r0.modules.priors.lib.joint_hyperprior_request import JointHyperpriorGraphRequest
 from r0.modules.priors.lib.joint_hyperprior_support import function_support
 from r0.modules.priors.lib.joint_pipeline_plans import JointInnovationPipelinePrior
+from r0.modules.priors.lib.structural_topology_request import StructuralTopologyRequest
 
 if TYPE_CHECKING:
     from r0.modules.priors.lib.typed_topology_request import TypedTopologyRequest
@@ -35,7 +36,7 @@ def admit_typed_topology(request: "TypedTopologyRequest") -> dict[str, int]:
     )
     # A redirection forest has at most one predecessor: unequal rectangular
     # matrices fit inside the W x W support used by the existing catalog planner.
-    assert not isinstance(request.topology, FixedParentTopology)
+    assert not isinstance(request.topology, (FixedParentTopology, StructuralTopologyRequest))
     proxy = JointHyperpriorGraphRequest(
         request.task,
         request.topology,
@@ -124,6 +125,8 @@ def typed_topology_child_limits(request: "TypedTopologyRequest"):
         request.topology.admit(request.limits)
         values, memory = function_record_cost(request.topology, request.limits)
         top = {"parameters": values, "estimated_working_bytes": memory}
+    elif isinstance(request.topology, StructuralTopologyRequest):
+        top = request.topology.admit(request.limits, request.raw_limits)
     else:
         top = admit_topology_hyperprior(request.topology, request.limits, request.raw_limits)
     numbers, storage = function_record_cost(request, request.limits)

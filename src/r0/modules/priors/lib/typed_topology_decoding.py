@@ -18,6 +18,11 @@ from r0.modules.priors.lib.native_graph_decoding import native_domain_prior_from
 from r0.modules.priors.lib.parent_composition_plans import ParentCompositionPrior
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits, RawDrawRecord
 from r0.modules.priors.lib.sampled_graph_decoding import decode_joint_function_prior
+from r0.modules.priors.lib.structural_topology_envelope import (
+    structural_topology_metadata,
+    structural_topology_request_from_dict,
+)
+from r0.modules.priors.lib.structural_topology_request import StructuralTopologyRequest
 from r0.modules.priors.lib.topology_hyperprior_decoding import complete_topology_record as record
 from r0.modules.priors.lib.topology_hyperprior_decoding import (
     sampled_topology_hyperprior_metadata,
@@ -65,6 +70,8 @@ def typed_topology_request_from_dict(data: Any, *, limits: CausalLimits) -> Type
     raw["topology"] = (
         decode_geometry_topology(raw["topology"])
         if composed and raw["topology"].get("version") == "fixed-parent-topology-r0-v1"
+        else structural_topology_request_from_dict(raw["topology"])
+        if composed and raw["topology"].get("version") == "structural-topology-request-r0-v1"
         else topology_hyperprior_from_dict(raw["topology"])
     )
     task = record(raw["task"], LinearRecipe)
@@ -140,6 +147,13 @@ def typed_topology_graph_from_dict(
             topology.validate()
             if topology.prior != request.topology or topology.limits != request.limits:
                 raise ValueError("fixed parent receipt differs from original request")
+        elif isinstance(request.topology, StructuralTopologyRequest):
+            topology = structural_topology_metadata(
+                raw["topology"],
+                request=request.topology,
+                limits=request.limits,
+                raw_limits=request.raw_limits,
+            )
         else:
             topology = sampled_topology_hyperprior_metadata(raw["topology"], limits=request.limits)
             if (

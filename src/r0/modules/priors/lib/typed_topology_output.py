@@ -9,6 +9,7 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.fixed_parent_topology import RetainedParentTopology
 from r0.modules.priors.lib.hyperprior_task_validation import validate_hyperprior_task
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
+from r0.modules.priors.lib.structural_topology_envelope import SampledStructuralTopology
 from r0.modules.priors.lib.training_task import TrainingTask
 from r0.modules.priors.lib.typed_topology_decoding import typed_topology_graph_from_dict
 from r0.modules.priors.lib.typed_topology_graph import TypedTopologyGraph
@@ -48,6 +49,11 @@ def generate_typed_topology(
     if isinstance(valid.topology, RetainedParentTopology):
         card["source_semantics"] = (
             "Explicit retained DAG with typed r0 geometry and source-specific parent composition"
+        )
+    if isinstance(valid.topology, SampledStructuralTopology):
+        card["source_semantics"] = (
+            f"{valid.topology.request.prior.version} source topology "
+            "composed with typed r0 geometry and source-specific parent composition"
         )
     source = record_fingerprint((record["recipe"], seed, task_id))
     return replace(
@@ -95,6 +101,8 @@ def typed_topology_trace(
                 receipt=result["topology_envelope"],
                 source="Explicit retained DAG + source-specific parent composition"
                 if isinstance(recipe.topology, RetainedParentTopology)
+                else recipe.topology.request.prior.version
+                if isinstance(recipe.topology, SampledStructuralTopology)
                 else "P2 topology reconstruction + explicit r0 typed composition",
             ),
         ),

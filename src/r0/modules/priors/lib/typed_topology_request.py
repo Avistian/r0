@@ -14,6 +14,7 @@ from r0.modules.priors.lib.joint_width_plans import JointWidthPrior
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.parent_composition_plans import ParentCompositionPrior
 from r0.modules.priors.lib.raw_draw_records import RawDrawLimits
+from r0.modules.priors.lib.structural_topology_request import StructuralTopologyRequest
 from r0.modules.priors.lib.topology_hyperprior import (
     FixedSizeTopologyHyperprior,
     TopologyHyperprior,
@@ -24,7 +25,7 @@ from r0.modules.priors.lib.typed_topology_roles import ConvertedTopologyRoles, N
 
 @dataclass(frozen=True, slots=True)
 class TypedTopologyRequest:
-    topology: TopologyHyperpriorRequest | FixedParentTopology
+    topology: TopologyHyperpriorRequest | FixedParentTopology | StructuralTopologyRequest
     task: LinearRecipe
     family: str = "functional"
     width_prior: JointWidthPrior = JointWidthPrior()
@@ -48,7 +49,12 @@ class TypedTopologyRequest:
             "typed-parent-topology-request-r0-v1" if composed else "typed-topology-request-r0-v1"
         )
         topology_types = (
-            (TopologyHyperprior, FixedSizeTopologyHyperprior, FixedParentTopology)
+            (
+                TopologyHyperprior,
+                FixedSizeTopologyHyperprior,
+                FixedParentTopology,
+                StructuralTopologyRequest,
+            )
             if composed
             else (TopologyHyperprior, FixedSizeTopologyHyperprior)
         )

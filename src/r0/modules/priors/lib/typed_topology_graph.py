@@ -31,6 +31,11 @@ from r0.modules.priors.lib.sampled_topology_hyperprior import (
     SampledTopologyHyperprior,
     sample_topology_hyperprior,
 )
+from r0.modules.priors.lib.structural_topology_envelope import (
+    SampledStructuralTopology,
+    sample_structural_topology,
+)
+from r0.modules.priors.lib.structural_topology_request import StructuralTopologyRequest
 from r0.modules.priors.lib.typed_topology_adapters import typed_topology_child_request
 from r0.modules.priors.lib.typed_topology_geometry import (
     NativeTopologyGeometry,
@@ -49,7 +54,7 @@ type TypedTopologyMechanisms = (
 @dataclass(frozen=True, slots=True)
 class TypedTopologyGraph:
     request: TypedTopologyRequest
-    topology: SampledTopologyHyperprior | RetainedParentTopology
+    topology: SampledTopologyHyperprior | RetainedParentTopology | SampledStructuralTopology
     geometry: NativeTopologyGeometry | None
     graph: TypedTopologyMechanisms
     initial: tuple[GeneratorSnapshot, ...]
@@ -107,6 +112,13 @@ def sample_typed_topology_graph(
         topology = (
             retain_parent_topology(request.topology, limits=request.limits)
             if isinstance(request.topology, FixedParentTopology)
+            else sample_structural_topology(
+                request.topology,
+                rng=streams["topology"],
+                limits=request.limits,
+                raw_limits=request.raw_limits,
+            )
+            if isinstance(request.topology, StructuralTopologyRequest)
             else sample_topology_hyperprior(
                 request.topology,
                 rng=streams["topology"],
