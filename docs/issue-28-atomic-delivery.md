@@ -178,3 +178,33 @@ with explicit centers, widths, distance exponents and output maps. Two runnable
 causal/dual-target configurations and independent saved-array calculations make
 this reconstruction concrete. The peer activation remains undisclosed; this is
 an adaptation mapping, not evidence of its exact implementation.
+
+
+## High-frequency sinusoidal mechanism
+
+`P3.structure.01`: the existing `CausalActivation("sin")` supports configurable
+input scaling and phase shifts. `FrozenRFFFunction` supplies finite mixtures of
+sinusoids over vector-valued parent projections, with configurable frequencies,
+phases and signed output coefficients. Neither requires fitting to query labels.
+This is an explicit r0 mechanism mapping, not a claim to reproduce the peer's
+complete prior or undocumented frequency distribution.
+
+Run the retained example through the public CLI:
+
+```sh
+python3 scripts/run_check.py r0 generate --config configs/generation/high-frequency-causal-cpu.json --out /tmp/high-frequency-datasets
+```
+
+The two observed Gaussian coordinates feed the fixed target equation
+`sin(32*x0) + 0.5*sin(128*x0 + 16*x1) - 0.25*sin(64*x0 - 64*x1)`.
+The archive represents sine as cosine with phase `3*pi/2`; frequencies are radians
+per input unit. Edit the frequency matrix, phases and coefficients for other
+frequency bands, directions, mixtures and output dimensions. Finite parameters
+and resource limits apply; numerical failures are reported rather than clipped.
+The example is a selected configuration, not the available range of the family.
+
+Two 256-row saved datasets passed independent NumPy sine-equation checks with
+maximum absolute errors `9.548e-15` and `7.744e-15`, exact deterministic regeneration,
+and repeated-row numerical trace inspection. Raw evidence is ignored under
+`docs/evidence/issue-28-sinusoidal/`. This is scoped CPU evidence; it does not
+establish source-prior equivalence, GPU agreement or whole-issue completion.

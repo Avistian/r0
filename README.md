@@ -111,6 +111,8 @@ in ignored `docs/evidence/issue-28/legacy-research/`. See the
 
 For a spatial causal graph and matching classification view, see the
 [runnable spatial examples](docs/issue-28-spatial-functions.md).
+A [high-frequency sinusoidal example](docs/issue-28-atomic-delivery.md#high-frequency-sinusoidal-mechanism)
+also generates saved datasets directly from a JSON request.
 
 ## Paired regression and classification targets
 
