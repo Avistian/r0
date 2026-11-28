@@ -115,3 +115,30 @@ do not measure actual peak memory and are not generation passes. The aggregate
 probe failed because only one of four cases passed. Typed combined-size support
 under this cap remains unqualified; no GPU, sustained-throughput or maximal-network
 claim follows from this probe.
+
+
+## Bounded 100-class typed configurations
+
+At source head `8a1ac39db28da9734ba05d7b1350b84574b3263b`, a separate
+four-case probe used 512 rows, eight observed Gaussian features and
+100 classes, with 384 context rows and the same frozen linear logits, seed,
+3 GiB estimate cap and 120-second deadline pattern as the combined-size probe.
+All four representations generated, saved and reloaded one dataset successfully.
+This establishes a supported many-class configuration for each representation;
+it does not reverse the larger workload's admission failures.
+
+| Representation | Worker seconds | Process peak MiB | Probability oracle max absolute error |
+| --- | ---: | ---: | ---: |
+| functional | 1.358 | 261.23 | 1.110e-16 |
+| native | 1.354 | 264.65 | 2.220e-16 |
+| native-vector | 1.344 | 264.84 | 8.327e-17 |
+| converted | 1.448 | 267.59 | 1.110e-16 |
+
+All arrays were finite, labels were int64 in 0..99, and every schema retained its
+100 declared classes. Independent NumPy matrix multiplication and softmax checked
+all saved probabilities. This does not require each random sample to contain every
+class and does not independently verify the random categorical draw. The functional
+case uses a probabilistic target adapter; native, native-vector and converted cases
+retain their respective typed target semantics. No classes were merged or discarded.
+The script, full requests, four archives and results remain ignored under
+`docs/evidence/issue-28-many-class/`. No GPU or sustained-throughput claim is made.

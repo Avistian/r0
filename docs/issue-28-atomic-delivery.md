@@ -208,3 +208,16 @@ maximum absolute errors `9.548e-15` and `7.744e-15`, exact deterministic regener
 and repeated-row numerical trace inspection. Raw evidence is ignored under
 `docs/evidence/issue-28-sinusoidal/`. This is scoped CPU evidence; it does not
 establish source-prior equivalence, GPU agreement or whole-issue completion.
+
+
+## Many-class typed generation
+
+`P3.structure.03`: native categorical nodes (`NativeCausalRecipe`), native vector
+variables (`NativeVectorRecipe`) and named categorical captures
+(`ConvertedCausalRecipe`) support a 100-class declared vocabulary. These remain
+separate from `FunctionalCausalRecipe`'s probabilistic target adapter. A bounded
+512-row, eight-feature case for each representation passed generation, save/reload,
+label-range/schema checks and independent saved-probability calculations; see
+[the measured configurations](issue-28-network-resource-measurements.md#bounded-100-class-typed-configurations).
+This maps the many-class capability, not the peer's complete sampling distribution.
+Empty classes remain legal; no sample-dependent merging is introduced.
