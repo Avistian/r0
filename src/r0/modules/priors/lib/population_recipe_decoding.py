@@ -6,6 +6,15 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 
 
 def population_recipe_from_dict(fields: dict[str, Any], *, limits: CausalLimits):
+    version = fields.get("version", "linear-v1")
+    if version == "gp-column-target-recipe-v1":
+        from r0.modules.priors.lib.gp_target_environment import gp_column_target_recipe_from_dict
+
+        return gp_column_target_recipe_from_dict(fields, limits=limits)
+    if version == "gp-column-recipe-v1":
+        from r0.modules.priors.lib.gp_column_decoding import gp_column_recipe_from_dict
+
+        return gp_column_recipe_from_dict(fields, limits=limits)
     if (
         "parent_rows" in fields
         and "observed_rows" in fields

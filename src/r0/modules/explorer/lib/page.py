@@ -26,14 +26,17 @@ window.r0request = async (action, data) => {
             "/* CURVES */",
             (assets / "curves.js").read_text()
             + "\n"
-            + (assets / "gp_column_curves.js").read_text(),
+            + (assets / "gp_column_curves.js").read_text()
+            + "\n"
+            + (assets / "gp_target_edits.js").read_text(),
         )
         .replace("<!-- GP TARGET CONTROLS -->", (assets / "gp_column_curves.html").read_text())
         .replace("/* GRAPHS */", (assets / "graphs.js").read_text())
         .replace("/* PAIRS */", (assets / "pairs.js").read_text())
         .replace(
             "<!-- INTERVENTIONS -->",
-            (assets / "interventions.html")
+            (assets / "gp_target_edits.html").read_text()
+            + (assets / "interventions.html")
             .read_text()
             .replace("<!-- TYPED_POLICY_FIELDS -->", (assets / "typed-policies.html").read_text()),
         )

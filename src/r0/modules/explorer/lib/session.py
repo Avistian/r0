@@ -52,7 +52,15 @@ def _identity_numbers(value: Any, *, for_browser: bool) -> Any:
         return value
     result: dict[str, Any] = {}
     for key, item in cast(dict[str, Any], value).items():
-        if key in ("seed", "task_id", "split", "population", "reference_seed", "reference_task_id"):
+        if key in (
+            "seed",
+            "task_id",
+            "split",
+            "population",
+            "reference_seed",
+            "reference_task_id",
+            "fresh_seed",
+        ):
             if for_browser and type(item) is int and item > 2**53 - 1:
                 item = str(item)
             elif not for_browser and isinstance(item, str) and item.isascii() and item.isdecimal():
@@ -115,6 +123,7 @@ class ExplorerSession:
                     "path": self.intervention.path,
                     "card": self.intervention.document["card"],
                     "before_id": self.intervention.before.episode_id,
+                    "before": inspect_task(self.intervention.before),
                     "after_id": self.intervention.after.episode_id,
                     "after": inspect_task(self.intervention.after),
                 },
@@ -320,10 +329,13 @@ class ExplorerSession:
             return convolution
         if action == "intervention_controls":
             return intervention_controls(self.task)
-        if action in ("intervene", "sample_intervention_policy"):
+        if action in ("intervene", "sample_intervention_policy", "gp_target_edit"):
             result = guarded_intervention(
                 self.output_dir,
-                "sample_policy" if action == "sample_intervention_policy" else "create",
+                {
+                    "sample_intervention_policy": "sample_policy",
+                    "gp_target_edit": "gp_target_edit",
+                }.get(action, "create"),
                 _identity_numbers(data, for_browser=False),
                 before=self.task,
                 archive=self.archive,

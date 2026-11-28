@@ -94,6 +94,13 @@ def explain_generation(
             }
         )
 
+    if raw.get("version") == "gp-column-target-recipe-v1":
+        from r0.modules.priors.lib.gp_target_inspection import gp_target_steps
+
+        if component is not None:
+            raise ValueError("GP target environments do not have composite children")
+        return {**gp_target_steps(task, indices, add, limits=limits), "nodes": nodes}
+
     if raw.get("version") == "gp-column-recipe-v1":
         from r0.modules.priors.lib.gp_column_inspection import gp_column_steps
 

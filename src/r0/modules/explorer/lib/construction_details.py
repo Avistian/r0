@@ -4,6 +4,22 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
+    if recipe.get("version") == "gp-column-target-recipe-v1":
+        comparison = recipe["comparison"]
+        return {
+            "kind": "gp-target-environment",
+            "population_id": comparison["original"]["population_id"],
+            "mode": comparison["mode"],
+            "fresh_seed": comparison["fresh_seed"],
+            "side": recipe["side"],
+            "original_target": comparison["original"]["target"],
+            "replacement_target": comparison["replacement"],
+            "notice": "Fixed original locations/kernels and independent calibration inputs. "
+            "Both targets share matched/fresh innovations and adapter streams. "
+            "This environment does not claim a new original GP population identity. "
+            "Reopen the original population to construct a new comparison; "
+            "dedicated environment reference/edit workflows remain required follow-ons.",
+        }
     if recipe.get("version") == "gp-column-recipe-v1":
         population = recipe["source"]
         return {
