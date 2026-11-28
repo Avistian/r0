@@ -25,10 +25,14 @@ from r0.modules.generation.lib.requests import (
     selected_recipe,
 )
 from r0.modules.priors import (
+    CalibratedPopulationGraph,
+    CalibratedPopulationIntervention,
+    CalibratedPopulationQuery,
     CausalLimits,
     GPRootCalibration,
     GPRootDAGRecipe,
     TrainingTask,
+    explain_generation,
     validate_gp_root_task,
 )
 
@@ -212,6 +216,23 @@ def _run(
                                 else CausalLimits()
                             )
                             validate_gp_root_task(task, limits=cap)
+                        if record["recipe"].get("version") in (
+                            "calibrated-population-graph-v1",
+                            "calibrated-population-query-v1",
+                            "calibrated-population-intervention-v1",
+                        ):
+                            selected = selected_recipe(request, task_id)
+                            if isinstance(
+                                selected,
+                                (
+                                    CalibratedPopulationGraph,
+                                    CalibratedPopulationIntervention,
+                                    CalibratedPopulationQuery,
+                                ),
+                            ):
+                                explain_generation(
+                                    task, [0], limits=request.causal_limits or selected.limits
+                                )
                     except (ValueError, RuntimeError) as error:
                         failures[str(task_id)] = _record_failure(failure_log, task_id, error)
                         if persist is not None:

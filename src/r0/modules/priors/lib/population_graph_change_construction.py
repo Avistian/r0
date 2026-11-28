@@ -6,7 +6,7 @@ from r0.modules.priors.lib.causal_intervention_decoding import intervention_from
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.population_graph_intervention_decoding import (
-    admit_population_graph_comparison,
+    preflight_population_graph_intervention,
 )
 from r0.modules.priors.lib.recursive_population_graph_decoding import (
     recursive_population_graph_from_dict,
@@ -38,7 +38,7 @@ def construct_population_graph_change(
             "samples": [b["sample"] for b in base["bindings"]],
             "inputs": [(b["node"], b["inputs"]) for b in base["bindings"]],
         }
-        admit_population_graph_comparison(envelope, limits=limits)
+        preflight_population_graph_intervention(envelope, limits=limits)
         original = recursive_population_graph_from_dict(base, limits=limits)
         return intervene_recursive_population_graph(
             original, intervention_from_dict(change, limits=limits)

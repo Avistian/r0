@@ -132,7 +132,9 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
             {
                 "name": f"x{i}",
                 "index": i,
-                "role": "joint GP column"
+                "role": "observed population input"
+                if mechanism["family"] == "calibrated_population_graph"
+                else "joint GP column"
                 if mechanism["family"] == "gp_columns"
                 else "active"
                 if i in active
@@ -157,6 +159,13 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
             native = native["original"]
         if native["version"] == "gp-root-dag-v1":
             native = native["base"]
+            native_record = {**record, "recipe": native}
+        if native["version"] in (
+            "calibrated-population-graph-v1",
+            "calibrated-population-query-v1",
+            "calibrated-population-intervention-v1",
+        ):
+            native = native["original"]
             native_record = {**record, "recipe": native}
         if native["version"] == "recursive-population-graph-v1":
             native = native["request"]["base"]

@@ -11,7 +11,10 @@ from r0.modules.priors import CausalLimits, TaskPair, TrainingTask, compare_caus
 
 
 def _same_card(actual: Any, expected: dict[str, Any]) -> bool:
-    if expected.get("version") == "recursive-population-graph-pair-v1":
+    if expected.get("version") in (
+        "recursive-population-graph-pair-v1",
+        "calibrated-population-pair-v1",
+    ):
         # Preserve legacy policies; the new population record owns exact primitive custody.
         return json.dumps(actual, sort_keys=True, allow_nan=False) == json.dumps(
             expected, sort_keys=True, allow_nan=False

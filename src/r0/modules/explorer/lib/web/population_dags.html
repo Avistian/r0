@@ -7,5 +7,16 @@
 <label>Complete original runtime (domains, converters, pipelines, noise and readouts)<textarea id="population-dag-runtime" rows="12"></textarea></label>
 <label>Construction RNG engine<select id="population-dag-engine"><option>PCG64</option><option>PCG64DXSM</option><option>Philox</option><option>SFC64</option><option>MT19937</option></select></label>
 <button id="population-dag-apply">Apply population controls to construction draft</button>
-<p id="population-dag-notice" class="muted">Forest plans expose estimator count, depth, terminal probability, feature intervals, split probabilities, source profile, output/label laws and explicit fresh-forest-per-row lifecycle. Change replacements in the complete construction JSON to select multiple nodes. populations must equal the runtime row count. Runtime pipelines keep their declared calibration constants: inspecting or replaying never fits query rows. Independent target calibration remains required and unavailable. Next constructs a new original-row population; Replay retains exact original rows. Paired interventions below use matched retained forests or an explicitly keyed fresh population.</p>
+<p id="population-dag-notice" class="muted">Forest plans expose estimator count, depth, terminal probability, feature intervals, split probabilities, source profile, output/label laws and explicit fresh-forest-per-row lifecycle. Change replacements in the complete construction JSON to select multiple nodes. populations must equal the runtime row count. Runtime pipelines keep their declared calibration constants: inspecting or replaying never fits query rows. Use the explicit independent-fit controls below to retain a calibration population. New query populations and paired interventions keep those constants fixed. Next constructs a new original-row population; Replay retains exact original rows. Paired interventions below use matched retained forests or an explicitly keyed fresh population.</p>
+</fieldset>
+
+<fieldset id="population-calibration-controls"><legend>Independent target calibration</legend>
+<p>Fit target mean and scale on a separately keyed same-law population. The active original rows are retained. Direct category codes keep their categorical meaning and cannot use numerical normalization. Resource limits cover both populations and retained history.</p>
+<label>Independent fit rows<input id="population-fit-rows" type="number" min="32" max="4096" value="32"></label>
+<label>Independent fit seed<input id="population-fit-seed" value="71" inputmode="numeric"></label>
+<label>Independent fit task ID<input id="population-fit-task" value="73" inputmode="numeric"></label>
+<button id="population-calibrate">Fit independent calibration for active population</button>
+<button id="population-calibration-details">Inspect retained fit</button>
+<p id="population-calibration-notice" class="muted">After fitting, Next keeps this independent fit and constructs only a fresh query population. Replay retains the current query exactly. Editing geometry or laws requires an explicit new population and fit.</p>
+<pre id="population-calibration-record"></pre>
 </fieldset>

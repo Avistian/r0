@@ -27,8 +27,7 @@ from r0.modules.priors.lib.recursive_task_preflight import admit_recursive_tasks
 from r0.modules.priors.lib.representatives import encode
 
 
-def admit_population_graph_comparison(data: Any, *, limits: CausalLimits):
-    """Shared metadata-only reservation for replay and new comparison construction."""
+def preflight_population_graph_intervention(data: Any, *, limits: CausalLimits):
     admit_function_metadata(data, limits)
     raw = complete_population_record(data, RecursivePopulationGraphIntervention)
     baseline = complete_population_record(raw["base"], RecursivePopulationGraph)
@@ -61,7 +60,7 @@ def admit_population_graph_comparison(data: Any, *, limits: CausalLimits):
         for p in plans
         if p.node not in disabled
     }
-    admit_recursive_tasks(
+    after_report = admit_recursive_tasks(
         [after],
         storage=storage,
         numbers=numbers,
@@ -71,14 +70,16 @@ def admit_population_graph_comparison(data: Any, *, limits: CausalLimits):
         population_geometry=geometry,
     )
     preflight_population_change(raw, baseline, change, limits=effective)
-    return raw, baseline, change, effective
+    return raw, baseline, change, effective, after_report[0]
 
 
 def population_graph_intervention_from_dict(
     data: Any, *, limits: CausalLimits
 ) -> RecursivePopulationGraphIntervention:
     try:
-        raw, baseline, change, effective = admit_population_graph_comparison(data, limits=limits)
+        raw, baseline, change, effective, _ = preflight_population_graph_intervention(
+            data, limits=limits
+        )
         # Geometry and outer semantics pass before either receipt decoder.
         # The whole archive is already charged above, with a separate nested
         # workspace reserved for each population. Passing that reduced workspace

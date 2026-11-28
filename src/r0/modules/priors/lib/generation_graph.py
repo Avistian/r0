@@ -98,21 +98,11 @@ def explain_generation(
     from r0.modules.priors.lib.population_task_semantics import is_population_task_record
 
     if is_population_task_record(record, card):
-        from r0.modules.priors.lib.population_task_semantics import population_task_record
-
-        record = population_task_record(task)
-        from r0.modules.priors.lib.recursive_population_inspection import recursive_population_steps
+        from r0.modules.priors.lib.population_inspection_dispatch import population_inspection_steps
 
         if component is not None:
             raise ValueError("recursive populations do not have composite children")
-        if record["recipe"].get("version") in (
-            "recursive-population-graph-v1",
-            "recursive-population-graph-intervention-v1",
-        ):
-            from r0.modules.priors.lib.population_graph_inspection import population_graph_steps
-
-            return {**population_graph_steps(task, indices, add, limits=limits), "nodes": nodes}
-        return {**recursive_population_steps(task, indices, add, limits=limits), "nodes": nodes}
+        return {**population_inspection_steps(task, indices, add, limits=limits), "nodes": nodes}
     inputs = task.inputs.detach().cpu()[list(indices)].clone()
     if record["recipe"].get("version") in ("converted-causal-v1", "sampled-converted-graph-v1"):
         from r0.modules.priors.lib.converted_inspection import converted_steps

@@ -299,6 +299,9 @@ def guarded_archive_version(version: object) -> bool:
         "recursive-population-graph-v1",
         "recursive-population-graph-intervention-v1",
         "gp-column-target-link-v1",
+        "calibrated-population-graph-v1",
+        "calibrated-population-query-v1",
+        "calibrated-population-intervention-v1",
         "prototype-batch-network-request-v1",
         "prototype-batch-network-realized-v1",
     )

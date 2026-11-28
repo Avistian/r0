@@ -31,6 +31,22 @@ def population_recipe_from_dict(fields: dict[str, Any], *, limits: CausalLimits)
         from r0.modules.priors.lib.hyperprior_graph_decoding import hyperprior_graph_from_dict
 
         return hyperprior_graph_from_dict(fields, limits=limits)
+    if version == "calibrated-population-query-v1":
+        from r0.modules.priors.lib.calibrated_query_decoding import calibrated_query_from_dict
+
+        return calibrated_query_from_dict(fields, limits=limits)
+    if version == "calibrated-population-intervention-v1":
+        from r0.modules.priors.lib.calibrated_population_intervention_decoding import (
+            calibrated_intervention_from_dict,
+        )
+
+        return calibrated_intervention_from_dict(fields, limits=limits)
+    if version == "calibrated-population-graph-v1":
+        from r0.modules.priors.lib.population_calibration_decoding import (
+            calibrated_population_from_dict,
+        )
+
+        return calibrated_population_from_dict(fields, limits=limits)
     if version == "network-observation-recipe-v1":
         from r0.modules.priors.lib.network_observation_recipe_decoding import (
             network_observation_recipe_from_dict,

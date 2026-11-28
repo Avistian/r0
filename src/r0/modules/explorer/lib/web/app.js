@@ -13,7 +13,7 @@ const format = value => {
 
 async function request(action, data = {}) {
   if(current && isObservation(current.view.recipe.recipe) && action === "graph") data={...limits(),...data};
-  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export", "mechanism", "network_draft", "observation_draft", "edit", "edit_export", "intervention_controls", "intervene", "intervention_graph", "intervention_export"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
+  if (current && ["row", "parameters", "export", "curve", "gp_curve", "graph", "pair", "pair_export", "mechanism", "network_draft", "observation_draft", "edit", "edit_export", "intervention_controls", "intervene", "intervention_graph", "intervention_export", "population_calibrate", "population_query", "population_dag_replay", "population_dag_controls"].includes(action)) data = {...data, expected_episode_id: current.view.episode_id};
   if (["graph", "pair", "open_pair", "mechanism", "network_draft", "observation_draft", "edit", "intervention_controls"].includes(action)) data = {...data, ...explorationLimits()};
   if (window.r0request) return window.r0request(action, data);
   const response = await fetch("/api", {
@@ -51,8 +51,9 @@ function parseRecipe() {
 }
 function fillControls(recipe) {
   const task = taskControls(recipe);
-  const native=["native-causal-v1","sampled-native-graph-v1","native-vector-causal-v1","sampled-native-vector-graph-v1","converted-causal-v1","sampled-converted-graph-v1"].includes(recipe.version);
+  const native=isCalibratedArchive(recipe) || ["native-causal-v1","sampled-native-graph-v1","native-vector-causal-v1","sampled-native-vector-graph-v1","converted-causal-v1","sampled-converted-graph-v1"].includes(recipe.version);
   $("difficulty-label").hidden=native;
+  for(const id of ["rows","context","difficulty"]) $(id).disabled=isCalibratedArchive(recipe);
   for(const id of ["features","active","task-type","classes"]) $(id).disabled=native || isPrototypeBatch(recipe);
   for (const [id, key] of Object.entries({rows: "rows", context: "context_rows", features: "features", active: "active_features", "task-type": "task_type", classes: "classes"})) $(id).value = task[key];
   $("difficulty").value = task.task_type === "regression" ? task.noise_ratio : task.separation;
@@ -66,7 +67,7 @@ function updateRecipe(changed) {
     recipe=recipe.request || recipe;
   }
   const task = taskControls(recipe);
-  if (recipe.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(recipe.version) || isObservation(recipe) || isConvolutionRecipe(recipe) || (isStandaloneNetwork(recipe) && !isPrototypeBatch(recipe))) throw new Error("Frozen construction archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
+  if (isCalibratedArchive(recipe) || recipe.version?.startsWith("sampled-") || ["fitted-functional-causal-v1","population-fitted-functional-causal-v1","xgboost-fitted-functional-causal-v1"].includes(recipe.version) || isObservation(recipe) || isConvolutionRecipe(recipe) || (isStandaloneNetwork(recipe) && !isPrototypeBatch(recipe))) throw new Error("Frozen construction archives are immutable. Use the mechanism editor below to create a linked edit, or sample a new graph.");
   const fields = {rows: "rows", context: "context_rows", features: "features", active: "active_features", classes: "classes"};
   if (fields[changed]) task[fields[changed]] = number(changed);
   if (changed === "difficulty") task[task.task_type === "regression" ? "noise_ratio" : "separation"] = number("difficulty");

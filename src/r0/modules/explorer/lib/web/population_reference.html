@@ -1,0 +1,8 @@
+<div id="population-reference-controls" hidden>
+<div class="chart-controls">
+<label>Retained population<select id="population-reference-side"><option value="active">Active saved population</option><option value="before">Comparison before</option><option value="after">Comparison after</option></select></label>
+<label id="population-reference-capture-label">Converter category intervention<select id="population-reference-capture"><option value="capture">Capture only (descendant representation unchanged)</option><option value="representation_and_capture">Representation and capture (where uniquely defined)</option></select></label>
+<label>Reference output<select id="population-reference-output"><option value="scores">Target score/readout channels</option><option value="raw_scores">Raw score before fixed calibration</option><option value="probabilities">Target class probabilities</option><option value="targets">Realized target with retained original draw</option></select></label>
+</div>
+<p class="muted">Each query retains the selected original row's forests, hidden roots, structural draws and emission/adapter draws. Numeric observed channels cut state and readout; native labels cut the declared emitted value and encoded span. A reference overrides a prior hard cut only at the same observed location; ambiguous overlaps reject. Category captures have a separate representation choice: original-input (_id) converters cannot force a unique representation. Other observed inputs stay fixed. Fresh comparisons use their already saved fresh population, not another draw. These are causal references, not conditional means; extrapolation follows the retained equations and tree leaves.</p>
+</div>

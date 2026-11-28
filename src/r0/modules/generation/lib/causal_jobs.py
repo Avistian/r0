@@ -12,6 +12,7 @@ from r0.modules.priors import (
     CausalLimits,
     TaskPair,
     compare_causal_pair,
+    construct_calibrated_population_change,
     construct_population_graph_change,
     explain_generation,
     generate_task,
@@ -46,6 +47,17 @@ def causal_job(request: dict[str, Any], out: Path) -> dict[str, Any]:
 
                 recipe = construct_intervention_policy(
                     record, request["policy_json"], limits=limits
+                )
+            elif record["recipe"]["version"] in (
+                "calibrated-population-graph-v1",
+                "calibrated-population-query-v1",
+            ):
+                recipe = construct_calibrated_population_change(
+                    record["recipe"],
+                    json.loads(request["interventions_json"]),
+                    mode=request["mode"],
+                    population=request["population"],
+                    limits=limits,
                 )
             elif record["recipe"]["version"] == "recursive-population-graph-v1":
                 recipe = construct_population_graph_change(

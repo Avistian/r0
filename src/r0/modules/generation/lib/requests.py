@@ -7,6 +7,9 @@ from typing import Any, cast
 
 from r0.modules.generation.lib.construction import GraphConstruction
 from r0.modules.priors import (
+    CalibratedPopulationGraph,
+    CalibratedPopulationIntervention,
+    CalibratedPopulationQuery,
     CausalLimits,
     GPRootCalibration,
     GPRootDAGRecipe,
@@ -14,6 +17,7 @@ from r0.modules.priors import (
     Recipe,
     TrainingTask,
     generate_task,
+    preflight_calibrated_generation,
     recipe_from_dict,
     sample_recipe,
 )
@@ -71,6 +75,21 @@ class RunRequest:
                 count=self.count,
                 sampling=self.sampling,
                 construction=self.construction,
+            )
+        if isinstance(
+            self.recipe,
+            (
+                CalibratedPopulationGraph,
+                CalibratedPopulationIntervention,
+                CalibratedPopulationQuery,
+            ),
+        ):
+            preflight_calibrated_generation(
+                self.recipe,
+                seed=self.seed,
+                task_id=self.start,
+                device=self.device,
+                count=self.count,
             )
         if self.construction is not None:
             if type(self.construction) is not GraphConstruction or self.sampling is not None:
@@ -312,6 +331,17 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
                 sampling=fields.get("sampling"),
                 construction=fields.get("construction"),
             )
+    if (
+        type(candidate) is dict
+        and cast(dict[str, Any], candidate).get("version")
+        in (
+            "calibrated-population-graph-v1",
+            "calibrated-population-intervention-v1",
+            "calibrated-population-query-v1",
+        )
+        and any(fields.get(key) is not None for key in ("construction", "sampling"))
+    ):
+        raise ValueError("fixed calibrated population cannot use construction or sampling")
     raw_limits = fields.pop("causal_limits", None)
     limits = None if raw_limits is None else CausalLimits(**raw_limits)
     raw_construction = fields.pop("construction", None)
@@ -345,6 +375,36 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
         # Admit the ordinary run header before decoding any retained covariance.
         header = {k: v for k, v in fields.items() if k != "sampling"}
         RunRequest(LinearRecipe(), causal_limits=limits, **header)
+    if type(raw_recipe) is dict and raw_recipe.get("version") in (
+        "calibrated-population-graph-v1",
+        "calibrated-population-intervention-v1",
+        "calibrated-population-query-v1",
+    ):
+        preflight_calibrated_generation(
+            raw_recipe,
+            seed=cast(int, fields.get("seed")),
+            task_id=fields.get("start", 0),
+            device=fields.get("device", "cpu"),
+            count=cast(int, fields.get("count")),
+        )
+        if construction is not None or fields.get("sampling") is not None:
+            raise ValueError("fixed calibrated population cannot use construction or sampling")
+        try:
+            task_source = (
+                raw_recipe["base"]
+                if raw_recipe["version"] == "calibrated-population-intervention-v1"
+                else raw_recipe
+            )
+            task_fields = dict(task_source["original"]["request"]["base"]["task"])
+            if type(task_fields["class_offsets"]) not in (tuple, list):
+                raise ValueError("class_offsets must be an array")
+            task_fields["class_offsets"] = tuple(task_fields["class_offsets"])
+            preview = LinearRecipe(**task_fields)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError("invalid calibrated population task metadata") from exc
+        # Validate the complete outer RunRequest schema/budgets against cheap task
+        # controls, without decoding either retained population. Discard preview.
+        RunRequest(preview, causal_limits=limits, **fields)
     recipe = recipe_from_dict(raw_recipe, limits=limits or CausalLimits())
     sampling = fields.pop("sampling", None)
     return RunRequest(

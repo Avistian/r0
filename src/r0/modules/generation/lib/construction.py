@@ -217,6 +217,12 @@ class GraphConstruction:
             controls = controls["source"]
         if controls.get("topology") == "gp-root-dag":
             return controls["base"]["task"]
+        if controls.get("topology") in ("calibrate-population", "calibrated-population-query"):
+            source = controls["source"]
+            original = (
+                source if controls["topology"] == "calibrate-population" else source["original"]
+            )
+            return original["request"]["base"]["task"]
         if controls.get("topology") == "recursive-population-dag":
             return controls["request"]["base"]["task"]
         if controls.get("topology") in (
@@ -266,6 +272,14 @@ class GraphConstruction:
                 controls,
                 seed=episode_seed,
                 task_id=task_id,
+                limits=limits,
+            )
+        if fields.get("topology") in ("calibrate-population", "calibrated-population-query"):
+            return priors.construct_calibrated_population(
+                fields,
+                seed=episode_seed,
+                task_id=task_id,
+                construction_seed=self.seed,
                 limits=limits,
             )
         if fields.get("topology") == "recursive-population-dag":

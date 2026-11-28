@@ -1,5 +1,7 @@
 "use strict";
 function taskControls(recipe) {
+  if(isCalibratedArchive(recipe))return taskControls(recipe.original);
+  if(recipe.version==="recursive-population-graph-intervention-v1")return taskControls(recipe.change.base);
   if(recipe.version === "gp-root-calibration-v1")return taskControls(recipe.original);
   if(recipe.version === "gp-root-dag-v1")return taskControls(recipe.base);
   if(recipe.request?.base)return taskControls(recipe.request.base);

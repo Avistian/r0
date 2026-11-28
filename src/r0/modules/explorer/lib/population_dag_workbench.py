@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 
 POPULATION_VERSION = "recursive-population-graph-v1"
+CALIBRATED_VERSIONS = ("calibrated-population-graph-v1", "calibrated-population-query-v1")
 
 
 def population_dag_action(
@@ -21,14 +22,86 @@ def population_dag_action(
     if session.task is None:
         return None
     record = json.loads(session.task.recipe_json)
-    original = record["recipe"]
-    if original.get("version") != POPULATION_VERSION:
+    stored = record["recipe"]
+    if action == "curve" and stored.get("version") in (
+        POPULATION_VERSION,
+        "recursive-population-graph-intervention-v1",
+        *CALIBRATED_VERSIONS,
+        "calibrated-population-intervention-v1",
+    ):
+        from r0.modules.explorer.lib.population_reference import population_reference_action
+
+        return population_reference_action(session, data)
+    calibrated = stored.get("version") in CALIBRATED_VERSIONS
+    retained = stored.get("version") == "calibrated-population-intervention-v1"
+    if stored.get("version") != POPULATION_VERSION and not calibrated and not retained:
         return None
+    if retained:
+        if action in (
+            "population_calibrate",
+            "population_query",
+            "intervention_controls",
+            "mechanism",
+            "intervene",
+            "sample_intervention_policy",
+            "edit",
+            "pair",
+        ):
+            raise ValueError(
+                "This retained comparison cannot create Next queries or nested edits. "
+                "Reopen its before archive for fixed-fit queries and comparisons."
+            )
+        if action == "population_dag_controls":
+            return {
+                "population_dag": True,
+                "retained_comparison": True,
+                "original_version": stored["version"],
+                "calibration": _calibration_details(stored["base"]),
+                "notice": "Retained comparison: exact replay and export preserve its fixed fit.",
+            }
+    original = stored["original"] if calibrated else stored
+    if action in ("population_calibrate", "population_query"):
+        if action == "population_calibrate":
+            if calibrated:
+                raise ValueError(
+                    "Fit a new raw population explicitly; retained calibration is immutable"
+                )
+            controls = {
+                "topology": "calibrate-population",
+                "source": stored,
+                "calibration_rows": data.get("calibration_rows", 64),
+                "calibration_seed": data.get("calibration_seed"),
+                "calibration_task_id": data.get("calibration_task_id"),
+            }
+            seed, task_id = record["seed"], record["task_id"]
+            construction_seed = data.get("calibration_seed")
+        else:
+            if not calibrated:
+                raise ValueError("Create an independent calibration before fixed-fit Next")
+            controls = {
+                "topology": "calibrated-population-query",
+                "source": stored,
+                "engine": data.get(
+                    "engine", original["bindings"][0]["sample"]["initial"]["engine"]
+                ),
+            }
+            seed, task_id = data.get("seed"), data.get("task_id")
+            construction_seed = data.get("construction_seed", seed)
+        return session.request(
+            "construct",
+            {
+                **data,
+                "controls": controls,
+                "construction_seed": construction_seed,
+                "seed": seed,
+                "task_id": task_id,
+            },
+        )
     if action == "population_dag_replay":
         task, archive, run = run_saved_document(
             session.output_dir,
             {
-                "recipe": original,
+                "recipe": stored,
                 "seed": record["seed"],
                 "start": record["task_id"],
                 "count": 1,
@@ -48,9 +121,11 @@ def population_dag_action(
         info = intervention_controls(editable)
         for binding in original["request"]["replacements"]:
             info["nodes"][binding["node"]]["population_forest"] = binding["forest"]
+        calibration = _calibration_details(stored) if calibrated else None
         info.update(
+            calibration=calibration,
             population_dag=True,
-            original_version=POPULATION_VERSION,
+            original_version=stored["version"],
             controls={
                 "topology": "recursive-population-dag",
                 "request": original["request"],
@@ -61,14 +136,37 @@ def population_dag_action(
                 "retain these forests; fresh comparisons draw new row forests with the explicit "
                 "population key. Hard cuts bypass selected mechanisms, soft replacements disable "
                 "that node's population forest. Stored pipelines retain calibration constants; "
-                "no query fit. Independent target calibration remains a required follow-on."
+                "no query fit. Explicit independent calibration retains fixed constants across "
+                "Next and matched/fresh comparisons. Changing laws requires a new explicit fit."
             ),
         )
         return info
-    if action in ("curve", "sample_intervention_policy", "edit"):
+    if calibrated and action == "pair":
+        raise ValueError(
+            "Use fixed-calibration causal comparisons; "
+            "task-only adapter comparisons remain required"
+        )
+    if action in ("sample_intervention_policy", "edit"):
         raise ValueError(
             "Population DAGs require original-row traces and explicit retained interventions; "
-            "reference curves, sampled policies and linked mechanism editing remain required "
+            "sampled policies and linked mechanism editing remain required "
             "follow-ons. Use construction controls for a new population."
         )
     return None
+
+
+def _calibration_details(stored: dict[str, Any]) -> dict[str, Any]:
+    root = stored
+    while root["version"] == "calibrated-population-query-v1":
+        root = root["source"]
+    fit = root["calibration_population"]
+    return {
+        "query_fit": False,
+        "constants": root["calibration"],
+        "fit": {
+            "seed": fit["seed"],
+            "task_id": fit["task_id"],
+            "rows": fit["request"]["base"]["task"]["rows"],
+        },
+        "source_version": stored["version"],
+    }
