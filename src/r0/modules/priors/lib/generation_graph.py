@@ -2,7 +2,7 @@
 
 import json
 from collections.abc import Sequence
-from typing import Any, cast
+from typing import Any
 
 import numpy as np
 import torch
@@ -13,22 +13,13 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
 from r0.modules.priors.lib.functional_steps import functional_steps
 from r0.modules.priors.lib.graph_functions import analytic_steps, composite_steps, gp_steps
+from r0.modules.priors.lib.inspection_preview import preview_parameters as _preview
 from r0.modules.priors.lib.native_inspection import native_steps
 from r0.modules.priors.lib.native_vector_inspection import native_vector_steps
 from r0.modules.priors.lib.representatives import record_fingerprint
 from r0.modules.priors.lib.signals import component_inputs, multiply_signals
 from r0.modules.priors.lib.target_inspection import target_steps as target_steps
 from r0.modules.priors.lib.training_task import TrainingTask
-
-
-def _preview(value: Any) -> Any:
-    if isinstance(value, dict):
-        return {key: _preview(item) for key, item in cast(dict[str, Any], value).items()}
-    if isinstance(value, list):
-        items = cast(list[Any], value)
-        shown = [_preview(item) for item in items[:32]]
-        return shown if len(items) <= 32 else {"total_items": len(items), "shown": shown}
-    return value
 
 
 def explain_generation(
@@ -244,6 +235,7 @@ def explain_generation(
             "standalone-network-innovations-v1",
             "network-observation-recipe-v1",
             "sampled-hyperprior-graph-v1",
+            "sampled-joint-hyperprior-graph-v1",
             "fitted-functional-causal-v1",
             "xgboost-fitted-functional-causal-v1",
             "sampled-fitted-functional-causal-v1",
@@ -268,6 +260,7 @@ def explain_generation(
             "standalone-network-innovations-v1",
             "network-observation-recipe-v1",
             "sampled-hyperprior-graph-v1",
+            "sampled-joint-hyperprior-graph-v1",
             "fitted-functional-causal-v1",
             "xgboost-fitted-functional-causal-v1",
             "sampled-fitted-functional-causal-v1",
@@ -296,6 +289,7 @@ def explain_generation(
                     "standalone-network-innovations-v1",
                     "network-observation-recipe-v1",
                     "sampled-hyperprior-graph-v1",
+                    "sampled-joint-hyperprior-graph-v1",
                     "fitted-functional-causal-v1",
                     "xgboost-fitted-functional-causal-v1",
                     "sampled-fitted-functional-causal-v1",
@@ -319,6 +313,7 @@ def explain_generation(
         "standalone-network-innovations-v1",
         "network-observation-recipe-v1",
         "sampled-hyperprior-graph-v1",
+        "sampled-joint-hyperprior-graph-v1",
         "fitted-functional-causal-v1",
         "xgboost-fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
@@ -337,6 +332,7 @@ def explain_generation(
         "standalone-network-innovations-v1",
         "network-observation-recipe-v1",
         "sampled-hyperprior-graph-v1",
+        "sampled-joint-hyperprior-graph-v1",
         "fitted-functional-causal-v1",
         "xgboost-fitted-functional-causal-v1",
         "sampled-fitted-functional-causal-v1",
@@ -373,6 +369,7 @@ def explain_generation(
         in (
             "sampled-functional-graph-v1",
             "sampled-hyperprior-graph-v1",
+            "sampled-joint-hyperprior-graph-v1",
             "sampled-parent-graph-v1",
             "sampled-topology-graph-v1",
             "sampled-geometry-graph-v1",
@@ -387,6 +384,7 @@ def explain_generation(
             "standalone-network-innovations-v1",
             "network-observation-recipe-v1",
             "sampled-hyperprior-graph-v1",
+            "sampled-joint-hyperprior-graph-v1",
             "fitted-functional-causal-v1",
             "xgboost-fitted-functional-causal-v1",
             "sampled-fitted-functional-causal-v1",

@@ -7,6 +7,22 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 
 def population_recipe_from_dict(fields: dict[str, Any], *, limits: CausalLimits):
     version = fields.get("version", "linear-v1")
+    if version == "network-input-view-v2":
+        from r0.modules.priors.lib.matched_network_view import matched_view_from_dict
+
+        return matched_view_from_dict(fields, limits=limits)
+    if version == "network-input-view-v1":
+        from r0.modules.priors.lib.network_input_view import network_view_from_dict
+
+        return network_view_from_dict(fields, limits=limits)
+    if version == "sampled-joint-hyperprior-graph-v1":
+        from r0.modules.priors.lib.joint_hyperprior_decoding import joint_hyperprior_graph_from_dict
+
+        return joint_hyperprior_graph_from_dict(fields, limits=limits)
+    if version == "sampled-hyperprior-graph-v1":
+        from r0.modules.priors.lib.hyperprior_graph_decoding import hyperprior_graph_from_dict
+
+        return hyperprior_graph_from_dict(fields, limits=limits)
     if version == "network-observation-recipe-v1":
         from r0.modules.priors.lib.network_observation_recipe_decoding import (
             network_observation_recipe_from_dict,
@@ -43,6 +59,22 @@ def population_recipe_from_dict(fields: dict[str, Any], *, limits: CausalLimits)
     ) != "recursive-population-graph-intervention-v1":
         raise ValueError("population DAG intervention requires its explicit version")
     version = fields.get("version", "linear-v1")
+    if version == "network-input-view-v2":
+        from r0.modules.priors.lib.matched_network_view import matched_view_from_dict
+
+        return matched_view_from_dict(fields, limits=limits)
+    if version == "network-input-view-v1":
+        from r0.modules.priors.lib.network_input_view import network_view_from_dict
+
+        return network_view_from_dict(fields, limits=limits)
+    if version == "sampled-joint-hyperprior-graph-v1":
+        from r0.modules.priors.lib.joint_hyperprior_decoding import joint_hyperprior_graph_from_dict
+
+        return joint_hyperprior_graph_from_dict(fields, limits=limits)
+    if version == "sampled-hyperprior-graph-v1":
+        from r0.modules.priors.lib.hyperprior_graph_decoding import hyperprior_graph_from_dict
+
+        return hyperprior_graph_from_dict(fields, limits=limits)
     if version == "network-observation-recipe-v1":
         from r0.modules.priors.lib.network_observation_recipe_decoding import (
             network_observation_recipe_from_dict,

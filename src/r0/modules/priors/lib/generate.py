@@ -35,6 +35,8 @@ from r0.modules.priors.lib.gp_target_links import GPColumnTargetLink, generate_g
 from r0.modules.priors.lib.hyperprior_graph import HyperpriorGraph, generate_hyperprior_graph
 from r0.modules.priors.lib.inputs import InputDistribution
 from r0.modules.priors.lib.intervention_policy_records import SampledInterventionPolicy
+from r0.modules.priors.lib.joint_hyperprior_graph import JointHyperpriorGraph
+from r0.modules.priors.lib.joint_hyperprior_output import generate_joint_hyperprior_graph
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.matrix_preference_prior import CausalMatrixPrior
 from r0.modules.priors.lib.native_causal import NativeCausalRecipe
@@ -50,7 +52,6 @@ from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
 from r0.modules.priors.lib.network_input_view import (
     NetworkInputView,
     generate_network_view,
-    network_view_from_dict,
 )
 from r0.modules.priors.lib.network_observation_recipe import (
     NetworkObservationRecipe,
@@ -109,6 +110,7 @@ type Recipe = (
     | NetworkRecipe
     | NetworkObservationRecipe
     | HyperpriorGraph
+    | JointHyperpriorGraph
     | RecursivePopulationIntervention
     | RecursivePopulationRecipe
     | NetworkInputView
@@ -146,19 +148,9 @@ def recipe_from_dict(data: object, *, limits: CausalLimits | None = None) -> Rec
     ):
         raise ValueError("prototype batch archive requires an explicit version")
     version = fields.get("version", "linear-v1")
-    if version == "sampled-hyperprior-graph-v1":
-        from r0.modules.priors.lib.hyperprior_graph_decoding import hyperprior_graph_from_dict
-
-        return hyperprior_graph_from_dict(fields, limits=limits)
     population = population_recipe_from_dict(fields, limits=limits)
     if population is not None:
         return population
-    if version == "network-input-view-v2":
-        from r0.modules.priors.lib.matched_network_view import matched_view_from_dict
-
-        return matched_view_from_dict(fields, limits=limits)
-    if version == "network-input-view-v1":
-        return network_view_from_dict(fields, limits=limits)
     if version == "standalone-network-innovations-v1":
         from r0.modules.priors.lib.network_innovation_decoding import network_innovation_from_dict
 
@@ -321,6 +313,8 @@ def generate_task(recipe: Recipe, *, seed: int, task_id: int, device: str = "cpu
         return generate_gp_target_environment(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, GPColumnRecipe):
         return generate_gp_columns(recipe, seed=seed, task_id=task_id, device=device)
+    if isinstance(recipe, JointHyperpriorGraph):
+        return generate_joint_hyperprior_graph(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, HyperpriorGraph):
         return generate_hyperprior_graph(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, NetworkObservationRecipe):
