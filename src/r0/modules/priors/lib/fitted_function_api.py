@@ -71,6 +71,12 @@ from r0.modules.priors.lib.structural_network import FrozenNetworkFunction as Fr
 from r0.modules.priors.lib.structural_network import NetworkAffine as NetworkAffine
 from r0.modules.priors.lib.structural_network import NetworkBlock as NetworkBlock
 from r0.modules.priors.lib.structural_network import NetworkProjection as NetworkProjection
+from r0.modules.priors.lib.tree_extension_decoding import sampled_tree_extension_from_dict
+from r0.modules.priors.lib.tree_extension_sampling import (
+    SampledTreeExtension,
+    TreeExtensionRequest,
+    sample_tree_extension,
+)
 from r0.modules.priors.lib.xgboost_fit_decoding import (
     xgboost_fit_from_dict as xgboost_fit_from_dict,
 )
@@ -121,6 +127,10 @@ from r0.modules.priors.lib.xgboost_vector_export import (
 )
 
 __all__ = [
+    "sampled_tree_extension_from_dict",
+    "TreeExtensionRequest",
+    "SampledTreeExtension",
+    "sample_tree_extension",
     "model_leaf_tree_recipe",
     "category_subset_activation",
     "oblique_tree_recipe",
