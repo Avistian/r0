@@ -55,6 +55,13 @@ python3 scripts/run_check.py python scripts/oracle_walkthrough.py --out /tmp/r0-
 
 ## Generate and save datasets without the explorer
 
+For a persistent Colab campaign, use the
+[generation notebook](notebooks/generation-campaign.ipynb) and
+[practical guide](docs/generation-campaign-guide.md). They cover a bounded
+multi-family pilot, Drive persistence, interruption recovery, verified outcome
+reports and a separate 100M planning example. Hosted Colab/reset validation remains
+NOT_RUN; the guide distinguishes it from local resume evidence.
+
 Run a bounded CPU generation job using an existing recipe:
 
 ```sh
