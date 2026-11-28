@@ -53,6 +53,34 @@ independent calculations, metric conventions and replay instructions. The
 python3 scripts/run_check.py python scripts/oracle_walkthrough.py --out /tmp/r0-oracle-evidence
 ```
 
+## Generate and save datasets without the explorer
+
+Run a bounded CPU generation job using an existing recipe:
+
+```sh
+python3 scripts/run_check.py r0 generate --config configs/generation/polynomial-cpu.toml --out /tmp/r0-datasets
+```
+
+The command prints a JSON completion summary. It saves dataset ZIP groups and
+receipts under the output directory; repeat the same command to resume without
+regenerating completed tasks. A timeout or incomplete run exits nonzero and keeps
+completed groups. `--quiet` suppresses the summary but preserves errors. The
+configuration sets task count, seed, shape, wall-time and storage limits. Other
+examples live in `configs/generation/`. A `.json` config can instead contain the
+public serialized `RunRequest`, including retained structural generator recipes.
+Decoding and replay execute inside the timeout-protected worker.
+
+Reload the saved tasks through the public API:
+
+```python
+from pathlib import Path
+from r0.modules.generation import load_group
+
+for archive in sorted(Path("/tmp/r0-datasets").glob("groups/**/*.zip")):
+    for task in load_group(archive):
+        print(task.inputs.shape, task.targets.shape)
+```
+
 ## Training generator kernels
 
 See [bounded batch consumption](docs/bounded-batch-consumption.md) for a runnable
