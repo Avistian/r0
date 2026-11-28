@@ -26,10 +26,12 @@ function clearCurve() {
   if(isConvolutionRecipe(current?.view?.recipe?.recipe) && !functional){$("curve").disabled=true;$("curve").dataset.unavailable="true";$("curve-description").textContent="Typed convolution curves remain pending explicit category/capture reference semantics. Inspect original-row kernel stages or use causal interventions; no continuous response is substituted for native emissions.";}
 
   gpColumnCurveControls();
+  gpRootCurveControls();
 }
 function drawCurve() {
   if (!curve) return;
-  if (curve.kind === "gp_column_target_reference") drawGPColumnCurve();
+  if (curve.kind === "gp_root_causal_reference") drawGPRootCurve();
+  else if (curve.kind === "gp_column_target_reference") drawGPColumnCurve();
   else if (curve.kind === "gp_conditional_curve") drawGP();
   else {
     const channel = Math.min(number("channel"), curve.scores[0].length - 1);
@@ -68,7 +70,7 @@ function drawGP() {
   $("curve-note").textContent = `${numerical}. ${curve.points} points; ${samples.length} additional draws${samples.length ? ` with seed ${curve.sampling.seed}` : ""}. The band is pointwise uncertainty of the latent function, not observation noise. Lines connect evaluated points. Dots match the fixed active coordinates; irrelevant inputs may differ. ${diagnostics.approximate ? "The reported error is the largest normalized change to the saved support projection. Original values still take precedence at exact saved coordinates." : ""}`;
 }
 function curveArguments() {
-  return {...(isGPTargetReference()?gpColumnCurveArguments():{}), feature: number("feature"), anchor_row: number("curve-row"), points: number("curve-points"), ...((isNoisyNetwork() || isFunctionalReference() || isObservation(current?.view?.recipe?.recipe)) ? {reference:$("network-reference").value} : {}), ...(isGP() ? {draws: number("gp-draws"), seed: number("gp-draws") ? $("gp-seed").value : null, allow_rank_truncation: $("gp-approximate").checked} : {})};
+  return {...(isGPRootReference()?gpRootCurveArguments():{}), ...(isGPTargetReference()?gpColumnCurveArguments():{}), feature: number("feature"), anchor_row: number("curve-row"), points: number("curve-points"), ...((isNoisyNetwork() || isFunctionalReference() || isObservation(current?.view?.recipe?.recipe)) ? {reference:$("network-reference").value} : {}), ...(isGP() ? {draws: number("gp-draws"), seed: number("gp-draws") ? $("gp-seed").value : null, allow_rank_truncation: $("gp-approximate").checked} : {})};
 }
 for (const id of ["network-reference", "curve-row", "curve-points", "gp-draws", "gp-seed", "gp-approximate"]) $(id).onchange = clearCurve;
 $("curve").onclick = () => act("Evaluating saved function…", async () => {
@@ -77,4 +79,4 @@ $("curve").onclick = () => act("Evaluating saved function…", async () => {
   const result = await request(isGP() ? "gp_curve" : "curve", {...parameters,...limits()});
   if (pretty(parameters) === pretty(curveArguments())) { curve = result.curve; drawCurve(); }
 });
-$("curve-json").onclick = () => download("response-curve.json", new Blob([pretty(curve)], {type: "application/json"}));
+$("curve-json").onclick = () => download("response-curve.json", new Blob([curve?.reference_json || pretty(curve)], {type: "application/json"}));

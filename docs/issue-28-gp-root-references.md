@@ -38,7 +38,35 @@ identity, primitive types, shape and vocabulary before replay, then requires
 exact reconstruction. Ordinary generation and existing archive schemas remain
 unchanged.
 
-This slice is the library core. Guarded explorer controls, reference downloads
-and composed intervention-source curves remain required integration follow-ons.
+The library core and guarded workbench are separate implementation slices.
+Composed intervention-source curves remain a required integration follow-on.
 The source supports accepted GP root laws and coordinates through its retained
 archive; this diagnostic adds no new source sampling law or paper attribution.
+
+## Guarded workbench integration
+
+Plain, independently calibrated and fixed-fit query GP-root datasets expose an
+original-row reference panel. The ordinary feature selector chooses the plotted
+coordinate; blank grid controls sweep continuous observed ranges or enumerate
+declared category codes. Optional full-grid JSON supports simultaneous cuts and
+repeated points. Separate controls choose structural innovation policy and the
+converted capture/representation policy. Display options distinguish raw scores,
+fixed-calibrated scores, class probabilities, continuous adapter means, and actual
+fixed-draw targets. Category points are plotted without interpolation.
+
+Every evaluation runs through the timeout-protected generation worker. Grid
+metadata is bounded before expansion, then the core admits complete source,
+history and prospective execution before replay. Failures preserve the active
+saved dataset. The JSON download is the exact core receipt, preserving integer
+identities even above JavaScript's safe-integer range. Replay/open and fixed-fit
+query controls retain their existing archive behavior.
+
+Reference work can exceed the original construction's retained budget, especially
+when query ancestry and complete fit provenance are present. Such requests reject;
+raising only exploration limits cannot override a smaller archived limit. Choose
+explicit adequate limits when constructing the original source. No cap is silently
+raised and no provenance is discarded. Hosted Colab and GPU verification remain
+separate; the local callback uses the same guarded implementation.
+
+Composed GP intervention-source references remain a required follow-on, alongside
+independent review of this UI and its separately frozen reference core.

@@ -32,6 +32,10 @@ def gp_root_action(
         if recipe["version"] in ("gp-root-calibration-v1", "gp-root-calibration-query-v1")
         else recipe
     )
+    if action == "curve":
+        from r0.modules.explorer.lib.gp_root_curves import inspect_gp_root_curve
+
+        return {"curve": inspect_gp_root_curve(session.task, data, session.output_dir)}
     if action == "gp_root_query":
         if recipe["version"] == "gp-root-dag-v1":
             raise ValueError("Fit an independent GP calibration before fixed-fit continuation")
@@ -110,7 +114,7 @@ def gp_root_action(
             ),
         )
         return info
-    if action in ("curve", "sample_intervention_policy", "edit", "intervene"):
+    if action in ("sample_intervention_policy", "edit", "intervene"):
         raise ValueError(
             "GP-root graphs require retained-population-aware references and interventions; "
             "these workbench operations are pending integration"
