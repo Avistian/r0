@@ -150,6 +150,8 @@ def _run(
         config.pop("construction")
     if request.observation is None:
         config.pop("observation")
+    elif not request.observation.measurements:
+        config["observation"].pop("measurements")
     config["format"] = "generation-run-v1" if request.sampling is None else "generation-run-v2"
     header = out / "run.json"
     if header.exists():

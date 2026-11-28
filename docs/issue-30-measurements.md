@@ -37,12 +37,50 @@ The kernel admits 1..64 stages, 1..20,000 rows and 1..256 columns against a decl
 workspace limit. It returns final values, the ordered stages, initial/final NumPy
 snapshots and a binding hash of stages, input shape and original input bytes.
 It retains no full intermediate matrices; those can be replayed from the source
-and initial RNG. This is a kernel, not yet a complete observation-task envelope:
-schema effects, raw-value custody, composition with missingness and CLI requests
-remain to integrate. Fitted rank/quantile maps, censoring/discretization/encodings,
+and initial RNG. The observation-task integration below now retains raw-value
+custody and composes measurements before masking in API/CLI runs. General schema
+changes and arbitrary interleaving of masking/transforms remain open. Fitted rank/quantile maps, censoring/discretization/encodings,
 engineered/redundant features and further required measurement families remain open.
 
 Checks compare deterministic maps with scalar arithmetic, all five noise laws
 with independent draw oracles across five RNG engines, order-dependent clipping,
 outlier endpoints and complete RNG rollback after a late overflow. These establish
 the named laws, not downstream robustness or the whole #30 portfolio.
+
+
+## Measurement-then-mask observation tasks
+
+`observe_missingness(..., measurements=stages)` and
+`ObservationRequest(..., measurements=stages)` apply ordered measurement stages
+before the declared mask. JSON requests use a `measurements` array of objects
+with `kind`, `columns` and optional `parameters` pair arrays. All stages act on
+declared continuous columns; category, ordinal, binary and count schema changes
+are rejected until a typed conversion is explicitly specified. Empty schemas
+retain the existing all-continuous interpretation.
+
+```sh
+r0 generate --config configs/generation/measured-tree-ensemble-cpu.json --out /tmp/measured-tree-ensembles
+```
+
+This example samples a mixed tree ensemble, then scales/shifts, adds Gaussian
+measurement noise and clips its continuous first column before self-value MNAR
+masking. Labels and structural mechanisms remain those of the original source.
+MAR/self-value masks use the measured values; target/latent policies retain their
+explicit privileged drivers. To request measurements with no missing cells, use
+an explicit MCAR plan with probability zero.
+
+Measured observations use `r0-missing-observation-v2` receipts. These retain ordered
+measurement stages, input binding and initial/final RNG snapshots alongside the
+mask receipt. Measurement PCG64 draws use a distinct domain tag plus observation
+seed and source seed/task ID; changing mask draws cannot consume measurement draws.
+Raw original inputs remain in privileged truth. Replay reconstructs measured values,
+then mask probabilities and draws, and compares all present observed cells. Even a
+change hidden by clipping must agree with the original measurement input binding.
+Source restoration returns the original raw generator task, not the measured table.
+
+Empty measurement pipelines retain v1 mask-only receipts and existing run-header
+layout. Existing mask-only CLI output can resume without regeneration. Tests check
+independent affine/noise/clip arithmetic, conditional mask probabilities/draws,
+raw-value tampering, source restoration, typed-column rejection, guarded JSON
+transport and resume. Additional measurement families, learned/fitted calibration,
+typed conversions and arbitrary ordered mask/transform compositions remain open.

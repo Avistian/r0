@@ -66,8 +66,9 @@ Its source/episode identities change to include the observation specification an
 value binding. Its recipe record retains the plan, separate observation seed,
 source identities, RNG snapshots and binding. PCG64 is keyed by a separate domain,
 observation seed and original episode seed/task ID. Structural equations and their
-mechanism record remain unchanged. Already-masked/observed tasks are rejected by
-this initial wrapper; composing stages needs a separate ordered contract.
+mechanism record remain unchanged. Already-masked/observed tasks are rejected. Optional ordered measurement stages
+may precede this mask, as documented in [measurement pipelines](issue-30-measurements.md);
+arbitrary interleaved mask/transform compositions remain open.
 
 `save_group` places raw inputs, probabilities and optional driver in `truth.npz`,
 with provenance in the privileged task card. `predictor.npz` contains only observed

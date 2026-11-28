@@ -10,6 +10,11 @@ import numpy as np
 import torch
 
 from r0.modules.priors.lib.causal_limits import CausalLimits
+from r0.modules.priors.lib.measurement_observation import (
+    measure_observation,
+    measurement_stages_from_dict,
+)
+from r0.modules.priors.lib.measurement_pipeline import MeasurementStage
 from r0.modules.priors.lib.missingness import MissingnessPlan, draw_missingness
 from r0.modules.priors.lib.representatives import encode, record_fingerprint
 
@@ -45,6 +50,19 @@ def _rng(seed: int, source: dict[str, Any]) -> np.random.Generator:
 
 
 def _identities(record: dict[str, Any]) -> tuple[str, str]:
+    if "measurement" in record:
+        source = record_fingerprint(
+            (
+                record["source_task_id"],
+                record["plan"],
+                record["seed"],
+                record["measurement"]["stages"],
+            )
+        )
+        episode = record_fingerprint(
+            (record["episode_id"], source, record["binding"], record["measurement"]["binding"])
+        )
+        return "observed-" + source, "observed-" + episode
     source = record_fingerprint((record["source_task_id"], record["plan"], record["seed"]))
     episode = record_fingerprint((record["episode_id"], source, record["binding"]))
     return "observed-" + source, "observed-" + episode
@@ -55,6 +73,7 @@ def observe_missingness(
     plan: MissingnessPlan,
     *,
     seed: int,
+    measurements: tuple[MeasurementStage, ...] = (),
     latent: torch.Tensor | None = None,
     latent_provenance: str | None = None,
     limits: CausalLimits = _DEFAULT,
@@ -84,7 +103,15 @@ def observe_missingness(
     if "observation" in source:
         raise ValueError("source already carries observation metadata")
     driver = task.targets.to(torch.float64).clone() if plan.mode == "mnar-target" else latent
-    raw = np.asarray(task.inputs.detach().numpy(), dtype=np.float64)
+    if type(measurements) is not tuple:
+        raise ValueError("observation measurements must be an immutable tuple")
+    measured = task.inputs
+    measurement_record = None
+    if measurements:
+        measured, measurement_record = measure_observation(
+            measurements, task.inputs, task.feature_schema, seed=seed, source=source, limits=limits
+        )
+    raw = np.asarray(measured.detach().numpy(), dtype=np.float64)
     values = None if driver is None else np.asarray(driver.detach().numpy(), dtype=np.float64)
     sampled = draw_missingness(
         plan,
@@ -108,6 +135,9 @@ def observe_missingness(
         if plan.mode == "mnar-target"
         else latent_provenance,
     }
+    if measurement_record is not None:
+        record["version"] = "r0-missing-observation-v2"
+        record["measurement"] = measurement_record
     truth = ObservationTruth(
         task.inputs.clone(),
         torch.tensor(sampled.probabilities),
@@ -115,7 +145,7 @@ def observe_missingness(
         encode(record),
     )
     mask = torch.tensor(sampled.mask)
-    inputs = task.inputs.clone()
+    inputs = measured.clone()
     inputs[mask] = float("nan")
     source_id, episode_id = _identities(record)
     return replace(
@@ -162,14 +192,28 @@ def validate_missing_observation(task: TrainingTask) -> None:
         "episode_id",
         "driver_provenance",
     }
+    if record.get("version") == "r0-missing-observation-v2":
+        expected_fields.add("measurement")
     source = json.loads(task.recipe_json)
     if (
         set(record) != expected_fields
-        or record["version"] != "r0-missing-observation-v1"
+        or record["version"] not in ("r0-missing-observation-v1", "r0-missing-observation-v2")
         or encode(source.get("observation")) != encode(record)
         or _identities(record) != (task.source_task_id, task.episode_id)
     ):
         raise ValueError("observation metadata or identity differs")
+    measured = raw
+    if record["version"] == "r0-missing-observation-v2":
+        measured, expected_measurement = measure_observation(
+            measurement_stages_from_dict(record["measurement"]["stages"]),
+            raw,
+            task.feature_schema,
+            seed=record["seed"],
+            source=source,
+            limits=CausalLimits(**record["limits"]),
+        )
+        if encode(expected_measurement) != encode(record["measurement"]):
+            raise ValueError("measurement receipt differs from retained replay")
     plan = _plan(record["plan"])
     driver = truth.driver
     if plan.mode == "mnar-target":
@@ -189,7 +233,7 @@ def validate_missing_observation(task: TrainingTask) -> None:
     values = None if driver is None else np.asarray(driver.detach().numpy(), dtype=np.float64)
     sampled = draw_missingness(
         plan,
-        np.asarray(raw.detach().numpy(), dtype=np.float64),
+        np.asarray(measured.detach().numpy(), dtype=np.float64),
         rng=_rng(record["seed"], source),
         limits=CausalLimits(**record["limits"]),
         target=values if plan.mode == "mnar-target" else None,
@@ -201,7 +245,7 @@ def validate_missing_observation(task: TrainingTask) -> None:
         or encode(asdict(sampled.final)) != encode(record["final"])
         or not torch.equal(torch.tensor(sampled.mask), task.missing_mask)
         or not torch.equal(torch.tensor(sampled.probabilities), truth.probabilities)
-        or not torch.equal(task.inputs[~task.missing_mask], raw[~task.missing_mask])
+        or not torch.equal(task.inputs[~task.missing_mask], measured[~task.missing_mask])
     ):
         raise ValueError("observation values or mask differ from retained replay")
 

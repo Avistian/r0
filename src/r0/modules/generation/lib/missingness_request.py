@@ -9,8 +9,10 @@ import torch
 
 from r0.modules.priors import (
     CausalLimits,
+    MeasurementStage,
     MissingnessPlan,
     TrainingTask,
+    measurement_stages_from_dict,
     observe_missingness,
     restore_observation_source,
 )
@@ -22,8 +24,15 @@ class ObservationRequest:
     seed: int = 30
     latent: tuple[float, ...] = ()
     latent_provenance: str | None = None
+    measurements: tuple[MeasurementStage, ...] = ()
 
     def __post_init__(self) -> None:
+        if (
+            type(self.measurements) is not tuple
+            or len(self.measurements) > 64
+            or any(type(s) is not MeasurementStage for s in self.measurements)
+        ):
+            raise ValueError("observation measurements require bounded frozen stages")
         if (
             type(self.plan) is not MissingnessPlan
             or type(self.seed) is not int
@@ -48,6 +57,7 @@ class ObservationRequest:
             task,
             self.plan,
             seed=self.seed,
+            measurements=self.measurements,
             latent=torch.tensor(self.latent, dtype=torch.float64) if self.latent else None,
             latent_provenance=self.latent_provenance,
             limits=limits,
@@ -59,7 +69,9 @@ class ObservationRequest:
             return False
         actual = cast(dict[str, Any], actual)
         expected = {
-            "version": "r0-missing-observation-v1",
+            "version": "r0-missing-observation-v2"
+            if self.measurements
+            else "r0-missing-observation-v1",
             "plan": asdict(self.plan),
             "seed": self.seed,
             "limits": asdict(limits),
@@ -67,6 +79,12 @@ class ObservationRequest:
             if self.plan.mode == "mnar-target"
             else self.latent_provenance,
         }
+        if self.measurements:
+            measurement = actual.get("measurement")
+            if type(measurement) is not dict or json.dumps(
+                cast(dict[str, Any], measurement).get("stages"), sort_keys=True
+            ) != json.dumps([asdict(s) for s in self.measurements], sort_keys=True):
+                return False
         return all(
             json.dumps(actual.get(k), sort_keys=True, allow_nan=False)
             == json.dumps(v, sort_keys=True, allow_nan=False)
@@ -89,6 +107,11 @@ class ObservationRequest:
 
 def observation_request_from_dict(data: dict[str, Any]) -> ObservationRequest:
     fields: dict[str, Any] = dict(data)
+    if "measurements" in fields:
+        value = fields["measurements"]
+        if type(value) not in (list, tuple):
+            raise ValueError("measurements must be an array")
+        fields["measurements"] = measurement_stages_from_dict(value) if value else ()
     raw: dict[str, Any] = dict(fields.pop("plan"))
     for key in ("columns", "drivers", "coefficients"):
         if key in raw:

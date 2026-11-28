@@ -63,6 +63,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenTreeFunction as FrozenTreeFunction,
 )
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
+from r0.modules.priors.lib.measurement_observation import measurement_stages_from_dict
 from r0.modules.priors.lib.measurement_pipeline import (
     MeasurementDraw,
     MeasurementStage,
@@ -225,3 +226,5 @@ __all__ += ["ObservationTruth", "observe_missingness", "validate_missing_observa
 __all__ += ["restore_observation_source"]
 
 __all__ += ["MeasurementDraw", "MeasurementStage", "draw_measurements"]
+
+__all__ += ["measurement_stages_from_dict"]
