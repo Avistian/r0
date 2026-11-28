@@ -14,8 +14,18 @@ from r0.modules.priors.lib.sampled_fitted_graph import (
     SampledFittedFunctionalCausalRecipe,
     sample_parameterized_fitted_graph,
 )
+from r0.modules.priors.lib.xgboost_parameter_decoding import sampled_xgboost_plan_from_dict
+from r0.modules.priors.lib.xgboost_parameter_sampling import (
+    SampledXGBoostPlan,
+    XGBoostParameterPrior,
+    sample_xgboost_plan,
+)
 
 __all__ = [
+    "XGBoostParameterPrior",
+    "SampledXGBoostPlan",
+    "sample_xgboost_plan",
+    "sampled_xgboost_plan_from_dict",
     "FittedParameterLaw",
     "FittedTreeParameterPrior",
     "SampledFittedTreePlan",
