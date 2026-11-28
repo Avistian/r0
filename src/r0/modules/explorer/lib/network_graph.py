@@ -18,6 +18,8 @@ def inspect_graph(
     from r0.modules.explorer.lib.convolutions import contains_convolution
 
     if not contains_convolution(record["recipe"]) and record["recipe"].get("version") not in (
+        "sampled-joint-hyperprior-graph-v1",
+        "sampled-hyperprior-graph-v1",
         "prototype-batch-network-realized-v1",
         "network-observation-recipe-v1",
         "standalone-network-innovations-v1",

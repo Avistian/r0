@@ -20,6 +20,7 @@ from r0.modules.explorer.lib.networks import network_editor, network_examples
 from r0.modules.explorer.lib.observation_examples import observation_examples
 from r0.modules.explorer.lib.prototype_root_examples import prototype_root_examples
 from r0.modules.explorer.lib.source_root_examples import source_root_examples
+from r0.modules.explorer.lib.topology_hyperprior_examples import topology_hyperprior_examples
 from r0.modules.explorer.lib.xgboost_examples import xgboost_examples
 
 
@@ -92,6 +93,7 @@ def construction_examples() -> dict[str, Any]:
         **network_hyperprior_examples(),
         **network_innovation_examples(),
         **converted_examples(),
+        **topology_hyperprior_examples(),
         **{
             f"Numerical pipeline: {variant}": {
                 **geometry,

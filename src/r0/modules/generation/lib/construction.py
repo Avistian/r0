@@ -29,6 +29,14 @@ def construct_graph(
         raise ValueError("construction seed must be an integer in [0, 2**63)")
     fields = _tuples(controls)
     topology = fields.pop("topology")
+    if topology in ("joint-topology-hyperprior", "authored-topology-hyperprior"):
+        from r0.modules.generation.lib.topology_hyperprior_construction import (
+            construct_topology_hyperprior,
+        )
+
+        return construct_topology_hyperprior(
+            fields, seed=seed, limits=limits, authored=topology == "authored-topology-hyperprior"
+        )
     if topology == "network-observations":
         from r0.modules.generation.lib.observation_construction import construct_observations
 
@@ -196,6 +204,11 @@ class GraphConstruction:
             "prototype-root-network",
         ):
             controls = controls["source"]
+        if controls.get("topology") in (
+            "joint-topology-hyperprior",
+            "authored-topology-hyperprior",
+        ):
+            return controls["request"]["task"]
         if controls.get("topology") == "sampled-converted":
             request = priors.converted_request_from_dict(
                 controls["request"],

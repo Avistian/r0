@@ -31,7 +31,8 @@ window.r0request = async (action, data) => {
             "<!-- NETWORK CONTROLS -->",
             (assets / "network_controls.html").read_text()
             + (assets / "observations.html").read_text()
-            + (assets / "convolutions.html").read_text(),
+            + (assets / "convolutions.html").read_text()
+            + (assets / "topology_hyperpriors.html").read_text(),
         )
         .replace("<!-- NETWORK WORKBENCH -->", (assets / "network_workbench.html").read_text())
         .replace(
@@ -47,7 +48,12 @@ window.r0request = async (action, data) => {
             + (assets / "convolutions.js").read_text(),
         )
         .replace("<!-- FITTED CONTROLS -->", (assets / "fitted_controls.html").read_text())
-        .replace("/* WORKBENCH */", (assets / "workbench.js").read_text())
+        .replace(
+            "/* WORKBENCH */",
+            (assets / "workbench.js").read_text()
+            + "\n"
+            + (assets / "topology_hyperpriors.js").read_text(),
+        )
         .replace("/* NATIVE */", (assets / "native.js").read_text())
         .replace("/* INNOVATIONS */", (assets / "innovations.js").read_text())
         .replace("<!-- INNOVATIONS -->", (assets / "innovations.html").read_text())

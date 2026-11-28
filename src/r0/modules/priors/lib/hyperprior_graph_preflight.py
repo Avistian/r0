@@ -17,7 +17,7 @@ from r0.modules.priors.lib.topology_hyperprior_decoding import (
 )
 
 
-def _root_preview(value: Any) -> Any:
+def authored_topology_root_preview(value: Any) -> Any:
     if type(value) is dict:
         raw = cast(dict[str, Any], value)
         if raw.get("version") == "sampled-source-root-base-v1":
@@ -27,10 +27,13 @@ def _root_preview(value: Any) -> Any:
                 "version": "source-root-base-v1",
             }
         if raw.get("version") == "sampled-prototype-root-v1":
-            return _root_preview(raw["root"])
-        return {key: _root_preview(item) for key, item in raw.items()}
+            return authored_topology_root_preview(raw["root"])
+        return {key: authored_topology_root_preview(item) for key, item in raw.items()}
     if type(value) in (list, tuple):
-        return tuple(_root_preview(item) for item in cast(list[Any] | tuple[Any, ...], value))
+        return tuple(
+            authored_topology_root_preview(item)
+            for item in cast(list[Any] | tuple[Any, ...], value)
+        )
     return value
 
 
@@ -49,7 +52,7 @@ def preflight_hyperprior_graph(
     templates: list[FunctionalCausalNode] = []
     for key in ("root_template", "edge_template"):
         raw = complete_topology_record(request[key], FunctionalCausalNode)
-        preview = _root_preview(recursive_authored_preview(raw))
+        preview = authored_topology_root_preview(recursive_authored_preview(raw))
         templates.append(functional_node_from_dict(preview, limits=limits))
     preview_request = HyperpriorGraphRequest(
         task,
