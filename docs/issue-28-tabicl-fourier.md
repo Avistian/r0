@@ -47,12 +47,10 @@ causal pipeline outputs, large task IDs and saved replay. Raw evidence, includin
 repaired import-cycle/annotation failures, is ignored under
 `docs/evidence/issue-28-tabicl-fourier/`.
 
-This is the frozen nonlinear function component, **not the full source activation
-pipeline**. Source-specific standardization, Gaussian shift/lognormal rescaling,
-shared-versus-independent layer-type selection and the tenfold Fourier selection
-weight still need their complete source-profile composition. Existing generic
-calibrated standardization uses population variance and epsilon 1e-4; do not claim
-it equals the pinned code's sample standard deviation plus 1e-6. Training-ready r0
-must fit independent calibration data and freeze the resulting constants, rather
-than learning them from query rows. These remaining source-profile requirements
-stay in #28. Full-suite and independent review of this new component remain pending.
+The frozen component is now composed by the
+[source-weighted activation selector](issue-28-tabicl-selector.md), including
+versioned sample standard deviation plus 1e-6, outer random scaling, inner
+Fourier standardization, shared/independent type selection and tenfold Fourier
+weight. Independent calibration is an explicit r0 lifecycle adaptation.
+Whole-source architecture reproduction, full-suite acceptance of these newer
+changes and independent review remain separate outstanding work.

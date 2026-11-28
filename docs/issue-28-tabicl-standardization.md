@@ -20,8 +20,9 @@ results whose intermediate sum overflows use an equivalent scaled expression.
 These stages compose in `CausalNodePipeline` and survive recipe JSON, dataset
 ZIP save/reopen and numerical traces. Network stages check declared channel
 width at construction. They are components of the source activation profile:
-the complete source selector and the additional internal standardization of
-Fourier/random-frequency sine still require integration.
+the [source selector](issue-28-tabicl-selector.md) composes these stages and
+retains Fourier's additional internal standardization. The explicit sine factory
+below also includes its own standardization.
 
 The conventions follow the pinned source documented in
 [the Fourier source contract](issue-28-tabicl-fourier.md). Scoped verification
@@ -47,6 +48,6 @@ This follows `RandomFreqSineActivation` in the
 [pinned source](https://github.com/soda-inria/tabicl/blob/9530bd65a7b806f6ad4f9f4335af745577e9d3cc/src/tabicl/prior/_activations.py).
 Its independent calibration lifecycle is the adaptation described above.
 It is an explicit option, not one of the source's 18 simple selector entries;
-that list contains ordinary sine. Complete source selector integration remains
-separate. Seven focused checks cover five-engine draw/numerical oracles,
+that list contains ordinary sine. The [complete selector composition](issue-28-tabicl-selector.md)
+is available separately. Seven focused checks cover five-engine draw/numerical oracles,
 construction rejection, JSON replay and generated dataset ZIP/tracing.
