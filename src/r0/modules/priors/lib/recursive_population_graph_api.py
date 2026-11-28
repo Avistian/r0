@@ -18,6 +18,9 @@ from .calibrated_population_query import (
 from .population_generation_identity import (
     preflight_calibrated_generation as preflight_calibrated_generation,
 )
+from .population_graph_change_construction import (
+    construct_population_graph_change as construct_population_graph_change,
+)
 from .population_target_calibration import (
     CalibratedPopulationGraph as CalibratedPopulationGraph,
 )

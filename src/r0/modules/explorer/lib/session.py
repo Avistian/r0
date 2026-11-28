@@ -18,6 +18,7 @@ from r0.modules.explorer.lib.construction import (
 from r0.modules.explorer.lib.curves import inspect_gp_curve, inspect_response_curve
 from r0.modules.explorer.lib.edits import SavedEdit, create_edit, open_edit
 from r0.modules.explorer.lib.exports import replay_bundle
+from r0.modules.explorer.lib.identity_numbers import identity_numbers as _identity_numbers
 from r0.modules.explorer.lib.inspection import inspect_rows, inspect_task
 from r0.modules.explorer.lib.interventions import (
     guarded_intervention,
@@ -42,31 +43,6 @@ from r0.modules.priors import (
     recipe_from_dict,
     sample_recipe,
 )
-
-
-def _identity_numbers(value: Any, *, for_browser: bool) -> Any:
-    """Keep 63-bit identities exact across JavaScript's 53-bit integer boundary."""
-    if isinstance(value, list):
-        return [_identity_numbers(item, for_browser=for_browser) for item in cast(list[Any], value)]
-    if not isinstance(value, dict):
-        return value
-    result: dict[str, Any] = {}
-    for key, item in cast(dict[str, Any], value).items():
-        if key in (
-            "seed",
-            "task_id",
-            "split",
-            "population",
-            "reference_seed",
-            "reference_task_id",
-            "fresh_seed",
-        ):
-            if for_browser and type(item) is int and item > 2**53 - 1:
-                item = str(item)
-            elif not for_browser and isinstance(item, str) and item.isascii() and item.isdecimal():
-                item = int(item)
-        result[key] = _identity_numbers(item, for_browser=for_browser)
-    return result
 
 
 def recipe_examples() -> dict[str, Any]:
@@ -157,6 +133,11 @@ class ExplorerSession:
         self.intervention = None
 
     def request(self, action: str, data: dict[str, Any]) -> dict[str, Any]:
+        from r0.modules.explorer.lib.population_dag_workbench import population_dag_action
+
+        population = population_dag_action(self, action, data)
+        if population is not None:
+            return _identity_numbers(population, for_browser=True)
         if action == "construction_examples":
             return {"examples": construction_examples()}
         if action == "construct":

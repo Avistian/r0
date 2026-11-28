@@ -20,6 +20,8 @@ def network_graph(data: dict[str, Any]) -> dict[str, Any]:
         if record["task_id"] != data["task_id"]:
             continue
         if task.episode_id != data["episode_id"] or record["recipe"].get("version") not in (
+            "recursive-population-graph-v1",
+            "recursive-population-graph-intervention-v1",
             "functional-causal-v1",
             "functional-causal-v2",
             "native-causal-v1",

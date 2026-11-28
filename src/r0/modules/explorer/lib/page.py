@@ -52,7 +52,8 @@ window.r0request = async (action, data) => {
             "<!-- NETWORK CONTROLS -->",
             (assets / "network_controls.html").read_text()
             + (assets / "observations.html").read_text()
-            + (assets / "convolutions.html").read_text(),
+            + (assets / "convolutions.html").read_text()
+            + (assets / "population_dags.html").read_text(),
         )
         .replace("<!-- NETWORK WORKBENCH -->", (assets / "network_workbench.html").read_text())
         .replace(
@@ -72,7 +73,12 @@ window.r0request = async (action, data) => {
         .replace("/* NATIVE */", (assets / "native.js").read_text())
         .replace("/* INNOVATIONS */", (assets / "innovations.js").read_text())
         .replace("<!-- INNOVATIONS -->", (assets / "innovations.html").read_text())
-        .replace("/* CONVERTERS */", (assets / "converters.js").read_text())
+        .replace(
+            "/* CONVERTERS */",
+            (assets / "converters.js").read_text()
+            + "\n"
+            + (assets / "population_dags.js").read_text(),
+        )
         .replace("<!-- CONVERTERS -->", (assets / "converters.html").read_text())
         .replace("/* TRANSPORT */", transport)
         .replace("<!-- RUNTIME -->", "Colab generation" if callback_name else "local generation")

@@ -81,3 +81,43 @@ adds stages intentionally. Evidence is under ignored
 This is a bounded inspection addition. Primitive functions remain named member or
 whole-function endpoints; it does not add internal traces for every primitive,
 change population laws, add workbench controls, or claim issue-wide acceptance.
+
+### Internal population DAG explorer workbench
+
+The construction catalog exposes twenty explicit examples: all four graph families
+with linear, feature-Conv and structural-network equations around row-owned forests;
+four vector-score/stochastic-category examples; native/vector majority-vote labels;
+and a mixed-variable vector root with optional descendant population replacement.
+The same complete request remains editable, including every node's forest plan,
+runtime equations/domains/converters/pipelines/readouts, raw limits and all five RNG
+engines. The named source profiles retain their existing laws and constraints.
+
+Construction admits complete outer metadata before stream creation and runs in the
+killable generation worker. Original-row graph inspection uses that worker too.
+Replay retains the saved population and exact seed/task identities; Next explicitly
+constructs another population. Loading controls prepares a separate construction
+draft. No original archive is rewritten. Save/open and dataset export use the existing
+lossless task format. Matched and fresh (`population`) interventions use the retained
+population pair APIs, with original baseline custody, row-specific forest identity,
+closed detailed traces and replayable pair export. Native logical variables and
+converter capture/readout/state distinctions remain explicit.
+
+New comparison construction shares the existing pair decoder's aggregate admission
+and outer semantic preflight before restoring the baseline. The authored metadata
+preview now also strips sampled-Conv wrappers during semantic checks; the original
+wrappers and receipts remain authoritative during replay. The target display unwraps
+population envelopes before reading native domains or converter captures.
+
+Public RED/GREEN and browser evidence is retained in ignored
+`docs/evidence/issue-28-population-dag-workbench/`. The browser walkthrough covers all
+presets, repeated original rows, identities above 2^55, exact replay, failed-request
+rollback, Next, matched/fresh comparisons and downloaded pair custody. A separate
+literal oracle traverses retained trees and checks the exported linear descendant.
+Earlier fixture mistakes and failed browser stages remain retained separately.
+
+Independent target calibration remains REQUIRED and unavailable in this freeze;
+existing node pipelines retain their declared calibration constants without query
+fitting. Population reference curves, sampled/nested intervention policies and linked
+mechanism-edit comparisons remain required follow-ons. Explicit interventions and
+new construction drafts are available. No whole-issue or full-suite acceptance is
+claimed by this workbench slice.
