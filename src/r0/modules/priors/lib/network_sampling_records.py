@@ -70,8 +70,10 @@ class NetworkSamplingRequest:
             or self.dropout > 1
             or self.skip_probability > 1
             or self.dropout_profile not in ("fixed", "p1-beta")
-            or self.mask_profile not in ("generic", "p1-individual", "p1-block")
-            or self.scale_exponent not in (0.5, 1.0)
+            or self.mask_profile
+            not in ("generic", "p1-individual", "p1-block", "tabicl-individual", "tabicl-block")
+            or self.scale_exponent
+            not in ((0.0, 0.5) if self.mask_profile.startswith("tabicl-") else (0.5, 1.0))
             or any(type(v) is not int or v < 1 for v in (self.block_limit, self.experts))
             or type(self.limits) is not CausalLimits
             or type(self.raw_limits) is not RawDrawLimits
@@ -83,14 +85,14 @@ class NetworkSamplingRequest:
             self.families
             != (
                 ("individual-sparse",)
-                if self.mask_profile == "p1-individual"
+                if self.mask_profile.endswith("individual")
                 else ("block-sparse",)
             )
             or self.weight_laws != ("normal",)
             or self.fan_in
         ):
             raise ValueError(
-                "P1 mask profiles require their matching sparse family, Gaussian weights "
+                "Source mask profiles require their matching sparse family, Gaussian weights "
                 "and no generic fan-in scaling"
             )
         if self.dropout_profile == "p1-beta" and any(

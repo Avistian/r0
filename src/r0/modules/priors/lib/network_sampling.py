@@ -126,12 +126,16 @@ def sample_network(
                 if masking and family == "individual-sparse":
                     p = (
                         0.0
-                        if request.mask_profile == "p1-individual" and layer_index == 0
+                        if request.mask_profile in ("p1-individual", "tabicl-individual")
+                        and layer_index == 0
                         else dropout
                     )
                     if request.mask_profile == "p1-individual":
                         p = min(p, 0.99)
                         scale = request.weight_scale / (1 - p**request.scale_exponent)
+                    elif request.mask_profile == "tabicl-individual":
+                        p = min(p, 0.99)
+                        scale = request.weight_scale / ((1 - p) ** request.scale_exponent)
                     mask = draw(name + "-mask", "random", (outs, ins)) >= p
                 if masking and family == "block-sparse":
                     count = (
@@ -139,20 +143,20 @@ def sample_network(
                             name + "-blocks",
                             tuple(range(1, math.ceil(math.sqrt(min(ins, outs))) + 1)),
                         )
-                        if request.mask_profile == "p1-block"
+                        if request.mask_profile in ("p1-block", "tabicl-block")
                         else min(request.block_limit, ins, outs)
                     )
                     mask[:] = False
                     h, w = outs // count, ins // count
                     for k in range(count):
                         mask[k * h : (k + 1) * h, k * w : (k + 1) * w] = True
-                    if request.mask_profile == "p1-block":
+                    if request.mask_profile in ("p1-block", "tabicl-block"):
                         scale = request.weight_scale / (
                             float(mask.mean()) ** request.scale_exponent
                         )
                 if zero:
                     mask[:] = False
-                if request.mask_profile.startswith("p1-"):
+                if request.mask_profile.startswith(("p1-", "tabicl-")):
                     bias = draw(
                         name + "-bias",
                         "uniform",

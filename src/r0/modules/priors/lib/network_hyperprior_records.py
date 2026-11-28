@@ -48,9 +48,11 @@ class NetworkHyperpriorRequest:
             raise ValueError(
                 "network hyperprior requires a fixed-output template and explicit laws/caps"
             )
-        if self.bias_scale is not None and self.template.mask_profile.startswith("p1-"):
+        if self.bias_scale is not None and self.template.mask_profile.startswith(
+            ("p1-", "tabicl-")
+        ):
             raise ValueError(
-                "P1 masks use source uniform biases; a bias-scale draw would be unused"
+                "Source mask profiles use uniform biases; a bias-scale draw would be unused"
             )
         self.admit()
 

@@ -25,13 +25,14 @@ Other inventory groups are not closed by this table.
 | I1.code.08 | Component: actual random-forest regressor and retained synthetic fitting. |
 | I1.code.09 | Component: actual CPU histogram multi-output XGBoost, retained native export and vector inference. Historical unspecified backend defaults remain distinct. |
 | I1.code.10 | Named adaptation: explicit actual-batch construction retains and freezes each realization. A new input batch requires a new construction; replay never silently refits. |
-| I1.code.11 | Needs exact pinned-source reconciliation: the current individual mask sampler exposes generic and P1-specific profiles; do not count these as the corrected I1 variance-scaling profile. |
-| I1.code.12 | Needs exact pinned-source reconciliation: current block masks likewise do not establish the corrected I1 scaling profile. |
+| I1.code.11 | Component: named `tabicl-individual` initialization, first matrix unmasked, later p capped at 0.99, corrected sqrt(1-p) scaling or explicit disabled scaling; independent raw-mask/scale checks. |
+| I1.code.12 | Component: named `tabicl-block` initialization, source block-count/geometry law and sqrt(realized keep) scaling or explicit disabled scaling; independent geometry/scale checks. |
 | I1.code.13 | Gap: a named source-default configuration with noncausal observations. Existing input-view controls and source scalar hyperpriors do not establish the complete tree architecture override. |
 | I1.code.14 | Explicit adaptation: actual-population fitting rejects nonfinite input rows, rather than copying source NaN replacement. This preserves the accepted failure-reporting requirement. |
 
 Concrete current contracts:
 
+- [Corrected mask profiles and retained legacy identity](issue-28-tabicl-mask-profiles.md).
 - [Fourier activation implementation and limitations](issue-28-tabicl-fourier.md).
 - [XGBoost sampled parameters and graph archives](issue-28-xgboost-parameter-laws.md).
 - [Actual-population XGBoost lifecycles](issue-28-xgboost-population.md).
