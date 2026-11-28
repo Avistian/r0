@@ -58,6 +58,7 @@ def preflight_xgboost_population_generation(
         any(type(v) is not int or not 0 <= v < 2**63 for v in (seed, task_id))
         or type(count) is not int
         or count < 1
+        or task_id + count > 2**63
         or device != "cpu"
     ):
         raise ValueError("population XGBoost generation requires exact identity and CPU")
@@ -67,6 +68,17 @@ def preflight_xgboost_population_generation(
         "independent-ancestors",
     ):
         raise ValueError("population XGBoost generation requires explicit lifecycle")
+    if any(
+        type(raw.get(key)) is not int or not 0 <= raw[key] < 2**63
+        for key in ("fit_seed", "fit_task_id")
+    ):
+        raise ValueError("population XGBoost requires exact fitting identity")
+    if (
+        raw["population"] == "independent-ancestors"
+        and seed == raw["fit_seed"]
+        and task_id <= raw["fit_task_id"] < task_id + count
+    ):
+        raise ValueError("independent ancestor query identity must differ from fitting identity")
     if raw["population"] != "independent-ancestors" and (
         type(raw.get("fit_seed")) is not int
         or type(raw.get("fit_task_id")) is not int

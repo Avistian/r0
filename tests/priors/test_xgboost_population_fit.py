@@ -59,11 +59,14 @@ def test_population_graph_fit_uses_actual_context_parent_rows(family: str, popul
         target_rng=np.random.default_rng(7),
         backend_rng=np.random.default_rng(11),
     )
-    task = p.generate_task(graph, seed=47, task_id=59)
+    task = p.generate_task(
+        graph, seed=48 if population == "independent-ancestors" else 47, task_id=59
+    )
     fit = graph.fits[0]
     if population == "support-only":
         assert tuple(map(int, task.context_indices)) == fit.row_ids
-    np.testing.assert_array_equal(fit.realization.inputs, task.inputs[list(fit.row_ids)])
+    fit_task = p.generate_task(base, seed=47, task_id=59)
+    np.testing.assert_array_equal(fit.realization.inputs, fit_task.inputs[list(fit.row_ids)])
     expected = p.evaluate_xgboost_vector(fit.realization.function, task.inputs.numpy())[:, 0]
     np.testing.assert_allclose(task.targets, expected, atol=1e-12)
     assert p.recipe_from_dict(asdict(graph)) == graph

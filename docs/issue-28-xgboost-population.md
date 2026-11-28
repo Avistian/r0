@@ -21,7 +21,7 @@ Three explicit lifecycles are available:
 | --- | --- | --- |
 | `support-only` | Emitted episode's actual context rows of each node's parents, in context order | Frozen model, same seed/task identity only |
 | `batch-refit-reference` | Every actual parent row in the emitted episode, in original row order | Frozen reference realization, same seed/task identity only |
-| `independent-ancestors` | Separate same-authored-graph population with the retained fit seed/task and requested fit row count | Frozen model, new query seed/task permitted |
+| `independent-ancestors` | Separate same-authored-graph population with the retained fit seed/task and requested fit row count | Frozen model, query seed/task pair must differ from the fit identity |
 
 Support and independent modes are named r0 constructions. Batch mode exposes
 the source's input-dependent fit as an explicit retained construction event;
@@ -63,7 +63,9 @@ No backend import or fitting occurs during model replay, graph generation,
 archive decoding or inspection. Full task validation compares canonical
 regeneration, execution metadata, identities and all tensors. Support/batch
 run requests reject count greater than one and changed fit identities before
-source restoration; independent mode can emit multiple new query tasks.
+source restoration; independent mode can emit multiple new query tasks. Its whole requested query range
+must exclude the fitting seed/task pair before restoration. Retained fitting rows
+belong to explicitly scoped fit inspection, not ordinary query generation.
 
 ## Admission and custody
 

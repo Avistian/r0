@@ -11,16 +11,20 @@ def generate_xgboost_population_graph(
     recipe: XGBoostPopulationGraph, *, seed: int, task_id: int, device: str = "cpu"
 ):
     from r0.modules.priors.lib.generate import generate_task
+    from r0.modules.priors.lib.xgboost_population_task import (
+        preflight_xgboost_population_generation,
+    )
 
-    if device != "cpu" or any(type(v) is not int or not 0 <= v < 2**63 for v in (seed, task_id)):
-        raise ValueError("population XGBoost requires exact identity and CPU")
-    if recipe.population != "independent-ancestors" and (seed, task_id) != (
-        recipe.fit_seed,
-        recipe.fit_task_id,
-    ):
-        raise ValueError(
-            "support/batch XGBoost archive is identity-locked; construct a new fit explicitly"
-        )
+    preflight_xgboost_population_generation(
+        {
+            "population": recipe.population,
+            "fit_seed": recipe.fit_seed,
+            "fit_task_id": recipe.fit_task_id,
+        },
+        seed=seed,
+        task_id=task_id,
+        device=device,
+    )
     recipe.validate()
     task = generate_task(recipe.runtime, seed=seed, task_id=task_id, device=device)
     record = json.loads(task.recipe_json)
