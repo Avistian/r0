@@ -54,10 +54,11 @@ $("mechanism-load").addEventListener("click",event=>{
 
 function populationDAGView(view){
   $("mechanism-load").textContent="Inspect and prepare edit";
+  const retained=isPopulationReference(view.recipe.recipe);
+  if(retained){$("curve-points").value=17;populationReferenceControls();}
+  $("next").dataset.unavailable=retained&&!isPopulationDAG(view.recipe.recipe)?"true":"false";
+  if(retained&&!isPopulationDAG(view.recipe.recipe)){$("next").textContent="Retained comparison population";return;}
   if(!isPopulationDAG(view.recipe.recipe))return;
   $("next").textContent="Next population";
   $("mechanism-load").textContent="Load population construction controls";
-  $("curve").disabled=true;$("curve").dataset.unavailable="true";
-  $("curve-description").textContent="Population DAGs retain row-owned mechanisms. Reference curves remain a required follow-on.";
-  $("curve-note").textContent="Population DAG reference curves remain a required follow-on. Inspect original-row forest paths and retained matched/fresh comparisons; no shared frozen response is substituted.";
 }

@@ -3,6 +3,16 @@
 from .population_graph_change_construction import (
     construct_population_graph_change as construct_population_graph_change,
 )
+from .population_reference import PopulationGraphReference as PopulationGraphReference
+from .population_reference import (
+    evaluate_population_graph_reference as evaluate_population_graph_reference,
+)
+from .population_reference import (
+    population_graph_reference_from_dict as population_graph_reference_from_dict,
+)
+from .population_reference import (
+    population_reference_from_source as population_reference_from_source,
+)
 from .recursive_population_graph_decoding import (
     recursive_population_graph_from_dict as recursive_population_graph_from_dict,
 )

@@ -22,6 +22,13 @@ def population_dag_action(
         return None
     record = json.loads(session.task.recipe_json)
     original = record["recipe"]
+    if action == "curve" and original.get("version") in (
+        POPULATION_VERSION,
+        "recursive-population-graph-intervention-v1",
+    ):
+        from r0.modules.explorer.lib.population_reference import population_reference_action
+
+        return population_reference_action(session, data)
     if original.get("version") != POPULATION_VERSION:
         return None
     if action == "population_dag_replay":
@@ -65,10 +72,10 @@ def population_dag_action(
             ),
         )
         return info
-    if action in ("curve", "sample_intervention_policy", "edit"):
+    if action in ("sample_intervention_policy", "edit"):
         raise ValueError(
             "Population DAGs require original-row traces and explicit retained interventions; "
-            "reference curves, sampled policies and linked mechanism editing remain required "
+            "sampled policies and linked mechanism editing remain required "
             "follow-ons. Use construction controls for a new population."
         )
     return None
