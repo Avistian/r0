@@ -90,6 +90,7 @@ def evaluate_native_nodes(
     execution: InterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
     root_populations: RootPopulations | None = None,
+    capture_external_reference: bool = False,
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> NativeEvaluation:
     """Evaluate an already admitted prefix; callers own resource and certificate checks."""
@@ -142,7 +143,7 @@ def evaluate_native_nodes(
                 else None
             )
             if external is not None:
-                if capture is not None:
+                if capture is not None and not capture_external_reference:
                     raise ValueError("external root populations cannot create iid draw receipts")
                 inputs = external
             else:

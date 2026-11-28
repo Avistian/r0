@@ -17,10 +17,17 @@ from r0.modules.priors.lib.native_vector_evaluation import (
 )
 from r0.modules.priors.lib.native_vector_records import NativeVectorRecipe
 from r0.modules.priors.lib.raw_draw_capture import RawDrawLedger, raw_transactions
+from r0.modules.priors.lib.raw_draw_records import RawDrawRecord
+from r0.modules.priors.lib.root_populations import RootPopulations
 from r0.modules.priors.lib.typed_policy_request import TypedInterventionPolicyRequest
 
 
-def typed_reference(request: TypedInterventionPolicyRequest, seed: int):
+def typed_reference(
+    request: TypedInterventionPolicyRequest,
+    seed: int,
+    *,
+    root_populations: RootPopulations | None = None,
+) -> tuple[list[torch.Tensor | None], tuple[RawDrawRecord, ...]]:
     graph = request.graph
     keys: list[tuple[object, ...]] = []
     native = isinstance(graph, (NativeCausalRecipe, NativeVectorRecipe))
@@ -66,6 +73,8 @@ def typed_reference(request: TypedInterventionPolicyRequest, seed: int):
                 "cpu",
                 capture=capture,
                 limits=graph.limits,
+                root_populations=root_populations,
+                capture_external_reference=root_populations is not None,
             )
             arrays = [
                 None if a.vocabulary(graph.nodes[a.node]) else scalar_result.values[a.node]
@@ -79,6 +88,8 @@ def typed_reference(request: TypedInterventionPolicyRequest, seed: int):
                 "cpu",
                 capture=capture,
                 limits=graph.limits,
+                root_populations=root_populations,
+                capture_external_reference=root_populations is not None,
             )
             for a in request.locations:
                 assert a.variable is not None
@@ -96,6 +107,8 @@ def typed_reference(request: TypedInterventionPolicyRequest, seed: int):
                     "cpu",
                     capture=capture,
                     limits=graph.limits,
+                    root_populations=root_populations,
+                    capture_external_reference=root_populations is not None,
                 )
                 states, readouts = converted_result.states, converted_result.readouts
             else:
@@ -108,6 +121,8 @@ def typed_reference(request: TypedInterventionPolicyRequest, seed: int):
                     readouts=readout_list,
                     capture=capture,
                     limits=graph.limits,
+                    root_populations=root_populations,
+                    capture_external_reference=root_populations is not None,
                 )
                 readouts = tuple(readout_list)
             for a in request.locations:

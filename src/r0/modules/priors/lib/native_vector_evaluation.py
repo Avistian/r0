@@ -84,6 +84,7 @@ def evaluate_native_vector_nodes(
     execution: InterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
     root_populations: RootPopulations | None = None,
+    capture_external_reference: bool = False,
     capture: RawDrawLedger | None = None,
     owner: tuple[str, ...] = ("native",),
     limits: CausalLimits = _DEFAULT_LIMITS,
@@ -126,7 +127,7 @@ def evaluate_native_vector_nodes(
                 else None
             )
             if external is not None:
-                if capture is not None:
+                if capture is not None and not capture_external_reference:
                     raise ValueError("external root populations cannot create iid draw receipts")
                 inputs = external
             else:

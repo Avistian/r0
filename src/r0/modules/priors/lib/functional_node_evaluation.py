@@ -66,6 +66,7 @@ def evaluate_functional_nodes(
     population_partitions: tuple[tuple[int, ...], ...] = (),
     mechanisms: NodeMechanisms | None = None,
     root_populations: RootPopulations | None = None,
+    capture_external_reference: bool = False,
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> list[torch.Tensor]:
     from r0.modules.priors.lib.population_exogenous import population_exogenous
@@ -96,7 +97,9 @@ def evaluate_functional_nodes(
                 else None
             )
             if external is not None:
-                if capture is not None or population_partitions:
+                if (
+                    capture is not None and not capture_external_reference
+                ) or population_partitions:
                     raise ValueError(
                         "external root populations require explicit retained-row evaluation"
                     )

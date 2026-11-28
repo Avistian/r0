@@ -27,16 +27,16 @@ def _frozen(value: Any) -> Any:
     return value
 
 
-def admit_typed_record(request: dict[str, Any], limits: CausalLimits) -> None:
+def admit_typed_record(request: dict[str, Any], limits: CausalLimits) -> dict[str, int]:
     """Preview authored geometry only; retain and charge every original wrapper."""
     admit_function_metadata(request, limits)
     try:
-        _plan(request, limits)
+        return _plan(request, limits)
     except (KeyError, TypeError, AttributeError, IndexError, OverflowError) as error:
         raise ValueError("malformed typed policy admission metadata") from error
 
 
-def _plan(request: dict[str, Any], limits: CausalLimits) -> None:
+def _plan(request: dict[str, Any], limits: CausalLimits) -> dict[str, int]:
     declared = CausalLimits(**request["limits"])
     limits = CausalLimits(
         **{f.name: min(getattr(limits, f.name), getattr(declared, f.name)) for f in fields(limits)}
@@ -211,3 +211,8 @@ def _plan(request: dict[str, Any], limits: CausalLimits) -> None:
     RawDrawLedger(limits=replace(raw_limits, working_bytes=ceiling)).admit_specs(
         (RawDrawSpec(("typed-policy",), "aggregate-reserve", "normal", (numbers,)),)
     )
+
+    return {
+        "parameters": construction_parameters + numbers + graph_numbers,
+        "estimated_working_bytes": working,
+    }

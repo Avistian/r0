@@ -28,7 +28,8 @@ def admit_query_envelope(
     cost: MetadataCost,
     populations: tuple[tuple[GPColumnRequest, GPRootRuntime], ...],
     limits: CausalLimits,
-) -> None:
+) -> dict[str, int]:
+    maximum_parameters = maximum_working = 0
     for ceiling in (limits, *(cap for r, b in populations for cap in (r.limits, b.limits))):
         cost.admit(ceiling)
         reports = [
@@ -42,6 +43,14 @@ def admit_query_envelope(
             > ceiling.working_bytes
         ):
             raise ValueError("GP query complete lineage metadata/runtime exceeds limits")
+        maximum_parameters = max(
+            maximum_parameters, cost.numbers + sum(r["parameters"] for r in reports)
+        )
+        maximum_working = max(
+            maximum_working,
+            8 * cost.storage + 4 * sum(r["estimated_working_bytes"] for r in reports),
+        )
+    return {"parameters": maximum_parameters, "estimated_working_bytes": maximum_working}
 
 
 def query_source_metadata(data: Any, *, limits: CausalLimits) -> GPQueryMetadata:

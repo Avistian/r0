@@ -152,6 +152,7 @@ def evaluate_converted_nodes(
     execution: ConverterInterventionExecution | None = None,
     mechanisms: NodeMechanisms | None = None,
     root_populations: RootPopulations | None = None,
+    capture_external_reference: bool = False,
     limits: CausalLimits = _DEFAULT_LIMITS,
 ) -> ConvertedEvaluation:
     emissions: dict[tuple[int, str], CategoricalEmission] = {}
@@ -188,6 +189,7 @@ def evaluate_converted_nodes(
         execution=execution,
         mechanisms=mechanisms,
         root_populations=root_populations,
+        capture_external_reference=capture_external_reference,
     )
     if mechanisms:
         for (index, name), emission in emissions.items():
