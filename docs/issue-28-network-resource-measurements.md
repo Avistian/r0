@@ -76,3 +76,42 @@ complexity. One seed per family does not establish across-seed performance or
 diversity. Root laws, native vectors, fitted lifecycles, typed converters, graph
 topologies, sustained bulk throughput and hosted/GPU execution need their own
 measurements. No predictive-quality claim follows from these checks.
+
+
+## Combined size probe (2026-11-28)
+
+At source head `35c6c95ae799ed0da5f8daec20795593bdf41901`, a separate
+CPU probe attempted 20,000 rows, 256 features and 100 classes together for four
+causal representations. Each request used a Gaussian 256-channel root, a frozen
+100-output linear target, seed 28, 10,000 context rows, a 3 GiB declared working
+estimate limit and a 120-second worker deadline. This is a simple graph, not a
+maximum-complexity qualification. The existing full verification suite was running
+concurrently.
+
+| Representation | Result | Worker seconds | Process peak MiB |
+| --- | --- | ---: | ---: |
+| Functional | PASS: generated, saved, reloaded and checked | 5.849 | 884.75 |
+| Native | Rejected before generation: working estimate exceeds 3 GiB | Not run | Not measured |
+| Native vector | Rejected before generation: working estimate exceeds 3 GiB | Not run | Not measured |
+| Converted | Rejected before generation: converter workspace exceeds 3 GiB | Not run | Not measured |
+
+The functional worker reported 4.538 generation seconds and saved a 75,041,587-byte
+archive. All saved inputs and scores were finite; labels were int64 in 0..99 and
+the declared vocabulary contained 100 classes. An independent NumPy matrix product
+and softmax calculation agreed with saved probabilities to maximum absolute error
+`1.6653345369377348e-16`. This checks probabilities, not a separate oracle for the
+random label draws. The worker reported aarch64, Python 3.12.3, NumPy 2.5.5 and
+CPU PyTorch 2.15.0.
+
+All four outcomes are retained under ignored
+`docs/evidence/issue-28-typed-size-envelope/`, including requests where construction
+succeeded, the functional archive, script and incremental `results.json`. An initial
+harness failure used NumPy scalar weights where immutable records require Python
+numbers; its log is retained separately. After that harness correction, each case
+was attempted once. The three admission failures were not retried with larger
+limits. Native estimates include conservative retained emission and JSON-copy costs;
+the converted estimate includes vocabulary-by-channel workspace. These rejections
+do not measure actual peak memory and are not generation passes. The aggregate
+probe failed because only one of four cases passed. Typed combined-size support
+under this cap remains unqualified; no GPU, sustained-throughput or maximal-network
+claim follows from this probe.
