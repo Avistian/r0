@@ -8,10 +8,9 @@ from r0.modules.priors.lib.frozen_function_primitives import FrozenLinearFunctio
 from r0.modules.priors.lib.frozen_parent_function import FrozenParentFunction
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
-from r0.modules.priors.lib.joint_root_base import JointRootBase
 from r0.modules.priors.lib.linear import LinearRecipe
 from r0.modules.priors.lib.node_pipeline import CausalNodePipeline
-from r0.modules.priors.lib.oblique_tree import oblique_tree_recipe
+from r0.modules.priors.lib.oblique_tree import TreeRoot, oblique_tree_recipe
 from r0.modules.priors.lib.recursive_forest_records import RecursiveForest, RecursiveTree
 from r0.modules.priors.lib.structural_network import (
     FrozenNetworkFunction,
@@ -30,7 +29,7 @@ def model_leaf_tree_recipe(
     models: tuple[NetworkAffine, ...],
     *,
     equality: str = "left",
-    root: JointRootBase | None = None,
+    root: TreeRoot | None = None,
     limits: CausalLimits = _DEFAULT,
 ) -> FunctionalCausalRecipe:
     """Models follow terminal-node order, independent of left/right traversal order.

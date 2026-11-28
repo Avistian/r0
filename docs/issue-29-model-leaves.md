@@ -40,3 +40,6 @@ and repeated-row traces. Evidence under `docs/evidence/issue-29-model-leaves/`
 retains an invalid two-class multiclass fixture failure before its correction to
 three classes; no source behavior was changed to accept an invalid task.
 Full current-head acceptance and the broader #29 portfolio remain open.
+
+[Existing feature-population families](issue-29-tree-populations.md) can be passed
+through `root`, with their frozen calibration and sampling provenance retained.

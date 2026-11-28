@@ -19,7 +19,8 @@ The result uses ordinary `FunctionalCausalRecipe` records. Inputs expose the raw
 root channels; projections and frozen mechanisms stay privileged. The compiled
 projection, thresholds, routes, values and mean reduction survive JSON and dataset
 ZIP replay. There is no new evaluator or serialization version. The optional
-`root` accepts an existing joint root law; the default is Gaussian. Parameter and
+`root` accepts existing joint, source, sampled-source and prototype root laws;
+the default is Gaussian. See [population integration](issue-29-tree-populations.md). Parameter and
 channel/workspace admission precedes dense identity construction.
 
 The forest must contain regression-vector values. Scalar outputs support regression

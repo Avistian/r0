@@ -8,10 +8,15 @@ from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_node import FunctionalCausalNode
 from r0.modules.priors.lib.joint_root_base import JointRootBase
 from r0.modules.priors.lib.linear import LinearRecipe
+from r0.modules.priors.lib.prototype_root_base import PrototypeRootBase
 from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
 from r0.modules.priors.lib.recursive_forest_records import RecursiveForest, RecursiveTree
+from r0.modules.priors.lib.sampled_source_root_base import SampledSourceRootBase
+from r0.modules.priors.lib.source_root_base import SourceRootBase
 from r0.modules.priors.lib.weight_geometry import Matrix, matrix_shape
 
+type TreeRoot = JointRootBase | SourceRootBase | PrototypeRootBase
+_ROOT_TYPES = (JointRootBase, SourceRootBase, SampledSourceRootBase, PrototypeRootBase)
 _DEFAULT = CausalLimits()
 
 
@@ -21,7 +26,7 @@ def oblique_tree_recipe(
     forest: RecursiveForest,
     *,
     equality: str = "left",
-    root: JointRootBase | None = None,
+    root: TreeRoot | None = None,
     limits: CausalLimits = _DEFAULT,
 ) -> FunctionalCausalRecipe:
     """Observed raw features -> linear split directions -> hard forest scores.
@@ -41,7 +46,7 @@ def oblique_tree_recipe(
         or task.features != width
         or forest.output_width != (task.classes if task.task_type == "multiclass" else 1)
         or root is not None
-        and (type(root) is not JointRootBase or root.width != width)
+        and (type(root) not in _ROOT_TYPES or root.width != width)
     ):
         raise ValueError("oblique forest geometry, score semantics or equality rule differs")
     forest.admit(task.rows, limits)
@@ -81,7 +86,12 @@ def oblique_tree_recipe(
         task,
         (
             FunctionalCausalNode(
-                (), FrozenLinearFunction(identity), root or JointRootBase("gaussian", width)
+                (),
+                FrozenLinearFunction(identity),
+                root or JointRootBase("gaussian", width),
+                version="functional-causal-node-v2"
+                if isinstance(root, (SourceRootBase, PrototypeRootBase))
+                else "functional-causal-node-v1",
             ),
             FunctionalCausalNode((0,), FrozenLinearFunction(projection)),
             FunctionalCausalNode((1,), FrozenRecursiveForestFunction(forest)),
