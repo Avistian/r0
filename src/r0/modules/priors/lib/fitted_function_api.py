@@ -63,6 +63,7 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenTreeFunction as FrozenTreeFunction,
 )
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
+from r0.modules.priors.lib.missingness import MissingnessDraw, MissingnessPlan, draw_missingness
 from r0.modules.priors.lib.model_leaf_tree import model_leaf_tree_recipe
 from r0.modules.priors.lib.network_recipe import NetworkRecipe as NetworkRecipe
 from r0.modules.priors.lib.network_sampling import sample_network as sample_network
@@ -205,3 +206,5 @@ __all__ += ["tree_extension_request_from_dict"]
 __all__ += ["CategorySubsetSplit", "categorical_model_tree_recipe", "sample_category_subset_splits"]
 
 __all__ += ["score_ensemble_recipe"]
+
+__all__ += ["MissingnessDraw", "MissingnessPlan", "draw_missingness"]
