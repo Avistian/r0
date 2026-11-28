@@ -18,6 +18,9 @@ from .calibrated_population_query import (
 from .calibrated_population_query import (
     realize_calibrated_population_query as realize_calibrated_population_query,
 )
+from .calibrated_population_reference import (
+    CalibratedPopulationReference as CalibratedPopulationReference,
+)
 from .calibrated_query_admission import preflight_calibrated_query as preflight_calibrated_query
 from .population_calibration_construction import (
     construct_calibrated_population as construct_calibrated_population,

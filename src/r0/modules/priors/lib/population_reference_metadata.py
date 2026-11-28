@@ -33,7 +33,8 @@ def _reject_source_constant(value: str) -> None:
 
 def validate_reference_metadata(raw: dict[str, Any], limits: CausalLimits) -> dict[str, Any]:
     if (
-        raw["version"] != "population-graph-reference-v1"
+        raw["version"]
+        not in ("population-graph-reference-v1", "calibrated-population-graph-reference-v1")
         or raw["precedence"] != "observed-location-reference-overrides-only-prior-hard-cut-v1"
         or raw["semantics"] != "original-row-owned-mechanisms-and-draws-not-conditional-mean-v1"
         or type(raw["source_json"]) is not str
@@ -49,7 +50,13 @@ def validate_reference_metadata(raw: dict[str, Any], limits: CausalLimits) -> di
     if type(source) is not dict:
         raise ValueError("population reference requires an object source")
     source = cast(dict[str, Any], source)
-    base = source.get("base", source)
+    calibrated = raw["version"] == "calibrated-population-graph-reference-v1"
+    from r0.modules.priors.lib.calibrated_reference_admission import CALIBRATED_REFERENCE_SOURCES
+
+    if calibrated != (source.get("version") in CALIBRATED_REFERENCE_SOURCES):
+        raise ValueError("reference version must match its calibrated source semantics")
+    execution_source = source["original"] if calibrated else source
+    base = execution_source.get("base", execution_source)
     if any(type(raw[k]) is not int or raw[k] != base[k] for k in ("seed", "task_id")):
         raise ValueError("population reference identity differs before replay")
     if raw["source_fingerprint"] != record_fingerprint(source):
@@ -65,7 +72,7 @@ def validate_reference_metadata(raw: dict[str, Any], limits: CausalLimits) -> di
         capture_location=raw["capture_location"],
         limits=limits,
     )
-    change = source.get("change")
+    change = execution_source.get("change")
     mode = change["mode"] if change else "original"
     index = change["population"] if change is not None and mode == "population" else None
     if (
@@ -96,6 +103,20 @@ def validate_reference_metadata(raw: dict[str, Any], limits: CausalLimits) -> di
         for value in reference_array(row, width):
             if type(value) is not float or not math.isfinite(value):
                 raise ValueError("population reference scores must be finite float64 values")
+    if calibrated:
+        fit_source = (
+            source["base"]
+            if source["version"] == "calibrated-population-intervention-v1"
+            else source
+        )
+        while fit_source["version"] == "calibrated-population-query-v1":
+            fit_source = fit_source["source"]
+        if raw["calibration_fingerprint"] != record_fingerprint(fit_source["calibration"]):
+            raise ValueError("reference fixed calibration fingerprint differs")
+        for row in reference_array(raw["raw_scores"], len(values)):
+            for value in reference_array(row, width):
+                if type(value) is not float or not math.isfinite(value):
+                    raise ValueError("reference raw scores require finite float64 values")
     if classes:
         for row in reference_array(raw["probabilities"], len(values)):
             probabilities = reference_array(row, classes)

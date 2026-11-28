@@ -26,6 +26,8 @@ def population_dag_action(
     if action == "curve" and stored.get("version") in (
         POPULATION_VERSION,
         "recursive-population-graph-intervention-v1",
+        *CALIBRATED_VERSIONS,
+        "calibrated-population-intervention-v1",
     ):
         from r0.modules.explorer.lib.population_reference import population_reference_action
 
@@ -144,7 +146,7 @@ def population_dag_action(
             "Use fixed-calibration causal comparisons; "
             "task-only adapter comparisons remain required"
         )
-    if action in ("curve", "sample_intervention_policy", "edit"):
+    if action in ("sample_intervention_policy", "edit"):
         raise ValueError(
             "Population DAGs require original-row traces and explicit retained interventions; "
             "sampled policies and linked mechanism editing remain required "

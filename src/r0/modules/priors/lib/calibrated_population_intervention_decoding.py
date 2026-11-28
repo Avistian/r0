@@ -58,7 +58,9 @@ def admit_calibrated_change(
     )
 
 
-def preflight_calibrated_intervention(data: Any, *, limits: CausalLimits):
+def preflight_calibrated_intervention(
+    data: Any, *, limits: CausalLimits, verify_streams: bool = True
+):
     admit_function_metadata(data, limits)
     raw = complete_version(data, CalibratedPopulationIntervention)
     numbers, storage = population_raw_cost(raw, limits)
@@ -74,7 +76,8 @@ def preflight_calibrated_intervention(data: Any, *, limits: CausalLimits):
     preview = authored_semantic_preview(recursive_authored_preview(current["request"]))
     request = recursive_population_graph_request_from_dict(preview, limits=cap)
     _aggregate([*reports, request.admit(limits=cap), after_report], numbers, storage, cap)
-    query_source_metadata(raw["base"], limits=cap)
+    if verify_streams:
+        query_source_metadata(raw["base"], limits=cap)
     return raw, cap
 
 

@@ -1,8 +1,12 @@
 """Versioned original-row population responses retain full mechanism/source identity."""
 
 from dataclasses import asdict, dataclass
-from typing import Any
+from typing import Any, cast
 
+from r0.modules.priors.lib.calibrated_population_intervention import (
+    CalibratedPopulationIntervention,
+)
+from r0.modules.priors.lib.calibrated_population_query import CalibratedPopulationQuery
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.function_metadata import admit_function_metadata
 from r0.modules.priors.lib.joint_function_admission import function_record_cost
@@ -13,6 +17,7 @@ from r0.modules.priors.lib.population_reference_execution import (
     overlay_reference,
     reference_clamps,
 )
+from r0.modules.priors.lib.population_target_calibration import CalibratedPopulationGraph
 from r0.modules.priors.lib.recursive_population_decoding import complete_population_record
 from r0.modules.priors.lib.recursive_population_graph_intervention import (
     RecursivePopulationGraphIntervention,
@@ -66,7 +71,17 @@ def _reference_from_source(
         capture_location=capture_location,
         limits=limits,
     )
+    from r0.modules.priors.lib.calibrated_population_reference import (
+        CALIBRATED_REFERENCE_TYPES,
+        CalibratedPopulationReference,
+        calibrated_reference_outputs,
+    )
+
     decoded = recipe_from_dict(source, limits=nested)
+    wrapper = None
+    if isinstance(decoded, CALIBRATED_REFERENCE_TYPES):
+        wrapper = decoded
+        decoded = decoded.original
     if not isinstance(decoded, (RecursivePopulationGraph, RecursivePopulationGraphIntervention)):
         raise ValueError("population reference requires its retained population recipe")
     original = decoded.replay(limits=nested).task
@@ -79,22 +94,34 @@ def _reference_from_source(
         [] if original.probabilities is not None else None
     )
     targets: list[float | int] = []
+    raw_scores: list[tuple[float, ...]] = []
     for value in values:
         point = tuple(value if i == feature else v for i, v in enumerate(anchor))
         change = overlay_reference(
             runtime, prior, reference_clamps(runtime, point, capture_location)
         )
         result = evaluate_reference_point(decoded, runtime, change)
-        scores.append(tuple(float(v) for v in result.scores[row]))
+        if wrapper is not None:
+            raw_scores.append(tuple(float(v) for v in result.scores[row]))
+            point_scores, point_targets, point_probabilities, _ = calibrated_reference_outputs(
+                wrapper, result, change
+            )
+        else:
+            point_scores, point_targets, point_probabilities = (
+                result.scores,
+                result.targets,
+                result.probabilities,
+            )
+        scores.append(tuple(float(v) for v in point_scores[row]))
         if probabilities is not None:
-            assert result.probabilities is not None
-            probabilities.append(tuple(float(v) for v in result.probabilities[row]))
+            assert point_probabilities is not None
+            probabilities.append(tuple(float(v) for v in point_probabilities[row]))
         targets.append(
-            float(result.targets[row])
+            float(point_targets[row])
             if result.task_type == "regression"
-            else int(result.targets[row])
+            else int(point_targets[row])
         )
-    return PopulationGraphReference(
+    reference = PopulationGraphReference(
         encode(source),
         record_fingerprint(source),
         base.seed,
@@ -113,9 +140,22 @@ def _reference_from_source(
         prior.population if prior and prior.mode == "population" else None,
     )
 
+    if wrapper is not None:
+        fields: dict[str, Any] = asdict(reference)
+        fields["version"] = "calibrated-population-graph-reference-v1"
+        return CalibratedPopulationReference(
+            **fields,
+            raw_scores=tuple(raw_scores),
+            calibration_fingerprint=record_fingerprint(asdict(wrapper.calibration)),
+        )
+    return reference
+
 
 def evaluate_population_graph_reference(
-    source: PopulationReferenceSource,
+    source: PopulationReferenceSource
+    | CalibratedPopulationGraph
+    | CalibratedPopulationQuery
+    | CalibratedPopulationIntervention,
     *,
     row: int,
     feature: int,
@@ -133,7 +173,13 @@ def evaluate_population_graph_reference(
     probabilities; targets retain the same stochastic label/noise draw. Neither
     field is a GP posterior, conditional mean or newly sampled population.
     """
-    if type(source) not in (RecursivePopulationGraph, RecursivePopulationGraphIntervention):
+    from r0.modules.priors.lib.calibrated_population_reference import CALIBRATED_REFERENCE_TYPES
+
+    if type(source) not in (
+        RecursivePopulationGraph,
+        RecursivePopulationGraphIntervention,
+        *CALIBRATED_REFERENCE_TYPES,
+    ):
         raise ValueError("population reference requires an explicit retained graph population")
     if type(limits) is not CausalLimits:
         raise ValueError("population reference requires explicit causal limits")
@@ -153,7 +199,15 @@ def _decode_reference(
 ) -> PopulationGraphReference:
     """Verify complete reference identity/derived values with no query fitting."""
     admit_function_metadata(data, limits)
-    raw = complete_population_record(data, PopulationGraphReference)
+    from r0.modules.priors.lib.calibrated_population_reference import CalibratedPopulationReference
+
+    cls = (
+        CalibratedPopulationReference
+        if type(data) is dict
+        and cast(dict[str, Any], data).get("version") == "calibrated-population-graph-reference-v1"
+        else PopulationGraphReference
+    )
+    raw = complete_population_record(data, cls)
     from r0.modules.priors.lib.population_reference_metadata import validate_reference_metadata
 
     source = validate_reference_metadata(raw, limits)

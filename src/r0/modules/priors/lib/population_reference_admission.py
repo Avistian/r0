@@ -18,6 +18,7 @@ from r0.modules.priors.lib.population_reference_execution import (
     overlay_reference,
     reference_clamps,
 )
+from r0.modules.priors.lib.population_reference_target import PopulationReferenceTarget
 from r0.modules.priors.lib.recursive_forest_plan import recursive_effective_limits
 from r0.modules.priors.lib.recursive_population_ancestors import ANCESTOR_TYPES, PopulationAncestors
 from r0.modules.priors.lib.recursive_population_decoding import (
@@ -27,6 +28,7 @@ from r0.modules.priors.lib.recursive_population_decoding import (
 from r0.modules.priors.lib.recursive_population_graph_decoding import admit_population_graph_request
 from r0.modules.priors.lib.recursive_population_graph_records import RecursivePopulationGraph
 from r0.modules.priors.lib.recursive_population_records import population_identity
+from r0.modules.priors.lib.training_features import TrainingFeature
 
 
 def admit_population_reference(
@@ -37,7 +39,7 @@ def admit_population_reference(
     values: tuple[float, ...],
     capture_location: str,
     limits: CausalLimits,
-):
+) -> tuple[CausalLimits, CausalLimits, tuple[TrainingFeature, ...], PopulationReferenceTarget]:
     from r0.modules.priors.lib.generate import recipe_from_dict
 
     if type(limits) is not CausalLimits:
@@ -47,6 +49,36 @@ def admit_population_reference(
         raise ValueError("population reference source must be a complete recipe object")
     source = cast(dict[str, Any], source)
     version = source.get("version")
+    from r0.modules.priors.lib.calibrated_reference_admission import (
+        CALIBRATED_REFERENCE_SOURCES,
+        calibrated_reference_reservation,
+    )
+
+    if version in CALIBRATED_REFERENCE_SOURCES:
+        original, nested = calibrated_reference_reservation(source, limits)
+        effective, query_cap, schema, geometry = admit_population_reference(
+            original,
+            row=row,
+            feature=feature,
+            values=values,
+            capture_location=capture_location,
+            limits=nested,
+        )
+        # Retain both raw and calibrated grid score matrices, including regression
+        # vector outputs whose width is unrelated to the class count.
+        extra = 2 * len(values) * geometry.score_width
+        if extra >= query_cap.parameters or 256 * extra >= query_cap.working_bytes:
+            raise ValueError("calibrated reference score matrices exceed caller limits")
+        return (
+            effective,
+            replace(
+                query_cap,
+                parameters=query_cap.parameters - extra,
+                working_bytes=query_cap.working_bytes - 256 * extra,
+            ),
+            schema,
+            geometry,
+        )
     if version not in (
         "recursive-population-graph-v1",
         "recursive-population-graph-intervention-v1",

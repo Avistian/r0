@@ -12,6 +12,9 @@ if TYPE_CHECKING:
     from r0.modules.explorer.lib.session import ExplorerSession
 
 POPULATION_REFERENCE_VERSIONS = (
+    "calibrated-population-graph-v1",
+    "calibrated-population-query-v1",
+    "calibrated-population-intervention-v1",
     "recursive-population-graph-v1",
     "recursive-population-graph-intervention-v1",
 )
@@ -108,6 +111,7 @@ def population_reference_action(session: "ExplorerSession", data: dict[str, Any]
                 "Numeric state/readout and native emitted-variable clamps; "
                 "converter location explicit. "
                 "Scores/probabilities and realized targets use saved target semantics, "
+                "including the retained independent calibration when present; "
                 "not a conditional mean. Lines only connect queried values."
             ),
         }

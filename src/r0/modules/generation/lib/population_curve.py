@@ -16,11 +16,18 @@ def population_curve(data: dict[str, Any]) -> dict[str, Any]:
     limits = p.CausalLimits(**data["causal_limits"])
     record = p.validate_population_record_metadata(data["record"])
     source = record["recipe"]
-    base = source.get("base", source)
-    if type(base) is not dict or any(
-        record[k] != cast(dict[str, Any], base).get(k) for k in ("seed", "task_id")
+    if source.get("version") in (
+        "calibrated-population-graph-v1",
+        "calibrated-population-query-v1",
+        "calibrated-population-intervention-v1",
     ):
-        raise ValueError("population reference transport identity differs")
+        p.preflight_calibrated_generation(source, seed=record["seed"], task_id=record["task_id"])
+    else:
+        base = source.get("base", source)
+        if type(base) is not dict or any(
+            record[k] != cast(dict[str, Any], base).get(k) for k in ("seed", "task_id")
+        ):
+            raise ValueError("population reference transport identity differs")
     execution = record["execution"]
     if execution["implementation"] != source.get("version") or execution["device"] != "cpu":
         raise ValueError("population reference requires its saved CPU implementation identity")
