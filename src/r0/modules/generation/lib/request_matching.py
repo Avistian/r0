@@ -15,6 +15,17 @@ from r0.modules.priors import (
 
 
 def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) -> bool:
+    if request.observation is None:
+        if "observation" in record:
+            return False
+    elif not request.observation.matches(record, request.causal_limits or CausalLimits()):
+        return False
+    return _source_matches(
+        {k: v for k, v in record.items() if k != "observation"}, request, task_id
+    )
+
+
+def _source_matches(record: dict[str, Any], request: RunRequest, task_id: int) -> bool:
     from r0.modules.priors import (
         PrototypeBatchNetworkRecipe,
         RealizedPrototypeBatchNetworkRecipe,

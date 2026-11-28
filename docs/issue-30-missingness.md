@@ -43,8 +43,8 @@ sharing, untouched columns, initial-state replay, input binding, zero/full masks
 invalid conditioning and rollback on resource rejection or arithmetic overflow.
 
 The kernel alone does not define a task archive. The single-stage observation
-wrapper below retains raw inputs, driver provenance and schema; CLI integration
-and ordered transformation composition remain pending. In a composed pipeline,
+wrapper below retains raw inputs, driver provenance and schema. CLI configuration
+is described below; ordered transformation composition remains pending. In a composed pipeline,
 MAR conditioning columns must remain observed; checking only one plan is not enough
 to claim that an arbitrary composition is MAR. Target-driven masks describe a
 privileged generative assumption and must not expose query labels or driver arrays
@@ -81,5 +81,40 @@ against retained source values; it does not by itself re-run every source genera
 original identities/recipe for separate source replay and `explain_generation`.
 Tests compare restored source episodes and structural traces with the originals.
 Direct structural inspection of the masked task is not yet an integrated trace;
-use the explicit source-restoration helper. The higher-level CLI request transport
-for observation plans is still pending.
+use the explicit source-restoration helper. CLI request transport now applies this wrapper after source generation, as described
+below.
+
+
+## CLI requests and resume
+
+`RunRequest.observation` accepts `ObservationRequest(plan, seed=30, latent=(),
+latent_provenance=None)`. JSON configuration uses the corresponding `observation`
+object; its `plan` contains the `MissingnessPlan` fields. Arrays in JSON become
+immutable tuples during guarded decoding. Runs with observations currently require
+CPU. Omit `observation` for unchanged source-only generation and run-header layout.
+
+```sh
+r0 generate --config configs/generation/observed-tree-ensemble-cpu.json --out /tmp/observed-tree-ensembles
+```
+
+The example samples a hard/soft/categorical tree ensemble, then applies self-value
+MNAR masking to both columns. Family selection and tree construction receipts remain
+in the source record alongside the observation receipt. Re-running the command
+validates retained observation truth and completes without regenerating saved tasks.
+Changing the plan, observation seed or other run controls requires another output
+directory. Observation plans are also checked against each producer result.
+
+For `mnar-latent`, configuration may include an explicitly authored numeric `latent`
+vector with one value per generated row and a nonempty `latent_provenance` label.
+That vector is reused by row position across tasks in the run; it is not silently
+sampled from a causal mechanism. Request validation binds the retained driver to
+the exact configured values. Automatic extraction of named generator latent nodes
+and richer latent-driver policies remain open. Target-driven masks instead use each
+generated task's numeric targets, retained only in privileged truth.
+
+Resume first checks the underlying source recipe and observation controls, then
+loads and replays masks/probabilities against retained source values. Existing
+specialized source validators receive the restored unmasked task. Tests exercise
+all seven modes through JSON/guarded generation, reject changed observation requests,
+and verify zero-generation resume and latent-driver binding. End-to-end source
+family coverage beyond the inspected examples remains part of the broader audit.

@@ -12,6 +12,7 @@ from r0.modules.generation.lib.job import JobResult as JobResult
 from r0.modules.generation.lib.job import run_guarded as run_guarded
 from r0.modules.generation.lib.job import run_guarded_document as run_guarded_document
 from r0.modules.generation.lib.loading import load_group as load_group
+from r0.modules.generation.lib.missingness_request import ObservationRequest as ObservationRequest
 from r0.modules.generation.lib.requests import RecipeSampling as RecipeSampling
 from r0.modules.generation.lib.requests import RunRequest as RunRequest
 from r0.modules.generation.lib.requests import request_from_dict as request_from_dict

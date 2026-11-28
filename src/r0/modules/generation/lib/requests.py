@@ -7,6 +7,10 @@ from typing import Any, cast
 
 from r0.modules.generation.lib.construction import GraphConstruction
 from r0.modules.generation.lib.gp_root_run_identity import validate_gp_root_run_identity
+from r0.modules.generation.lib.missingness_request import (
+    ObservationRequest,
+    observation_request_from_dict,
+)
 from r0.modules.priors import (
     CalibratedPopulationGraph,
     CalibratedPopulationIntervention,
@@ -48,8 +52,13 @@ class RunRequest:
     sampling: RecipeSampling | None = None
     causal_limits: CausalLimits | None = None
     construction: GraphConstruction | None = None
+    observation: ObservationRequest | None = None
 
     def __post_init__(self) -> None:
+        if self.observation is not None and (
+            type(self.observation) is not ObservationRequest or self.device != "cpu"
+        ):
+            raise ValueError("observation runs require ObservationRequest and CPU")
         from r0.modules.generation.lib.xgboost_population_transport import (
             validate_xgboost_population_run,
         )
@@ -159,6 +168,13 @@ def sampling_record(request: RunRequest) -> dict[str, Any] | None:
 
 
 def generate_requested(request: RunRequest, task_id: int) -> TrainingTask:
+    source = _generate_source(request, task_id)
+    if request.observation is None:
+        return source
+    return request.observation.apply(source, request.causal_limits or CausalLimits())
+
+
+def _generate_source(request: RunRequest, task_id: int) -> TrainingTask:
     if request.construction is not None and json.loads(request.construction.controls_json).get(
         "topology"
     ) in ("tree-extension", "tree-ensemble"):
@@ -192,6 +208,8 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
 
 def request_from_dict(data: dict[str, Any]) -> RunRequest:
     fields = dict(data)
+    if fields.get("observation") is not None:
+        fields["observation"] = observation_request_from_dict(fields["observation"])
     candidate = fields.get("recipe")
     if type(candidate) is dict:
         candidate = cast(dict[str, Any], candidate)
