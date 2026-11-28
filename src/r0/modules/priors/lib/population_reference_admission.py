@@ -126,7 +126,13 @@ def admit_population_reference(
                     and (cut.node, cut.capture) == (ref.node, ref.capture)
                 ):
                     neutral[i] = float(schema[i].vocabulary.index(cut.category))
+    change = None
     for value in values:
         dummy = tuple(value if i == feature else neutral[i] for i in range(features))
-        overlay_reference(runtime, prior, reference_clamps(runtime, dummy, capture_location))
-    return effective, nested, schema
+        change = overlay_reference(
+            runtime, prior, reference_clamps(runtime, dummy, capture_location)
+        )
+    from r0.modules.priors.lib.population_reference_target import population_reference_target
+
+    assert change is not None
+    return effective, nested, schema, population_reference_target(runtime, change)

@@ -58,7 +58,7 @@ def _reference_from_source(
     """Strict raw source entrypoint; all query controls precede nested source replay."""
     from r0.modules.priors.lib.generate import recipe_from_dict
 
-    _, nested, schema = admit_population_reference(
+    _, nested, schema, _ = admit_population_reference(
         source,
         row=row,
         feature=feature,

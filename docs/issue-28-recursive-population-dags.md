@@ -172,3 +172,22 @@ Fixed independent population target-calibration wrapper composition remains a re
 follow-on with the separately authored calibration slice; it must retain the complete
 wrapper and apply fixed constants before its target adapter, never fit query points.
 No hosted/GPU/full-suite or whole-issue acceptance is claimed here.
+
+### Exact reference receipt geometry
+
+Reference decoding now derives exact score and probability columns and target
+labels from the admitted effective target before restoring any population stream.
+Functional binary adapters retain one latent score and two probabilities; direct
+native threshold scores retain one column unless a scalar native hard category
+cut replaces them with the full indicator vector. Vector-native threshold cuts
+retain their scalar score span. Converted capture scores use the target vocabulary
+width, independently of the converter representation width. Continuous selected
+targets remain scalar. Effective soft domains and retained matched/fresh cuts are
+included in the metadata calculation.
+
+This closes the historical `cf8` late rejection of impossible score widths and
+also binds exact labels. No reference evaluator or serialized output fields were
+changed. The repair preserves the original review rejection; independent repair
+review and broader population-reference acceptance remain separate gates. Raw
+RED/GREEN, outside restore counts and complete20preset before/after task/reference
+hashes live under ignored `docs/evidence/issue-28-population-reference-geometry/`.

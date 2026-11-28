@@ -38,7 +38,7 @@ def validate_reference_metadata(raw: dict[str, Any], limits: CausalLimits) -> di
     values = raw["values"]
     if type(values) not in (list, tuple) or not 1 <= len(values) <= 129:
         raise ValueError("population reference grid must be a bounded array")
-    _, _, schema = admit_population_reference(
+    _, _, schema, geometry = admit_population_reference(
         source,
         row=raw["row"],
         feature=raw["feature"],
@@ -64,18 +64,15 @@ def validate_reference_metadata(raw: dict[str, Any], limits: CausalLimits) -> di
         if type(value) is not float or not math.isfinite(value):
             raise ValueError("population reference anchor must retain finite float64 values")
         feature.decode(value)
-    task = base["request"]["base"]["task"]
-    classes = task["classes"]
+    classes = geometry.probability_width
     target_classes = reference_array(raw["target_classes"], classes)
     if (
-        any(type(v) is not str or not v for v in target_classes)
-        or len(set(target_classes)) != classes
+        any(type(v) is not str for v in target_classes)
+        or tuple(target_classes) != geometry.vocabulary
     ):
         raise ValueError("population reference target vocabulary differs")
     scores = reference_array(raw["scores"], len(values))
-    width = len(reference_array(scores[0], len(scores[0])))
-    if not 1 <= width <= max(1, classes):
-        raise ValueError("population reference target score width differs")
+    width = geometry.score_width
     for row in scores:
         for value in reference_array(row, width):
             if type(value) is not float or not math.isfinite(value):
