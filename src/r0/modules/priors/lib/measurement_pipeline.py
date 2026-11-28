@@ -15,6 +15,7 @@ from r0.modules.priors.lib.raw_draw_capture import raw_transactions
 _DEFAULT = CausalLimits()
 _DEFAULTS: dict[str, dict[str, float]] = {
     "affine": {"scale": 1.0, "shift": 0.0},
+    "linear-mix": {},
     "signed-power": {"power": 1.0},
     "signed-log1p": {},
     "tanh": {},
@@ -28,6 +29,18 @@ _DEFAULTS: dict[str, dict[str, float]] = {
     "outliers": {"probability": 0.01, "scale": 10.0},
     "student-noise": {"df": 3.0, "scale": 1.0},
 }
+
+
+def _mix_parameter(name: str, width: int) -> bool:
+    if len(name) > 12:
+        return False
+    parts = name.split("_")
+    if not ((parts[0] == "w" and len(parts) == 3) or (parts[0] == "bias" and len(parts) == 2)):
+        return False
+    return all(
+        value.isascii() and value.isdigit() and str(int(value)) == value and int(value) < width
+        for value in parts[1:]
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,7 +68,12 @@ class MeasurementStage:
         ):
             raise ValueError("invalid bounded measurement stage")
         supplied = dict(self.parameters)
-        if len(supplied) != len(self.parameters) or supplied.keys() - _DEFAULTS[self.kind].keys():
+        unknown = (
+            any(not _mix_parameter(name, len(self.columns)) for name in supplied)
+            if self.kind == "linear-mix"
+            else bool(supplied.keys() - _DEFAULTS[self.kind].keys())
+        )
+        if len(supplied) != len(self.parameters) or unknown:
             raise ValueError("duplicate or unknown measurement parameters")
         p = self.controls
         if (
@@ -96,6 +114,17 @@ def _apply(
     match stage.kind:
         case "affine":
             return p["scale"] * x + p["shift"]
+        case "linear-mix":
+            width = len(stage.columns)
+            matrix = np.eye(width, dtype=np.float64)
+            bias = np.zeros(width, dtype=np.float64)
+            for name, value in stage.parameters:
+                parts = name.split("_")
+                if parts[0] == "w":
+                    matrix[int(parts[1]), int(parts[2])] = value
+                else:
+                    bias[int(parts[1])] = value
+            return x @ matrix.T + bias
         case "signed-power":
             return np.sign(x) * np.abs(x) ** p["power"]
         case "signed-log1p":
@@ -152,7 +181,10 @@ def draw_measurements(
         raise ValueError("measurement pipeline requires bounded stages and float64 matrix")
     if any(max(stage.columns) >= inputs.shape[1] for stage in stages):
         raise ValueError("measurement column lies outside input schema")
-    if 65536 + inputs.size * 128 > limits.working_bytes:
+    matrix_sizes = [len(s.columns) ** 2 + len(s.columns) for s in stages if s.kind == "linear-mix"]
+    if sum(matrix_sizes) > limits.parameters:
+        raise ValueError("measurement matrix parameters exceed limits")
+    if 65536 + inputs.size * 128 + max(matrix_sizes, default=0) * 16 > limits.working_bytes:
         raise ValueError("measurement workspace exceeds limits")
     if not np.isfinite(inputs).all():
         raise ValueError("measurement inputs must be finite before masking")

@@ -84,3 +84,35 @@ independent affine/noise/clip arithmetic, conditional mask probabilities/draws,
 raw-value tampering, source restoration, typed-column rejection, guarded JSON
 transport and resume. Additional measurement families, learned/fitted calibration,
 typed conversions and arbitrary ordered mask/transform compositions remain open.
+
+## Linear mixing, projections and redundancy
+
+`MeasurementStage("linear-mix", columns, parameters)` applies `X @ W.T + b` to
+only the listed continuous columns, simultaneously using their pre-stage values.
+Matrix indices are local positions in `columns`, not global feature numbers.
+Parameters `w_i_j` set output-position `i`'s coefficient on input-position `j`;
+`bias_i` sets its offset. Unspecified coefficients form the identity matrix and
+unspecified biases are zero. For example, on columns `(2,0)`, `w_0_0=2`,
+`w_0_1=-1`, `bias_0=3`, `w_1_0=1`, `w_1_1=0` gives new column 2 =
+`2*old_column_2 - old_column_0 + 3` and new column 0 = `old_column_2`.
+
+This permits dense/sparse projections, low-rank maps and copied/redundant columns
+within a fixed-width table. It does not add new columns; allocate the desired
+observed width in the source recipe. Zeroing a column with an affine stage followed
+by an existing noise stage produces an explicit nuisance column. Targets remain
+unchanged, so a projection can remove signal or leave a difficult/weak task.
+Such valid cases are retained, not repaired or silently filtered.
+
+Names, local indices, duplicate parameters and finite coefficients are validated.
+The full matrices plus biases count against `CausalLimits.parameters`; the largest
+matrix contributes to the measurement workspace estimate. Nonfinite outputs fail
+with the existing RNG-rollback behavior. The stage itself consumes no random draws.
+Coefficients are authored/frozen here; random projection hyperpriors and nonlinear
+cross-column interaction families remain separate work. Existing observation
+receipts, archive validation and source restoration carry this stage unchanged.
+
+[`linear-mix-polynomial-cpu.json`](../configs/generation/linear-mix-polynomial-cpu.json)
+contains a sum/difference projection, one deliberately redundant output and an
+independent Gaussian nuisance column. Focused checks include hand-calculated
+values with reordered columns, identity defaults, exact redundancy, target
+preservation, archive restore, parameter admission and overflow rollback.
