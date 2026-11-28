@@ -7,6 +7,12 @@ from r0.modules.priors.lib.causal_limits import CausalLimits
 
 def population_recipe_from_dict(fields: dict[str, Any], *, limits: CausalLimits):
     version = fields.get("version", "linear-v1")
+    if version == "population-xgboost-graph-v1":
+        from r0.modules.priors.lib.xgboost_population_graph_decoding import (
+            xgboost_population_graph_from_dict,
+        )
+
+        return xgboost_population_graph_from_dict(fields, limits=limits)
     if version == "gp-root-calibration-v1":
         from r0.modules.priors.lib.gp_root_calibration_decoding import gp_root_calibration_from_dict
 

@@ -48,6 +48,11 @@ class RunRequest:
     construction: GraphConstruction | None = None
 
     def __post_init__(self) -> None:
+        from r0.modules.generation.lib.xgboost_population_transport import (
+            validate_xgboost_population_run,
+        )
+
+        validate_xgboost_population_run(self)
         if self.causal_limits is not None and type(self.causal_limits) is not CausalLimits:
             raise ValueError("run exploration limits require caller-owned CausalLimits")
         if any(
@@ -163,6 +168,13 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
             ):
                 return False
     selected = selected_recipe(request, task_id)
+    from r0.modules.generation.lib.xgboost_population_transport import (
+        xgboost_population_record_matches,
+    )
+
+    match = xgboost_population_record_matches(record, request, selected, task_id)
+    if match is not None:
+        return match
     from r0.modules.priors import (
         GPColumnPopulation,
         GPColumnRecipe,
@@ -405,6 +417,11 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
         # Validate the complete outer RunRequest schema/budgets against cheap task
         # controls, without decoding either retained population. Discard preview.
         RunRequest(preview, causal_limits=limits, **fields)
+    from r0.modules.generation.lib.xgboost_population_transport import (
+        preflight_xgboost_population_run,
+    )
+
+    preflight_xgboost_population_run(raw_recipe, fields, limits, construction)
     recipe = recipe_from_dict(raw_recipe, limits=limits or CausalLimits())
     sampling = fields.pop("sampling", None)
     return RunRequest(

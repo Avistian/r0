@@ -43,6 +43,13 @@ def explain_generation(
         raise ValueError("inspection requires caller-owned causal limits")
     record = json.loads(task.recipe_json)
     raw = record.get("recipe", {})
+    if raw.get("version") == "population-xgboost-graph-v1":
+        from r0.modules.priors.lib.xgboost_population_inspection import explain_xgboost_population
+
+        return explain_xgboost_population(
+            task, indices, component=component, column_start=column_start, limits=limits
+        )
+
     if raw.get("version") == "network-observation-recipe-v1" or (
         raw.get("version") == "causal-intervention-v1"
         and raw.get("base", {}).get("version") == "network-observation-recipe-v1"
