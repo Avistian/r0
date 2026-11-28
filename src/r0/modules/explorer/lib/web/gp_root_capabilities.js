@@ -22,7 +22,7 @@ function gpRootCapabilities(view){
       pendingGPRootButton(id,"The retained GP archive requires unchanged graph and task geometry. Use an original GP-root construction to define a different task.");
   if(recipe.version==="gp-root-intervention-v1"){
     const message="Open the original GP source to create another change. Nested intervention editing remains pending; replay and inspection retain this result.";
-    for(const id of ["next","gp-query-create","gp-root-load","mechanism-load","intervention-load","intervention-add","intervention-create"])
+    for(const id of ["next","gp-query-create","gp-root-load","mechanism-load","intervention-load","intervention-add","intervention-create","curve"])
       pendingGPRootButton(id,message,id==="intervention-load");
     $("intervention-controls").hidden=true;
   }

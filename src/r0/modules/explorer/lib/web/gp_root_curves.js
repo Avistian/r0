@@ -4,7 +4,7 @@ function gpRootCurveControls(){
   $("gp-root-reference-controls").hidden=!isGPRootReference();
   if(!isGPRootReference())return;
   $("curve-title").textContent="Original-row GP causal reference";
-  $("curve-description").textContent="Clamp every observed input while preserving the selected original row's hidden GP coordinates. Choose retained or zero structural innovations. The original independent fit remains fixed; no new GP population or target fit is created. This is not a conditional expectation.";
+  $("curve-description").textContent="Clamp every observed input while preserving the selected original row's hidden GP coordinates. Choose retained or zero structural innovations. Any retained independent fit stays fixed; no new GP population or target fit is created. This is not a conditional expectation.";
   $("curve").textContent="Evaluate GP causal reference";
   $("curve-points").max=129;
   $("gp-root-reference-metric").querySelector('option[value="scores"]').textContent=current.view.recipe.recipe.version==="gp-root-dag-v1"?"Target score (no independent fit)":"Fixed-calibrated target score";
