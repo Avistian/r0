@@ -30,6 +30,16 @@ $("gp-root-apply").onclick=()=>act("Updating GP-root draft…",async()=>{
   $("construction-controls").value=pretty(draft);
   $("gp-root-notice").textContent="Draft updated. Construct checks the complete GP population, graph, bindings and resource limits before drawing a new population.";
 });
+$("generate").addEventListener("click",event=>{
+  const stored=current?.view?.recipe?.recipe;if(!gpRootEnvelope(stored))return;
+  event.stopImmediatePropagation();event.preventDefault();
+  act("Replaying the complete retained GP-root archive…",async()=>{
+    if($("recipe").value!==pretty(stored))throw new Error("Unapplied archive edits retained. Use the GP-root construction draft to change the graph.");
+    if($("seed").value!==String(current.view.recipe.seed)||$("task-id").value!==String(current.view.recipe.task_id))
+      throw new Error("Replay requires the saved seed and task identifier. Use the original source construction or Next for a new population.");
+    show(await request("gp_root_replay",limits()));
+  });
+},true);
 $("next").addEventListener("click",event=>{
   const stored=current?.view?.recipe?.recipe;if(!gpRootEnvelope(stored))return;
   event.stopImmediatePropagation();event.preventDefault();
