@@ -52,4 +52,7 @@ from r0.modules.generation.lib.requests import RunRequest as RunRequest
 from r0.modules.generation.lib.requests import request_from_dict as request_from_dict
 from r0.modules.generation.lib.runs import RunSummary as RunSummary
 from r0.modules.generation.lib.runs import run_generation as run_generation
+from r0.modules.generation.lib.task_construction import (
+    per_task_construction as per_task_construction,
+)
 from r0.modules.generation.lib.tree_ensemble_prior import TreeEnsemblePrior as TreeEnsemblePrior

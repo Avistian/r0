@@ -217,6 +217,12 @@ class GraphConstruction:
     def task_record(self) -> dict[str, Any]:
         """Return preconstruction row geometry; sampled native target type is not yet known."""
         controls = json.loads(self.controls_json)
+        if controls.get("topology") == "per-task":
+            from r0.modules.generation.lib.task_construction import task_construction_source
+
+            return GraphConstruction(
+                json.dumps(task_construction_source(self)), self.seed
+            ).task_record()
         while controls.get("topology") in (
             "source-root-network",
             "network-innovations",
@@ -283,6 +289,13 @@ class GraphConstruction:
         self, limits: priors.CausalLimits, *, episode_seed: int = 0, task_id: int = 0
     ) -> priors.Recipe:
         fields = json.loads(self.controls_json)
+        if fields.get("topology") == "per-task":
+            from r0.modules.generation.lib.task_construction import resolve_task_construction
+
+            effective, _ = resolve_task_construction(
+                self, episode_seed=episode_seed, task_id=task_id
+            )
+            return effective.build(limits, episode_seed=episode_seed, task_id=task_id)
         if fields.get("topology") in ("tree-extension", "tree-ensemble"):
             from r0.modules.generation.lib.tree_extension_construction import (
                 construct_tree_bundle,

@@ -31,8 +31,29 @@ def _source_matches(record: dict[str, Any], request: RunRequest, task_id: int) -
         RealizedPrototypeBatchNetworkRecipe,
     )
 
+    per_task = (
+        request.construction is not None
+        and json.loads(request.construction.controls_json).get("topology") == "per-task"
+    )
+    if ("construction_sampling" in record) != per_task:
+        return False
     if request.construction is not None:
         controls = json.loads(request.construction.controls_json)
+        if controls.get("topology") == "per-task":
+            from r0.modules.generation.lib.task_construction import resolve_task_construction
+
+            effective, receipt = resolve_task_construction(
+                request.construction, episode_seed=request.seed, task_id=task_id
+            )
+            if json.dumps(
+                record.get("construction_sampling"), sort_keys=True, allow_nan=False
+            ) != json.dumps(receipt, sort_keys=True, allow_nan=False):
+                return False
+            return _source_matches(
+                {k: v for k, v in record.items() if k != "construction_sampling"},
+                replace(request, construction=effective),
+                task_id,
+            )
         if controls.get("topology") in ("tree-extension", "tree-ensemble"):
             from r0.modules.generation.lib.tree_extension_construction import tree_record_matches
 

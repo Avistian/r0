@@ -175,6 +175,22 @@ def generate_requested(request: RunRequest, task_id: int) -> TrainingTask:
 
 
 def _generate_source(request: RunRequest, task_id: int) -> TrainingTask:
+    if (
+        request.construction is not None
+        and json.loads(request.construction.controls_json).get("topology") == "per-task"
+    ):
+        from r0.modules.generation.lib.task_construction import resolve_task_construction
+
+        effective, receipt = resolve_task_construction(
+            request.construction, episode_seed=request.seed, task_id=task_id
+        )
+        task = _generate_source(replace(request, construction=effective), task_id)
+        record = json.loads(task.recipe_json)
+        record["construction_sampling"] = receipt
+        return replace(
+            task,
+            recipe_json=json.dumps(record, sort_keys=True, separators=(",", ":"), allow_nan=False),
+        )
     if request.construction is not None and json.loads(request.construction.controls_json).get(
         "topology"
     ) in ("tree-extension", "tree-ensemble"):

@@ -32,6 +32,11 @@ def _fresh(request: RunRequest) -> bool:
     if request.construction is not None:
         # Other construction adapters can retain the same construction seed for
         # every episode. Do not infer independent mechanisms from unique task IDs.
+        if json.loads(request.construction.controls_json).get("topology") == "per-task":
+            from r0.modules.generation.lib.task_construction import task_construction_source
+
+            task_construction_source(request.construction)
+            return True
         return json.loads(request.construction.controls_json).get("topology") in (
             "tree-extension",
             "tree-ensemble",
