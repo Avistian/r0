@@ -19,6 +19,9 @@ def identity_numbers(value: Any, *, for_browser: bool) -> Any:
             "reference_seed",
             "reference_task_id",
             "fresh_seed",
+            "calibration_seed",
+            "calibration_task_id",
+            "construction_seed",
         ):
             if for_browser and type(item) is int and item > 2**53 - 1:
                 item = str(item)

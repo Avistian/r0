@@ -1,5 +1,8 @@
 """Explicit internal-DAG row-owned populations, outside the frozen-function registry."""
 
+from .calibrated_change_construction import (
+    construct_calibrated_population_change as construct_calibrated_population_change,
+)
 from .calibrated_population_intervention import (
     CalibratedPopulationIntervention as CalibratedPopulationIntervention,
 )
@@ -16,6 +19,9 @@ from .calibrated_population_query import (
     realize_calibrated_population_query as realize_calibrated_population_query,
 )
 from .calibrated_query_admission import preflight_calibrated_query as preflight_calibrated_query
+from .population_calibration_construction import (
+    construct_calibrated_population as construct_calibrated_population,
+)
 from .population_generation_identity import (
     preflight_calibrated_generation as preflight_calibrated_generation,
 )

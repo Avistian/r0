@@ -22,12 +22,18 @@ from r0.modules.priors.lib.representatives import record_fingerprint
 def calibration_request(
     original: RecursivePopulationGraph, rows: int
 ) -> RecursivePopulationGraphRequest:
+    return calibration_request_from_source(original.request, rows)
+
+
+def calibration_request_from_source(
+    request: RecursivePopulationGraphRequest, rows: int
+) -> RecursivePopulationGraphRequest:
+    """Plan the independent population using metadata-only authored previews too."""
     if type(rows) is not int or not 32 <= rows <= 4096:
         raise ValueError(
             "population target calibration requires 32..4096 independent rows "
             "under the retained forest population cap"
         )
-    request = original.request
     if (
         not isinstance(request.base, FunctionalCausalRecipe)
         and request.task.task_type != "regression"

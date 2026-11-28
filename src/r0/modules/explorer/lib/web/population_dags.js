@@ -1,5 +1,6 @@
 "use strict";
-function isPopulationDAG(recipe){return recipe?.version==="recursive-population-graph-v1";}
+function isCalibratedPopulation(recipe){return ["calibrated-population-graph-v1","calibrated-population-query-v1"].includes(recipe?.version);}
+function isPopulationDAG(recipe){return recipe?.version==="recursive-population-graph-v1" || isCalibratedPopulation(recipe);}
 function populationConstructionDraft(){
   const draft=JSON.parse($("construction-controls").value);
   if(draft.topology!=="recursive-population-dag")throw new Error("Choose or load a Population DAG construction first.");
@@ -42,7 +43,9 @@ $("next").addEventListener("click",event=>{
   act("Constructing next original-row population…",async()=>{
     if($("recipe").value!==pretty(stored))throw new Error("Unapplied archive edits retained. Use population construction controls to create a new population.");
     const info=await request("population_dag_controls",{}), next=String(BigInt($("task-id").value)+1n);
-    const result=await request("construct",{controls:info.controls,construction_seed:$("construction-seed").value,seed:$("seed").value,task_id:next,...limits()});
+    const result=isCalibratedPopulation(stored)
+      ? await request("population_query",{construction_seed:$("construction-seed").value,seed:$("seed").value,task_id:next,engine:$("population-dag-engine").value || info.controls.engine,...limits()})
+      : await request("construct",{controls:info.controls,construction_seed:$("construction-seed").value,seed:$("seed").value,task_id:next,...limits()});
     show(result);
   });
 },true);
@@ -54,10 +57,28 @@ $("mechanism-load").addEventListener("click",event=>{
 
 function populationDAGView(view){
   $("mechanism-load").textContent="Inspect and prepare edit";
+  const calibrated=isCalibratedPopulation(view.recipe.recipe);
+  $("population-calibrate").disabled=calibrated || !isPopulationDAG(view.recipe.recipe);
+  $("population-calibration-details").disabled=!calibrated;
+  $("population-calibrate").dataset.unavailable=String($("population-calibrate").disabled);
+  $("population-calibration-details").dataset.unavailable=String($("population-calibration-details").disabled);
+  $("population-calibration-record").textContent="";
+  $("population-calibration-notice").textContent=calibrated
+    ? "Independent fit retained. Next creates only new query rows; Replay is exact. Matched/fresh interventions preserve the same fit. Geometry or law edits require explicit new calibration."
+    : "Fit an independent same-law population explicitly. Original query rows and their archive remain unchanged.";
   if(!isPopulationDAG(view.recipe.recipe))return;
-  $("next").textContent="Next population";
+  $("next").textContent=calibrated ? "Next query · fixed calibration" : "Next population";
   $("mechanism-load").textContent="Load population construction controls";
   $("curve").disabled=true;$("curve").dataset.unavailable="true";
   $("curve-description").textContent="Population DAGs retain row-owned mechanisms. Reference curves remain a required follow-on.";
   $("curve-note").textContent="Population DAG reference curves remain a required follow-on. Inspect original-row forest paths and retained matched/fresh comparisons; no shared frozen response is substituted.";
 }
+
+$("population-calibrate").onclick=()=>act("Fitting retained independent population…",async()=>{
+  if($("recipe").value!==pretty(current.view.recipe.recipe))throw new Error("Unapplied archive edits retained. Apply changes through a new explicit population before fitting.");
+  show(await request("population_calibrate",{calibration_rows:number("population-fit-rows"),calibration_seed:$("population-fit-seed").value,calibration_task_id:$("population-fit-task").value,...limits()}));
+});
+$("population-calibration-details").onclick=()=>act("Reading retained calibration…",async()=>{
+  const info=await request("population_dag_controls",{});
+  $("population-calibration-record").textContent=pretty(info.calibration);
+});

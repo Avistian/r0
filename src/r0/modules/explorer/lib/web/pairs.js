@@ -3,6 +3,7 @@ const pairNames = {noise: "Noise / signal", irrelevant: "Total feature count", s
 const pairFields = {noise: "noise_ratio", irrelevant: "features", sparsity: "active_features", separation: "separation"};
 function resetPair() {
   const regression = current.view.task_type === "regression";
+  $("pair-create").hidden=isCalibratedPopulation(current.view.recipe.recipe);
   const choices = (["causal","observed_network"].includes(current.view.family) || isPrototypeBatch(current.view.recipe.recipe)) ? [regression ? "noise" : "separation"] : [regression ? "noise" : "separation", "irrelevant", "sparsity"];
   $("pair-intervention").replaceChildren(...choices.filter(key => current.view.recipe.recipe.version !== "network-input-view-v2" || key !== "sparsity").map(key => new Option(pairNames[key], key)));
   $("pair-metric").replaceChildren(...(regression ? [["Observed target", "target"], ["Latent signal", "scores"], ["Residual noise", "noise"]] : [["Class probability", "probabilities"], ["Latent score", "scores"], ["Sampled label index", "target"]]).map(([label, value]) => new Option(label, value)));
@@ -20,6 +21,7 @@ function pairControls() {
   $("pair-estimate-label").hidden = !estimated;
   $("pair-estimate").checked = false;
   $("pair-policy-note").textContent = estimated ? "This family uses independent calibration to target unit signal variance. True expected variances may differ. Check the box to request this comparison explicitly." : intervention === "sparsity" ? "Gaussian linear coefficients preserve expected unit signal variance; realized sample variance can differ." : "The saved latent function stays unchanged. Only the selected control changes.";
+  if(isCalibratedPopulation(current.view.recipe.recipe)) $("pair-policy-note").textContent="Use causal interventions above for fixed-calibration comparisons. Task-only adapter comparisons remain a required extension; changing geometry or task laws requires an explicit new population and fit.";
   if (current.view.family === "standalone_network") $("pair-policy-note").textContent = intervention === "sparsity" ? "An explicit mask zeroes selected inputs after the original joint root. The frozen architecture is retained. Signal variance is uncontrolled by default. Check the box to estimate the original baseline mean and spread on an independent shared population; this does not target unit variance." : intervention === "irrelevant" ? "Extra observed columns use independent keyed Gaussian draws. Original inputs and frozen network outputs stay unchanged." : "The saved network, input mask and root distribution stay unchanged. Only the selected task control changes.";
 }
 function showPair() {
