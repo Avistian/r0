@@ -29,7 +29,6 @@ function gpRootCapabilities(view){
   const policy="Unavailable for GP-root datasets: sampled intervention policies require retained-population integration and remain required work.";
   for(const id of ["policy-draft","policy-add-location","policy-create"])
     pendingGPRootButton(id,policy,id==="policy-draft");
-  pendingGPRootButton("curve","Unavailable for GP-root datasets: original-row causal reference curves remain required pending retained-population integration.",true);
   pendingGPRootButton("pair-create","Unavailable for GP-root datasets: generic task-only comparisons do not retain the GP population. Population-aware comparisons remain required pending integration.",true);
 
 }

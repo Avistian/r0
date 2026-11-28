@@ -49,6 +49,7 @@ from .gp_population_metadata_cost import (
     gp_column_population_metadata_cost as gp_column_population_metadata_cost,
 )
 from .gp_population_metadata_cost import gp_root_dag_metadata_cost as gp_root_dag_metadata_cost
+from .gp_reference_decoding import gp_root_reference_from_dict as gp_root_reference_from_dict
 from .gp_root_calibration import GPRootCalibration as GPRootCalibration
 from .gp_root_calibration import calibrate_gp_root_dag as calibrate_gp_root_dag
 from .gp_root_calibration import generate_calibrated_gp_root as generate_calibrated_gp_root
@@ -76,6 +77,9 @@ from .gp_root_query_admission import (
 from .gp_root_query_decoding import (
     gp_root_calibration_query_from_dict as gp_root_calibration_query_from_dict,
 )
+from .gp_root_reference import GPRootReference as GPRootReference
+from .gp_root_reference import evaluate_gp_root_reference as evaluate_gp_root_reference
+from .gp_root_reference import gp_root_reference_from_source as gp_root_reference_from_source
 from .gp_root_task_validation import validate_gp_root_task as validate_gp_root_task
 from .gp_target_environment import GPColumnTargetRecipe as GPColumnTargetRecipe
 from .gp_target_environment import (
