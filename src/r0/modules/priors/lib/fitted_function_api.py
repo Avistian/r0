@@ -84,6 +84,11 @@ from r0.modules.priors.lib.network_sampling_records import (
 )
 from r0.modules.priors.lib.network_sampling_records import SampledNetwork as SampledNetwork
 from r0.modules.priors.lib.oblique_tree import oblique_tree_recipe
+from r0.modules.priors.lib.observation_encoding import (
+    ColumnEncoding,
+    EncodedObservation,
+    encode_observation_columns,
+)
 from r0.modules.priors.lib.score_ensemble import score_ensemble_recipe
 from r0.modules.priors.lib.soft_tree import SoftTreeBranch, compile_soft_tree
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction as FrozenNetworkFunction
@@ -228,3 +233,5 @@ __all__ += ["restore_observation_source"]
 __all__ += ["MeasurementDraw", "MeasurementStage", "draw_measurements"]
 
 __all__ += ["measurement_stages_from_dict"]
+
+__all__ += ["ColumnEncoding", "EncodedObservation", "encode_observation_columns"]
