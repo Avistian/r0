@@ -29,6 +29,7 @@ from r0.modules.priors.lib.network_observation_recipe import NetworkObservationR
 from r0.modules.priors.lib.recursive_forest_function import FrozenRecursiveForestFunction
 from r0.modules.priors.lib.recursive_function_evaluation import recursive_function_steps
 from r0.modules.priors.lib.representatives import encode
+from r0.modules.priors.lib.root_populations import RootPopulations
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction
 from r0.modules.priors.lib.training_task import TrainingTask
 
@@ -39,12 +40,17 @@ def intervention_steps(
     add: Callable[..., None],
     *,
     limits: CausalLimits | None,
+    root_populations: RootPopulations | None = None,
 ) -> dict[str, Any]:
     record = json.loads(task.recipe_json)
     recipe = intervention_from_dict(record["recipe"], limits=limits or CausalLimits())
     execution = intervention_execution(recipe)
     replay = generate_intervened(
-        recipe, seed=record["seed"], task_id=record["task_id"], execution=execution
+        recipe,
+        seed=record["seed"],
+        task_id=record["task_id"],
+        execution=execution,
+        root_populations=root_populations,
     )
     if not torch.equal(replay.inputs, task.inputs.cpu()) or not torch.equal(
         replay.targets, task.targets.cpu()

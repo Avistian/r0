@@ -52,6 +52,16 @@ from .gp_root_construction_matching import (
 )
 from .gp_root_dags import GPRootBinding as GPRootBinding
 from .gp_root_dags import GPRootDAGRecipe as GPRootDAGRecipe
+from .gp_root_intervention import GPRootIntervention as GPRootIntervention
+from .gp_root_intervention import intervene_gp_root_dag as intervene_gp_root_dag
+from .gp_root_intervention_construction import (
+    construct_gp_root_intervention as construct_gp_root_intervention,
+)
+from .gp_root_intervention_inspection import (
+    validate_gp_intervention_task as validate_gp_intervention_task,
+)
+from .gp_root_intervention_pairs import compare_gp_root_pair as compare_gp_root_pair
+from .gp_root_intervention_pairs import generate_gp_root_pair as generate_gp_root_pair
 from .gp_root_query import GPRootCalibrationQuery as GPRootCalibrationQuery
 from .gp_root_query import realize_gp_root_calibration_query as realize_gp_root_calibration_query
 from .gp_root_query_admission import (
