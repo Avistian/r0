@@ -34,3 +34,10 @@ Do not infer that an unlisted paper option is complete or deferred.
 [Tree feature-population integration](issue-29-tree-populations.md).
 
 [Sampled hard/soft extension portfolio and remaining limits](issue-29-tree-extension-sampling.md).
+
+[Sampled ensemble size and weight priors](issue-29-ensemble-priors.md) now add
+bounded categorical member counts, weighted template choices with/without
+replacement, and equal/Dirichlet/lognormal/signed-normal score weights, with
+per-task archived realizations. This closes the initial size/weight-prior primitive
+gap in T29-06; correlated forests, broader dependent priors and source-specific
+portfolio verification remain open.

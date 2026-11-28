@@ -8,6 +8,10 @@ from typing import Any, cast
 import numpy as np
 
 from r0.modules.generation.lib.construction import GraphConstruction
+from r0.modules.generation.lib.tree_ensemble_prior import (
+    ensemble_prior_from_dict,
+    sample_ensemble_prior,
+)
 from r0.modules.priors import (
     CausalLimits,
     FunctionalCausalRecipe,
@@ -24,7 +28,11 @@ def construct_tree_ensemble(
         raise ValueError("ensemble construction requires exact integer identities")
     controls = json.loads(construction.controls_json)
     if (
-        set(controls) != {"topology", "members", "weights", "reduction"}
+        set(controls)
+        not in (
+            {"topology", "members", "weights", "reduction"},
+            {"topology", "members", "weights", "reduction", "prior"},
+        )
         or controls["topology"] != "tree-ensemble"
     ):
         raise ValueError("ensemble construction fields differ")
@@ -54,9 +62,22 @@ def construct_tree_ensemble(
     )
     if any(r.task != requests[0].task or r.root != requests[0].root for r in requests):
         raise ValueError("ensemble member requests must share task and root controls")
-    # Conservative hard-model-tree upper bound before drawing any member.
-    if 2 + sum(3 + 3 * 2**r.max_depth for r in requests) > limits.nodes:
+    prior = ensemble_prior_from_dict(controls["prior"]) if "prior" in controls else None
+    if prior is not None:
+        if weights:
+            raise ValueError("sampled ensemble prior requires empty authored weights")
+        prior.validate_pool(len(requests), reduction)
+    # Admit the full declared support before any size, selection or weight draw.
+    costs = [3 + 3 * 2**r.max_depth for r in requests]
+    worst = sum(costs) if prior is None else prior.max_members * max(costs)
+    if 2 + worst > limits.nodes:
         raise ValueError("ensemble worst-case node count exceeds limits")
+    selection = None
+    if prior is not None:
+        selection, weights = sample_ensemble_prior(
+            prior, len(requests), construction_seed=construction.seed, seed=seed, task_id=task_id
+        )
+        requests = tuple(requests[index] for index in selection)
     sampled = tuple(
         sample_tree_extension(
             request,
@@ -72,8 +93,10 @@ def construct_tree_ensemble(
     recipe = score_ensemble_recipe(
         tuple(s.recipe for s in sampled), weights=weights, reduction=reduction, limits=limits
     )
-    receipt = {
-        "version": "r0-tree-ensemble-construction-v1",
+    receipt: dict[str, Any] = {
+        "version": "r0-tree-ensemble-construction-v1"
+        if prior is None
+        else "r0-tree-ensemble-construction-v2",
         "construction_seed": construction.seed,
         "seed": seed,
         "task_id": task_id,
@@ -81,4 +104,7 @@ def construct_tree_ensemble(
         "reduction": reduction,
         "members": [asdict(s) for s in sampled],
     }
+    if prior is not None:
+        receipt["prior"] = asdict(prior)
+        receipt["selected_templates"] = list(selection or ())
     return recipe, json.loads(json.dumps(receipt, allow_nan=False))
