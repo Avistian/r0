@@ -37,6 +37,9 @@ from .gp_root_calibration import GPRootCalibration as GPRootCalibration
 from .gp_root_calibration import calibrate_gp_root_dag as calibrate_gp_root_dag
 from .gp_root_calibration import generate_calibrated_gp_root as generate_calibrated_gp_root
 from .gp_root_construction import construct_gp_root_dag as construct_gp_root_dag
+from .gp_root_construction_matching import (
+    gp_root_construction_matches as gp_root_construction_matches,
+)
 from .gp_root_dags import GPRootBinding as GPRootBinding
 from .gp_root_dags import GPRootDAGRecipe as GPRootDAGRecipe
 from .gp_root_task_validation import validate_gp_root_task as validate_gp_root_task

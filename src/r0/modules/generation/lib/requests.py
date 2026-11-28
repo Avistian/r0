@@ -130,6 +130,19 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
         RealizedPrototypeBatchNetworkRecipe,
     )
 
+    if request.construction is not None:
+        controls = json.loads(request.construction.controls_json)
+        if controls.get("topology") == "gp-root-dag":
+            from r0.modules.priors import gp_root_construction_matches
+
+            if not gp_root_construction_matches(
+                controls,
+                record,
+                seed=request.seed,
+                task_id=task_id,
+                limits=request.causal_limits or CausalLimits(),
+            ):
+                return False
     selected = selected_recipe(request, task_id)
     from r0.modules.priors import (
         GPColumnPopulation,
