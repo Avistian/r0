@@ -30,6 +30,7 @@ def inspect_graph(
         "calibrated-population-graph-v1",
         "calibrated-population-query-v1",
         "calibrated-population-intervention-v1",
+        "population-xgboost-graph-v1",
         "recursive-population-graph-v1",
         "recursive-population-graph-intervention-v1",
         "sampled-intervention-policy-v1",

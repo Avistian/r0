@@ -207,6 +207,14 @@ def _run(
                             or task.inputs.device.type != request.device
                         ):
                             raise ValueError("producer returned a different task or recipe")
+                        if record["recipe"].get("version") == "population-xgboost-graph-v1":
+                            from r0.modules.priors.lib.xgboost_population_task import (
+                                validate_xgboost_population_task,
+                            )
+
+                            validate_xgboost_population_task(
+                                task, limits=request.causal_limits or CausalLimits()
+                            )
                         if record["recipe"].get("version") in (
                             "gp-root-dag-v1",
                             "gp-root-calibration-v1",

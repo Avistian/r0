@@ -4,6 +4,19 @@ from typing import Any
 
 
 def construction_details(recipe: dict[str, Any]) -> dict[str, Any] | None:
+    if recipe.get("version") == "population-xgboost-graph-v1":
+        return {
+            "kind": "population-xgboost",
+            "population": recipe["population"],
+            "fit_seed": recipe["fit_seed"],
+            "fit_task_id": recipe["fit_task_id"],
+            "fits": [
+                {"node": fit["node"], "row_ids": fit["row_ids"], "plan": fit["realization"]["plan"]}
+                for fit in recipe["fits"]
+            ],
+            "notice": "Frozen native XGBoost models fitted to actual synthetic parent rows. "
+            "Replay and independent queries do not refit. Fitting tables retain their own row IDs.",
+        }
     if recipe.get("version") == "gp-root-intervention-v1":
         return {
             "kind": "gp-root-intervention",

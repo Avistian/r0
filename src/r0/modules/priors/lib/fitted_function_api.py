@@ -57,6 +57,64 @@ from r0.modules.priors.lib.frozen_function_primitives import (
     FrozenTreeFunction as FrozenTreeFunction,
 )
 from r0.modules.priors.lib.frozen_kumo_product import FrozenKumoProductFunction
+from r0.modules.priors.lib.network_recipe import NetworkRecipe as NetworkRecipe
+from r0.modules.priors.lib.network_sampling import sample_network as sample_network
+from r0.modules.priors.lib.network_sampling_records import (
+    NetworkSamplingRequest as NetworkSamplingRequest,
+)
+from r0.modules.priors.lib.network_sampling_records import SampledNetwork as SampledNetwork
+from r0.modules.priors.lib.structural_network import FrozenNetworkFunction as FrozenNetworkFunction
+from r0.modules.priors.lib.structural_network import NetworkAffine as NetworkAffine
+from r0.modules.priors.lib.structural_network import NetworkBlock as NetworkBlock
+from r0.modules.priors.lib.structural_network import NetworkProjection as NetworkProjection
+from r0.modules.priors.lib.xgboost_fit_decoding import (
+    xgboost_fit_from_dict as xgboost_fit_from_dict,
+)
+from r0.modules.priors.lib.xgboost_fit_graph import XGBoostFittedGraph as XGBoostFittedGraph
+from r0.modules.priors.lib.xgboost_fit_graph import XGBoostNodeFit as XGBoostNodeFit
+from r0.modules.priors.lib.xgboost_fit_graph import with_xgboost_fits as with_xgboost_fits
+from r0.modules.priors.lib.xgboost_fit_plan import XGBoostFitPlan as XGBoostFitPlan
+from r0.modules.priors.lib.xgboost_fitting import XGBoostFit as XGBoostFit
+from r0.modules.priors.lib.xgboost_fitting import fit_xgboost as fit_xgboost
+from r0.modules.priors.lib.xgboost_population_construction import (
+    construct_xgboost_population as construct_xgboost_population,
+)
+from r0.modules.priors.lib.xgboost_population_construction import (
+    xgboost_population_construction_matches as xgboost_population_construction_matches,
+)
+from r0.modules.priors.lib.xgboost_population_decoding import (
+    population_xgboost_fit_from_dict as population_xgboost_fit_from_dict,
+)
+from r0.modules.priors.lib.xgboost_population_fit import (
+    PopulationXGBoostFit as PopulationXGBoostFit,
+)
+from r0.modules.priors.lib.xgboost_population_fit import (
+    fit_population_xgboost as fit_population_xgboost,
+)
+from r0.modules.priors.lib.xgboost_population_graph import (
+    PopulationXGBoostNodeFit as PopulationXGBoostNodeFit,
+)
+from r0.modules.priors.lib.xgboost_population_graph import (
+    XGBoostPopulationGraph as XGBoostPopulationGraph,
+)
+from r0.modules.priors.lib.xgboost_population_graph import (
+    fit_xgboost_population_graph as fit_xgboost_population_graph,
+)
+from r0.modules.priors.lib.xgboost_population_graph_decoding import (
+    xgboost_population_graph_from_dict as xgboost_population_graph_from_dict,
+)
+from r0.modules.priors.lib.xgboost_population_plan import (
+    PopulationXGBoostPlan as PopulationXGBoostPlan,
+)
+from r0.modules.priors.lib.xgboost_population_task import (
+    validate_xgboost_population_task as validate_xgboost_population_task,
+)
+from r0.modules.priors.lib.xgboost_vector import FrozenXGBoostVector as FrozenXGBoostVector
+from r0.modules.priors.lib.xgboost_vector import XGBoostVectorTree as XGBoostVectorTree
+from r0.modules.priors.lib.xgboost_vector import evaluate_xgboost_vector as evaluate_xgboost_vector
+from r0.modules.priors.lib.xgboost_vector_export import (
+    export_xgboost_vector as export_xgboost_vector,
+)
 
 __all__ = [
     "XGBoostNodeFit",
@@ -95,28 +153,20 @@ __all__ = [
     "FittedTreeOutput",
 ]
 
-from r0.modules.priors.lib.network_recipe import NetworkRecipe as NetworkRecipe
-from r0.modules.priors.lib.network_sampling import sample_network as sample_network
-from r0.modules.priors.lib.network_sampling_records import (
-    NetworkSamplingRequest as NetworkSamplingRequest,
-)
-from r0.modules.priors.lib.network_sampling_records import SampledNetwork as SampledNetwork
-from r0.modules.priors.lib.structural_network import FrozenNetworkFunction as FrozenNetworkFunction
-from r0.modules.priors.lib.structural_network import NetworkAffine as NetworkAffine
-from r0.modules.priors.lib.structural_network import NetworkBlock as NetworkBlock
-from r0.modules.priors.lib.structural_network import NetworkProjection as NetworkProjection
-from r0.modules.priors.lib.xgboost_fit_decoding import (
-    xgboost_fit_from_dict as xgboost_fit_from_dict,
-)
-from r0.modules.priors.lib.xgboost_fit_graph import XGBoostFittedGraph as XGBoostFittedGraph
-from r0.modules.priors.lib.xgboost_fit_graph import XGBoostNodeFit as XGBoostNodeFit
-from r0.modules.priors.lib.xgboost_fit_graph import with_xgboost_fits as with_xgboost_fits
-from r0.modules.priors.lib.xgboost_fit_plan import XGBoostFitPlan as XGBoostFitPlan
-from r0.modules.priors.lib.xgboost_fitting import XGBoostFit as XGBoostFit
-from r0.modules.priors.lib.xgboost_fitting import fit_xgboost as fit_xgboost
-from r0.modules.priors.lib.xgboost_vector import FrozenXGBoostVector as FrozenXGBoostVector
-from r0.modules.priors.lib.xgboost_vector import XGBoostVectorTree as XGBoostVectorTree
-from r0.modules.priors.lib.xgboost_vector import evaluate_xgboost_vector as evaluate_xgboost_vector
-from r0.modules.priors.lib.xgboost_vector_export import (
-    export_xgboost_vector as export_xgboost_vector,
-)
+__all__ += [
+    "PopulationXGBoostPlan",
+    "PopulationXGBoostFit",
+    "fit_population_xgboost",
+    "population_xgboost_fit_from_dict",
+]
+
+__all__ += [
+    "XGBoostPopulationGraph",
+    "PopulationXGBoostNodeFit",
+    "fit_xgboost_population_graph",
+    "xgboost_population_graph_from_dict",
+]
+
+__all__ += ["validate_xgboost_population_task"]
+
+__all__ += ["construct_xgboost_population", "xgboost_population_construction_matches"]

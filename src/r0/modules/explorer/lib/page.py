@@ -23,7 +23,11 @@ window.r0request = async (action, data) => {
         .replace("/* STYLES */", (assets / "style.css").read_text())
         .replace(
             "/* APPLICATION */",
-            (assets / "task_controls.js").read_text() + "\n" + (assets / "app.js").read_text(),
+            (assets / "task_controls.js").read_text()
+            + "\n"
+            + (assets / "show.js").read_text()
+            + "\n"
+            + (assets / "app.js").read_text(),
         )
         .replace(
             "/* CURVES */",
@@ -75,7 +79,8 @@ window.r0request = async (action, data) => {
             + (assets / "population_dags.html").read_text()
             + (assets / "gp_roots.html").read_text()
             + (assets / "topology_hyperpriors.html").read_text()
-            + (assets / "gp_calibration.html").read_text(),
+            + (assets / "gp_calibration.html").read_text()
+            + (assets / "xgboost_population.html").read_text(),
         )
         .replace("<!-- NETWORK WORKBENCH -->", (assets / "network_workbench.html").read_text())
         .replace(
@@ -107,7 +112,8 @@ window.r0request = async (action, data) => {
             + (assets / "population_dags.js").read_text()
             + (assets / "gp_roots.js").read_text()
             + (assets / "gp_calibration.js").read_text()
-            + (assets / "gp_root_capabilities.js").read_text(),
+            + (assets / "gp_root_capabilities.js").read_text()
+            + (assets / "xgboost_population.js").read_text(),
         )
         .replace("<!-- CONVERTERS -->", (assets / "converters.html").read_text())
         .replace("/* TRANSPORT */", transport)

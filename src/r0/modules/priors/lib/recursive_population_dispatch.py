@@ -20,10 +20,13 @@ from r0.modules.priors.lib.recursive_population_graph_records import RecursivePo
 from r0.modules.priors.lib.recursive_population_intervention import RecursivePopulationIntervention
 from r0.modules.priors.lib.recursive_population_records import RecursivePopulationRecipe
 from r0.modules.priors.lib.training_task import TrainingTask
+from r0.modules.priors.lib.xgboost_population_graph import XGBoostPopulationGraph
+from r0.modules.priors.lib.xgboost_population_output import generate_xgboost_population_graph
 
 type PopulationRecipe = (
     GPRootIntervention
     | GPRootCalibrationQuery
+    | XGBoostPopulationGraph
     | GPRootCalibration
     | GPRootDAGRecipe
     | CalibratedPopulationQuery
@@ -38,6 +41,7 @@ type PopulationRecipe = (
 POPULATION_RECIPE_TYPES = (
     GPRootIntervention,
     GPRootCalibrationQuery,
+    XGBoostPopulationGraph,
     GPRootCalibration,
     GPRootDAGRecipe,
     CalibratedPopulationQuery,
@@ -57,6 +61,8 @@ def generate_population_recipe(
     task_id: int,
     device: str,
 ) -> TrainingTask:
+    if isinstance(recipe, XGBoostPopulationGraph):
+        return generate_xgboost_population_graph(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, GPRootIntervention):
         return generate_gp_root_intervention(recipe, seed=seed, task_id=task_id, device=device)
     if isinstance(recipe, (GPRootCalibration, GPRootCalibrationQuery)):

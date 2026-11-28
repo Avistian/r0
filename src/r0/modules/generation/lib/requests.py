@@ -6,6 +6,7 @@ from dataclasses import asdict, dataclass, replace
 from typing import Any, cast
 
 from r0.modules.generation.lib.construction import GraphConstruction
+from r0.modules.generation.lib.gp_root_run_identity import validate_gp_root_run_identity
 from r0.modules.priors import (
     CalibratedPopulationGraph,
     CalibratedPopulationIntervention,
@@ -49,6 +50,11 @@ class RunRequest:
     construction: GraphConstruction | None = None
 
     def __post_init__(self) -> None:
+        from r0.modules.generation.lib.xgboost_population_transport import (
+            validate_xgboost_population_run,
+        )
+
+        validate_xgboost_population_run(self)
         if self.causal_limits is not None and type(self.causal_limits) is not CausalLimits:
             raise ValueError("run exploration limits require caller-owned CausalLimits")
         if any(
@@ -72,7 +78,7 @@ class RunRequest:
         ):
             raise ValueError("GP calibrated runs require CPU replay")
         if isinstance(self.recipe, (GPRootDAGRecipe, GPRootCalibration, GPRootCalibrationQuery)):
-            _gp_root_run_identity(
+            validate_gp_root_run_identity(
                 asdict(self.recipe),
                 seed=self.seed,
                 start=self.start,
@@ -195,6 +201,17 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
                 limits=request.causal_limits or CausalLimits(),
             ):
                 return False
+        if controls.get("topology") == "xgboost-population":
+            from r0.modules.priors import xgboost_population_construction_matches
+
+            return xgboost_population_construction_matches(
+                controls,
+                record,
+                construction_seed=request.construction.seed,
+                seed=request.seed,
+                task_id=task_id,
+                limits=request.causal_limits or CausalLimits(),
+            )
         if controls.get("topology") == "gp-root-dag":
             from r0.modules.priors import gp_root_construction_matches
 
@@ -207,6 +224,13 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
             ):
                 return False
     selected = selected_recipe(request, task_id)
+    from r0.modules.generation.lib.xgboost_population_transport import (
+        xgboost_population_record_matches,
+    )
+
+    match = xgboost_population_record_matches(record, request, selected, task_id)
+    if match is not None:
+        return match
     from r0.modules.priors import (
         GPColumnPopulation,
         GPColumnRecipe,
@@ -330,37 +354,6 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
     )
 
 
-def _gp_root_run_identity(
-    raw: dict[str, Any],
-    *,
-    seed: Any,
-    start: Any,
-    count: Any,
-    sampling: Any,
-    construction: Any,
-) -> None:
-    if raw.get("version") in ("gp-root-calibration-v1", "gp-root-calibration-query-v1"):
-        original = raw.get("original")
-        if type(original) is not dict:
-            raise ValueError("GP calibration requires retained original source identity")
-        raw = cast(dict[str, Any], original)
-    source = raw.get("source")
-    if type(source) is not dict:
-        raise ValueError("GP root run requires exactly one retained source identity")
-    source = cast(dict[str, Any], source)
-    if (
-        any(type(v) is not int for v in (seed, start, count))
-        or count != 1
-        or any(
-            type(source.get(k)) is not int or source[k] != value
-            for k, value in (("seed", seed), ("task_id", start))
-        )
-        or sampling is not None
-        or construction is not None
-    ):
-        raise ValueError("GP root run requires exactly one retained source identity")
-
-
 def request_from_dict(data: dict[str, Any]) -> RunRequest:
     fields = dict(data)
     candidate = fields.get("recipe")
@@ -371,7 +364,7 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
             "gp-root-calibration-v1",
             "gp-root-calibration-query-v1",
         ):
-            _gp_root_run_identity(
+            validate_gp_root_run_identity(
                 candidate,
                 seed=fields.get("seed"),
                 start=fields.get("start", 0),
@@ -413,7 +406,7 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
             and fields.get("device", "cpu") != "cpu"
         ):
             raise ValueError("GP calibrated runs require CPU replay")
-        _gp_root_run_identity(
+        validate_gp_root_run_identity(
             raw_recipe,
             seed=fields.get("seed"),
             start=fields.get("start", 0),
@@ -454,6 +447,11 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
         # Validate the complete outer RunRequest schema/budgets against cheap task
         # controls, without decoding either retained population. Discard preview.
         RunRequest(preview, causal_limits=limits, **fields)
+    from r0.modules.generation.lib.xgboost_population_transport import (
+        preflight_xgboost_population_run,
+    )
+
+    preflight_xgboost_population_run(raw_recipe, fields, limits, construction)
     recipe = recipe_from_dict(raw_recipe, limits=limits or CausalLimits())
     sampling = fields.pop("sampling", None)
     return RunRequest(

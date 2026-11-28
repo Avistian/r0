@@ -113,6 +113,8 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         runtime_mechanism = mechanism["original"]
     if runtime_mechanism["family"] == "gp_root_dag":
         runtime_mechanism = runtime_mechanism["runtime"]
+    if runtime_mechanism["family"] == "population_xgboost":
+        runtime_mechanism = runtime_mechanism["runtime"]
     active = set(runtime_mechanism.get("active", ()))
     view: dict[str, Any] = {
         "version": "inspection-v1",
@@ -155,6 +157,9 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         native = record["recipe"]
         view["native_construction"] = native["version"]
         native_record = record
+        if native["version"] == "population-xgboost-graph-v1":
+            native = native["base"]
+            native_record = {**record, "recipe": native}
         if native["version"] == "gp-root-intervention-v1":
             native = native["change"]
             native_record = {**record, "recipe": native}
