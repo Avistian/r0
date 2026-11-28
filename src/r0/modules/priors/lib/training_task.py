@@ -1,11 +1,14 @@
 """Tensor output for training; immutable episode conversion for existing consumers."""
 
+import json
 from dataclasses import dataclass
+from typing import Any, cast
 
 import numpy as np
 import torch
 
 from r0.modules.episodes import Episode, Feature, Row, Target, TaskType
+from r0.modules.priors.lib.missing_observation import ObservationTruth, validate_missing_observation
 from r0.modules.priors.lib.training_features import TrainingFeature
 
 
@@ -26,6 +29,7 @@ class TrainingTask:
     feature_schema: tuple[TrainingFeature, ...] = ()
     target_origin: str = "adapter-v1"
     missing_mask: torch.Tensor | None = None
+    observation_truth: ObservationTruth | None = None
 
     def __post_init__(self) -> None:
         if self.target_origin not in ("adapter-v1", "native-variable-v1"):
@@ -70,6 +74,18 @@ class TrainingTask:
             )
         ):
             raise ValueError("native targets require bounded int64 category codes")
+
+        declared_observation = (
+            json.loads(self.recipe_json).get("observation")
+            if '"observation"' in self.recipe_json
+            else None
+        )
+        if self.observation_truth is not None or (
+            isinstance(declared_observation, dict)
+            and cast(dict[str, Any], declared_observation).get("version")
+            == "r0-missing-observation-v1"
+        ):
+            validate_missing_observation(self)
 
     def episode(self) -> Episode:
         """Materialize the existing immutable contract only when requested."""

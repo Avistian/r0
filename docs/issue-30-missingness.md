@@ -42,11 +42,44 @@ Independent checks cover probability formulas, exact uniform draws, row/block
 sharing, untouched columns, initial-state replay, input binding, zero/full masks,
 invalid conditioning and rollback on resource rejection or arithmetic overflow.
 
-This is the missingness kernel. The enclosing observation recipe must still retain
-raw inputs, privileged driver provenance, schema and transformation order, apply
-the mask to task inputs, and save/replay it through the CLI. In a composed pipeline,
+The kernel alone does not define a task archive. The single-stage observation
+wrapper below retains raw inputs, driver provenance and schema; CLI integration
+and ordered transformation composition remain pending. In a composed pipeline,
 MAR conditioning columns must remain observed; checking only one plan is not enough
 to claim that an arbitrary composition is MAR. Target-driven masks describe a
 privileged generative assumption and must not expose query labels or driver arrays
 to the learner. Categorical/tail-censoring/near-empty/latent structured families and
 other required #30 variants remain open beyond these initial modes.
+
+## Observation tasks and privileged archives
+
+`observe_missingness(task, plan, seed=..., latent=None,
+latent_provenance=None, limits=...)` now applies one mask to an existing CPU
+float64 task. It retains original inputs, conditional mask probabilities and
+any numeric target/latent driver in `ObservationTruth`. Target-driven policies
+use the original target encoding; latent policies require an explicit caller
+provenance label. This label records an assertion, not independent proof of the
+latent driver's scientific origin.
+
+The observed task keeps targets, scores, context/query indices and feature schema.
+Its source/episode identities change to include the observation specification and
+value binding. Its recipe record retains the plan, separate observation seed,
+source identities, RNG snapshots and binding. PCG64 is keyed by a separate domain,
+observation seed and original episode seed/task ID. Structural equations and their
+mechanism record remain unchanged. Already-masked/observed tasks are rejected by
+this initial wrapper; composing stages needs a separate ordered contract.
+
+`save_group` places raw inputs, probabilities and optional driver in `truth.npz`,
+with provenance in the privileged task card. `predictor.npz` contains only observed
+inputs, context targets and their missing masks. Loading reconstructs and validates
+the observation: masks, probabilities, source-value binding, RNG replay, present
+values and identities must agree. Removing required truth while retaining the
+observation declaration is rejected. This validation checks the observation layer
+against retained source values; it does not by itself re-run every source generator.
+
+`restore_observation_source(task)` returns retained complete source inputs and
+original identities/recipe for separate source replay and `explain_generation`.
+Tests compare restored source episodes and structural traces with the originals.
+Direct structural inspection of the masked task is not yet an integrated trace;
+use the explicit source-restoration helper. The higher-level CLI request transport
+for observation plans is still pending.

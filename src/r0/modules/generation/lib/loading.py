@@ -11,7 +11,7 @@ import numpy as np
 import torch
 
 from r0.modules.generation.lib.groups import verify_group
-from r0.modules.priors import TrainingFeature, TrainingTask
+from r0.modules.priors import ObservationTruth, TrainingFeature, TrainingTask
 
 
 def _tensors(archive: zipfile.ZipFile, name: str) -> dict[str, torch.Tensor]:
@@ -67,7 +67,25 @@ def _load_task(archive: zipfile.ZipFile, task_id: int) -> TrainingTask:
         missing_mask = torch.empty_like(inputs, dtype=torch.bool)
         missing_mask[context] = predictor["context_missing"]
         missing_mask[query] = predictor["query_missing"]
+    observation_truth = None
+    observation_record = card.get("observation_truth")
+    observation_arrays = {key for key in truth if key.startswith("observation_")}
+    if observation_record is not None:
+        required = {"observation_raw_inputs", "observation_probabilities"}
+        if not required <= observation_arrays or observation_arrays - required - {
+            "observation_driver"
+        }:
+            raise ValueError("saved observation truth arrays differ")
+        observation_truth = ObservationTruth(
+            truth["observation_raw_inputs"],
+            truth["observation_probabilities"],
+            truth.get("observation_driver"),
+            json.dumps(observation_record, sort_keys=True, allow_nan=False),
+        )
+    elif observation_arrays:
+        raise ValueError("observation arrays lack a provenance record")
     return TrainingTask(
+        observation_truth=observation_truth,
         missing_mask=missing_mask,
         source_task_id=card["source_task_id"],
         episode_id=card["episode_id"],
