@@ -15,6 +15,11 @@ def inspect_graph(
     task: priors.TrainingTask, archive: str | None, output_dir: Path, data: dict[str, Any]
 ) -> dict[str, Any]:
     record = json.loads(task.recipe_json)
+    population = data.get("population", "query")
+    if population not in ("query", "fit") or (
+        population == "fit" and record["recipe"].get("version") != "gp-root-calibration-v1"
+    ):
+        raise ValueError("fit population traces require a retained GP calibration")
     from r0.modules.explorer.lib.convolutions import contains_convolution
 
     if not contains_convolution(record["recipe"]) and record["recipe"].get("version") not in (
@@ -50,6 +55,7 @@ def inspect_graph(
             "task_id": record["task_id"],
             "episode_id": task.episode_id,
             "indices": data["indices"],
+            "population": population,
             "component": data.get("component"),
             "column_start": data.get("column_start", 0),
             "causal_limits": asdict(caller_limits(data)),

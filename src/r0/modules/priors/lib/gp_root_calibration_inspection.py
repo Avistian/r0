@@ -68,6 +68,13 @@ def calibrated_gp_root_steps(
         torch.tensor([recipe.calibration.center, recipe.calibration.scale], dtype=torch.float64),
         {
             **asdict(recipe.calibration),
+            "row_labels": ["center", "scale"],
+            "row_heading": "Statistic",
+            "column_heading": "Target score channel",
+            "axes": (
+                f"Center and scale over all {recipe.calibration.rows} independent fitting rows."
+            ),
+            "scope": "global fitting statistics, not an emitted dataset row",
             "population_id": recipe.fit.source.population_id,
             "seed": recipe.fit.source.seed,
             "task_id": recipe.fit.source.task_id,

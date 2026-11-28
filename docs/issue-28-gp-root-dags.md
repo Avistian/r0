@@ -40,8 +40,7 @@ acceptance or scientific replication.
 
 Remaining required work includes independent review; response
 curves; matched/fresh graph interventions and fixed-fit query lifecycles; broader
-sampled/fitted mechanism wrappers and categorical calibration policies; fit-graph
-inspection; mixed nested layouts and policies; measured resource/diversity
+sampled/fitted mechanism wrappers and categorical calibration policies; mixed nested layouts and policies; measured resource/diversity
 qualification; and local/Colab/CPU-GPU integration evidence. Calibrated output
 currently uses explicit CPU replay. Independent fit populations use the current
 finite GP cap of 32..1024 rows. These are current implementation bounds, not
@@ -111,7 +110,7 @@ repeated-row traces, ZIP downloads and replay. Literal checks reconstruct fit
 means/scales and query scores/probabilities from the downloaded populations.
 Evidence remains ignored under docs/evidence/issue-28-gp-calibration-workbench.
 Independent review and a full check of this child are still required. Fixed-fit
-Next, fit-population graph inspection, matched/fresh interventions and broader
+Next, matched/fresh interventions and broader
 calibration policies remain required work.
 
 GP-root workbench controls explicitly mark causal interventions, sampled policies,
@@ -121,3 +120,28 @@ unavailable until fixed-fit continuation is implemented; replay remains availabl
 These capability guards prevent unsupported workflows, including after busy-state
 reset, and clear when returning to an ordinary supported dataset. Disabling them
 is an interface correction, not completion or exclusion of those requirements.
+
+## Independent fitting-population inspection
+
+The generation graph has a population selector for calibrated GP-root datasets.
+Query remains the default. Selecting the independent fitting population traces
+its own retained row indices, including rows beyond the query population size,
+with repeated indices and order preserved. Its covariance, factors, locations,
+innovations and values use the complete fitting population and identity in the
+matrix views and downloads. Returning to query restores the original population
+matrices; neither operation changes the active dataset or calibration.
+
+Public explain_gp_calibration_fit validates the entire active query envelope and
+tensors, then replays the saved fitting graph under its retained identity. Invalid
+fit row selections reject before covariance reconstruction. The guarded graph
+worker carries the population choice and output limits. Large fit identities use
+exact browser transport. Calibration statistics in both graph views have explicit
+center/scale row labels and global axes, even when the user selects exactly two
+rows; their statistics always refer to all independent fitting rows.
+
+Author checks cover all four continuous graph families, literal fitting inputs
+and aggregate statistics, repeated/out-of-query-range rows, malformed selections,
+forged active tensors, and guarded session preservation. Independent acceptance
+and the combined full check remain pending. This inspection increment does not
+implement fixed-fit query continuation or the remaining intervention/reference
+workflows.

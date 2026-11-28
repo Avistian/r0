@@ -7,6 +7,7 @@ $("gp-fit-create").onclick=()=>act("Fitting targets on an independent GP populat
 });
 function gpCalibrationView(view){
   const stored=view.recipe.recipe,source=gpRootEnvelope(stored);
+  $("graph-population-label").hidden=stored.version!=="gp-root-calibration-v1";
   const categorical=source && source.base.version!=="functional-causal-v1" && source.base.task.task_type!=="regression";
   const available=source && stored.version==="gp-root-dag-v1" && !categorical;
   $("gp-fit-create").disabled=!available;$("gp-fit-create").dataset.unavailable=String(!available);
@@ -17,7 +18,7 @@ function gpCalibrationView(view){
     $("gp-fit-task").value=String(next<2n**63n?next:0n);
   }
   $("gp-fit-notice").textContent=stored.version==="gp-root-calibration-v1"
-    ? `Fixed calibration retained from ${stored.calibration.rows} separate GP rows. Replay preserves both populations. Open the original dataset to fit another calibration. Fixed-fit Next and fit-population graph inspection remain pending.`
+    ? `Fixed calibration retained from ${stored.calibration.rows} separate GP rows. Replay preserves both populations. Open the original dataset to fit another calibration. Use the generation graph population selector to inspect the independent fitting rows. Fixed-fit Next remains pending.`
     : categorical?"Direct categorical targets require category-preserving calibration; numeric scaling is unavailable."
     : "Choose a distinct fit seed/task identity. Both populations and the complete fixed fit are retained; failure leaves the current dataset active.";
 }
