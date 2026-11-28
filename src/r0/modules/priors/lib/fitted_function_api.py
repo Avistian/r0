@@ -71,6 +71,7 @@ from r0.modules.priors.lib.network_sampling_records import (
 )
 from r0.modules.priors.lib.network_sampling_records import SampledNetwork as SampledNetwork
 from r0.modules.priors.lib.oblique_tree import oblique_tree_recipe
+from r0.modules.priors.lib.score_ensemble import score_ensemble_recipe
 from r0.modules.priors.lib.soft_tree import SoftTreeBranch, compile_soft_tree
 from r0.modules.priors.lib.structural_network import FrozenNetworkFunction as FrozenNetworkFunction
 from r0.modules.priors.lib.structural_network import NetworkAffine as NetworkAffine
@@ -202,3 +203,5 @@ __all__ += ["construct_xgboost_population", "xgboost_population_construction_mat
 __all__ += ["tree_extension_request_from_dict"]
 
 __all__ += ["CategorySubsetSplit", "categorical_model_tree_recipe", "sample_category_subset_splits"]
+
+__all__ += ["score_ensemble_recipe"]
