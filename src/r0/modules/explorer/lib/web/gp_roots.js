@@ -55,5 +55,5 @@ function gpRootView(view){
   $("gp-root-notice").textContent="Replay preserves the retained GP population. Next constructs a new population with the same authored graph and bindings.";
 }
 function specialPopulationViews(view){
-  gpColumnAvailability();populationDAGView(view);gpRootView(view);gpCalibrationView(view);
+  gpColumnAvailability();populationDAGView(view);gpRootView(view);gpCalibrationView(view);gpRootCapabilities(view);
 }

@@ -113,3 +113,11 @@ Evidence remains ignored under docs/evidence/issue-28-gp-calibration-workbench.
 Independent review and a full check of this child are still required. Fixed-fit
 Next, fit-population graph inspection, matched/fresh interventions and broader
 calibration policies remain required work.
+
+GP-root workbench controls explicitly mark causal interventions, sampled policies,
+causal-reference curves and generic task-only comparisons unavailable while their
+retained-population integration remains required. Calibrated GP-root Next is also
+unavailable until fixed-fit continuation is implemented; replay remains available.
+These capability guards prevent unsupported workflows, including after busy-state
+reset, and clear when returning to an ordinary supported dataset. Disabling them
+is an interface correction, not completion or exclusion of those requirements.

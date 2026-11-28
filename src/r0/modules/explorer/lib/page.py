@@ -84,7 +84,8 @@ window.r0request = async (action, data) => {
             + "\n"
             + (assets / "population_dags.js").read_text()
             + (assets / "gp_roots.js").read_text()
-            + (assets / "gp_calibration.js").read_text(),
+            + (assets / "gp_calibration.js").read_text()
+            + (assets / "gp_root_capabilities.js").read_text(),
         )
         .replace("<!-- CONVERTERS -->", (assets / "converters.html").read_text())
         .replace("/* TRANSPORT */", transport)
