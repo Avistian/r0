@@ -29,6 +29,10 @@ from .gp_environment_reference import (
 from .gp_link_pairs import compare_gp_link_pair as compare_gp_link_pair
 from .gp_link_pairs import generate_gp_link_pair as generate_gp_link_pair
 from .gp_link_pairs import validate_gp_link_controls as validate_gp_link_controls
+from .gp_population_metadata_cost import (
+    gp_column_population_metadata_cost as gp_column_population_metadata_cost,
+)
+from .gp_population_metadata_cost import gp_root_dag_metadata_cost as gp_root_dag_metadata_cost
 from .gp_root_calibration import GPRootCalibration as GPRootCalibration
 from .gp_root_calibration import calibrate_gp_root_dag as calibrate_gp_root_dag
 from .gp_root_calibration import generate_calibrated_gp_root as generate_calibrated_gp_root
