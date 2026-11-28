@@ -9,6 +9,7 @@ import torch
 from r0.modules.priors.lib.causal_limits import CausalLimits
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
+from r0.modules.priors.lib.gp_column_inspection import gp_population_matrices
 from r0.modules.priors.lib.gp_root_calibration import GPRootCalibration
 from r0.modules.priors.lib.gp_root_dags import generate_gp_root_dag
 from r0.modules.priors.lib.gp_root_inspection import gp_root_steps
@@ -101,6 +102,7 @@ def calibrated_gp_root_steps(
         "episode_id": task.episode_id,
         "rows": rows,
         "population_id": source.population_id,
+        "shared_matrices": gp_population_matrices(source),
         "fit_population_id": recipe.fit.source.population_id,
         "query_fit": False,
         "component": None,

@@ -9,6 +9,7 @@ from r0.modules.explorer.lib.composed_examples import composed_examples, fitted_
 from r0.modules.explorer.lib.converted import converted_editor, converted_examples
 from r0.modules.explorer.lib.convolution_examples import convolution_examples
 from r0.modules.explorer.lib.gp_column_examples import gp_column_examples
+from r0.modules.explorer.lib.gp_root_examples import gp_root_examples
 from r0.modules.explorer.lib.innovation_examples import innovation_examples
 from r0.modules.explorer.lib.native import (
     native_example,
@@ -93,6 +94,7 @@ def construction_examples() -> dict[str, Any]:
         **source_root_examples(),
         **prototype_root_examples(),
         **gp_column_examples(),
+        **gp_root_examples(),
         **network_hyperprior_examples(),
         **network_innovation_examples(),
         **converted_examples(),
@@ -288,6 +290,8 @@ def population_identity(record: dict[str, Any], data: dict[str, Any]) -> dict[st
 def guarded_archive_version(version: object) -> bool:
     """Batch reconstruction and frozen replay both belong in the bounded worker."""
     return frozen_archive_version(version) or version in (
+        "gp-root-dag-v1",
+        "gp-root-calibration-v1",
         "gp-column-recipe-v1",
         "gp-column-target-recipe-v1",
         "recursive-population-graph-v1",

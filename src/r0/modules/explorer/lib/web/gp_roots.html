@@ -1,0 +1,10 @@
+<fieldset id="gp-root-controls"><legend>GP-root causal graphs</legend>
+<p>Choose a “GP root DAG” example above. Edit its finite GP population, root-column bindings and complete causal graph. Apply changes to the draft, then Construct; the active dataset changes only after construction succeeds.</p>
+<button id="gp-root-load">Load active GP-root controls</button>
+<button id="gp-root-replay">Replay retained GP-root dataset</button>
+<label>GP population request: kernels, locations and dimensions<textarea id="gp-root-request" rows="10"></textarea></label>
+<label>Root bindings: node IDs and ordered GP column indices<textarea id="gp-root-bindings" rows="6"></textarea></label>
+<label>Complete graph: equations, typed domains, readouts and task adapter<textarea id="gp-root-runtime" rows="14"></textarea></label>
+<button id="gp-root-apply">Apply GP-root draft</button>
+<p id="gp-root-notice" class="muted">Repeated column indices explicitly share a GP column, including across roots. Unbound roots use their declared laws. The DAG determines targets; the GP source's marginal target is retained provenance.</p>
+</fieldset>

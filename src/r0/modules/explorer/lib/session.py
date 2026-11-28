@@ -133,9 +133,9 @@ class ExplorerSession:
         self.intervention = None
 
     def request(self, action: str, data: dict[str, Any]) -> dict[str, Any]:
-        from r0.modules.explorer.lib.population_dag_workbench import population_dag_action
+        from r0.modules.explorer.lib.population_workbench import population_action
 
-        population = population_dag_action(self, action, data)
+        population = population_action(self, action, data)
         if population is not None:
             return _identity_numbers(population, for_browser=True)
         if action == "construction_examples":

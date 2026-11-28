@@ -95,7 +95,12 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         record_fingerprint(("explorer-rows-v1", record["seed"], record["task_id"], len(x))), 16
     )
     indices = _sample_rows(len(x), sample_rows, np.random.default_rng(sample_seed))
-    active = set(mechanism.get("active", ()))
+    runtime_mechanism = mechanism
+    if mechanism["family"] == "gp_root_calibration":
+        runtime_mechanism = mechanism["original"]
+    if runtime_mechanism["family"] == "gp_root_dag":
+        runtime_mechanism = runtime_mechanism["runtime"]
+    active = set(runtime_mechanism.get("active", ()))
     view: dict[str, Any] = {
         "version": "inspection-v1",
         "source_task_id": task.source_task_id,
@@ -135,6 +140,11 @@ def inspect_task(task: TrainingTask, *, sample_rows: int = 512) -> dict[str, Any
         native = record["recipe"]
         view["native_construction"] = native["version"]
         native_record = record
+        if native["version"] == "gp-root-calibration-v1":
+            native = native["original"]
+        if native["version"] == "gp-root-dag-v1":
+            native = native["base"]
+            native_record = {**record, "recipe": native}
         if native["version"] == "recursive-population-graph-v1":
             native = native["request"]["base"]
             native_record = {**record, "recipe": native}

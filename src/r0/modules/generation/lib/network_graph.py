@@ -30,6 +30,8 @@ def network_graph(data: dict[str, Any]) -> dict[str, Any]:
             "sampled-intervention-policy-v1",
             "sampled-typed-intervention-policy-v1",
             "prototype-batch-network-realized-v1",
+            "gp-root-dag-v1",
+            "gp-root-calibration-v1",
             "gp-column-recipe-v1",
             "gp-column-target-recipe-v1",
             "gp-column-target-link-v1",

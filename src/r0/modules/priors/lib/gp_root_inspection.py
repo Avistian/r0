@@ -13,6 +13,7 @@ from r0.modules.priors.lib.converted_inspection import converted_steps
 from r0.modules.priors.lib.functional_causal import FunctionalCausalRecipe
 from r0.modules.priors.lib.functional_causal_evaluation import functional_rng
 from r0.modules.priors.lib.functional_steps import functional_steps
+from r0.modules.priors.lib.gp_column_inspection import gp_population_matrices
 from r0.modules.priors.lib.gp_root_dags import GPRootDAGRecipe
 from r0.modules.priors.lib.gp_root_task_validation import validate_gp_root_task
 from r0.modules.priors.lib.native_causal import NativeCausalRecipe
@@ -120,6 +121,7 @@ def gp_root_steps(
         "episode_id": task.episode_id,
         "rows": rows,
         "population_id": recipe.source.population_id,
+        "shared_matrices": gp_population_matrices(recipe.source),
         "bindings": [asdict(b) for b in recipe.bindings],
         "component": None,
         "component_count": 0,

@@ -3,13 +3,13 @@ let gpPopulationMatrices=null;
 function clearGPPopulationMatrices(){gpPopulationMatrices=null;$("gp-covariance-panel").hidden=true;$("gp-matrix-plot").replaceChildren();$("gp-matrix-table").replaceChildren();}
 function showGPPopulationMatrices(graph, selectedRecipe=null, origin="active dataset"){
   clearGPPopulationMatrices();
-  if(!["gp_column_population","gp_target_environment"].includes(graph.kind)||!graph.shared_matrices?.length)return;
+  if(!["gp_column_population","gp_target_environment","gp_root_dag","gp_root_calibration"].includes(graph.kind)||!graph.shared_matrices?.length)return;
   const recipe=selectedRecipe || current.view.recipe.recipe;
-  let base=recipe,depth=0;
+  let base=recipe.version==="gp-root-calibration-v1"?recipe.original:recipe,depth=0;
   while(base.version==="gp-column-target-link-v1" && depth<8){base=base.parent;depth++;}
   const environment=base.version==="gp-column-target-recipe-v1", source=environment?base.comparison:base.source;
   if(!source?.draw)return;
-  gpPopulationMatrices={population_id:graph.population_id,matrices:graph.shared_matrices,locations:source.draw.locations,innovations:source.draw.innovations,values:source.draw.values,...(environment?{environment:{origin,mode:source.mode,fresh_seed:source.fresh_seed,side:depth?"linked-replacement":base.side,lineage_depth:depth,recipe_version:recipe.version}}:{})};
+  gpPopulationMatrices={population_id:graph.population_id,matrices:graph.shared_matrices,locations:source.draw.locations,innovations:source.draw.innovations,values:source.draw.values,...(base.version==="gp-root-dag-v1"?{root_input_bindings:base.bindings}:{}),...(environment?{environment:{origin,mode:source.mode,fresh_seed:source.fresh_seed,side:depth?"linked-replacement":base.side,lineage_depth:depth,recipe_version:recipe.version}}:{})};
   $("gp-matrix-kernel").replaceChildren(...graph.shared_matrices.map((m,i)=>new Option(`Kernel ${i} · feature columns ${m.kernel_columns.join(", ")}`,i)));
   $("gp-matrix-row").value=0;$("gp-matrix-column").value=0;$("gp-matrix-kind").value="covariance";$("gp-covariance-panel").hidden=false;drawGPPopulationMatrix();
 }
@@ -30,8 +30,8 @@ function drawGPPopulationMatrix(){
   for(const [x,y,text] of [[12,58,rowIds[0]],[12,298,rowIds.at(-1)],[55,320,columns[0]],[440,320,columns.at(-1)]])svg.append(element("text",{x,y,"font-size":11},String(text)));
   $("gp-matrix-plot").replaceChildren(svg);chartExports("gp-matrix-plot",svg,"gp-population-matrix");
   table("gp-matrix-table",["Original population row",...columns.map(j=>`${heading} ${j}`)],rows.map((row,i)=>[rowIds[i],...row]));
-  const environment=gpPopulationMatrices.environment;
-  $("gp-matrix-note").textContent=`${environment?`${environment.origin} · ${environment.mode} innovations · ${environment.side} · lineage ${environment.lineage_depth}. `:""}Population ${gpPopulationMatrices.population_id}. Full shape ${matrix.length} × ${matrix[0].length}; window rows ${rowIds[0]}–${rowIds.at(-1)}, columns ${columns[0]}–${columns.at(-1)}. Change the offsets to inspect every entry. Kernel applies to feature columns ${selected.kernel_columns.join(", ")}. Green positive, orange negative, white zero; scale uses this window. Complete values are in the JSON download.`;
+  const environment=gpPopulationMatrices.environment,rootNote=gpPopulationMatrices.root_input_bindings?"GP source columns feed the retained root bindings; observed DAG channels are shown in the generation trace. ":"";
+  $("gp-matrix-note").textContent=`${rootNote}${environment?`${environment.origin} · ${environment.mode} innovations · ${environment.side} · lineage ${environment.lineage_depth}. `:""}Population ${gpPopulationMatrices.population_id}. Full shape ${matrix.length} × ${matrix[0].length}; window rows ${rowIds[0]}–${rowIds.at(-1)}, columns ${columns[0]}–${columns.at(-1)}. Change the offsets to inspect every entry. Kernel applies to feature columns ${selected.kernel_columns.join(", ")}. Green positive, orange negative, white zero; scale uses this window. Complete values are in the JSON download.`;
 }
 for(const id of ["gp-matrix-kernel","gp-matrix-kind","gp-matrix-row","gp-matrix-column"])$(id).onchange=drawGPPopulationMatrix;
 $("gp-matrix-json").onclick=()=>{if(gpPopulationMatrices)download("gp-population-matrices.json",new Blob([JSON.stringify(gpPopulationMatrices,null,2)],{type:"application/json"}));};

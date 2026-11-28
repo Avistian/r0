@@ -25,6 +25,7 @@ from r0.modules.generation.lib.requests import (
     selected_recipe,
 )
 from r0.modules.priors import (
+    CausalLimits,
     GPRootCalibration,
     GPRootDAGRecipe,
     TrainingTask,
@@ -201,10 +202,16 @@ def _run(
                             or task.inputs.device.type != request.device
                         ):
                             raise ValueError("producer returned a different task or recipe")
-                        if isinstance(request.recipe, (GPRootDAGRecipe, GPRootCalibration)):
-                            validate_gp_root_task(
-                                task, limits=request.causal_limits or request.recipe.limits
+                        if record["recipe"].get("version") in (
+                            "gp-root-dag-v1",
+                            "gp-root-calibration-v1",
+                        ):
+                            cap = request.causal_limits or (
+                                request.recipe.limits
+                                if isinstance(request.recipe, (GPRootDAGRecipe, GPRootCalibration))
+                                else CausalLimits()
                             )
+                            validate_gp_root_task(task, limits=cap)
                     except (ValueError, RuntimeError) as error:
                         failures[str(task_id)] = _record_failure(failure_log, task_id, error)
                         if persist is not None:

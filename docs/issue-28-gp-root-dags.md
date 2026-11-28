@@ -38,7 +38,7 @@ custody, JSON/ZIP and repeated-row traces. Genuine failures and fixture errors a
 retained separately. This is an implementation increment, not whole issue #28
 acceptance or scientific replication.
 
-Remaining required work includes independent review; the workbench and response
+Remaining required work includes independent review; response
 curves; matched/fresh graph interventions and fixed-fit query lifecycles; broader
 sampled/fitted mechanism wrappers and categorical calibration policies; fit-graph
 inspection; mixed nested layouts and policies; measured resource/diversity
@@ -57,3 +57,29 @@ caller and retained nested caps. Declared graph caps must fit their retained
 envelope caps, which must fit the calibration caller caps; records are never
 silently rewritten to make a lower cap appear compatible. These are conservative
 admission accounts, not measured allocator or RSS figures.
+
+## GP-root workbench
+
+The construction catalog includes 27 authored GP-root examples across functional,
+scalar-native, vector-native and converted graphs, with linear, convolution and
+network root mechanisms. Regression and multiclass cover all four families;
+functional binary examples retain the ordinary adapter. Complete GP request,
+runtime and binding controls remain editable JSON. Construction admits the future
+source metadata and runtime before drawing a population. The construction seed
+does not modify authored equations; the explicitly retained episode identity
+selects the GP population.
+
+Load controls, exact replay and raw-population Next preserve large integer IDs.
+Traces run through the guarded worker, retain requested row order and duplicates,
+and show full source covariance, factors, locations, innovations and values.
+Matrix downloads include root-input bindings; graph traces show the downstream
+mechanisms. Failed construction preserves the active dataset. Calibrated
+fixed-fit Next, fit controls, graph edits and response/intervention controls still
+require their own implementations; unavailable actions report this explicitly.
+
+Author Chromium evidence covers six family/mechanism/target combinations, matrix
+views, downloads, ZIP exports, replay, Next and invalid-draft recovery. Literal
+checks on the saved browser artifacts reconstruct RBF matrices, GP draws, root
+and descendant equations and classification probabilities. Evidence is ignored
+under docs/evidence/issue-28-gp-root-workbench. These are bounded author checks;
+independent review and a full check of the combined change remain required.

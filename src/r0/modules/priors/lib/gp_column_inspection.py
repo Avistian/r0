@@ -92,17 +92,20 @@ def gp_column_steps(
         "kind": "gp_column_population",
         "rows": selected,
         "population_id": p.population_id,
-        "shared_matrices": [
-            {
-                "kernel_columns": list(range(p.request.columns))
-                if len(p.draw.kernels) == 1
-                else [j],
-                "row_ids": list(p.row_ids),
-                "column_row_ids": list(p.row_ids),
-                "covariance": [list(row) for row in k],
-                "factor": [list(row) for row in p.draw.factors[j]],
-                "axis_semantics": "original population row by original population row",
-            }
-            for j, k in enumerate(p.draw.covariance)
-        ],
+        "shared_matrices": gp_population_matrices(p),
     }
+
+
+def gp_population_matrices(p: GPColumnPopulation):
+    """Retained covariance/factor matrices with explicit original-row axes."""
+    return [
+        {
+            "kernel_columns": list(range(p.request.columns)) if len(p.draw.kernels) == 1 else [j],
+            "row_ids": list(p.row_ids),
+            "column_row_ids": list(p.row_ids),
+            "covariance": [list(row) for row in k],
+            "factor": [list(row) for row in p.draw.factors[j]],
+            "axis_semantics": "original population row by original population row",
+        }
+        for j, k in enumerate(p.draw.covariance)
+    ]
