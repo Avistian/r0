@@ -19,7 +19,7 @@ function gpRootCapabilities(view){
   const recipe=view.recipe.recipe;if(!gpRootEnvelope(recipe))return;
   if(["gp-root-calibration-v1","gp-root-calibration-query-v1","gp-root-intervention-v1"].includes(recipe.version))
     for(const id of ["rows","context","features","active","task-type","classes","difficulty"])
-      pendingGPRootButton(id,"The retained fixed fit requires unchanged graph and task geometry. Use an original GP-root construction to define a different task.");
+      pendingGPRootButton(id,"The retained GP archive requires unchanged graph and task geometry. Use an original GP-root construction to define a different task.");
   if(recipe.version==="gp-root-intervention-v1"){
     const message="Open the original GP source to create another change. Nested intervention editing remains pending; replay and inspection retain this result.";
     for(const id of ["next","gp-query-create","gp-root-load","mechanism-load","intervention-load","intervention-add","intervention-create"])
