@@ -9,6 +9,9 @@ from .calibrated_population_intervention import (
 from .calibrated_population_pairs import (
     generate_calibrated_population_pair as generate_calibrated_population_pair,
 )
+from .population_generation_identity import (
+    preflight_calibrated_generation as preflight_calibrated_generation,
+)
 from .population_target_calibration import (
     CalibratedPopulationGraph as CalibratedPopulationGraph,
 )

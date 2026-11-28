@@ -7,11 +7,13 @@ from typing import Any, cast
 
 from r0.modules.generation.lib.construction import GraphConstruction
 from r0.modules.priors import (
+    CalibratedPopulationGraph,
     CausalLimits,
     LinearRecipe,
     Recipe,
     TrainingTask,
     generate_task,
+    preflight_calibrated_generation,
     recipe_from_dict,
     sample_recipe,
 )
@@ -59,6 +61,14 @@ class RunRequest:
             math.isfinite(self.max_seconds) and self.max_seconds > 0
         ):
             raise ValueError("max_seconds must be finite and positive")
+        if isinstance(self.recipe, CalibratedPopulationGraph):
+            preflight_calibrated_generation(
+                self.recipe,
+                seed=self.seed,
+                task_id=self.start,
+                device=self.device,
+                count=self.count,
+            )
         if self.construction is not None:
             if type(self.construction) is not GraphConstruction or self.sampling is not None:
                 raise ValueError("graph construction cannot also use recipe sampling")
@@ -228,6 +238,13 @@ def record_matches(record: dict[str, Any], request: RunRequest, task_id: int) ->
 
 def request_from_dict(data: dict[str, Any]) -> RunRequest:
     fields = dict(data)
+    candidate = fields.get("recipe")
+    if (
+        type(candidate) is dict
+        and cast(dict[str, Any], candidate).get("version") == "calibrated-population-graph-v1"
+        and any(fields.get(key) is not None for key in ("construction", "sampling"))
+    ):
+        raise ValueError("fixed calibrated population cannot use construction or sampling")
     raw_limits = fields.pop("causal_limits", None)
     limits = None if raw_limits is None else CausalLimits(**raw_limits)
     raw_construction = fields.pop("construction", None)
@@ -240,7 +257,32 @@ def request_from_dict(data: dict[str, Any]) -> RunRequest:
         if "recipe" not in fields and construction is not None
         else fields.pop("recipe", None)
     )
-    recipe = recipe_from_dict(raw_recipe, limits=limits or CausalLimits())
+    if (
+        type(raw_recipe) is dict
+        and cast(dict[str, Any], raw_recipe).get("version") == "calibrated-population-graph-v1"
+    ):
+        raw_recipe = cast(dict[str, Any], raw_recipe)
+        preflight_calibrated_generation(
+            raw_recipe,
+            seed=cast(int, fields.get("seed")),
+            task_id=fields.get("start", 0),
+            device=fields.get("device", "cpu"),
+            count=cast(int, fields.get("count")),
+        )
+        if construction is not None or fields.get("sampling") is not None:
+            raise ValueError("fixed calibrated population cannot use construction or sampling")
+        try:
+            task_fields = dict(raw_recipe["original"]["request"]["base"]["task"])
+            if type(task_fields["class_offsets"]) not in (tuple, list):
+                raise ValueError("class_offsets must be an array")
+            task_fields["class_offsets"] = tuple(task_fields["class_offsets"])
+            preview = LinearRecipe(**task_fields)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError("invalid calibrated population task metadata") from exc
+        # Validate the complete outer RunRequest schema/budgets against cheap task
+        # controls, without decoding either retained population. Discard preview.
+        RunRequest(preview, causal_limits=limits, **fields)
+    recipe = recipe_from_dict(cast(Any, raw_recipe), limits=limits or CausalLimits())
     sampling = fields.pop("sampling", None)
     return RunRequest(
         recipe,

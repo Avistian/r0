@@ -50,3 +50,9 @@ needs a new linked construction. Those paired lifecycle APIs and explorer
 construction/edit/reopen/reference controls remain REQUIRED follow-ons. This
 slice does not advertise them as available. Hosted execution, scientific
 reproduction and maximum-size resource measurements are not established here.
+
+Generation preflight validates exact primitive seed/task identity, CPU execution,
+and fixed count=1 before source replay. Serialized runner requests also reject
+unused sampling/construction and invalid outer budgets before decoding either
+retained population. This admission guard does not alter valid calibration or
+task artifacts.
